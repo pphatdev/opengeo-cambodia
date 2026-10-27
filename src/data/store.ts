@@ -528,7 +528,8 @@ export class AdminStore {
    * Search across all administrative boundaries with Romanization & Khmer support
    */
   public search(query: string, level?: AdminLevel, limit = 20): AdminItem[] {
-    const cleanQuery = AdminStore.normalize(query);
+    const boundedLimit = Math.max(1, Math.min(100, isNaN(limit) ? 20 : limit));
+    const cleanQuery = AdminStore.normalize(query.slice(0, 100));
     if (!cleanQuery) return [];
 
     const pool = level
@@ -570,7 +571,7 @@ export class AdminStore {
 
     // Sort by relevance score descending, then alphabetically by name_en
     results.sort((a, b) => b.score - a.score || a.item.name_en.localeCompare(b.item.name_en));
-    return results.slice(0, limit).map((r) => r.item);
+    return results.slice(0, boundedLimit).map((r) => r.item);
   }
 
   public getStats(): AdminStats {

@@ -1,10 +1,14 @@
 import { Hono } from 'hono';
 import { GeocodeService } from '../services/geocode.service.js';
+import { geocodeRateLimiter } from '../middleware/rate-limiter.js';
 import type { ApiResponse } from '../types/api.js';
 import type { GeocodeResult } from '../types/geocode.js';
 
 export const geocodeRoutes = new Hono();
 const geocodeService = new GeocodeService();
+
+// Apply dedicated geocoding rate limiter (30 req/min/IP) to respect OSM policies
+geocodeRoutes.use('*', geocodeRateLimiter);
 
 /**
  * GET /api/geocode/reverse?lat=...&lon=...
@@ -29,7 +33,14 @@ geocodeRoutes.get('/reverse', async (c) => {
   const lat = parseFloat(latStr);
   const lon = parseFloat(lonStr);
 
-  if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lon) ||
+    lat < -90 ||
+    lat > 90 ||
+    lon < -180 ||
+    lon > 180
+  ) {
     return c.json<ApiResponse<null>>(
       {
         success: false,
@@ -72,10 +83,24 @@ geocodeRoutes.get('/reverse', async (c) => {
  */
 geocodeRoutes.get('/search', async (c) => {
   const start = performance.now();
-  const q = c.req.query('q') || '';
-  const limit = Math.min(parseInt(c.req.query('limit') || '10', 10), 50);
+  const rawQ = c.req.query('q') || '';
+  const q = rawQ.trim();
 
-  if (!q.trim()) {
+  if (q.length > 100) {
+    return c.json<ApiResponse<null>>(
+      {
+        success: false,
+        data: null,
+        error: "Query parameter 'q' exceeds maximum length of 100 characters",
+      },
+      400
+    );
+  }
+
+  const limitRaw = parseInt(c.req.query('limit') || '10', 10);
+  const limit = Math.max(1, Math.min(50, isNaN(limitRaw) ? 10 : limitRaw));
+
+  if (!q) {
     return c.json<ApiResponse<GeocodeResult[]>>({
       success: true,
       data: [],

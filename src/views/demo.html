@@ -690,11 +690,17 @@
       });
     }
 
-    // Syntax Highlight JSON Helper
+    // Syntax Highlight JSON Helper (Safely HTML-encoded to prevent DOM XSS)
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
     function syntaxHighlight(json) {
       if (typeof json !== 'string') {
         json = JSON.stringify(json, undefined, 2);
       }
+      // HTML escape <, >, and & before wrapping in syntax highlight spans
+      json = escapeHtml(json);
       return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
         let cls = 'json-num';
         if (/^"/.test(match)) {

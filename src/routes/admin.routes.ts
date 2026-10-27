@@ -6,6 +6,19 @@ import type { AdminItem, AdminStats, HierarchyPath, AdminLevel } from '../types/
 export const adminRoutes = new Hono();
 const adminService = new AdminService();
 
+const ALLOWED_LEVELS = new Set<string>(['province', 'district', 'commune', 'village']);
+
+/**
+ * Validate and safely parse an administrative integer ID
+ */
+function parseValidId(param: string | undefined): number | null {
+  if (!param || !/^\d{1,9}$/.test(param)) {
+    return null;
+  }
+  const id = parseInt(param, 10);
+  return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
+
 // Middleware: Set caching headers for ultra-fast local administrative responses
 adminRoutes.use('*', async (c, next) => {
   const start = performance.now();
@@ -44,14 +57,14 @@ adminRoutes.get('/provinces', (c) => {
  */
 adminRoutes.get('/provinces/:id/districts', (c) => {
   const start = performance.now();
-  const provinceId = parseInt(c.req.param('id'), 10);
+  const provinceId = parseValidId(c.req.param('id'));
 
-  if (isNaN(provinceId)) {
+  if (provinceId === null) {
     return c.json<ApiResponse<null>>(
       {
         success: false,
         data: null,
-        error: 'Invalid province ID format',
+        error: 'Invalid province ID format. Must be a positive integer.',
       },
       400
     );
@@ -80,14 +93,14 @@ adminRoutes.get('/provinces/:id/districts', (c) => {
  */
 adminRoutes.get('/districts/:id/communes', (c) => {
   const start = performance.now();
-  const districtId = parseInt(c.req.param('id'), 10);
+  const districtId = parseValidId(c.req.param('id'));
 
-  if (isNaN(districtId)) {
+  if (districtId === null) {
     return c.json<ApiResponse<null>>(
       {
         success: false,
         data: null,
-        error: 'Invalid district ID format',
+        error: 'Invalid district ID format. Must be a positive integer.',
       },
       400
     );
@@ -116,14 +129,14 @@ adminRoutes.get('/districts/:id/communes', (c) => {
  */
 adminRoutes.get('/communes/:id/villages', (c) => {
   const start = performance.now();
-  const communeId = parseInt(c.req.param('id'), 10);
+  const communeId = parseValidId(c.req.param('id'));
 
-  if (isNaN(communeId)) {
+  if (communeId === null) {
     return c.json<ApiResponse<null>>(
       {
         success: false,
         data: null,
-        error: 'Invalid commune ID format',
+        error: 'Invalid commune ID format. Must be a positive integer.',
       },
       400
     );
@@ -151,9 +164,12 @@ adminRoutes.get('/communes/:id/villages', (c) => {
  * Lookup single item by ID
  */
 adminRoutes.get('/item/:id', (c) => {
-  const id = parseInt(c.req.param('id'), 10);
-  if (isNaN(id)) {
-    return c.json<ApiResponse<null>>({ success: false, data: null, error: 'Invalid ID' }, 400);
+  const id = parseValidId(c.req.param('id'));
+  if (id === null) {
+    return c.json<ApiResponse<null>>(
+      { success: false, data: null, error: 'Invalid ID format. Must be a positive integer.' },
+      400
+    );
   }
 
   const item = adminService.getItemById(id);
@@ -172,9 +188,12 @@ adminRoutes.get('/item/:id', (c) => {
  * Resolves full ascending 4-tier tree (Province -> District -> Commune -> Village)
  */
 adminRoutes.get('/hierarchy/:id', (c) => {
-  const id = parseInt(c.req.param('id'), 10);
-  if (isNaN(id)) {
-    return c.json<ApiResponse<null>>({ success: false, data: null, error: 'Invalid ID' }, 400);
+  const id = parseValidId(c.req.param('id'));
+  if (id === null) {
+    return c.json<ApiResponse<null>>(
+      { success: false, data: null, error: 'Invalid ID format. Must be a positive integer.' },
+      400
+    );
   }
 
   const path = adminService.getHierarchy(id);
@@ -190,11 +209,42 @@ adminRoutes.get('/hierarchy/:id', (c) => {
  */
 adminRoutes.get('/search', (c) => {
   const start = performance.now();
-  const q = c.req.query('q') || '';
-  const level = c.req.query('level') as AdminLevel | undefined;
-  const limit = parseInt(c.req.query('limit') || '20', 10);
+  const rawQ = c.req.query('q') || '';
+  const q = rawQ.trim();
 
-  if (!q.trim()) {
+  // Validate search length to mitigate ReDoS and CPU exhaustion
+  if (q.length > 100) {
+    return c.json<ApiResponse<null>>(
+      {
+        success: false,
+        data: null,
+        error: "Search query 'q' exceeds maximum length of 100 characters",
+      },
+      400
+    );
+  }
+
+  const rawLevel = c.req.query('level');
+  let level: AdminLevel | undefined = undefined;
+  if (rawLevel) {
+    const normalizedLevel = rawLevel.toLowerCase();
+    if (!ALLOWED_LEVELS.has(normalizedLevel)) {
+      return c.json<ApiResponse<null>>(
+        {
+          success: false,
+          data: null,
+          error: "Invalid 'level' parameter. Allowed values: province, district, commune, village",
+        },
+        400
+      );
+    }
+    level = normalizedLevel as AdminLevel;
+  }
+
+  const limitRaw = parseInt(c.req.query('limit') || '20', 10);
+  const limit = Math.max(1, Math.min(100, isNaN(limitRaw) ? 20 : limitRaw));
+
+  if (!q) {
     return c.json<ApiResponse<AdminItem[]>>({
       success: true,
       data: [],

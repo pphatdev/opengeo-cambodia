@@ -8,8 +8,6 @@ healthRoutes.get('/health', (c) => {
     status: 'ok',
     uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
-    nodeVersion: process.version,
-    memoryUsageMb: Math.round(process.memoryUsage().rss / 1024 / 1024),
   });
 });
 

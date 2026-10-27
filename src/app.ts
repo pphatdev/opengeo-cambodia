@@ -5,7 +5,10 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
+import { secureHeaders } from 'hono/secure-headers';
 
+import { config } from './config.js';
+import { globalRateLimiter } from './middleware/rate-limiter.js';
 import { adminRoutes } from './routes/admin.routes.js';
 import { geocodeRoutes } from './routes/geocode.routes.js';
 import { healthRoutes } from './routes/health.routes.js';
@@ -15,20 +18,46 @@ const __dirname = path.dirname(__filename);
 
 export const app = new Hono();
 
-// Global Middlewares
+// 1. Essential HTTP Security Headers (OWASP Recommended)
+app.use(
+  '*',
+  secureHeaders({
+    xContentTypeOptions: 'nosniff',
+    xFrameOptions: 'SAMEORIGIN',
+    xXssProtection: '0',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    strictTransportSecurity: 'max-age=31536000; includeSubDomains; preload',
+    contentSecurityPolicy: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.tailwindcss.com', 'https://unpkg.com'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https://opengeo-cambodia.pphat.me'],
+    },
+  })
+);
+
+// 2. Request Logging & JSON Formatting
 app.use('*', logger());
 app.use('*', prettyJSON());
+
+// 3. Hardened CORS Configuration
 app.use(
   '*',
   cors({
     origin: '*',
-    allowMethods: ['GET', 'POST', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    exposeHeaders: ['X-Response-Time'],
+    allowMethods: ['GET', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Accept'],
+    exposeHeaders: ['X-Response-Time', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'Retry-After'],
+    maxAge: 86400,
   })
 );
 
-// Serve Interactive Testing Dashboard at Root & /demo
+// 4. Rate Limiting for all API routes (120 req/min/IP)
+app.use('/api/*', globalRateLimiter);
+
+// 5. Serve Interactive Testing Dashboard at Root & /demo
 const demoHtmlPath = path.resolve(__dirname, 'views', 'demo.html');
 
 app.get('/', (c) => {
@@ -45,12 +74,12 @@ app.get('/demo', (c) => {
   return c.redirect('/');
 });
 
-// Mount Routes
+// 6. Mount API Routes
 app.route('/api/admin', adminRoutes);
 app.route('/api/geocode', geocodeRoutes);
 app.route('/', healthRoutes);
 
-// 404 Not Found Handler
+// 7. 404 Not Found Handler
 app.notFound((c) => {
   return c.json(
     {
@@ -63,13 +92,16 @@ app.notFound((c) => {
   );
 });
 
-// Global Error Handler
+// 8. Global Error Handler with Production Sanitization (CWE-209 Prevention)
 app.onError((err, c) => {
   console.error('[Hono Error]', err);
+  const isProd = config.nodeEnv === 'production';
+  const errorMessage = isProd ? 'Internal Server Error' : err.message || 'Internal Server Error';
+
   return c.json(
     {
       success: false,
-      error: err.message || 'Internal Server Error',
+      error: errorMessage,
     },
     500
   );
