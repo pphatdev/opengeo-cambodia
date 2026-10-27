@@ -53,7 +53,6 @@ let cachedDemoHtml: string | null = null;
 function getDemoHtml(): string {
     if (config.nodeEnv === "production" && cachedDemoHtml) {
         return cachedDemoHtml;
-
     }
     if (fs.existsSync(demoHtmlPath)) {
         const content = fs.readFileSync(demoHtmlPath, "utf-8");
@@ -174,6 +173,41 @@ app.get("/llms-full.txt", (c) => {
 });
 
 // 7. Static Branding & Logo Endpoints
+app.get("/logo.jpg", (c) => {
+    const filePath = path.join(publicDir, "logo.jpg");
+    if (fs.existsSync(filePath)) {
+        c.header("Content-Type", "image/jpeg");
+        c.header("Cache-Control", "public, max-age=86400");
+        return c.body(fs.readFileSync(filePath));
+    }
+    return c.notFound();
+});
+
+app.get("/logo.jpeg", (c) => {
+    return c.redirect("/logo.jpg", 301);
+});
+
+app.get("/logo.png", (c) => {
+    const filePath = path.join(publicDir, "logo.png");
+    if (fs.existsSync(filePath)) {
+        c.header("Content-Type", "image/png");
+        c.header("Cache-Control", "public, max-age=86400");
+        return c.body(fs.readFileSync(filePath));
+    }
+    const fallbackPath = path.join(
+        publicDir,
+        "logo",
+        "4light",
+        "android-chrome-512x512.png",
+    );
+    if (fs.existsSync(fallbackPath)) {
+        c.header("Content-Type", "image/png");
+        c.header("Cache-Control", "public, max-age=86400");
+        return c.body(fs.readFileSync(fallbackPath));
+    }
+    return c.notFound();
+});
+
 app.get("/logo.svg", (c) => {
     const filePath = path.join(publicDir, "logo.svg");
     if (fs.existsSync(filePath)) {
@@ -181,7 +215,7 @@ app.get("/logo.svg", (c) => {
         c.header("Cache-Control", "public, max-age=86400");
         return c.body(fs.readFileSync(filePath, "utf-8"));
     }
-    return c.notFound();
+    return c.redirect("/logo.jpg", 302);
 });
 
 app.get("/logo-icon.svg", (c) => {
@@ -191,7 +225,7 @@ app.get("/logo-icon.svg", (c) => {
         c.header("Cache-Control", "public, max-age=86400");
         return c.body(fs.readFileSync(filePath, "utf-8"));
     }
-    return c.notFound();
+    return c.redirect("/logo.svg", 302);
 });
 
 app.get("/site.webmanifest", (c) => {
@@ -210,19 +244,22 @@ app.get("/favicon.ico", (c) => {
     const target = fs.existsSync(darkFavicon)
         ? darkFavicon
         : fs.existsSync(lightFavicon)
-          ? lightFavicon
-          : null;
+        ? lightFavicon
+        : null;
     if (target) {
         c.header("Content-Type", "image/x-icon");
         c.header("Cache-Control", "public, max-age=86400");
         return c.body(fs.readFileSync(target));
     }
-    return c.redirect("/logo.svg", 302);
+    return c.redirect("/logo.jpg", 302);
 });
 
 app.get("/logo/*", (c) => {
     const relativeSubPath = c.req.path.replace(/^\/logo\//, "");
-    const safePath = path.normalize(relativeSubPath).replace(/^(\.\.[\/\\])+/, "");
+    const safePath = path.normalize(relativeSubPath).replace(
+        /^(\.\.[\/\\])+/,
+        "",
+    );
     const filePath = path.join(publicDir, "logo", safePath);
 
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
