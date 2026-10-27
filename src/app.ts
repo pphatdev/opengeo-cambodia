@@ -166,7 +166,11 @@ app.use(
 app.use("/api/*", globalRateLimiter);
 
 // 6. LLM Documentation Endpoints (llmstxt.org Standard)
-app.get("/llms.txt", (c) => {
+app.get("/llms.txt", async (c) => {
+    if (c.env && (c.env as any).ASSETS) {
+        const assetRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/llms.txt", c.req.url)));
+        if (assetRes.ok) return assetRes;
+    }
     c.header("Content-Type", "text/plain; charset=utf-8");
     c.header(
         "Cache-Control",
@@ -175,7 +179,11 @@ app.get("/llms.txt", (c) => {
     return c.text(getLlmsTxt());
 });
 
-app.get("/llms-full.txt", (c) => {
+app.get("/llms-full.txt", async (c) => {
+    if (c.env && (c.env as any).ASSETS) {
+        const assetRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/llms-full.txt", c.req.url)));
+        if (assetRes.ok) return assetRes;
+    }
     c.header("Content-Type", "text/plain; charset=utf-8");
     c.header(
         "Cache-Control",
@@ -294,14 +302,26 @@ app.get("/logo/*", (c) => {
 });
 
 // 8. Interactive Demo UI Endpoint
-app.get("/demo", (c) => {
+app.get("/demo", async (c) => {
+    if (c.env && (c.env as any).ASSETS) {
+        const demoRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/demo.html", c.req.url)));
+        if (demoRes.ok) return demoRes;
+        const indexRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/index.html", c.req.url)));
+        if (indexRes.ok) return indexRes;
+    }
     return c.html(getDemoHtml());
 });
 
 // 8. API Root Welcome Endpoint (Auto-detects Browser vs API client)
-app.get("/", (c) => {
+app.get("/", async (c) => {
     const accept = c.req.header("Accept") || "";
     if (accept.includes("text/html") && !c.req.query("json")) {
+        if (c.env && (c.env as any).ASSETS) {
+            const indexRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/index.html", c.req.url)));
+            if (indexRes.ok) return indexRes;
+            const demoRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/demo.html", c.req.url)));
+            if (demoRes.ok) return demoRes;
+        }
         return c.html(getDemoHtml());
     }
 

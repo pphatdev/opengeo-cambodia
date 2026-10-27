@@ -27,6 +27,7 @@
         "audit:security": "pnpm audit --audit-level=high",
         "verify:lockfile": "pnpm install --frozen-lockfile",
         "security:check": "pnpm audit --audit-level=high && tsc --noEmit",
+        "predeploy": "tsx src/scripts/copy-assets.ts",
         "deploy": "wrangler deploy",
         "preview": "wrangler dev",
         "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
