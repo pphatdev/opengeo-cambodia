@@ -1,0 +1,2102 @@
+[
+  {
+    "id": 102,
+    "code": "0102",
+    "parentId": 1,
+    "name": "Mangkul Bourei",
+    "name_en": "Mangkul Bourei",
+    "name_km": "មង្គលបូរី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 103,
+    "code": "0103",
+    "parentId": 1,
+    "name": "Phnum Srok",
+    "name_en": "Phnum Srok",
+    "name_km": "ភ្នំស្រុក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 104,
+    "code": "0104",
+    "parentId": 1,
+    "name": "Preah Net Preah",
+    "name_en": "Preah Net Preah",
+    "name_km": "ព្រះនេត្រព្រះ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 105,
+    "code": "0105",
+    "parentId": 1,
+    "name": "Ou Chrov",
+    "name_en": "Ou Chrov",
+    "name_km": "អូរជ្រៅ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 106,
+    "code": "0106",
+    "parentId": 1,
+    "name": "Serei Saophoan",
+    "name_en": "Serei Saophoan",
+    "name_km": "សិរីសោភ័ណ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 107,
+    "code": "0107",
+    "parentId": 1,
+    "name": "Thma Puok",
+    "name_en": "Thma Puok",
+    "name_km": "ថ្មពួក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 108,
+    "code": "0108",
+    "parentId": 1,
+    "name": "Svay Chek",
+    "name_en": "Svay Chek",
+    "name_km": "ស្វាយចេក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 109,
+    "code": "0109",
+    "parentId": 1,
+    "name": "Malai",
+    "name_en": "Malai",
+    "name_km": "ម៉ាឡៃ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 110,
+    "code": "0110",
+    "parentId": 1,
+    "name": "Paoy Paet",
+    "name_en": "Paoy Paet",
+    "name_km": "ប៉ោយប៉ែត",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 201,
+    "code": "0201",
+    "parentId": 2,
+    "name": "Banan",
+    "name_en": "Banan",
+    "name_km": "បាណន់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 202,
+    "code": "0202",
+    "parentId": 2,
+    "name": "Thma Koul",
+    "name_en": "Thma Koul",
+    "name_km": "ថ្មគោល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 203,
+    "code": "0203",
+    "parentId": 2,
+    "name": "Battambang",
+    "name_en": "Battambang",
+    "name_km": "បាត់ដំបង",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 204,
+    "code": "0204",
+    "parentId": 2,
+    "name": "Bavel",
+    "name_en": "Bavel",
+    "name_km": "បវេល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 205,
+    "code": "0205",
+    "parentId": 2,
+    "name": "Aek Phnum",
+    "name_en": "Aek Phnum",
+    "name_km": "ឯកភ្នំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 206,
+    "code": "0206",
+    "parentId": 2,
+    "name": "Moung Ruessei",
+    "name_en": "Moung Ruessei",
+    "name_km": "មោងឫស្សី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 207,
+    "code": "0207",
+    "parentId": 2,
+    "name": "Rotaknak Mundul",
+    "name_en": "Rotaknak Mundul",
+    "name_km": "រតនមណ្ឌល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 208,
+    "code": "0208",
+    "parentId": 2,
+    "name": "Sangkae",
+    "name_en": "Sangkae",
+    "name_km": "សង្កែ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 209,
+    "code": "0209",
+    "parentId": 2,
+    "name": "Samlout",
+    "name_en": "Samlout",
+    "name_km": "សំឡូត",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 210,
+    "code": "0210",
+    "parentId": 2,
+    "name": "Sampov Lun",
+    "name_en": "Sampov Lun",
+    "name_km": "សំពៅលូន",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 211,
+    "code": "0211",
+    "parentId": 2,
+    "name": "Phnum Proek",
+    "name_en": "Phnum Proek",
+    "name_km": "ភ្នំព្រឹក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 212,
+    "code": "0212",
+    "parentId": 2,
+    "name": "Kamrieng",
+    "name_en": "Kamrieng",
+    "name_km": "កំរៀង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 213,
+    "code": "0213",
+    "parentId": 2,
+    "name": "Koas Krala",
+    "name_en": "Koas Krala",
+    "name_km": "គាស់ក្រឡ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 214,
+    "code": "0214",
+    "parentId": 2,
+    "name": "Rukh Kiri",
+    "name_en": "Rukh Kiri",
+    "name_km": "រុក្ខគិរី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 301,
+    "code": "0301",
+    "parentId": 3,
+    "name": "Batheay",
+    "name_en": "Batheay",
+    "name_km": "បាធាយ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 302,
+    "code": "0302",
+    "parentId": 3,
+    "name": "Chamkar Leu",
+    "name_en": "Chamkar Leu",
+    "name_km": "ចំការលើ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 303,
+    "code": "0303",
+    "parentId": 3,
+    "name": "Cheung Prey",
+    "name_en": "Cheung Prey",
+    "name_km": "ជើងព្រៃ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 305,
+    "code": "0305",
+    "parentId": 3,
+    "name": "Kampong Cham",
+    "name_en": "Kampong Cham",
+    "name_km": "កំពង់ចាម",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 306,
+    "code": "0306",
+    "parentId": 3,
+    "name": "Kampong Siem",
+    "name_en": "Kampong Siem",
+    "name_km": "កំពង់សៀម",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 307,
+    "code": "0307",
+    "parentId": 3,
+    "name": "Kang Meas",
+    "name_en": "Kang Meas",
+    "name_km": "កងមាស",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 308,
+    "code": "0308",
+    "parentId": 3,
+    "name": "Kaoh Soutin",
+    "name_en": "Kaoh Soutin",
+    "name_km": "កោះសូទិន",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 313,
+    "code": "0313",
+    "parentId": 3,
+    "name": "Prey Chhor",
+    "name_en": "Prey Chhor",
+    "name_km": "ព្រៃឈរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 314,
+    "code": "0314",
+    "parentId": 3,
+    "name": "Srei Santhor",
+    "name_en": "Srei Santhor",
+    "name_km": "ស្រីសន្ធរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 315,
+    "code": "0315",
+    "parentId": 3,
+    "name": "Stueng Trang",
+    "name_en": "Stueng Trang",
+    "name_km": "ស្ទឹងត្រង់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 401,
+    "code": "0401",
+    "parentId": 4,
+    "name": "Baribour",
+    "name_en": "Baribour",
+    "name_km": "បរិបូណ៌",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 402,
+    "code": "0402",
+    "parentId": 4,
+    "name": "Chul Kiri",
+    "name_en": "Chul Kiri",
+    "name_km": "ជលគីរី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 403,
+    "code": "0403",
+    "parentId": 4,
+    "name": "Kampong Chhnang",
+    "name_en": "Kampong Chhnang",
+    "name_km": "កំពង់ឆ្នាំង",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 404,
+    "code": "0404",
+    "parentId": 4,
+    "name": "Kampong Leaeng",
+    "name_en": "Kampong Leaeng",
+    "name_km": "កំពង់លែង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 405,
+    "code": "0405",
+    "parentId": 4,
+    "name": "Kampong Tralach",
+    "name_en": "Kampong Tralach",
+    "name_km": "កំពង់ត្រឡាច",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 406,
+    "code": "0406",
+    "parentId": 4,
+    "name": "Rolea B'ier",
+    "name_en": "Rolea B'ier",
+    "name_km": "រលាប្អៀរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 407,
+    "code": "0407",
+    "parentId": 4,
+    "name": "Sammeakki Mean Chey",
+    "name_en": "Sammeakki Mean Chey",
+    "name_km": "សាមគ្គីមានជ័យ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 408,
+    "code": "0408",
+    "parentId": 4,
+    "name": "Tuek Phos",
+    "name_en": "Tuek Phos",
+    "name_km": "ទឹកផុស",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 501,
+    "code": "0501",
+    "parentId": 5,
+    "name": "Basaed",
+    "name_en": "Basaed",
+    "name_km": "បរសេដ្ឋ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 502,
+    "code": "0502",
+    "parentId": 5,
+    "name": "Chbar Mon",
+    "name_en": "Chbar Mon",
+    "name_km": "ច្បារមន",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 503,
+    "code": "0503",
+    "parentId": 5,
+    "name": "Kong Pisei",
+    "name_en": "Kong Pisei",
+    "name_km": "គងពិសី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 504,
+    "code": "0504",
+    "parentId": 5,
+    "name": "Aoral",
+    "name_en": "Aoral",
+    "name_km": "ឱរ៉ាល់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 506,
+    "code": "0506",
+    "parentId": 5,
+    "name": "Phnum Sruoch",
+    "name_en": "Phnum Sruoch",
+    "name_km": "ភ្នំស្រួច",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 507,
+    "code": "0507",
+    "parentId": 5,
+    "name": "Samraong Tong",
+    "name_en": "Samraong Tong",
+    "name_km": "សំរោងទង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 508,
+    "code": "0508",
+    "parentId": 5,
+    "name": "Thpong",
+    "name_en": "Thpong",
+    "name_km": "ថ្ពង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 509,
+    "code": "0509",
+    "parentId": 5,
+    "name": "Odong Mae Chey",
+    "name_en": "Odong Mae Chey",
+    "name_km": "ឧដុង្គម៉ែជ័យ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 510,
+    "code": "0510",
+    "parentId": 5,
+    "name": "Sammeakki Muni Chey",
+    "name_en": "Sammeakki Muni Chey",
+    "name_km": "សាមគ្គីមុនីជ័យ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 601,
+    "code": "0601",
+    "parentId": 6,
+    "name": "Baray",
+    "name_en": "Baray",
+    "name_km": "បារាយណ៍",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 602,
+    "code": "0602",
+    "parentId": 6,
+    "name": "Kampong Svay",
+    "name_en": "Kampong Svay",
+    "name_km": "កំពង់ស្វាយ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 603,
+    "code": "0603",
+    "parentId": 6,
+    "name": "Stueng Saen",
+    "name_en": "Stueng Saen",
+    "name_km": "ស្ទឹងសែន",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 604,
+    "code": "0604",
+    "parentId": 6,
+    "name": "Prasat Ballang",
+    "name_en": "Prasat Ballang",
+    "name_km": "ប្រាសាទបល្ល័ង្គ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 605,
+    "code": "0605",
+    "parentId": 6,
+    "name": "Prasat Sambour",
+    "name_en": "Prasat Sambour",
+    "name_km": "ប្រាសាទសំបូរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 606,
+    "code": "0606",
+    "parentId": 6,
+    "name": "Sandan",
+    "name_en": "Sandan",
+    "name_km": "សណ្ដាន់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 607,
+    "code": "0607",
+    "parentId": 6,
+    "name": "Santuk",
+    "name_en": "Santuk",
+    "name_km": "សន្ទុក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 608,
+    "code": "0608",
+    "parentId": 6,
+    "name": "Stoung",
+    "name_en": "Stoung",
+    "name_km": "ស្ទោង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 609,
+    "code": "0609",
+    "parentId": 6,
+    "name": "Tang Kouk",
+    "name_en": "Tang Kouk",
+    "name_km": "តាំងគោក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 701,
+    "code": "0701",
+    "parentId": 7,
+    "name": "Angkor Chey",
+    "name_en": "Angkor Chey",
+    "name_km": "អង្គរជ័យ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 702,
+    "code": "0702",
+    "parentId": 7,
+    "name": "Banteay Meas",
+    "name_en": "Banteay Meas",
+    "name_km": "បន្ទាយមាស",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 703,
+    "code": "0703",
+    "parentId": 7,
+    "name": "Chhuk",
+    "name_en": "Chhuk",
+    "name_km": "ឈូក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 704,
+    "code": "0704",
+    "parentId": 7,
+    "name": "Chum Kiri",
+    "name_en": "Chum Kiri",
+    "name_km": "ជុំគិរី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 705,
+    "code": "0705",
+    "parentId": 7,
+    "name": "Dang Tung",
+    "name_en": "Dang Tung",
+    "name_km": "ដងទង់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 706,
+    "code": "0706",
+    "parentId": 7,
+    "name": "Kampong Trach",
+    "name_en": "Kampong Trach",
+    "name_km": "កំពង់ត្រាច",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 707,
+    "code": "0707",
+    "parentId": 7,
+    "name": "Tuek Chhu",
+    "name_en": "Tuek Chhu",
+    "name_km": "ទឹកឈូ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 708,
+    "code": "0708",
+    "parentId": 7,
+    "name": "Kampot",
+    "name_en": "Kampot",
+    "name_km": "កំពត",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 709,
+    "code": "0709",
+    "parentId": 7,
+    "name": "Bouk Kou",
+    "name_en": "Bouk Kou",
+    "name_km": "បូកគោ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 801,
+    "code": "0801",
+    "parentId": 8,
+    "name": "Kandal Stueng",
+    "name_en": "Kandal Stueng",
+    "name_km": "កណ្ដាលស្ទឹង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 802,
+    "code": "0802",
+    "parentId": 8,
+    "name": "Kien Svay",
+    "name_en": "Kien Svay",
+    "name_km": "កៀនស្វាយ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 803,
+    "code": "0803",
+    "parentId": 8,
+    "name": "Khsach Kandal",
+    "name_en": "Khsach Kandal",
+    "name_km": "ខ្សាច់កណ្ដាល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 804,
+    "code": "0804",
+    "parentId": 8,
+    "name": "Kaoh Thum",
+    "name_en": "Kaoh Thum",
+    "name_km": "កោះធំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 805,
+    "code": "0805",
+    "parentId": 8,
+    "name": "Leuk Daek",
+    "name_en": "Leuk Daek",
+    "name_km": "លើកដែក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 806,
+    "code": "0806",
+    "parentId": 8,
+    "name": "Lvea Aem",
+    "name_en": "Lvea Aem",
+    "name_km": "ល្វាឯម",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 807,
+    "code": "0807",
+    "parentId": 8,
+    "name": "Mukh Kampul",
+    "name_en": "Mukh Kampul",
+    "name_km": "មុខកំពូល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 808,
+    "code": "0808",
+    "parentId": 8,
+    "name": "Angk Snuol",
+    "name_en": "Angk Snuol",
+    "name_km": "អង្គស្នួល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 809,
+    "code": "0809",
+    "parentId": 8,
+    "name": "Ponhea Lueu",
+    "name_en": "Ponhea Lueu",
+    "name_km": "ពញាឮ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 810,
+    "code": "0810",
+    "parentId": 8,
+    "name": "S'ang",
+    "name_en": "S'ang",
+    "name_km": "ស្អាង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 811,
+    "code": "0811",
+    "parentId": 8,
+    "name": "Ta Khmau",
+    "name_en": "Ta Khmau",
+    "name_km": "តាខ្មៅ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 812,
+    "code": "0812",
+    "parentId": 8,
+    "name": "Sampov Pun",
+    "name_en": "Sampov Pun",
+    "name_km": "សំពៅពូន",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 813,
+    "code": "0813",
+    "parentId": 8,
+    "name": "Akrey Ksat",
+    "name_en": "Akrey Ksat",
+    "name_km": "អរិយក្សត្រ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 901,
+    "code": "0901",
+    "parentId": 9,
+    "name": "Botum Sakor",
+    "name_en": "Botum Sakor",
+    "name_km": "បុទុមសាគរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 902,
+    "code": "0902",
+    "parentId": 9,
+    "name": "Kiri Sakor",
+    "name_en": "Kiri Sakor",
+    "name_km": "គិរីសាគរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 903,
+    "code": "0903",
+    "parentId": 9,
+    "name": "Kaoh Kong",
+    "name_en": "Kaoh Kong",
+    "name_km": "កោះកុង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 904,
+    "code": "0904",
+    "parentId": 9,
+    "name": "Khemmeakrakphumin",
+    "name_en": "Khemmeakrakphumin",
+    "name_km": "ខេមរភូមិន្ទ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 905,
+    "code": "0905",
+    "parentId": 9,
+    "name": "Mundul Seima",
+    "name_en": "Mundul Seima",
+    "name_km": "មណ្ឌលសីមា",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 906,
+    "code": "0906",
+    "parentId": 9,
+    "name": "Srae Ambel",
+    "name_en": "Srae Ambel",
+    "name_km": "ស្រែ អំបិល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 907,
+    "code": "0907",
+    "parentId": 9,
+    "name": "Thma Bang",
+    "name_en": "Thma Bang",
+    "name_km": "ថ្មបាំង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1001,
+    "code": "1001",
+    "parentId": 10,
+    "name": "Chhloung",
+    "name_en": "Chhloung",
+    "name_km": "ឆ្លូង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1002,
+    "code": "1002",
+    "parentId": 10,
+    "name": "Kracheh",
+    "name_en": "Kracheh",
+    "name_km": "ក្រចេះ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1003,
+    "code": "1003",
+    "parentId": 10,
+    "name": "Preaek Prasab",
+    "name_en": "Preaek Prasab",
+    "name_km": "ព្រែកប្រសព្វ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1004,
+    "code": "1004",
+    "parentId": 10,
+    "name": "Sambour",
+    "name_en": "Sambour",
+    "name_km": "សំបូរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1005,
+    "code": "1005",
+    "parentId": 10,
+    "name": "Snuol",
+    "name_en": "Snuol",
+    "name_km": "ស្នួល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1006,
+    "code": "1006",
+    "parentId": 10,
+    "name": "Chet Borei",
+    "name_en": "Chet Borei",
+    "name_km": "ចិត្របុរី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1007,
+    "code": "1007",
+    "parentId": 10,
+    "name": "Ou Krieng Saen Chey",
+    "name_en": "Ou Krieng Saen Chey",
+    "name_km": "អូរគ្រៀងសែនជ័យ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1101,
+    "code": "1101",
+    "parentId": 11,
+    "name": "Kaev Seima",
+    "name_en": "Kaev Seima",
+    "name_km": "កែវសីមា",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1102,
+    "code": "1102",
+    "parentId": 11,
+    "name": "Kaoh Nheaek",
+    "name_en": "Kaoh Nheaek",
+    "name_km": "កោះញែក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1103,
+    "code": "1103",
+    "parentId": 11,
+    "name": "Ou Reang",
+    "name_en": "Ou Reang",
+    "name_km": "អូររាំង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1104,
+    "code": "1104",
+    "parentId": 11,
+    "name": "Pechreada",
+    "name_en": "Pechreada",
+    "name_km": "ពេជ្រាដា",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1105,
+    "code": "1105",
+    "parentId": 11,
+    "name": "Saen Meaknourum",
+    "name_en": "Saen Meaknourum",
+    "name_km": "សែនមនោរម្យ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1201,
+    "code": "1201",
+    "parentId": 12,
+    "name": "Chamkar Mon",
+    "name_en": "Chamkar Mon",
+    "name_km": "ចំការមន",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1202,
+    "code": "1202",
+    "parentId": 12,
+    "name": "Doun Penh",
+    "name_en": "Doun Penh",
+    "name_km": "ដូនពេញ",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1203,
+    "code": "1203",
+    "parentId": 12,
+    "name": "Prampir Meakkakra",
+    "name_en": "Prampir Meakkakra",
+    "name_km": "៧មករា",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1204,
+    "code": "1204",
+    "parentId": 12,
+    "name": "Tuol Kouk",
+    "name_en": "Tuol Kouk",
+    "name_km": "ទួលគោក",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1205,
+    "code": "1205",
+    "parentId": 12,
+    "name": "Dangkao",
+    "name_en": "Dangkao",
+    "name_km": "ដង្កោ",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1206,
+    "code": "1206",
+    "parentId": 12,
+    "name": "Mean Chey",
+    "name_en": "Mean Chey",
+    "name_km": "មានជ័យ",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1207,
+    "code": "1207",
+    "parentId": 12,
+    "name": "Russey Keo",
+    "name_en": "Russey Keo",
+    "name_km": "ឫស្សីកែវ",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1208,
+    "code": "1208",
+    "parentId": 12,
+    "name": "Saen Sokh",
+    "name_en": "Saen Sokh",
+    "name_km": "សែនសុខ",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1209,
+    "code": "1209",
+    "parentId": 12,
+    "name": "Pou Saen Chey",
+    "name_en": "Pou Saen Chey",
+    "name_km": "ពោធិ៍សែនជ័យ",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1210,
+    "code": "1210",
+    "parentId": 12,
+    "name": "Chbar Ampov",
+    "name_en": "Chbar Ampov",
+    "name_km": "ច្បារអំពៅ",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1211,
+    "code": "1211",
+    "parentId": 12,
+    "name": "Chraoy Chongvar",
+    "name_en": "Chraoy Chongvar",
+    "name_km": "ជ្រោយចង្វារ",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1212,
+    "code": "1212",
+    "parentId": 12,
+    "name": "Preaek Pnov",
+    "name_en": "Preaek Pnov",
+    "name_km": "ព្រែកព្នៅ",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1213,
+    "code": "1213",
+    "parentId": 12,
+    "name": "Boeng Keng Kang",
+    "name_en": "Boeng Keng Kang",
+    "name_km": "បឹងកេងកង",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1214,
+    "code": "1214",
+    "parentId": 12,
+    "name": "Kamboul",
+    "name_en": "Kamboul",
+    "name_km": "កំបូល",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
+  },
+  {
+    "id": 1301,
+    "code": "1301",
+    "parentId": 13,
+    "name": "Chey Saen",
+    "name_en": "Chey Saen",
+    "name_km": "ជ័យសែន",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1302,
+    "code": "1302",
+    "parentId": 13,
+    "name": "Chhaeb",
+    "name_en": "Chhaeb",
+    "name_km": "ឆែប",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1303,
+    "code": "1303",
+    "parentId": 13,
+    "name": "Choam Ksan",
+    "name_en": "Choam Ksan",
+    "name_km": "ជាំក្សាន្ដ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1304,
+    "code": "1304",
+    "parentId": 13,
+    "name": "Kuleaen",
+    "name_en": "Kuleaen",
+    "name_km": "គូលែន",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1305,
+    "code": "1305",
+    "parentId": 13,
+    "name": "Rovieng",
+    "name_en": "Rovieng",
+    "name_km": "រវៀង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1306,
+    "code": "1306",
+    "parentId": 13,
+    "name": "Sangkum Thmei",
+    "name_en": "Sangkum Thmei",
+    "name_km": "សង្គមថ្មី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1307,
+    "code": "1307",
+    "parentId": 13,
+    "name": "Tbaeng Mean Chey",
+    "name_en": "Tbaeng Mean Chey",
+    "name_km": "ត្បែងមានជ័យ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1308,
+    "code": "1308",
+    "parentId": 13,
+    "name": "Preah Vihear",
+    "name_en": "Preah Vihear",
+    "name_km": "ព្រះវិហារ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1401,
+    "code": "1401",
+    "parentId": 14,
+    "name": "Ba Phnum",
+    "name_en": "Ba Phnum",
+    "name_km": "បាភ្នំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1402,
+    "code": "1402",
+    "parentId": 14,
+    "name": "Kamchay Mear",
+    "name_en": "Kamchay Mear",
+    "name_km": "កំចាយមារ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1403,
+    "code": "1403",
+    "parentId": 14,
+    "name": "Kampong Trabaek",
+    "name_en": "Kampong Trabaek",
+    "name_km": "កំពង់ត្របែក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1404,
+    "code": "1404",
+    "parentId": 14,
+    "name": "Kanhchriech",
+    "name_en": "Kanhchriech",
+    "name_km": "កញ្ជ្រៀច",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1405,
+    "code": "1405",
+    "parentId": 14,
+    "name": "Me Sang",
+    "name_en": "Me Sang",
+    "name_km": "មេសាង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1406,
+    "code": "1406",
+    "parentId": 14,
+    "name": "Peam Chor",
+    "name_en": "Peam Chor",
+    "name_km": "ពាមជរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1407,
+    "code": "1407",
+    "parentId": 14,
+    "name": "Peam Ro",
+    "name_en": "Peam Ro",
+    "name_km": "ពាមរក៍",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1408,
+    "code": "1408",
+    "parentId": 14,
+    "name": "Pea Reang",
+    "name_en": "Pea Reang",
+    "name_km": "ពារាំង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1409,
+    "code": "1409",
+    "parentId": 14,
+    "name": "Preah Sdach",
+    "name_en": "Preah Sdach",
+    "name_km": "ព្រះស្ដេច",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1410,
+    "code": "1410",
+    "parentId": 14,
+    "name": "Prey Veng",
+    "name_en": "Prey Veng",
+    "name_km": "ព្រៃវែង",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1411,
+    "code": "1411",
+    "parentId": 14,
+    "name": "Pur Rieng",
+    "name_en": "Pur Rieng",
+    "name_km": "ពោធិ៍រៀង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1412,
+    "code": "1412",
+    "parentId": 14,
+    "name": "Sithor Kandal",
+    "name_en": "Sithor Kandal",
+    "name_km": "ស៊ីធរកណ្ដាល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1413,
+    "code": "1413",
+    "parentId": 14,
+    "name": "Svay Antor",
+    "name_en": "Svay Antor",
+    "name_km": "ស្វាយអន្ទរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1501,
+    "code": "1501",
+    "parentId": 15,
+    "name": "Bakan",
+    "name_en": "Bakan",
+    "name_km": "បាកាន",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1502,
+    "code": "1502",
+    "parentId": 15,
+    "name": "Kandieng",
+    "name_en": "Kandieng",
+    "name_km": "កណ្ដៀង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1503,
+    "code": "1503",
+    "parentId": 15,
+    "name": "Krakor",
+    "name_en": "Krakor",
+    "name_km": "ក្រគរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1504,
+    "code": "1504",
+    "parentId": 15,
+    "name": "Phnum Kravanh",
+    "name_en": "Phnum Kravanh",
+    "name_km": "ភ្នំក្រវ៉ាញ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1505,
+    "code": "1505",
+    "parentId": 15,
+    "name": "Pousat",
+    "name_en": "Pousat",
+    "name_km": "ពោធិ៍សាត់",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1506,
+    "code": "1506",
+    "parentId": 15,
+    "name": "Veal Veaeng",
+    "name_en": "Veal Veaeng",
+    "name_km": "វាលវែង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1507,
+    "code": "1507",
+    "parentId": 15,
+    "name": "Ta Lou Soen Chey",
+    "name_en": "Ta Lou Soen Chey",
+    "name_km": "តាលោសែនជ័យ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1601,
+    "code": "1601",
+    "parentId": 16,
+    "name": "Andoung Meas",
+    "name_en": "Andoung Meas",
+    "name_km": "អណ្ដូងមាស",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1602,
+    "code": "1602",
+    "parentId": 16,
+    "name": "Ban Lung",
+    "name_en": "Ban Lung",
+    "name_km": "បានលុង",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1603,
+    "code": "1603",
+    "parentId": 16,
+    "name": "Bar Kaev",
+    "name_en": "Bar Kaev",
+    "name_km": "បរកែវ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1604,
+    "code": "1604",
+    "parentId": 16,
+    "name": "Koun Mom",
+    "name_en": "Koun Mom",
+    "name_km": "កូនមុំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1605,
+    "code": "1605",
+    "parentId": 16,
+    "name": "Lumphat",
+    "name_en": "Lumphat",
+    "name_km": "លំផាត់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1606,
+    "code": "1606",
+    "parentId": 16,
+    "name": "Ou Chum",
+    "name_en": "Ou Chum",
+    "name_km": "អូរជុំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1607,
+    "code": "1607",
+    "parentId": 16,
+    "name": "Ou Ya Dav",
+    "name_en": "Ou Ya Dav",
+    "name_km": "អូរយ៉ាដាវ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1608,
+    "code": "1608",
+    "parentId": 16,
+    "name": "Ta Veaeng",
+    "name_en": "Ta Veaeng",
+    "name_km": "តាវែង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1609,
+    "code": "1609",
+    "parentId": 16,
+    "name": "Veun Sai",
+    "name_en": "Veun Sai",
+    "name_km": "វើនសៃ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1701,
+    "code": "1701",
+    "parentId": 17,
+    "name": "Angkor Chum",
+    "name_en": "Angkor Chum",
+    "name_km": "អង្គរជុំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1702,
+    "code": "1702",
+    "parentId": 17,
+    "name": "Angkor Thum",
+    "name_en": "Angkor Thum",
+    "name_km": "អង្គរធំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1703,
+    "code": "1703",
+    "parentId": 17,
+    "name": "Banteay Srei",
+    "name_en": "Banteay Srei",
+    "name_km": "បន្ទាយស្រី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1704,
+    "code": "1704",
+    "parentId": 17,
+    "name": "Chi Kraeng",
+    "name_en": "Chi Kraeng",
+    "name_km": "ជីក្រែង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1706,
+    "code": "1706",
+    "parentId": 17,
+    "name": "Kralanh",
+    "name_en": "Kralanh",
+    "name_km": "ក្រឡាញ់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1707,
+    "code": "1707",
+    "parentId": 17,
+    "name": "Puok",
+    "name_en": "Puok",
+    "name_km": "ពួក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1709,
+    "code": "1709",
+    "parentId": 17,
+    "name": "Prasat Bakong",
+    "name_en": "Prasat Bakong",
+    "name_km": "ប្រាសាទបាគង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1710,
+    "code": "1710",
+    "parentId": 17,
+    "name": "Siem Reab",
+    "name_en": "Siem Reab",
+    "name_km": "សៀមរាប",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1711,
+    "code": "1711",
+    "parentId": 17,
+    "name": "Sout Nikum",
+    "name_en": "Sout Nikum",
+    "name_km": "សូទ្រនិគម",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1712,
+    "code": "1712",
+    "parentId": 17,
+    "name": "Srei Snam",
+    "name_en": "Srei Snam",
+    "name_km": "ស្រីស្នំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1713,
+    "code": "1713",
+    "parentId": 17,
+    "name": "Svay Leu",
+    "name_en": "Svay Leu",
+    "name_km": "ស្វាយលើ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1714,
+    "code": "1714",
+    "parentId": 17,
+    "name": "Varin",
+    "name_en": "Varin",
+    "name_km": "វ៉ារិន",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1715,
+    "code": "1715",
+    "parentId": 17,
+    "name": "Run Ta Aek Techou Saen",
+    "name_en": "Run Ta Aek Techou Saen",
+    "name_km": "រុនតាឯកតេជោសែន",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1801,
+    "code": "1801",
+    "parentId": 18,
+    "name": "Preah Sihanouk",
+    "name_en": "Preah Sihanouk",
+    "name_km": "ព្រះសីហនុ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1802,
+    "code": "1802",
+    "parentId": 18,
+    "name": "Prey Nub",
+    "name_en": "Prey Nub",
+    "name_km": "ព្រៃនប់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1803,
+    "code": "1803",
+    "parentId": 18,
+    "name": "Stueng Hav",
+    "name_en": "Stueng Hav",
+    "name_km": "ស្ទឹងហាវ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1804,
+    "code": "1804",
+    "parentId": 18,
+    "name": "Kampong Seila",
+    "name_en": "Kampong Seila",
+    "name_km": "កំពង់សីលា",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1805,
+    "code": "1805",
+    "parentId": 18,
+    "name": "Kaoh Rung",
+    "name_en": "Kaoh Rung",
+    "name_km": "កោះរ៉ុង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1806,
+    "code": "1806",
+    "parentId": 18,
+    "name": "Kampong Saom",
+    "name_en": "Kampong Saom",
+    "name_km": "កំពង់សោម",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1901,
+    "code": "1901",
+    "parentId": 19,
+    "name": "Sesan",
+    "name_en": "Sesan",
+    "name_km": "សេសាន",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1902,
+    "code": "1902",
+    "parentId": 19,
+    "name": "Siem Bouk",
+    "name_en": "Siem Bouk",
+    "name_km": "សៀមបូក",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 1903,
+    "code": "1903",
+    "parentId": 19,
+    "name": "Siem Pang",
+    "name_en": "Siem Pang",
+    "name_km": "សៀមប៉ាង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1904,
+    "code": "1904",
+    "parentId": 19,
+    "name": "Stueng Traeng",
+    "name_en": "Stueng Traeng",
+    "name_km": "ស្ទឹងត្រែង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1905,
+    "code": "1905",
+    "parentId": 19,
+    "name": "Thala Barivat",
+    "name_en": "Thala Barivat",
+    "name_km": "ថាឡាបរិវ៉ាត់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 1906,
+    "code": "1906",
+    "parentId": 19,
+    "name": "Borei Ou Svay Senchey",
+    "name_en": "Borei Ou Svay Senchey",
+    "name_km": "បុរីអូរស្វាយសែនជ័យ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2001,
+    "code": "2001",
+    "parentId": 20,
+    "name": "Chantrea",
+    "name_en": "Chantrea",
+    "name_km": "ចន្ទ្រា",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2002,
+    "code": "2002",
+    "parentId": 20,
+    "name": "Kampong Rou",
+    "name_en": "Kampong Rou",
+    "name_km": "កំពង់រោទិ៍",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2003,
+    "code": "2003",
+    "parentId": 20,
+    "name": "Rumduol",
+    "name_en": "Rumduol",
+    "name_km": "រំដួល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2004,
+    "code": "2004",
+    "parentId": 20,
+    "name": "Romeas Haek",
+    "name_en": "Romeas Haek",
+    "name_km": "រមាសហែក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2005,
+    "code": "2005",
+    "parentId": 20,
+    "name": "Svay Chrum",
+    "name_en": "Svay Chrum",
+    "name_km": "ស្វាយជ្រំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2006,
+    "code": "2006",
+    "parentId": 20,
+    "name": "Svay Rieng",
+    "name_en": "Svay Rieng",
+    "name_km": "ស្វាយរៀង",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 2007,
+    "code": "2007",
+    "parentId": 20,
+    "name": "Svay Teab",
+    "name_en": "Svay Teab",
+    "name_km": "ស្វាយទាប",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2008,
+    "code": "2008",
+    "parentId": 20,
+    "name": "Bavet",
+    "name_en": "Bavet",
+    "name_km": "បាវិត",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 2101,
+    "code": "2101",
+    "parentId": 21,
+    "name": "Angkor Borei",
+    "name_en": "Angkor Borei",
+    "name_km": "អង្គរបូរី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2102,
+    "code": "2102",
+    "parentId": 21,
+    "name": "Bati",
+    "name_en": "Bati",
+    "name_km": "បាទី",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2103,
+    "code": "2103",
+    "parentId": 21,
+    "name": "Bourei Chulsar",
+    "name_en": "Bourei Chulsar",
+    "name_km": "បូរីជលសារ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2104,
+    "code": "2104",
+    "parentId": 21,
+    "name": "Kiri Vung",
+    "name_en": "Kiri Vung",
+    "name_km": "គីរីវង់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2105,
+    "code": "2105",
+    "parentId": 21,
+    "name": "Kaoh Andaet",
+    "name_en": "Kaoh Andaet",
+    "name_km": "កោះអណ្ដែត",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2106,
+    "code": "2106",
+    "parentId": 21,
+    "name": "Prey Kabbas",
+    "name_en": "Prey Kabbas",
+    "name_km": "ព្រៃកប្បាស",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2107,
+    "code": "2107",
+    "parentId": 21,
+    "name": "Samraong",
+    "name_en": "Samraong",
+    "name_km": "សំរោង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2108,
+    "code": "2108",
+    "parentId": 21,
+    "name": "Doun Kaev",
+    "name_en": "Doun Kaev",
+    "name_km": "ដូនកែវ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 2109,
+    "code": "2109",
+    "parentId": 21,
+    "name": "Tram Kak",
+    "name_en": "Tram Kak",
+    "name_km": "ត្រាំកក់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2110,
+    "code": "2110",
+    "parentId": 21,
+    "name": "Treang",
+    "name_en": "Treang",
+    "name_km": "ទ្រាំង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2201,
+    "code": "2201",
+    "parentId": 22,
+    "name": "Anlung Veaeng",
+    "name_en": "Anlung Veaeng",
+    "name_km": "អន្លង់វែង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2202,
+    "code": "2202",
+    "parentId": 22,
+    "name": "Banteay Ampil",
+    "name_en": "Banteay Ampil",
+    "name_km": "បន្ទាយអំពិល",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2203,
+    "code": "2203",
+    "parentId": 22,
+    "name": "Chong Kal",
+    "name_en": "Chong Kal",
+    "name_km": "ចុងកាល់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2204,
+    "code": "2204",
+    "parentId": 22,
+    "name": "Samraong",
+    "name_en": "Samraong",
+    "name_km": "សំរោង",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2205,
+    "code": "2205",
+    "parentId": 22,
+    "name": "Trapeang Prasat",
+    "name_en": "Trapeang Prasat",
+    "name_km": "ត្រពាំងប្រាសាទ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 2301,
+    "code": "2301",
+    "parentId": 23,
+    "name": "Damnak Chang'aeu",
+    "name_en": "Damnak Chang'aeu",
+    "name_km": "ដំណាក់ចង្អើរ",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 2302,
+    "code": "2302",
+    "parentId": 23,
+    "name": "Kaeb",
+    "name_en": "Kaeb",
+    "name_km": "កែប",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2401,
+    "code": "2401",
+    "parentId": 24,
+    "name": "Pailin",
+    "name_en": "Pailin",
+    "name_km": "ប៉ៃលិន",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 2402,
+    "code": "2402",
+    "parentId": 24,
+    "name": "Sala Krau",
+    "name_en": "Sala Krau",
+    "name_km": "សាលាក្រៅ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2501,
+    "code": "2501",
+    "parentId": 25,
+    "name": "Dambae",
+    "name_en": "Dambae",
+    "name_km": "តំបែរ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2502,
+    "code": "2502",
+    "parentId": 25,
+    "name": "Krouch Chhmar",
+    "name_en": "Krouch Chhmar",
+    "name_km": "ក្រូចឆ្មារ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2503,
+    "code": "2503",
+    "parentId": 25,
+    "name": "Memut",
+    "name_en": "Memut",
+    "name_km": "មេមត់",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2504,
+    "code": "2504",
+    "parentId": 25,
+    "name": "Ou Reang Ov",
+    "name_en": "Ou Reang Ov",
+    "name_km": "អូររាំងឪ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2505,
+    "code": "2505",
+    "parentId": 25,
+    "name": "Ponhea Kraek",
+    "name_en": "Ponhea Kraek",
+    "name_km": "ពញាក្រែក",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  },
+  {
+    "id": 2506,
+    "code": "2506",
+    "parentId": 25,
+    "name": "Suong",
+    "name_en": "Suong",
+    "name_km": "សួង",
+    "level": "district",
+    "typeKm": "ក្រុង"
+  },
+  {
+    "id": 2507,
+    "code": "2507",
+    "parentId": 25,
+    "name": "Tboung Khmum",
+    "name_en": "Tboung Khmum",
+    "name_km": "ត្បូងឃ្មុំ",
+    "level": "district",
+    "typeKm": "ស្រុក"
+  }
+]
