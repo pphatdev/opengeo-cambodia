@@ -435,7 +435,16 @@
                 <!-- Live Ping Indicator -->
                 <div class="hidden md:flex items-center gap-2 px-2.5 py-1 text-xs font-medium text-neutral-400">
                     <span class="pulse-dot"></span>
-                    <span id="headerPingText">Online</span>
+                    <div id="headerPingText" class="inline-flex items-center">
+                        <span id="headerPingLabel">Online</span>
+                        <span id="headerPingLatency" class="inline-flex items-center">
+                            <span>&nbsp;(</span>
+                            <span class="inline-flex items-center overflow-hidden h-[16px] leading-none">
+                                <span id="headerPingMs" class="inline-block font-mono text-emerald-400 font-semibold transform-gpu leading-none">--</span>
+                            </span>
+                            <span>ms)</span>
+                        </span>
+                    </div>
                 </div>
 
                 <div class="h-4 w-px bg-white/10 hidden md:block"></div>
@@ -457,9 +466,8 @@
         <section class="flex flex-col items-center text-center max-w-3xl w-full pt-2 sm:pt-4">
 
             <!-- Brand Badge with Logo -->
-            <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 backdrop-blur-md mb-6 hover:border-teal-500/50 transition-all shadow-sm">
-                <img src="/logo.jpg" alt="OpenGeo Cambodia Logo" class="w-5 h-5 rounded-full object-cover drop-shadow-[0_0_8px_rgba(20,184,166,0.6)] border border-teal-500/40">
-                <span class="text-xs font-semibold tracking-wide text-teal-300">OpenGeo Cambodia • 4-Tier Division API</span>
+            <div class="inline-flex items-center gap-2.5 px-3.5 py-1 rounded-full border border-teal-500/30 bg-teal-500/10 backdrop-blur-md mb-6 hover:border-teal-500/50 transition-all shadow-sm">
+                <span class="text-xs font-medium tracking-wide text-teal-300">API • OpenGeo Cambodia</span>
             </div>
 
             <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-[1.12]">
@@ -1159,12 +1167,6 @@
     <!-- Footer with Brand Logo -->
     <footer class="w-full border-t border-white/5 py-8 px-4 text-xs text-neutral-500">
         <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-2.5">
-                <img src="/logo.jpg" alt="OpenGeo Cambodia Logo" class="w-5 h-5 rounded-md object-cover border border-white/10" />
-                <span class="font-semibold text-neutral-300">OpenGeo Cambodia</span>
-                <span class="text-neutral-600">•</span>
-                <span>4-Tier Division API &amp; Geocoding</span>
-            </div>
             <div class="flex items-center gap-4 text-neutral-400">
                 <a href="/api/info" class="hover:text-teal-400 transition-colors">API Docs</a>
                 <a href="/llms.txt" class="hover:text-teal-400 transition-colors">llms.txt</a>
@@ -1223,6 +1225,51 @@
                 }
                 requestAnimationFrame(update);
             }, delay);
+        }
+
+        // Ping Milliseconds Number Transform-Up Animation
+        function animatePingMs(element, targetMs, duration = 650) {
+            if (!element) return;
+
+            // Step 1: Slide current number up and fade out
+            element.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+            element.style.transform = 'translateY(-100%)';
+            element.style.opacity = '0';
+
+            setTimeout(() => {
+                // Step 2: Set initial number at bottom
+                element.style.transition = 'none';
+                element.style.transform = 'translateY(100%)';
+                element.style.opacity = '0';
+                element.innerText = '0';
+
+                const startTime = performance.now();
+                const start = 0;
+
+                // Step 3: Animate transform-up into place and count up
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        element.style.transition = 'transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1)';
+                        element.style.transform = 'translateY(0)';
+                        element.style.opacity = '1';
+                    });
+                });
+
+                function update(now) {
+                    const elapsed = now - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                    const current = Math.floor(start + (targetMs - start) * ease);
+                    element.innerText = current;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        element.innerText = targetMs;
+                    }
+                }
+                requestAnimationFrame(update);
+            }, 180);
         }
 
         // Theme Initialization
@@ -1932,19 +1979,31 @@
             initTheme();
             updateEndpointUI();
 
-            // Test Ping
-            try {
-                const t0 = performance.now();
-                const healthRes = await fetch(getApiUrl('/health'));
-                const took = Math.round(performance.now() - t0);
-                const healthPing = document.getElementById('headerPingText');
-                if (healthPing && healthRes.ok) {
-                    healthPing.innerText = `Online (${took}ms)`;
+            // Test Ping with Transform-Up on MS number
+            async function checkPing() {
+                try {
+                    const t0 = performance.now();
+                    const healthRes = await fetch(getApiUrl('/health'));
+                    const took = Math.max(1, Math.round(performance.now() - t0));
+                    const msEl = document.getElementById('headerPingMs');
+                    const latencyEl = document.getElementById('headerPingLatency');
+                    const labelEl = document.getElementById('headerPingLabel');
+                    if (labelEl) labelEl.innerText = 'Online';
+                    if (latencyEl) latencyEl.classList.remove('hidden');
+                    if (msEl && healthRes.ok) {
+                        animatePingMs(msEl, took);
+                    }
+                } catch {
+                    const labelEl = document.getElementById('headerPingLabel');
+                    const latencyEl = document.getElementById('headerPingLatency');
+                    if (labelEl) labelEl.innerText = 'Unreachable';
+                    if (latencyEl) latencyEl.classList.add('hidden');
                 }
-            } catch {
-                const healthPing = document.getElementById('headerPingText');
-                if (healthPing) healthPing.innerText = 'Unreachable';
             }
+
+            checkPing();
+            // Periodic ping refresh with smooth transform-up animation on ms number
+            setInterval(checkPing, 30000);
 
             // Fetch Stats & Animate Numbers Transform-Up
             let statsAnimated = false;
