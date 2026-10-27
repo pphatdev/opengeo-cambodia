@@ -3,9 +3,11 @@
 > Sub-1ms cascading lookups across all 25 Provinces, 200+ Districts, 1,600+ Communes, and 14,500+ Villages with smart OpenStreetMap geocoding
 
 [![Domain](https://img.shields.io/badge/Domain-opengeo--cambodia.pphat.me-0d9488?style=flat-square)](https://opengeo-cambodia.pphat.me)
+[![LLM Docs](https://img.shields.io/badge/LLM%20Docs-llms.txt-7c3aed?style=flat-square)](https://opengeo-cambodia.pphat.me/llms.txt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
-🔗 **Live Production URL:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me)
+🔗 **Live Production URL:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me)  
+🤖 **LLM Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)
 
 ---
 
@@ -75,11 +77,14 @@ npm run dev
 ```
 
 The server starts at `http://localhost:3000`:
-- **Interactive Testing Dashboard**: `http://localhost:3000/`
+- **Interactive Web UI**: `http://localhost:3000/demo` (or opening `/` in a browser)
+- **API Welcome / Endpoints**: `http://localhost:3000/` (JSON)
 - **API Spec & Info**: `http://localhost:3000/api/info`
+- **LLM Summary (`llmstxt.org`)**: `http://localhost:3000/llms.txt`
+- **LLM Full Specification**: `http://localhost:3000/llms-full.txt`
 - **Health Check**: `http://localhost:3000/health`
 
-### 4. Build for Production
+### 4. Build Backend for Production
 ```bash
 npm run build
 npm start
@@ -255,9 +260,26 @@ opengeo-cambodia.pphat.me/
     │   ├── geocode.service.ts # 4-tier key normalization & fallback cascade
     │   └── nominatim.client.ts# OSM Nominatim HTTP client
     ├── scripts/
-    │   └── sync-overpass.ts   # Background ETL pipeline from Overpass API
+    │   ├── copy-assets.ts     # Asset bundling script for production builds
+    │   ├── sync-overpass.ts   # Background ETL pipeline from Overpass API
+    │   └── convert-csv.ts     # CSV data ingestion and conversion utilities
     └── views/
         └── demo.html          # Interactive Web UI with live timing & geocoder
+```
+
+---
+
+## 🤖 LLM & AI Agent Integration (`llms.txt`)
+
+OpenGeo Cambodia conforms to the [llmstxt.org](https://llmstxt.org) standard for AI coding assistants (ChatGPT, Claude, Cursor, Copilot, Antigravity, and autonomous web agents):
+
+- **Compact LLM Context**: [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) — Token-efficient summary of 4-tier domain model, base URLs, rate limits, and quick-start integration snippets.
+- **Full LLM Reference**: [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt) — Comprehensive single-file reference containing complete JSON schemas, parameter types, error handling, and TypeScript/Python SDK code.
+
+### Using with Cursor or Claude
+Add the URL directly to your project prompt or `.cursorrules`:
+```
+Always use https://opengeo-cambodia.pphat.me/llms.txt for Cambodian administrative boundary and address normalization rules.
 ```
 
 ---

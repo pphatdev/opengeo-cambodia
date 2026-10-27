@@ -1,51 +1,53 @@
 {
-  "name": "opengeo-cambodia-api",
-  "version": "1.0.0",
-  "description": "Sub-1ms cascading lookups across all 25 Provinces, 200+ Districts, 1,600+ Communes, and 14,500+ Villages with smart OpenStreetMap geocoding",
-  "homepage": "https://opengeo-cambodia.pphat.me",
-  "main": "dist/index.js",
-  "type": "module",
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc && node dist/scripts/copy-assets.js",
-    "start": "node dist/index.js",
-    "sync:overpass": "tsx src/scripts/sync-overpass.ts",
-    "convert:csv": "tsx src/scripts/convert-csv.ts",
-    "update:provinces": "tsx src/scripts/update-provinces.ts",
-    "update:districts": "tsx src/scripts/update-districts.ts",
-    "update:communes": "tsx src/scripts/update-communes.ts",
-    "update:villages": "tsx src/scripts/update-villages.ts",
-    "update:all": "tsx src/scripts/update-provinces.ts && tsx src/scripts/update-districts.ts && tsx src/scripts/update-communes.ts && tsx src/scripts/update-villages.ts",
-    "lint": "tsc --noEmit"
-  },
-  "keywords": [
-    "cambodia",
-    "geocoding",
-    "osm",
-    "openstreetmap",
-    "hono",
-    "honojs",
-    "nominatim",
-    "overpass",
-    "administrative-boundaries",
-    "provinces",
-    "districts",
-    "communes",
-    "villages"
-  ],
-  "author": "Sophat",
-  "license": "MIT",
-  "dependencies": {
-    "@hono/node-server": "^1.13.7",
-    "@hono/zod-validator": "^0.4.2",
-    "axios": "^1.7.9",
-    "dotenv": "^16.4.7",
-    "hono": "^4.6.14",
-    "zod": "^4.6.6"
-  },
-  "devDependencies": {
-    "@types/node": "^22.10.2",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
-  }
+    "name": "opengeo-cambodia-api",
+    "version": "1.0.0",
+    "description": "Sub-1ms cascading lookups across all 25 Provinces, 200+ Districts, 1,600+ Communes, and 14,500+ Villages with smart OpenStreetMap geocoding",
+    "homepage": "https://opengeo-cambodia.pphat.me",
+    "main": "dist/index.js",
+    "type": "module",
+    "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc && node dist/scripts/copy-assets.js",
+        "postbuild": "node dist/scripts/generate-llms.js",
+        "generate:llms": "tsx src/scripts/generate-llms.ts",
+        "start": "node dist/index.js",
+        "sync:overpass": "tsx src/scripts/sync-overpass.ts",
+        "convert:csv": "tsx src/scripts/convert-csv.ts",
+        "update:provinces": "tsx src/scripts/update-provinces.ts",
+        "update:districts": "tsx src/scripts/update-districts.ts",
+        "update:communes": "tsx src/scripts/update-communes.ts",
+        "update:villages": "tsx src/scripts/update-villages.ts",
+        "update:all": "tsx src/scripts/update-provinces.ts && tsx src/scripts/update-districts.ts && tsx src/scripts/update-communes.ts && tsx src/scripts/update-villages.ts",
+        "lint": "tsc --noEmit"
+    },
+    "keywords": [
+        "cambodia",
+        "geocoding",
+        "osm",
+        "openstreetmap",
+        "hono",
+        "honojs",
+        "nominatim",
+        "overpass",
+        "administrative-boundaries",
+        "provinces",
+        "districts",
+        "communes",
+        "villages"
+    ],
+    "author": "Sophat",
+    "license": "MIT",
+    "dependencies": {
+        "@hono/node-server": "^1.13.7",
+        "@hono/zod-validator": "^0.4.2",
+        "axios": "^1.7.9",
+        "dotenv": "^16.4.7",
+        "hono": "^4.6.14",
+        "zod": "^4.6.6"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.2",
+        "tsx": "^4.19.2",
+        "typescript": "^5.7.2"
+    }
 }

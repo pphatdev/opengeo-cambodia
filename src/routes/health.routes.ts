@@ -41,9 +41,11 @@ healthRoutes.get('/api/info', (c) => {
         search: 'GET /api/geocode/search?q=:query&limit=:limit',
       },
       system: {
+        root: 'GET /',
         health: 'GET /health',
         info: 'GET /api/info',
-        demo: 'GET /',
+        llms: 'GET /llms.txt',
+        llmsFull: 'GET /llms-full.txt',
       },
     },
   });
