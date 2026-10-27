@@ -4237,7 +4237,7 @@
     "name_en": "Veang Chas",
     "name_km": "វាំងចាស់",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 50902,
@@ -4247,7 +4247,7 @@
     "name_en": "Veal Pung",
     "name_km": "វាលពង់",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 50903,
@@ -4257,7 +4257,7 @@
     "name_en": "Trach Tong",
     "name_km": "ត្រាចទង",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 50904,
@@ -4267,7 +4267,7 @@
     "name_en": "Preah Srae",
     "name_km": "ព្រះស្រែ",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 50905,
@@ -4277,7 +4277,7 @@
     "name_en": "Khsem Khsan",
     "name_km": "ក្សេមក្សាន្ដ",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 51001,
@@ -12987,7 +12987,7 @@
     "name_en": "Boeng Mealea",
     "name_km": "បឹងមាលា",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 171302,
@@ -12997,7 +12997,7 @@
     "name_en": "Kantuot",
     "name_km": "កន្ទួត",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 171303,
@@ -13007,7 +13007,7 @@
     "name_en": "Khnang Phnum",
     "name_km": "ខ្នងភ្នំ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 171304,
@@ -13017,7 +13017,7 @@
     "name_en": "Svay Leu",
     "name_km": "ស្វាយលើ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 171305,
@@ -13027,7 +13027,7 @@
     "name_en": "Ta Siem",
     "name_km": "តាសៀម",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 171401,
@@ -13087,7 +13087,7 @@
     "name_en": "Run Ta Aek",
     "name_km": "រុនតាឯក",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 171502,
@@ -13097,7 +13097,7 @@
     "name_en": "Ballang",
     "name_km": "បល្ល័ង្ក",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 180101,
@@ -13287,7 +13287,7 @@
     "name_en": "Chamkar Luong",
     "name_km": "ចំការហ្លួង",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 180402,
@@ -13297,7 +13297,7 @@
     "name_en": "Kampong Seila",
     "name_km": "កំពង់សីលា",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 180403,
@@ -13307,7 +13307,7 @@
     "name_en": "Ou Bak Roteh",
     "name_km": "អូរបាក់រទេះ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 180404,
@@ -13317,7 +13317,7 @@
     "name_en": "Stueng Chhay",
     "name_km": "ស្ទឹងឆាយ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 180501,
@@ -13327,7 +13327,7 @@
     "name_en": "Kaoh Rung",
     "name_km": "កោះរ៉ុង",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 180502,
@@ -13337,7 +13337,7 @@
     "name_en": "Koah Rung Sonlem",
     "name_km": "កោះរ៉ុងសន្លឹម",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 180601,
@@ -13467,7 +13467,7 @@
     "name_en": "Kaoh Preah",
     "name_km": "កោះព្រះ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 190202,
@@ -13477,7 +13477,7 @@
     "name_en": "Kaoh Sampeay",
     "name_km": "កោះសំពាយ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 190203,
@@ -13487,7 +13487,7 @@
     "name_en": "Kaoh Sralay",
     "name_km": "កោះស្រឡាយ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 190204,
@@ -13497,7 +13497,7 @@
     "name_en": "Ou Mreah",
     "name_km": "អូរម្រះ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 190205,
@@ -13507,7 +13507,7 @@
     "name_en": "Ou Ruessei Kandal",
     "name_km": "អូរឫស្សីកណ្ដាល",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 190206,
@@ -13517,7 +13517,7 @@
     "name_en": "Siem Bouk",
     "name_km": "សៀមបូក",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 190207,
@@ -13527,7 +13527,7 @@
     "name_en": "Srae Krasang",
     "name_km": "ស្រែក្រសាំង",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 190301,
@@ -13587,7 +13587,7 @@
     "name_en": "Stueng Traeng",
     "name_km": "ស្ទឹងត្រែង",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 190402,
@@ -13597,7 +13597,7 @@
     "name_en": "Srah Ruessei",
     "name_km": "ស្រះឫស្សី",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 190403,
@@ -13607,7 +13607,7 @@
     "name_en": "Preah Bat",
     "name_km": "ព្រះបាទ",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 190404,
@@ -13617,7 +13617,7 @@
     "name_en": "Sameakki",
     "name_km": "សាមគ្គី",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 190501,
@@ -15667,7 +15667,7 @@
     "name_en": "Bansay Reak",
     "name_km": "បន្សាយរាក់",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 220402,
@@ -15677,7 +15677,7 @@
     "name_en": "Bos Sbouv",
     "name_km": "បុស្បូវ",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 220403,
@@ -15687,7 +15687,7 @@
     "name_en": "Koun Kriel",
     "name_km": "កូនក្រៀល",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 220404,
@@ -15697,7 +15697,7 @@
     "name_en": "Samraong",
     "name_km": "សំរោង",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 220405,
@@ -15707,7 +15707,7 @@
     "name_en": "Ou Smach",
     "name_km": "អូរស្មាច់",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 220501,
@@ -15717,7 +15717,7 @@
     "name_en": "Bak Anlung",
     "name_km": "បាក់អន្លូង",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 220502,
@@ -15727,7 +15727,7 @@
     "name_en": "Ph'av",
     "name_km": "ផ្អាវ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 220503,
@@ -15737,7 +15737,7 @@
     "name_en": "Ou Svay",
     "name_km": "អូរស្វាយ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 220504,
@@ -15747,7 +15747,7 @@
     "name_en": "Preah Pralay",
     "name_km": "ព្រះប្រឡាយ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 220505,
@@ -15757,7 +15757,7 @@
     "name_en": "Tumnub Dach",
     "name_km": "ទំនប់ដាច់",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 220506,
@@ -15767,7 +15767,7 @@
     "name_en": "Trapeang Prasat",
     "name_km": "ត្រពាំងប្រាសាទ",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 230101,
@@ -15777,7 +15777,7 @@
     "name_en": "Angkaol",
     "name_km": "អង្កោល",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 230103,
@@ -15787,7 +15787,7 @@
     "name_en": "Pong Tuek",
     "name_km": "ពងទឹក",
     "level": "commune",
-    "typeKm": "សង្កាត់"
+    "typeKm": "ឃុំ"
   },
   {
     "id": 230201,
@@ -15797,7 +15797,7 @@
     "name_en": "Kaeb",
     "name_km": "កែប",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 230202,
@@ -15807,7 +15807,7 @@
     "name_en": "Prey Thum",
     "name_km": "ព្រៃធំ",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 230203,
@@ -15817,7 +15817,7 @@
     "name_en": "Ou Krasar",
     "name_km": "អូរក្រសារ",
     "level": "commune",
-    "typeKm": "ឃុំ"
+    "typeKm": "សង្កាត់"
   },
   {
     "id": 240101,
