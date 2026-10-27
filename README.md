@@ -1,4 +1,4 @@
-# 🇰🇭 OpenGeo Cambodia API
+# OpenGeo Cambodia API
 
 > Sub-1ms cascading lookups across all 25 Provinces, 200+ Districts, 1,600+ Communes, and 14,500+ Villages with smart OpenStreetMap geocoding
 
