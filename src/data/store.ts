@@ -375,17 +375,6 @@ export class AdminStore {
     // Strictly in-memory: NO fs.writeFileSync! Seed datasets on disk remain untouched.
   }
 
-  private readJsonFile<T>(filePath: string, fallback: T): T {
-    if (!fs.existsSync(filePath)) {
-      return fallback;
-    }
-    try {
-      const content = fs.readFileSync(filePath, 'utf-8');
-      return JSON.parse(content) as T;
-    } catch {
-      return fallback;
-    }
-  }
 
   private rebuildIndexes(): void {
     this.itemById.clear();
