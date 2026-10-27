@@ -26,30 +26,33 @@ export function createRateLimiter(
     } = options;
 
     const store = new Map<string, ClientRecord>();
-
-    // Periodically sweep expired entries to prevent memory leaks
-    const sweepInterval = setInterval(() => {
-        const now = Date.now();
-        for (const [key, record] of store.entries()) {
-            if (now > record.resetAt) {
-                store.delete(key);
-            }
-        }
-    }, Math.max(30000, windowMs));
-
-    // Ensure background timer does not hold event loop open
-    if (sweepInterval.unref) {
-        sweepInterval.unref();
-    }
+    let lastSweep = 0;
+    const sweepIntervalMs = Math.max(30000, windowMs);
 
     return async (c, next) => {
+        const now = Date.now();
+
+        // Edge/Serverless compatible lazy sweep without global scope timers
+        if (now - lastSweep > sweepIntervalMs) {
+            lastSweep = now;
+            for (const [k, record] of store.entries()) {
+                if (now > record.resetAt) {
+                    store.delete(k);
+                }
+            }
+        }
+
+        // Safety cap against memory saturation in edge isolates
+        if (store.size > 5000) {
+            store.clear();
+        }
+
         const forwarded = c.req.header("x-forwarded-for");
         const realIp = c.req.header("x-real-ip");
         const clientIp = (forwarded ? forwarded.split(",")[0].trim() : "") ||
             realIp || "127.0.0.1";
 
         const key = `${keyPrefix}:${clientIp}`;
-        const now = Date.now();
         let record = store.get(key);
 
         if (!record || now > record.resetAt) {
