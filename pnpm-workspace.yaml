@@ -1,20 +1,13 @@
-storeDir: .pnpm-store
+packages:
+  - '.'
 
 # Supply Chain Protection: Only whitelist known native binary compilation
 onlyBuiltDependencies:
   - esbuild
 
-# Transitive Dependency Overrides (pnpm v9+ format in workspace)
+# Transitive Dependency Overrides
 overrides:
   "@hono/node-server": ">=1.19.17"
   undici: ">=7.30.1"
   sharp: ">=0.35.5"
   esbuild: ">=0.25.0"
-
-minimumReleaseAgeExclude:
-  - miniflare@5.20261023.0-beta
-  - wrangler@4.153.0
-
-allowBuilds:
-  esbuild: set this to true or false
-  workerd: set this to true or false
