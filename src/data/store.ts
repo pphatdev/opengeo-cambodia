@@ -114,29 +114,80 @@ export class AdminStore {
   }
 
   /**
-   * Load administrative boundaries strictly from canonical JSON seed datasets.
+   * Parse CSV line with quote handling
+   */
+  public static parseCsvLine(line: string): string[] {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  }
+
+  /**
+   * Load administrative boundaries from the 4 official CSV files.
    * Read-only: never modifies, overwrites, or regenerates seed files on server startup.
    */
   public loadData(): void {
     const possibleDataDirs = [
       path.resolve(__dirname),
       path.resolve(__dirname, '..', '..', 'src', 'data'),
-      path.resolve(process.cwd(), 'dist', 'data'),
       path.resolve(process.cwd(), 'src', 'data'),
+      path.resolve(process.cwd(), 'dist', 'data'),
     ];
 
     let dataDir = path.resolve(__dirname);
     for (const candidate of possibleDataDirs) {
-      if (fs.existsSync(path.join(candidate, 'seed', 'provinces.json'))) {
+      if (
+        fs.existsSync(path.join(candidate, 'CambodiaVillagesList.csv')) ||
+        fs.existsSync(path.join(candidate, 'seed', 'provinces.json'))
+      ) {
         dataDir = candidate;
         break;
       }
     }
 
+    const provinceCsv = path.join(dataDir, 'CambodiaProvinceList.csv');
+    const districtCsv = path.join(dataDir, 'CambodiaDistrictList.csv');
+    const communeCsv = path.join(dataDir, 'CambodiaCommuneList.csv');
+    const villageCsv = path.join(dataDir, 'CambodiaVillagesList.csv');
+
+    // 1. If the 4 official CSV files exist, load directly from them (Read-only, seed is never changed)
+    if (
+      fs.existsSync(provinceCsv) &&
+      fs.existsSync(districtCsv) &&
+      fs.existsSync(communeCsv) &&
+      fs.existsSync(villageCsv)
+    ) {
+      try {
+        this.loadFromFourCsvs(provinceCsv, districtCsv, communeCsv, villageCsv);
+        this.rebuildIndexes();
+        this.isLoaded = true;
+        return;
+      } catch (err) {
+        console.warn('[AdminStore] Error reading CSV files, falling back to seed JSON:', err);
+      }
+    }
+
+    // 2. Fallback: load strictly from canonical JSON seed directory
     const syncDir = path.resolve(dataDir, 'synced');
     const seedDir = path.resolve(dataDir, 'seed');
-
-    // Prefer synced directory if present and valid, otherwise strictly load from canonical seed directory
     const activeDir =
       fs.existsSync(syncDir) && fs.existsSync(path.join(syncDir, 'provinces.json'))
         ? syncDir
@@ -159,6 +210,173 @@ export class AdminStore {
     } catch (err) {
       console.error('[AdminStore] Error loading data from seed:', err);
     }
+  }
+
+  /**
+   * Parse the 4 dedicated CSV files directly into memory without modifying any seed files on disk
+   */
+  private loadFromFourCsvs(
+    provinceCsv: string,
+    districtCsv: string,
+    communeCsv: string,
+    villageCsv: string
+  ): void {
+    // 1. Provinces (CambodiaProvinceList.csv)
+    const pLines = fs.readFileSync(provinceCsv, 'utf-8').split(/\r?\n/);
+    const pStartIndex = pLines[0].toLowerCase().includes('province_code') ? 1 : 0;
+    const provinces: AdminItem[] = [];
+
+    for (let i = pStartIndex; i < pLines.length; i++) {
+      const line = pLines[i].trim();
+      if (!line) continue;
+      const cols = AdminStore.parseCsvLine(line);
+      if (cols.length < 3) continue;
+
+      const code = cols[0].trim();
+      const kh = cols[1].trim();
+      const en = cols[2].trim();
+      if (!code) continue;
+
+      const coord = DEFAULT_PROVINCE_COORDINATES[code];
+      provinces.push({
+        id: parseInt(code, 10),
+        code,
+        name: en,
+        name_en: en,
+        name_km: kh,
+        level: 'province',
+        lat: coord?.lat,
+        lon: coord?.lon,
+        typeKm: coord?.typeKm || (code === '12' ? 'រាជធានី' : 'ខេត្ត'),
+      });
+    }
+
+    // 2. Districts (CambodiaDistrictList.csv)
+    const dLines = fs.readFileSync(districtCsv, 'utf-8').split(/\r?\n/);
+    const dStartIndex = dLines[0].toLowerCase().includes('district_code') ? 1 : 0;
+    const districts: AdminItem[] = [];
+    const districtTypeKmMap = new Map<string, string>();
+
+    for (let i = dStartIndex; i < dLines.length; i++) {
+      const line = dLines[i].trim();
+      if (!line) continue;
+      const cols = AdminStore.parseCsvLine(line);
+      if (cols.length < 4) continue;
+
+      const pCode = cols[0].trim();
+      const dCode = cols[1].trim();
+      const dKh = cols[2].trim();
+      const dEn = cols[3].trim();
+      if (!dCode) continue;
+
+      const isKhan = pCode === '12';
+      const isKrong = KRONG_CODES.has(dCode) || dEn.toLowerCase().startsWith('krong ') || dKh.startsWith('ក្រុង');
+      const typeKm = isKhan ? 'ខណ្ឌ' : isKrong ? 'ក្រុង' : 'ស្រុក';
+      districtTypeKmMap.set(dCode, typeKm);
+
+      districts.push({
+        id: parseInt(dCode, 10),
+        code: dCode,
+        parentId: parseInt(pCode, 10),
+        name: dEn,
+        name_en: dEn,
+        name_km: dKh,
+        level: 'district',
+        typeKm,
+      });
+    }
+
+    // 3. Communes (CambodiaCommuneList.csv)
+    const cLines = fs.readFileSync(communeCsv, 'utf-8').split(/\r?\n/);
+    const cStartIndex = cLines[0].toLowerCase().includes('commune_code') ? 1 : 0;
+    const communes: AdminItem[] = [];
+
+    for (let i = cStartIndex; i < cLines.length; i++) {
+      const line = cLines[i].trim();
+      if (!line) continue;
+      const cols = AdminStore.parseCsvLine(line);
+      if (cols.length < 5) continue;
+
+      const dCode = cols[1].trim();
+      const cCode = cols[2].trim();
+      const cKh = cols[3].trim();
+      const cEn = cols[4].trim();
+      if (!cCode) continue;
+
+      const districtType = districtTypeKmMap.get(dCode);
+      const isSangkat = districtType === 'ខណ្ឌ' || districtType === 'ក្រុង';
+      const typeKm = isSangkat ? 'សង្កាត់' : 'ឃុំ';
+
+      communes.push({
+        id: parseInt(cCode, 10),
+        code: cCode,
+        parentId: parseInt(dCode, 10),
+        name: cEn,
+        name_en: cEn,
+        name_km: cKh,
+        level: 'commune',
+        typeKm,
+      });
+    }
+
+    // 4. Villages (CambodiaVillagesList.csv)
+    const vLines = fs.readFileSync(villageCsv, 'utf-8').split(/\r?\n/);
+    const vStartIndex = vLines[0].toLowerCase().includes('village_code') ? 1 : 0;
+    const villages: AdminItem[] = [];
+    const seenVillageCodes = new Set<string>();
+
+    for (let i = vStartIndex; i < vLines.length; i++) {
+      const line = vLines[i].trim();
+      if (!line) continue;
+      const cols = AdminStore.parseCsvLine(line);
+      if (cols.length < 6) continue;
+
+      const cCode = cols[2].trim();
+      const vCode = cols[3].trim();
+      const vKh = cols[4].trim();
+      const vEn = cols[5].trim();
+      if (!cCode) continue;
+
+      let resolvedVCode = vCode;
+      let resolvedVId = parseInt(vCode.replace(/[^0-9]/g, ''), 10);
+      if (vCode.includes('-') || !vCode || isNaN(resolvedVId)) {
+        let subIndex = 1;
+        while (seenVillageCodes.has(`${cCode}${String(subIndex).padStart(2, '0')}`)) {
+          subIndex++;
+        }
+        resolvedVCode = `${cCode}${String(subIndex).padStart(2, '0')}`;
+        resolvedVId = parseInt(resolvedVCode, 10);
+      }
+
+      if (seenVillageCodes.has(resolvedVCode)) {
+        let subIndex = 1;
+        while (seenVillageCodes.has(`${cCode}${String(subIndex).padStart(2, '0')}`)) {
+          subIndex++;
+        }
+        resolvedVCode = `${cCode}${String(subIndex).padStart(2, '0')}`;
+        resolvedVId = parseInt(resolvedVCode, 10);
+      }
+
+      seenVillageCodes.add(resolvedVCode);
+
+      villages.push({
+        id: resolvedVId,
+        code: resolvedVCode,
+        parentId: parseInt(cCode, 10),
+        name: vEn,
+        name_en: vEn,
+        name_km: vKh,
+        level: 'village',
+        typeKm: 'ភូមិ',
+      });
+    }
+
+    this.provinces = provinces.sort((a, b) => a.id - b.id);
+    this.districts = districts.sort((a, b) => a.id - b.id);
+    this.communes = communes.sort((a, b) => a.id - b.id);
+    this.villages = villages.sort((a, b) => a.id - b.id);
+    this.lastSyncAt = '2026-10-27T00:00:00.000Z';
+    // Strictly in-memory: NO fs.writeFileSync! Seed datasets on disk remain untouched.
   }
 
   private readJsonFile<T>(filePath: string, fallback: T): T {
