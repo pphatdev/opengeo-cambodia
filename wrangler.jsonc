@@ -12,8 +12,7 @@
   },
   "routes": [
     {
-      "pattern": "opengeo-cambodia.pphat.me/*",
-      "zone_name": "pphat.me",
+      "pattern": "opengeo-cambodia.pphat.me",
       "custom_domain": true
     }
   ],
