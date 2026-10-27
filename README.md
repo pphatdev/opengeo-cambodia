@@ -1,0 +1,248 @@
+# 🇰🇭 OpenGeo Cambodia API
+
+> High-performance Cambodian 4-tier administrative hierarchy cascading dropdown & smart OpenStreetMap (OSM) geocoding REST API built with **Node.js**, **TypeScript**, and **Hono.js**.
+
+[![Domain](https://img.shields.io/badge/Domain-opengeo--cambodia.pphat.me-0d9488?style=flat-square)](https://opengeo-cambodia.pphat.me)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+
+🔗 **Live Production URL:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me)
+
+---
+
+## 🌟 Overview & Purpose
+
+Digital platforms operating in Cambodia (logistics, e-commerce, fintech KYC, ride-hailing, government forms) require a standard 4-tier administrative address selector:
+
+$$\text{City / Province (រាជធានី / ខេត្ត)} \longrightarrow \text{District / Khan / Krong (ស្រុក / ខណ្ឌ / ក្រុង)} \longrightarrow \text{Commune / Sangkat (ឃុំ / សង្កាត់)} \longrightarrow \text{Village (ភូមិ)}$$
+
+This project solves two primary challenges:
+1. **Instant Cascading Dropdowns (< 5ms)**: Serves administrative divisions directly from an indexed in-memory store without hammering external public APIs.
+2. **Smart Reverse Geocoding & Address Search**: Normalizes arbitrary OpenStreetMap (Nominatim) address schemas into the standardized Cambodian 4-tier model.
+
+---
+
+## 🏛️ Cambodian Administrative Domain Model
+
+| Level | Cambodian Name (KM) | Latin Romanization | Typical Count | OSM Tagging Equivalent |
+| :--- | :--- | :--- | :--- | :--- |
+| **Tier 1** | រាជធានី / ខេត្ត | Reachdhanie / Khaet | **25** (1 Capital + 24 Provinces) | `boundary=administrative`, `admin_level=4` |
+| **Tier 2** | ស្រុក / ខណ្ឌ / ក្រុង | Srok / Khan / Krong | **~209** | `boundary=administrative`, `admin_level=6` |
+| **Tier 3** | ឃុំ / សង្កាត់ | Khum / Sangkat | **~1,652** | `boundary=administrative`, `admin_level=8` |
+| **Tier 4** | ភូមិ | Phum (Village) | **~14,500+** | `place=village` / `place=hamlet` *(Nodes)* |
+
+---
+
+## 🏗️ Architecture & Hybrid Strategy
+
+```
+[ Web / Mobile Client ]
+       │
+       ├───> GET /api/admin/* (Dropdowns) ────> [ In-Memory Store / O(1) Index ] (<5ms)
+       │                                                 ▲
+       │                                                 │ Periodic sync
+       │                                          [ Overpass API (OSM) ]
+       │
+       └───> GET /api/geocode/* (GPS Pin / Search) ──> [ Nominatim OSM API ]
+                                                         (Normalized to 4 tiers)
+```
+
+1. **In-Memory Store (`AdminStore`)**:
+   - Pre-loaded with seed data for all 25 provinces, Phnom Penh's 14 Khans, Siem Reap, Battambang, Preah Sihanouk, Kandal, and Kampot.
+   - O(1) hash map indices for parent-to-child lookups.
+   - Normalized full-text search tolerating English Romanization variations (*Siem Reap* vs *Siemreap*, *Tuol Kork* vs *Toul Kork*) and native Khmer script.
+2. **Reverse Geocoder (`GeocodeService`)**:
+   - Integrates with Nominatim with required `User-Agent`.
+   - Cascades through fallback keys (`suburb`, `quarter`, `municipality`, `county`, `village`).
+3. **ETL Pipeline (`sync:overpass`)**:
+   - Offline background batch extractor querying Overpass QL to update datasets without client-side latency.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Prerequisites
+- **Node.js** v20+ LTS
+- **npm** or **pnpm** / **yarn**
+
+### 2. Installation
+```bash
+npm install
+```
+
+### 3. Run Development Server
+```bash
+npm run dev
+```
+
+The server starts at `http://localhost:3000`:
+- **Interactive Testing Dashboard**: `http://localhost:3000/`
+- **API Spec & Info**: `http://localhost:3000/api/info`
+- **Health Check**: `http://localhost:3000/health`
+
+### 4. Build for Production
+```bash
+npm run build
+npm start
+```
+
+### 5. Run Overpass ETL Sync
+```bash
+npm run sync:overpass
+```
+
+---
+
+## 📡 REST API Reference
+
+### 1. Administrative Hierarchy (Instant Dropdowns)
+
+#### List All Provinces / Capital
+```http
+GET /api/admin/provinces
+```
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 12,
+      "code": "12",
+      "name": "Phnom Penh",
+      "name_en": "Phnom Penh",
+      "name_km": "រាជធានីភ្នំពេញ",
+      "typeKm": "រាជធានី",
+      "level": "province",
+      "lat": 11.5564,
+      "lon": 104.9282
+    }
+  ],
+  "meta": {
+    "total": 25,
+    "tookMs": 0.45,
+    "source": "local_cache"
+  }
+}
+```
+
+#### List Districts within a Province
+```http
+GET /api/admin/provinces/:id/districts
+```
+Example: `GET /api/admin/provinces/12/districts` returns the 14 Khans of Phnom Penh.
+
+#### List Communes within a District
+```http
+GET /api/admin/districts/:id/communes
+```
+Example: `GET /api/admin/districts/1202/communes` returns Sangkats in Khan Doun Penh (Phsar Thmei, Boeng Reang, Phsar Kandal, Voat Phnum, etc.).
+
+#### List Villages within a Commune
+```http
+GET /api/admin/communes/:id/villages
+```
+Example: `GET /api/admin/communes/120201/villages` returns Phums within Sangkat Phsar Thmei 1.
+
+#### Resolve Full 4-Tier Hierarchy Path
+```http
+GET /api/admin/hierarchy/:id
+```
+Given any division ID (e.g., a village), returns the complete ascending hierarchy:
+```json
+{
+  "success": true,
+  "data": {
+    "province": { "id": 12, "name_en": "Phnom Penh", "name_km": "រាជធានីភ្នំពេញ" },
+    "district": { "id": 1202, "name_en": "Doun Penh", "name_km": "ខណ្ឌដូនពេញ" },
+    "commune": { "id": 120201, "name_en": "Phsar Thmei 1", "name_km": "សង្កាត់ផ្សារថ្មីទី១" },
+    "village": { "id": 12020101, "name_en": "Phum 1", "name_km": "ភូមិ១" }
+  }
+}
+```
+
+#### Administrative Search
+```http
+GET /api/admin/search?q=Doun+Penh&level=district&limit=10
+```
+
+---
+
+### 2. Smart Geocoding & Address Autocomplete
+
+#### GPS Reverse Geocoding
+```http
+GET /api/geocode/reverse?lat=11.5714&lon=104.9250
+```
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "displayName": "Doun Penh, Phnom Penh, 120201, Cambodia",
+    "lat": 11.5714,
+    "lon": 104.925,
+    "hierarchy": {
+      "province": "Phnom Penh",
+      "district": "Doun Penh",
+      "commune": "Phsar Thmei 1",
+      "village": null,
+      "country": "Cambodia"
+    }
+  },
+  "meta": {
+    "tookMs": 142.3,
+    "source": "nominatim"
+  }
+}
+```
+
+#### Free-text Address Autocomplete
+```http
+GET /api/geocode/search?q=Wat+Phnom&limit=5
+```
+
+---
+
+## 🛠️ Project Structure
+
+```text
+opengeo-cambodia.pphat.me/
+├── package.json
+├── tsconfig.json
+├── .env.example
+├── .gitignore
+├── README.md
+├── context.md
+└── src/
+    ├── index.ts               # Server entry point using @hono/node-server
+    ├── app.ts                 # Hono app configuration, CORS, Logger, routes
+    ├── config.ts              # Environment settings and constants
+    ├── types/
+    │   ├── admin.ts           # AdminItem, AdminLevel, Hierarchy contracts
+    │   ├── geocode.ts         # GeocodeResult, Nominatim types
+    │   └── api.ts             # Standardized API response envelope
+    ├── data/
+    │   ├── store.ts           # High-performance In-Memory repository (O(1) index)
+    │   └── seed/
+    │       ├── provinces.json # Seed data for all 25 provinces
+    │       ├── districts.json # Seed data for districts
+    │       ├── communes.json  # Seed data for communes
+    │       └── villages.json  # Seed data for villages
+    ├── routes/
+    │   ├── admin.routes.ts    # /api/admin/* endpoints
+    │   ├── geocode.routes.ts  # /api/geocode/* endpoints
+    │   └── health.routes.ts   # /health and /api/info
+    ├── services/
+    │   ├── admin.service.ts   # Dropdown cascading logic
+    │   ├── geocode.service.ts # 4-tier key normalization & fallback cascade
+    │   └── nominatim.client.ts# OSM Nominatim HTTP client
+    ├── scripts/
+    │   └── sync-overpass.ts   # Background ETL pipeline from Overpass API
+    └── views/
+        └── demo.html          # Interactive Web UI with live timing & geocoder
+```
+
+---
+
+## 📜 License
+MIT © [Sophat](https://github.com/sophat)

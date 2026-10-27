@@ -1,0 +1,46 @@
+{
+  "name": "opengeo-cambodia-api",
+  "version": "1.0.0",
+  "description": "High-performance Cambodian 4-tier administrative hierarchy cascading dropdown & geocoding REST API built with Hono.js & OpenStreetMap",
+  "homepage": "https://opengeo-cambodia.pphat.me",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "sync:overpass": "tsx src/scripts/sync-overpass.ts",
+    "convert:csv": "tsx src/scripts/convert-csv.ts",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "cambodia",
+    "geocoding",
+    "osm",
+    "openstreetmap",
+    "hono",
+    "honojs",
+    "nominatim",
+    "overpass",
+    "administrative-boundaries",
+    "provinces",
+    "districts",
+    "communes",
+    "villages"
+  ],
+  "author": "Sophat",
+  "license": "MIT",
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@hono/zod-validator": "^0.4.2",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "hono": "^4.6.14",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
