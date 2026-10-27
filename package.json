@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && node dist/scripts/copy-assets.js",
     "start": "node dist/index.js",
     "sync:overpass": "tsx src/scripts/sync-overpass.ts",
     "convert:csv": "tsx src/scripts/convert-csv.ts",

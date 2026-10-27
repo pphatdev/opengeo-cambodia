@@ -10,6 +10,14 @@ const geocodeService = new GeocodeService();
 // Apply dedicated geocoding rate limiter (30 req/min/IP) to respect OSM policies
 geocodeRoutes.use('*', geocodeRateLimiter);
 
+// Long caching for successful geocode lookups (7 days client & CDN cache)
+geocodeRoutes.use('*', async (c, next) => {
+  await next();
+  if (c.res.status === 200) {
+    c.header('Cache-Control', 'public, max-age=604800, s-maxage=604800, stale-while-revalidate=86400');
+  }
+});
+
 /**
  * GET /api/geocode/reverse?lat=...&lon=...
  * Reverse geocode a GPS point to the Cambodian 4-tier hierarchy

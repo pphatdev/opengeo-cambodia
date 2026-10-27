@@ -43,4 +43,8 @@ export class AdminService {
   public getStats(): AdminStats {
     return this.store.getStats();
   }
+
+  public getLastSyncAt(): string {
+    return this.store.getLastSyncAt();
+  }
 }

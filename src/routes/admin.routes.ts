@@ -19,13 +19,13 @@ function parseValidId(param: string | undefined): number | null {
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 
-// Middleware: Set caching headers for ultra-fast local administrative responses
+// Middleware: Set maximum 1-year caching headers for ultra-fast local administrative responses
 adminRoutes.use('*', async (c, next) => {
   const start = performance.now();
   await next();
   const tookMs = Number((performance.now() - start).toFixed(2));
   c.header('X-Response-Time', `${tookMs}ms`);
-  c.header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600');
+  c.header('Cache-Control', 'public, max-age=31536000, s-maxage=31536000, immutable, stale-while-revalidate=86400');
 });
 
 /**
@@ -33,17 +33,14 @@ adminRoutes.use('*', async (c, next) => {
  * Returns all 25 provinces/capital of Cambodia
  */
 adminRoutes.get('/provinces', (c) => {
-  const start = performance.now();
   const provinces = adminService.getProvinces();
-  const tookMs = Number((performance.now() - start).toFixed(2));
 
   const response: ApiResponse<AdminItem[]> = {
     success: true,
     data: provinces,
     meta: {
       total: provinces.length,
-      tookMs,
-      timestamp: new Date().toISOString(),
+      timestamp: adminService.getLastSyncAt(),
       source: 'local_cache',
     },
   };
@@ -56,7 +53,6 @@ adminRoutes.get('/provinces', (c) => {
  * Returns all districts / khans / krongs within a province
  */
 adminRoutes.get('/provinces/:id/districts', (c) => {
-  const start = performance.now();
   const provinceId = parseValidId(c.req.param('id'));
 
   if (provinceId === null) {
@@ -71,15 +67,13 @@ adminRoutes.get('/provinces/:id/districts', (c) => {
   }
 
   const districts = adminService.getDistricts(provinceId);
-  const tookMs = Number((performance.now() - start).toFixed(2));
 
   const response: ApiResponse<AdminItem[]> = {
     success: true,
     data: districts,
     meta: {
       total: districts.length,
-      tookMs,
-      timestamp: new Date().toISOString(),
+      timestamp: adminService.getLastSyncAt(),
       source: 'local_cache',
     },
   };
@@ -92,7 +86,6 @@ adminRoutes.get('/provinces/:id/districts', (c) => {
  * Returns all communes / sangkats within a district
  */
 adminRoutes.get('/districts/:id/communes', (c) => {
-  const start = performance.now();
   const districtId = parseValidId(c.req.param('id'));
 
   if (districtId === null) {
@@ -107,15 +100,13 @@ adminRoutes.get('/districts/:id/communes', (c) => {
   }
 
   const communes = adminService.getCommunes(districtId);
-  const tookMs = Number((performance.now() - start).toFixed(2));
 
   const response: ApiResponse<AdminItem[]> = {
     success: true,
     data: communes,
     meta: {
       total: communes.length,
-      tookMs,
-      timestamp: new Date().toISOString(),
+      timestamp: adminService.getLastSyncAt(),
       source: 'local_cache',
     },
   };
@@ -128,7 +119,6 @@ adminRoutes.get('/districts/:id/communes', (c) => {
  * Returns all villages (phum) within a commune
  */
 adminRoutes.get('/communes/:id/villages', (c) => {
-  const start = performance.now();
   const communeId = parseValidId(c.req.param('id'));
 
   if (communeId === null) {
@@ -143,15 +133,13 @@ adminRoutes.get('/communes/:id/villages', (c) => {
   }
 
   const villages = adminService.getVillages(communeId);
-  const tookMs = Number((performance.now() - start).toFixed(2));
 
   const response: ApiResponse<AdminItem[]> = {
     success: true,
     data: villages,
     meta: {
       total: villages.length,
-      tookMs,
-      timestamp: new Date().toISOString(),
+      timestamp: adminService.getLastSyncAt(),
       source: 'local_cache',
     },
   };
@@ -208,7 +196,6 @@ adminRoutes.get('/hierarchy/:id', (c) => {
  * Search administrative divisions by Khmer or Romanized name
  */
 adminRoutes.get('/search', (c) => {
-  const start = performance.now();
   const rawQ = c.req.query('q') || '';
   const q = rawQ.trim();
 
@@ -253,15 +240,13 @@ adminRoutes.get('/search', (c) => {
   }
 
   const results = adminService.search(q, level, limit);
-  const tookMs = Number((performance.now() - start).toFixed(2));
 
   return c.json<ApiResponse<AdminItem[]>>({
     success: true,
     data: results,
     meta: {
       total: results.length,
-      tookMs,
-      timestamp: new Date().toISOString(),
+      timestamp: adminService.getLastSyncAt(),
       source: 'local_cache',
     },
   });

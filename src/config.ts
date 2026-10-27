@@ -21,8 +21,8 @@ export const config = {
     timeoutMs: 60000,
   },
   
-  // Local cache TTL & files
+  // Local cache TTL & files (Default: 1 year / 31,536,000 seconds)
   cache: {
-    ttlSeconds: parseInt(process.env.CACHE_TTL_SECONDS || '86400', 10),
+    ttlSeconds: parseInt(process.env.CACHE_TTL_SECONDS || '31536000', 10),
   },
 };

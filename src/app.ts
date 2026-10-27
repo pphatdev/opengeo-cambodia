@@ -6,6 +6,7 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { secureHeaders } from 'hono/secure-headers';
+import { etag } from 'hono/etag';
 
 import { config } from './config.js';
 import { globalRateLimiter } from './middleware/rate-limiter.js';
@@ -42,14 +43,17 @@ app.use(
 app.use('*', logger());
 app.use('*', prettyJSON());
 
-// 3. Hardened CORS Configuration
+// 3. Automatic HTTP ETag generation & conditional request handling (304 Not Modified)
+app.use('*', etag());
+
+// 4. Hardened CORS Configuration (Supports ETag / If-None-Match)
 app.use(
   '*',
   cors({
     origin: '*',
     allowMethods: ['GET', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Accept'],
-    exposeHeaders: ['X-Response-Time', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'Retry-After'],
+    allowHeaders: ['Content-Type', 'Accept', 'If-None-Match'],
+    exposeHeaders: ['ETag', 'X-Response-Time', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'Retry-After'],
     maxAge: 86400,
   })
 );
@@ -58,18 +62,35 @@ app.use(
 app.use('/api/*', globalRateLimiter);
 
 // 5. Serve Interactive Testing Dashboard at Root & /demo
-const demoHtmlPath = path.resolve(__dirname, 'views', 'demo.html');
+function findDemoHtml(): string | null {
+  const candidates = [
+    path.resolve(__dirname, 'views', 'demo.html'),
+    path.resolve(__dirname, '..', 'src', 'views', 'demo.html'),
+    path.resolve(process.cwd(), 'dist', 'views', 'demo.html'),
+    path.resolve(process.cwd(), 'src', 'views', 'demo.html'),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      return fs.readFileSync(p, 'utf-8');
+    }
+  }
+  return null;
+}
 
 app.get('/', (c) => {
-  if (fs.existsSync(demoHtmlPath)) {
-    return c.html(fs.readFileSync(demoHtmlPath, 'utf-8'));
+  const html = findDemoHtml();
+  if (html) {
+    c.header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600');
+    return c.html(html);
   }
   return c.text('OpenGeo Cambodia API is running. Visit /api/info for documentation.');
 });
 
 app.get('/demo', (c) => {
-  if (fs.existsSync(demoHtmlPath)) {
-    return c.html(fs.readFileSync(demoHtmlPath, 'utf-8'));
+  const html = findDemoHtml();
+  if (html) {
+    c.header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600');
+    return c.html(html);
   }
   return c.redirect('/');
 });

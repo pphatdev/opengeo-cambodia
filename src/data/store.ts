@@ -247,7 +247,7 @@ export class AdminStore {
         level: 'province',
         lat: coord?.lat,
         lon: coord?.lon,
-        typeKm: coord?.typeKm || (code === '12' ? 'រាជធានី' : 'ខេត្ត'),
+        typeKm: code === '12' ? 'រាជធានី' : 'ខេត្ត',
       });
     }
 

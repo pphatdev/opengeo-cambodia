@@ -10,8 +10,8 @@ interface CacheEntry<T> {
 export class NominatimClient {
   private client: AxiosInstance;
   private cache = new Map<string, CacheEntry<any>>();
-  private maxCacheSize = 1000;
-  private cacheTtlMs = 3600 * 1000; // 1 hour
+  private maxCacheSize = 10000;
+  private cacheTtlMs = 365 * 24 * 3600 * 1000; // 1 year (longest possible)
 
   constructor() {
     this.client = axios.create({
