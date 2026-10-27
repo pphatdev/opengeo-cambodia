@@ -9,12 +9,11 @@
     <link rel="canonical" href="https://opengeo-cambodia.pphat.me">
 
     <!-- Favicon & Brand Icons -->
+    <link rel="icon" type="image/jpeg" href="/logo.jpg">
+    <link rel="shortcut icon" href="/logo.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.jpg">
     <link rel="icon" type="image/svg+xml" href="/logo.svg">
-    <link rel="icon" type="image/png" sizes="16x16" href="/logo/4dark/favicon-16x16.png" media="(prefers-color-scheme: light)">
-    <link rel="icon" type="image/png" sizes="32x32" href="/logo/4dark/favicon-32x32.png" media="(prefers-color-scheme: light)">
-    <link rel="icon" type="image/png" sizes="16x16" href="/logo/4light/favicon-16x16.png" media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/png" sizes="32x32" href="/logo/4light/favicon-32x32.png" media="(prefers-color-scheme: dark)">
-    <link rel="apple-touch-icon" sizes="180x180" href="/logo/4dark/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo/4dark/favicon-32x32.png">
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#0d9488">
 
@@ -23,11 +22,11 @@
     <meta property="og:title" content="OpenGeo Cambodia - 4-Tier Administrative API & Smart Geocoder">
     <meta property="og:description" content="Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages.">
     <meta property="og:site_name" content="OpenGeo Cambodia">
-    <meta property="og:image" content="https://opengeo-cambodia.pphat.me/logo/4light/android-chrome-512x512.png">
-    <meta property="og:image:width" content="512">
-    <meta property="og:image:height" content="512">
+    <meta property="og:image" content="https://opengeo-cambodia.pphat.me/logo.jpg">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://opengeo-cambodia.pphat.me/logo/4light/android-chrome-512x512.png">
+    <meta name="twitter:image" content="https://opengeo-cambodia.pphat.me/logo.jpg">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -425,13 +424,8 @@
         <div class="w-full max-w-6xl mx-auto flex items-center justify-between gap-2">
 
             <!-- Brand Logo -->
-            <a href="/"
-                class="pointer-events-auto rounded-lg border border-white/10 bg-neutral-950/60 backdrop-blur-xl px-3 py-1.5 flex items-center gap-2.5 shadow-xl hover:border-teal-500/40 hover:bg-neutral-900/80 transition-all group">
-                <img src="/logo.svg" alt="OpenGeo Cambodia Logo" class="w-6 h-6 object-contain group-hover:scale-105 transition-transform" />
-                <div class="flex items-center gap-1.5">
-                    <span class="text-sm font-bold tracking-tight text-white group-hover:text-teal-300 transition-colors">OpenGeo</span>
-                    <span class="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">Cambodia</span>
-                </div>
+            <a href="/" class="pointer-events-auto rounded-lg backdrop-blur-xl flex items-center gap-2.5 shadow-xl hover:border-teal-500/40 hover:bg-neutral-900/80 transition-all group">
+                <img src="/logo.jpg" alt="OpenGeo Cambodia Logo" class="w-14 h-15 rounded-md object-cover shadow-sm group-hover:scale-105 transition-transform border border-white/10" />
             </a>
 
             <!-- Controls -->
@@ -464,7 +458,7 @@
 
             <!-- Brand Badge with Logo -->
             <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 backdrop-blur-md mb-6 hover:border-teal-500/50 transition-all shadow-sm">
-                <img src="/logo.svg" alt="OpenGeo Cambodia Logo" class="w-4 h-4 object-contain drop-shadow-[0_0_8px_rgba(20,184,166,0.6)]">
+                <img src="/logo.jpg" alt="OpenGeo Cambodia Logo" class="w-5 h-5 rounded-full object-cover drop-shadow-[0_0_8px_rgba(20,184,166,0.6)] border border-teal-500/40">
                 <span class="text-xs font-semibold tracking-wide text-teal-300">OpenGeo Cambodia • 4-Tier Division API</span>
             </div>
 
@@ -560,8 +554,7 @@
                 </div>
 
                 <!-- Tab Pills -->
-                <div
-                    class="flex overflow-x-auto w-full gap-1.5 p-1 bg-neutral-900/60 rounded-none border border-white/10 backdrop-blur-xl">
+                <div class="flex overflow-x-auto w-fit gap-1.5 p-1 bg-neutral-900/60 rounded-none border border-white/10 backdrop-blur-xl">
                     <button id="tabBtnDropdown" onclick="switchPlaygroundTab('dropdown')"
                         class="tab-pill px-3.5 py-2 rounded-none whitespace-nowrap text-xs font-semibold transition-all bg-white text-black shadow-md flex items-center gap-1.5">
                         <i data-lucide="folder-tree" class="w-3.5 h-3.5"></i>Cascading
@@ -982,16 +975,12 @@
                     <div class="space-y-2 pt-2 border-t border-white/10">
                         <span class="text-xs font-medium text-neutral-400">Sample Queries:</span>
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="setSearch('Doun Penh')"
-                                class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-mono">Doun
+                            <button onclick="setSearch('Doun Penh')" class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-mono">Doun
                                 Penh</button>
-                            <button onclick="setSearch('ខណ្ឌចំការមន')"
-                                class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-khmer">ខណ្ឌចំការមន</button>
-                            <button onclick="setSearch('Siem Reap')"
-                                class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-mono">Siem
+                            <button onclick="setSearch('ចំការមន')" class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-khmer">ចំការមន</button>
+                            <button onclick="setSearch('Siem Reap')" class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-mono">Siem
                                 Reap</button>
-                            <button onclick="setSearch('សង្កាត់បឹងកក់')"
-                                class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-khmer">សង្កាត់បឹងកក់</button>
+                            <button onclick="setSearch('បឹងកក់')" class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-khmer">បឹងកក់</button>
                         </div>
                     </div>
                 </div>
@@ -1166,6 +1155,23 @@
             </div>
         </section>
     </main>
+
+    <!-- Footer with Brand Logo -->
+    <footer class="w-full border-t border-white/5 py-8 px-4 text-xs text-neutral-500">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2.5">
+                <img src="/logo.jpg" alt="OpenGeo Cambodia Logo" class="w-5 h-5 rounded-md object-cover border border-white/10" />
+                <span class="font-semibold text-neutral-300">OpenGeo Cambodia</span>
+                <span class="text-neutral-600">•</span>
+                <span>4-Tier Division API &amp; Geocoding</span>
+            </div>
+            <div class="flex items-center gap-4 text-neutral-400">
+                <a href="/api/info" class="hover:text-teal-400 transition-colors">API Docs</a>
+                <a href="/llms.txt" class="hover:text-teal-400 transition-colors">llms.txt</a>
+                <a href="https://github.com/pphatdev/opengeo-cambodia" target="_blank" class="hover:text-teal-400 transition-colors">GitHub</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
         const DEFAULT_API_BASE = window.location.origin;
@@ -2122,7 +2128,7 @@
             try {
                 const res = await fetch(getApiUrl(`/api/geocode/reverse?lat=${lat}&lon=${lon}`));
                 const took = (performance.now() - t0).toFixed(1);
-                if (speedTag) speedTag.innerText = `⏱️ ${took}ms`;
+                if (speedTag) speedTag.innerText = ` ${took}ms`;
                 const data = await res.json();
                 if (viewer) viewer.innerHTML = syntaxHighlight(data);
             } catch (err) {
@@ -2174,7 +2180,7 @@
             try {
                 const res = await fetch(getApiUrl(`/api/geocode/search?q=${encodeURIComponent(q)}`));
                 const took = (performance.now() - t0).toFixed(1);
-                if (speedTag) speedTag.innerText = `⏱️ ${took}ms`;
+                if (speedTag) speedTag.innerText = ` ${took}ms`;
                 const data = await res.json();
                 if (viewer) viewer.innerHTML = syntaxHighlight(data);
             } catch (err) {
