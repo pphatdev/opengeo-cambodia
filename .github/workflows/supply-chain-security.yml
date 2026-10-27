@@ -1,0 +1,64 @@
+name: Supply Chain Security Audit
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  schedule:
+    # Weekly scheduled security scan (Every Monday at 04:00 UTC)
+    - cron: '0 4 * * 1'
+
+# Least Privilege: Restrict default GITHUB_TOKEN permissions
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Dependency Audit & Lockfile Integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js (LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Verify Lockfile Integrity & Frozen Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run pnpm Security Audit
+        run: pnpm audit --audit-level=high
+
+      - name: TypeScript Type Check
+        run: pnpm run lint
+
+  dependency-review:
+    name: Dependency Review (PRs only)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          deny-licenses: GPL-1.0-only, GPL-1.0-or-later
