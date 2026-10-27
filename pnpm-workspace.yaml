@@ -1,5 +1,12 @@
 storeDir: .pnpm-store
 
 # Supply Chain Protection: Only whitelist known native binary compilation
-allowBuilds:
-  esbuild: true
+onlyBuiltDependencies:
+  - esbuild
+
+# Transitive Dependency Overrides (pnpm v9+ format in workspace)
+overrides:
+  "@hono/node-server": ">=1.19.17"
+  undici: ">=7.30.1"
+  sharp: ">=0.35.5"
+  esbuild: ">=0.25.0"
