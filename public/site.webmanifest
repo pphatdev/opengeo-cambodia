@@ -18,10 +18,15 @@
   ],
   "icons": [
     {
+      "src": "/logo.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
       "src": "/logo.svg",
       "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/svg+xml"
     },
     {
       "src": "/logo/4dark/favicon-16x16.png",
@@ -65,9 +70,9 @@
       "url": "/demo",
       "icons": [
         {
-          "src": "/logo.svg",
-          "sizes": "any",
-          "type": "image/svg+xml"
+          "src": "/logo.jpg",
+          "sizes": "1024x1024",
+          "type": "image/jpeg"
         }
       ]
     },
@@ -78,9 +83,9 @@
       "url": "/api/info",
       "icons": [
         {
-          "src": "/logo.svg",
-          "sizes": "any",
-          "type": "image/svg+xml"
+          "src": "/logo.jpg",
+          "sizes": "1024x1024",
+          "type": "image/jpeg"
         }
       ]
     }
