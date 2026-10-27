@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "opengeo-cambodia-api",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "routes": [
+    {
+      "pattern": "opengeo-cambodia.pphat.me/*",
+      "zone_name": "pphat.me",
+      "custom_domain": true
+    }
+  ],
+  "vars": {
+    "NODE_ENV": "production",
+    "APP_DOMAIN": "opengeo-cambodia.pphat.me",
+    "APP_URL": "https://opengeo-cambodia.pphat.me",
+    "NOMINATIM_BASE_URL": "https://nominatim.openstreetmap.org",
+    "NOMINATIM_USER_AGENT": "OpenGeoCambodia/1.0 (contact@opengeo-cambodia.pphat.me)",
+    "OVERPASS_API_URL": "https://overpass-api.de/api/interpreter",
+    "CACHE_TTL_SECONDS": "31536000"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

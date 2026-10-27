@@ -59,19 +59,29 @@ for (const csv of csvFiles) {
     }
 }
 
-// 5. Copy LLM documentation files
+// 5. Copy LLM documentation files to dist/ and public/
 const llmFiles = ["llms.txt", "llms-full.txt"];
 for (const file of llmFiles) {
     const src = path.join(rootDir, file);
     const dest = path.join(distDir, file);
+    const publicDest = path.join(rootDir, "public", file);
     if (fs.existsSync(src)) {
         fs.copyFileSync(src, dest);
+        fs.copyFileSync(src, publicDest);
         console.log(
             `📄 Copied ${path.relative(rootDir, src)} -> ${
                 path.relative(rootDir, dest)
-            }`,
+            } & public/${file}`,
         );
     }
+}
+
+// 5b. Sync demo.html to public/index.html and public/demo.html for Cloudflare Workers Static Assets
+const demoHtmlSrc = path.join(srcDir, "views", "demo.html");
+if (fs.existsSync(demoHtmlSrc)) {
+    fs.copyFileSync(demoHtmlSrc, path.join(rootDir, "public", "index.html"));
+    fs.copyFileSync(demoHtmlSrc, path.join(rootDir, "public", "demo.html"));
+    console.log("🌐 Synced demo.html -> public/index.html & public/demo.html");
 }
 
 // 6. Ensure Public Assets & Logos are synchronized and copied to dist/public
