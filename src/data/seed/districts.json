@@ -487,7 +487,7 @@
     "name_en": "Odong Mae Chey",
     "name_km": "ឧដុង្គម៉ែជ័យ",
     "level": "district",
-    "typeKm": "ស្រុក"
+    "typeKm": "ក្រុង"
   },
   {
     "id": 510,
@@ -1617,7 +1617,7 @@
     "name_en": "Svay Leu",
     "name_km": "ស្វាយលើ",
     "level": "district",
-    "typeKm": "ក្រុង"
+    "typeKm": "ស្រុក"
   },
   {
     "id": 1714,
@@ -1637,7 +1637,7 @@
     "name_en": "Run Ta Aek Techou Saen",
     "name_km": "រុនតាឯកតេជោសែន",
     "level": "district",
-    "typeKm": "ស្រុក"
+    "typeKm": "ក្រុង"
   },
   {
     "id": 1801,
@@ -1677,7 +1677,7 @@
     "name_en": "Kampong Seila",
     "name_km": "កំពង់សីលា",
     "level": "district",
-    "typeKm": "ក្រុង"
+    "typeKm": "ស្រុក"
   },
   {
     "id": 1805,
@@ -1687,7 +1687,7 @@
     "name_en": "Kaoh Rung",
     "name_km": "កោះរ៉ុង",
     "level": "district",
-    "typeKm": "ស្រុក"
+    "typeKm": "ក្រុង"
   },
   {
     "id": 1806,
@@ -1717,7 +1717,7 @@
     "name_en": "Siem Bouk",
     "name_km": "សៀមបូក",
     "level": "district",
-    "typeKm": "ក្រុង"
+    "typeKm": "ស្រុក"
   },
   {
     "id": 1903,
@@ -1737,7 +1737,7 @@
     "name_en": "Stueng Traeng",
     "name_km": "ស្ទឹងត្រែង",
     "level": "district",
-    "typeKm": "ស្រុក"
+    "typeKm": "ក្រុង"
   },
   {
     "id": 1905,
@@ -1977,7 +1977,7 @@
     "name_en": "Samraong",
     "name_km": "សំរោង",
     "level": "district",
-    "typeKm": "ស្រុក"
+    "typeKm": "ក្រុង"
   },
   {
     "id": 2205,
@@ -1987,7 +1987,7 @@
     "name_en": "Trapeang Prasat",
     "name_km": "ត្រពាំងប្រាសាទ",
     "level": "district",
-    "typeKm": "ក្រុង"
+    "typeKm": "ស្រុក"
   },
   {
     "id": 2301,
@@ -1997,7 +1997,7 @@
     "name_en": "Damnak Chang'aeu",
     "name_km": "ដំណាក់ចង្អើរ",
     "level": "district",
-    "typeKm": "ក្រុង"
+    "typeKm": "ស្រុក"
   },
   {
     "id": 2302,
@@ -2007,7 +2007,7 @@
     "name_en": "Kaeb",
     "name_km": "កែប",
     "level": "district",
-    "typeKm": "ស្រុក"
+    "typeKm": "ក្រុង"
   },
   {
     "id": 2401,
