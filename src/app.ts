@@ -17,36 +17,48 @@ import { healthRoutes } from "./routes/health.routes.js";
 
 export const app = new Hono();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, "..");
-const demoHtmlPath = path.resolve(__dirname, "views", "demo.html");
-const llmsTxtPath = path.resolve(rootDir, "llms.txt");
-const llmsFullTxtPath = path.resolve(rootDir, "llms-full.txt");
-const publicDir = fs.existsSync(path.resolve(rootDir, "public"))
+function resolveAppDir(): string {
+    try {
+        if (typeof import.meta !== "undefined" && import.meta && import.meta.url) {
+            return path.dirname(fileURLToPath(import.meta.url));
+        }
+    } catch {
+        // Edge / Cloudflare Workers runtime
+    }
+    return "";
+}
+
+const currentDir = resolveAppDir();
+const rootDir = currentDir ? path.resolve(currentDir, "..") : "";
+const demoHtmlPath = currentDir ? path.resolve(currentDir, "views", "demo.html") : "";
+const llmsTxtPath = rootDir ? path.resolve(rootDir, "llms.txt") : "";
+const llmsFullTxtPath = rootDir ? path.resolve(rootDir, "llms-full.txt") : "";
+const publicDir = (rootDir && typeof fs?.existsSync === "function" && fs.existsSync(path.resolve(rootDir, "public")))
     ? path.resolve(rootDir, "public")
-    : path.resolve(__dirname, "..", "public");
+    : (currentDir ? path.resolve(currentDir, "..", "public") : "");
 
 // Auto-sync reference logo assets if available
-try {
-    const khmerDatetimeLogoDir = path.resolve(
-        rootDir,
-        "..",
-        "..",
-        "labs",
-        "libs",
-        "kfe",
-        "khmer-datetime.pphat.me",
-        "public",
-        "logo",
-    );
-    const localLogoDir = path.join(publicDir, "logo");
-    if (!fs.existsSync(localLogoDir) && fs.existsSync(khmerDatetimeLogoDir)) {
-        fs.mkdirSync(localLogoDir, { recursive: true });
-        fs.cpSync(khmerDatetimeLogoDir, localLogoDir, { recursive: true });
+if (rootDir && typeof fs?.existsSync === "function") {
+    try {
+        const khmerDatetimeLogoDir = path.resolve(
+            rootDir,
+            "..",
+            "..",
+            "labs",
+            "libs",
+            "kfe",
+            "khmer-datetime.pphat.me",
+            "public",
+            "logo",
+        );
+        const localLogoDir = path.join(publicDir, "logo");
+        if (!fs.existsSync(localLogoDir) && fs.existsSync(khmerDatetimeLogoDir)) {
+            fs.mkdirSync(localLogoDir, { recursive: true });
+            fs.cpSync(khmerDatetimeLogoDir, localLogoDir, { recursive: true });
+        }
+    } catch {
+        // Non-blocking fallback
     }
-} catch {
-    // Non-blocking fallback
 }
 
 let cachedDemoHtml: string | null = null;
@@ -54,12 +66,12 @@ function getDemoHtml(): string {
     if (config.nodeEnv === "production" && cachedDemoHtml) {
         return cachedDemoHtml;
     }
-    if (fs.existsSync(demoHtmlPath)) {
+    if (demoHtmlPath && typeof fs?.existsSync === "function" && fs.existsSync(demoHtmlPath)) {
         const content = fs.readFileSync(demoHtmlPath, "utf-8");
         if (config.nodeEnv === "production") cachedDemoHtml = content;
         return content;
     }
-    return "<!DOCTYPE html><html><body><h1>Demo page not found</h1></body></html>";
+    return "<!DOCTYPE html><html><body><h1>OpenGeo Cambodia</h1></body></html>";
 }
 
 let cachedLlmsTxt: string | null = null;
@@ -67,7 +79,7 @@ function getLlmsTxt(): string {
     if (config.nodeEnv === "production" && cachedLlmsTxt) {
         return cachedLlmsTxt;
     }
-    if (fs.existsSync(llmsTxtPath)) {
+    if (llmsTxtPath && typeof fs?.existsSync === "function" && fs.existsSync(llmsTxtPath)) {
         const content = fs.readFileSync(llmsTxtPath, "utf-8");
         if (config.nodeEnv === "production") cachedLlmsTxt = content;
         return content;
@@ -80,7 +92,7 @@ function getLlmsFullTxt(): string {
     if (config.nodeEnv === "production" && cachedLlmsFullTxt) {
         return cachedLlmsFullTxt;
     }
-    if (fs.existsSync(llmsFullTxtPath)) {
+    if (llmsFullTxtPath && typeof fs?.existsSync === "function" && fs.existsSync(llmsFullTxtPath)) {
         const content = fs.readFileSync(llmsFullTxtPath, "utf-8");
         if (config.nodeEnv === "production") cachedLlmsFullTxt = content;
         return content;

@@ -2,9 +2,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { AdminItem, AdminLevel, AdminStats, HierarchyPath } from '../types/admin.js';
+import seedProvinces from './seed/provinces.json' with { type: 'json' };
+import seedDistricts from './seed/districts.json' with { type: 'json' };
+import seedCommunes from './seed/communes.json' with { type: 'json' };
+import seedVillages from './seed/villages.json' with { type: 'json' };
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+function resolveCurrentDir(): string {
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta && import.meta.url) {
+      return path.dirname(fileURLToPath(import.meta.url));
+    }
+  } catch {
+    // Edge/Cloudflare Workers runtime
+  }
+  return '';
+}
+
+const currentDir = resolveCurrentDir();
 
 export const DEFAULT_PROVINCE_COORDINATES: Record<string, { lat: number; lon: number }> = {
   '01': { lat: 13.6672, lon: 102.8975 }, // Banteay Meanchey
@@ -145,71 +159,53 @@ export class AdminStore {
    * Read-only: never modifies, overwrites, or regenerates seed files on server startup.
    */
   public loadData(): void {
-    const possibleDataDirs = [
-      path.resolve(__dirname),
-      path.resolve(__dirname, '..', '..', 'src', 'data'),
-      path.resolve(process.cwd(), 'src', 'data'),
-      path.resolve(process.cwd(), 'dist', 'data'),
-    ];
-
-    let dataDir = path.resolve(__dirname);
-    for (const candidate of possibleDataDirs) {
-      if (
-        fs.existsSync(path.join(candidate, 'CambodiaVillagesList.csv')) ||
-        fs.existsSync(path.join(candidate, 'seed', 'provinces.json'))
-      ) {
-        dataDir = candidate;
-        break;
-      }
-    }
-
-    const provinceCsv = path.join(dataDir, 'CambodiaProvinceList.csv');
-    const districtCsv = path.join(dataDir, 'CambodiaDistrictList.csv');
-    const communeCsv = path.join(dataDir, 'CambodiaCommuneList.csv');
-    const villageCsv = path.join(dataDir, 'CambodiaVillagesList.csv');
-
-    // 1. If the 4 official CSV files exist, load directly from them (Read-only, seed is never changed)
-    if (
-      fs.existsSync(provinceCsv) &&
-      fs.existsSync(districtCsv) &&
-      fs.existsSync(communeCsv) &&
-      fs.existsSync(villageCsv)
-    ) {
+    // 1. If in a Node.js filesystem environment, try loading from the 4 official CSV files
+    if (currentDir && typeof fs?.existsSync === 'function') {
       try {
-        this.loadFromFourCsvs(provinceCsv, districtCsv, communeCsv, villageCsv);
-        this.rebuildIndexes();
-        this.isLoaded = true;
-        return;
+        const possibleDataDirs = [
+          path.resolve(currentDir),
+          path.resolve(currentDir, '..', '..', 'src', 'data'),
+          path.resolve(process.cwd(), 'src', 'data'),
+          path.resolve(process.cwd(), 'dist', 'data'),
+        ];
+
+        let dataDir = path.resolve(currentDir);
+        for (const candidate of possibleDataDirs) {
+          if (fs.existsSync(path.join(candidate, 'CambodiaVillagesList.csv'))) {
+            dataDir = candidate;
+            break;
+          }
+        }
+
+        const provinceCsv = path.join(dataDir, 'CambodiaProvinceList.csv');
+        const districtCsv = path.join(dataDir, 'CambodiaDistrictList.csv');
+        const communeCsv = path.join(dataDir, 'CambodiaCommuneList.csv');
+        const villageCsv = path.join(dataDir, 'CambodiaVillagesList.csv');
+
+        if (
+          fs.existsSync(provinceCsv) &&
+          fs.existsSync(districtCsv) &&
+          fs.existsSync(communeCsv) &&
+          fs.existsSync(villageCsv)
+        ) {
+          this.loadFromFourCsvs(provinceCsv, districtCsv, communeCsv, villageCsv);
+          this.rebuildIndexes();
+          this.isLoaded = true;
+          return;
+        }
       } catch (err) {
-        console.warn('[AdminStore] Error reading CSV files, falling back to seed JSON:', err);
+        console.warn('[AdminStore] Local CSV read unavailable, using bundled datasets:', err);
       }
     }
 
-    // 2. Fallback: load strictly from canonical JSON seed directory
-    const syncDir = path.resolve(dataDir, 'synced');
-    const seedDir = path.resolve(dataDir, 'seed');
-    const activeDir =
-      fs.existsSync(syncDir) && fs.existsSync(path.join(syncDir, 'provinces.json'))
-        ? syncDir
-        : seedDir;
+    // 2. Edge / Cloudflare Workers / Serverless: load directly from pre-bundled canonical seed JSON
+    this.provinces = seedProvinces as AdminItem[];
+    this.districts = seedDistricts as AdminItem[];
+    this.communes = seedCommunes as AdminItem[];
+    this.villages = seedVillages as AdminItem[];
 
-    try {
-      this.provinces = this.readJsonFile<AdminItem[]>(path.join(activeDir, 'provinces.json'), []);
-      this.districts = this.readJsonFile<AdminItem[]>(path.join(activeDir, 'districts.json'), []);
-      this.communes = this.readJsonFile<AdminItem[]>(path.join(activeDir, 'communes.json'), []);
-      this.villages = this.readJsonFile<AdminItem[]>(path.join(activeDir, 'villages.json'), []);
-
-      const metaFile = path.join(activeDir, 'meta.json');
-      if (fs.existsSync(metaFile)) {
-        const meta = this.readJsonFile<{ lastSyncAt: string }>(metaFile, { lastSyncAt: '' });
-        this.lastSyncAt = meta.lastSyncAt || null;
-      }
-
-      this.rebuildIndexes();
-      this.isLoaded = true;
-    } catch (err) {
-      console.error('[AdminStore] Error loading data from seed:', err);
-    }
+    this.rebuildIndexes();
+    this.isLoaded = true;
   }
 
   /**
@@ -565,16 +561,21 @@ export class AdminStore {
     communes: AdminItem[];
     villages: AdminItem[];
   }): void {
-    const syncDir = path.resolve(__dirname, 'synced');
-    if (!fs.existsSync(syncDir)) {
-      fs.mkdirSync(syncDir, { recursive: true });
-    }
-
     this.provinces = payload.provinces;
     this.districts = payload.districts;
     this.communes = payload.communes;
     this.villages = payload.villages;
     this.lastSyncAt = new Date().toISOString();
+
+    if (!currentDir || typeof fs?.writeFileSync !== 'function') {
+      this.rebuildIndexes();
+      return;
+    }
+
+    const syncDir = path.resolve(currentDir, 'synced');
+    if (!fs.existsSync(syncDir)) {
+      fs.mkdirSync(syncDir, { recursive: true });
+    }
 
     fs.writeFileSync(path.join(syncDir, 'provinces.json'), JSON.stringify(this.provinces, null, 2));
     fs.writeFileSync(path.join(syncDir, 'districts.json'), JSON.stringify(this.districts, null, 2));
