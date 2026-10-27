@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import { config } from '../config.js';
 
+import { getSupplyChainStatus } from '../security/supply-chain.js';
+
 export const healthRoutes = new Hono();
 
 healthRoutes.get('/health', (c) => {
@@ -8,6 +10,7 @@ healthRoutes.get('/health', (c) => {
     status: 'ok',
     uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
+    security: getSupplyChainStatus(),
   });
 });
 

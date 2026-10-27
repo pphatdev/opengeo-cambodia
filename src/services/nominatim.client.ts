@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { config } from "../config.js";
+import { validateOutboundUrl } from "../security/supply-chain.js";
 import type { NominatimRawItem } from "../types/geocode.js";
 
 interface CacheEntry<T> {
@@ -14,6 +15,12 @@ export class NominatimClient {
     private cacheTtlMs = 365 * 24 * 3600 * 1000; // 1 year (longest possible)
 
     constructor() {
+        if (!validateOutboundUrl(config.nominatim.baseUrl)) {
+            throw new Error(
+                `[SupplyChainDefense] Blocked unauthorized Nominatim baseUrl: ${config.nominatim.baseUrl}`,
+            );
+        }
+
         this.client = axios.create({
             baseURL: config.nominatim.baseUrl,
             timeout: config.nominatim.timeoutMs,

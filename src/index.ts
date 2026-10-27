@@ -1,7 +1,11 @@
+import { initSupplyChainDefense } from "./security/supply-chain.js";
 import { serve } from "@hono/node-server";
 import { app } from "./app.js";
 import { config } from "./config.js";
 import { AdminStore } from "./data/store.js";
+
+// Initialize runtime supply chain defense (prototype pollution & config sealing)
+initSupplyChainDefense();
 
 const store = AdminStore.getInstance();
 const stats = store.getStats();

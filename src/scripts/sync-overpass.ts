@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { config } from "../config.js";
+import { validateOutboundUrl } from "../security/supply-chain.js";
 import type { AdminItem } from "../types/admin.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -33,6 +34,12 @@ async function syncFromOverpass() {
     const outputDir = path.resolve(__dirname, "..", "data", "synced");
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    if (!validateOutboundUrl(config.overpass.apiUrl)) {
+        throw new Error(
+            `[SupplyChainDefense] Blocked unauthorized Overpass API URL: ${config.overpass.apiUrl}`,
+        );
     }
 
     const client = axios.create({
