@@ -5,6 +5,10 @@
     "homepage": "https://opengeo-cambodia.pphat.me",
     "main": "dist/index.js",
     "type": "module",
+    "engines": {
+        "node": ">=20.0.0",
+        "pnpm": ">=9.0.0"
+    },
     "scripts": {
         "dev": "tsx watch src/index.ts",
         "build": "tsc && node dist/scripts/copy-assets.js",
@@ -18,7 +22,10 @@
         "update:communes": "tsx src/scripts/update-communes.ts",
         "update:villages": "tsx src/scripts/update-villages.ts",
         "update:all": "tsx src/scripts/update-provinces.ts && tsx src/scripts/update-districts.ts && tsx src/scripts/update-communes.ts && tsx src/scripts/update-villages.ts",
-        "lint": "tsc --noEmit"
+        "lint": "tsc --noEmit",
+        "audit:security": "pnpm audit --audit-level=high",
+        "verify:lockfile": "pnpm install --frozen-lockfile",
+        "security:check": "pnpm audit --audit-level=high && tsc --noEmit"
     },
     "keywords": [
         "cambodia",
@@ -37,17 +44,22 @@
     ],
     "author": "Sophat",
     "license": "MIT",
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild"
+        ]
+    },
     "dependencies": {
-        "@hono/node-server": "^1.13.7",
-        "@hono/zod-validator": "^0.4.2",
-        "axios": "^1.7.9",
-        "dotenv": "^16.4.7",
-        "hono": "^4.6.14",
-        "zod": "^4.6.6"
+        "@hono/node-server": "1.13.7",
+        "@hono/zod-validator": "0.4.2",
+        "axios": "1.7.9",
+        "dotenv": "16.4.7",
+        "hono": "4.6.14",
+        "zod": "4.6.6"
     },
     "devDependencies": {
-        "@types/node": "^22.10.2",
-        "tsx": "^4.19.2",
-        "typescript": "^5.7.2"
+        "@types/node": "22.10.2",
+        "tsx": "4.19.2",
+        "typescript": "5.7.2"
     }
 }

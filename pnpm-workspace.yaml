@@ -1,6 +1,5 @@
 storeDir: .pnpm-store
 
+# Supply Chain Protection: Only whitelist known native binary compilation
 allowBuilds:
   esbuild: true
-
-
