@@ -98,6 +98,10 @@ export class AdminStore {
     return AdminStore.instance;
   }
 
+  public isReady(): boolean {
+    return this.isLoaded;
+  }
+
   /**
    * Normalize search string: lowercase, remove accents, spaces, and punctuation
    */
@@ -300,7 +304,6 @@ export class AdminStore {
       const pId = parseInt(pCode, 10);
       const dId = parseInt(dCode, 10);
       const cId = parseInt(cCode, 10);
-      const vId = parseInt(vCode, 10);
 
       // Province
       if (!provinceMap.has(pCode)) {

@@ -156,7 +156,6 @@ export function convertCsvToSeedFiles(): {
     const pId = parseInt(pCode, 10);
     const dId = parseInt(dCode, 10);
     const cId = parseInt(cCode, 10);
-    const vId = parseInt(vCode, 10);
 
     // 1. Province (Tier 1)
     if (!provinceMap.has(pCode)) {
