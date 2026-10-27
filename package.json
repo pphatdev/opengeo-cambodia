@@ -1,7 +1,7 @@
 {
   "name": "opengeo-cambodia-api",
   "version": "1.0.0",
-  "description": "High-performance Cambodian 4-tier administrative hierarchy cascading dropdown & geocoding REST API built with Hono.js & OpenStreetMap",
+  "description": "Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,536 Villages with smart OpenStreetMap geocoding",
   "homepage": "https://opengeo-cambodia.pphat.me",
   "main": "dist/index.js",
   "type": "module",

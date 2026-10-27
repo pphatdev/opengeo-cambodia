@@ -1,6 +1,6 @@
 # 🇰🇭 OpenGeo Cambodia API
 
-> High-performance Cambodian 4-tier administrative hierarchy cascading dropdown & smart OpenStreetMap (OSM) geocoding REST API built with **Node.js**, **TypeScript**, and **Hono.js**.
+> Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,536 Villages with smart OpenStreetMap geocoding.
 
 [![Domain](https://img.shields.io/badge/Domain-opengeo--cambodia.pphat.me-0d9488?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
@@ -16,19 +16,19 @@ Digital platforms operating in Cambodia (logistics, e-commerce, fintech KYC, rid
 $$\text{City / Province (រាជធានី / ខេត្ត)} \longrightarrow \text{District / Khan / Krong (ស្រុក / ខណ្ឌ / ក្រុង)} \longrightarrow \text{Commune / Sangkat (ឃុំ / សង្កាត់)} \longrightarrow \text{Village (ភូមិ)}$$
 
 This project solves two primary challenges:
-1. **Instant Cascading Dropdowns (< 5ms)**: Serves administrative divisions directly from an indexed in-memory store without hammering external public APIs.
+1. **Instant Cascading Dropdowns (< 1ms)**: Serves administrative divisions directly from an indexed in-memory store without hammering external public APIs.
 2. **Smart Reverse Geocoding & Address Search**: Normalizes arbitrary OpenStreetMap (Nominatim) address schemas into the standardized Cambodian 4-tier model.
 
 ---
 
 ## 🏛️ Cambodian Administrative Domain Model
 
-| Level | Cambodian Name (KM) | Latin Romanization | Typical Count | OSM Tagging Equivalent |
+| Level | Cambodian Name (KM) | Latin Romanization | Count | OSM Tagging Equivalent |
 | :--- | :--- | :--- | :--- | :--- |
 | **Tier 1** | រាជធានី / ខេត្ត | Reachdhanie / Khaet | **25** (1 Capital + 24 Provinces) | `boundary=administrative`, `admin_level=4` |
-| **Tier 2** | ស្រុក / ខណ្ឌ / ក្រុង | Srok / Khan / Krong | **~209** | `boundary=administrative`, `admin_level=6` |
-| **Tier 3** | ឃុំ / សង្កាត់ | Khum / Sangkat | **~1,652** | `boundary=administrative`, `admin_level=8` |
-| **Tier 4** | ភូមិ | Phum (Village) | **~14,500+** | `place=village` / `place=hamlet` *(Nodes)* |
+| **Tier 2** | ស្រុក / ខណ្ឌ / ក្រុង | Srok / Khan / Krong | **210** (14 Khans + 32 Krongs + 164 Sroks) | `boundary=administrative`, `admin_level=6` |
+| **Tier 3** | ឃុំ / សង្កាត់ | Khum / Sangkat | **1,661** | `boundary=administrative`, `admin_level=8` |
+| **Tier 4** | ភូមិ | Phum (Village) | **14,536** | `place=village` / `place=hamlet` *(Nodes)* |
 
 ---
 
