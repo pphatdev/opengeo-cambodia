@@ -3,7 +3,7 @@ import { app } from './app.js';
 import { config } from './config.js';
 import { AdminStore } from './data/store.js';
 
-// Initialize in-memory cache and sync seed files from CambodiaGeographicalList.csv
+// Initialize in-memory cache strictly from canonical seed datasets (read-only)
 const store = AdminStore.getInstance();
 const stats = store.getStats();
 

@@ -113,29 +113,30 @@ export class AdminStore {
       .replace(/[\u0300-\u036f]/g, '');
   }
 
+  /**
+   * Load administrative boundaries strictly from canonical JSON seed datasets.
+   * Read-only: never modifies, overwrites, or regenerates seed files on server startup.
+   */
   public loadData(): void {
-    const csvPath = path.resolve(__dirname, 'CambodiaGeographicalList.csv');
-    const syncDir = path.resolve(__dirname, 'synced');
-    const seedDir = path.resolve(__dirname, 'seed');
+    const possibleDataDirs = [
+      path.resolve(__dirname),
+      path.resolve(__dirname, '..', '..', 'src', 'data'),
+      path.resolve(process.cwd(), 'dist', 'data'),
+      path.resolve(process.cwd(), 'src', 'data'),
+    ];
 
-    // Load centroid coordinates map for provinces
-    const provinceCoords = this.loadProvinceCoords(seedDir);
-
-    // If official CSV dataset exists, parse full nationwide 4-tier geography
-    if (fs.existsSync(csvPath)) {
-      try {
-        const loadedFromCsv = this.loadFromCsv(csvPath, provinceCoords);
-        if (loadedFromCsv) {
-          this.rebuildIndexes();
-          this.isLoaded = true;
-          return;
-        }
-      } catch (err) {
-        console.warn('[AdminStore] Error reading CSV, falling back to JSON seed:', err);
+    let dataDir = path.resolve(__dirname);
+    for (const candidate of possibleDataDirs) {
+      if (fs.existsSync(path.join(candidate, 'seed', 'provinces.json'))) {
+        dataDir = candidate;
+        break;
       }
     }
 
-    // Fallback: prefer synced directory if available, else seed directory
+    const syncDir = path.resolve(dataDir, 'synced');
+    const seedDir = path.resolve(dataDir, 'seed');
+
+    // Prefer synced directory if present and valid, otherwise strictly load from canonical seed directory
     const activeDir =
       fs.existsSync(syncDir) && fs.existsSync(path.join(syncDir, 'provinces.json'))
         ? syncDir
@@ -156,260 +157,8 @@ export class AdminStore {
       this.rebuildIndexes();
       this.isLoaded = true;
     } catch (err) {
-      console.error('[AdminStore] Error loading data:', err);
+      console.error('[AdminStore] Error loading data from seed:', err);
     }
-  }
-
-  private loadProvinceCoords(seedDir: string): Map<string, { lat: number; lon: number; typeKm?: string }> {
-    const coordsMap = new Map<string, { lat: number; lon: number; typeKm?: string }>();
-    const seedProvincesPath = path.join(seedDir, 'provinces.json');
-    if (fs.existsSync(seedProvincesPath)) {
-      try {
-        const list = JSON.parse(fs.readFileSync(seedProvincesPath, 'utf-8')) as AdminItem[];
-        for (const p of list) {
-          if (p.code && p.lat && p.lon) {
-            coordsMap.set(p.code, { lat: p.lat, lon: p.lon, typeKm: p.typeKm });
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
-    // Fallback to official Cambodian provincial centroid coordinates
-    for (const [code, coord] of Object.entries(DEFAULT_PROVINCE_COORDINATES)) {
-      if (!coordsMap.has(code)) {
-        coordsMap.set(code, coord);
-      }
-    }
-    return coordsMap;
-  }
-
-  /**
-   * Parse the complete nationwide Cambodian Geographical List CSV (14,500+ records)
-   */
-  private loadFromCsv(
-    csvPath: string,
-    provinceCoords: Map<string, { lat: number; lon: number; typeKm?: string }>
-  ): boolean {
-    const content = fs.readFileSync(csvPath, 'utf-8');
-    const lines = content.split(/\r?\n/);
-
-    if (lines.length < 2) return false;
-
-    const provinceMap = new Map<string, AdminItem>();
-    const districtMap = new Map<string, AdminItem>();
-    const communeMap = new Map<string, AdminItem>();
-    const villageMap = new Map<string, AdminItem>();
-
-    // Load commune overrides from CambodiaCommuneList.csv if present
-    const communeCsvPath = path.resolve(__dirname, 'CambodiaCommuneList.csv');
-    const communeOverrides = new Map<string, { kh: string; en: string }>();
-    if (fs.existsSync(communeCsvPath)) {
-      const cContent = fs.readFileSync(communeCsvPath, 'utf-8');
-      const cLines = cContent.split(/\r?\n/);
-      for (let i = 1; i < cLines.length; i++) {
-        const cLine = cLines[i].trim();
-        if (!cLine) continue;
-        const cParts = cLine.split(',');
-        if (cParts.length >= 5 && cParts[2]) {
-          communeOverrides.set(cParts[2].trim(), {
-            kh: cParts[3].trim(),
-            en: cParts[4].trim(),
-          });
-        }
-      }
-    }
-
-    // Load district overrides from CambodiaDistrictList.csv if present
-    const districtCsvPath = path.resolve(__dirname, 'CambodiaDistrictList.csv');
-    const districtOverrides = new Map<string, { kh: string; en: string }>();
-    if (fs.existsSync(districtCsvPath)) {
-      const dContent = fs.readFileSync(districtCsvPath, 'utf-8');
-      const dLines = dContent.split(/\r?\n/);
-      for (let i = 1; i < dLines.length; i++) {
-        const dLine = dLines[i].trim();
-        if (!dLine) continue;
-        const dParts = dLine.split(',');
-        if (dParts.length >= 4 && dParts[1]) {
-          districtOverrides.set(dParts[1].trim(), {
-            kh: dParts[2].trim(),
-            en: dParts[3].trim(),
-          });
-        }
-      }
-    }
-
-    // Load province overrides from CambodiaProvinceList.csv if present
-    const provinceCsvPath = path.resolve(__dirname, 'CambodiaProvinceList.csv');
-    const provinceOverrides = new Map<string, { kh: string; en: string }>();
-    if (fs.existsSync(provinceCsvPath)) {
-      const pContent = fs.readFileSync(provinceCsvPath, 'utf-8');
-      const pLines = pContent.split(/\r?\n/);
-      for (let i = 1; i < pLines.length; i++) {
-        const pLine = pLines[i].trim();
-        if (!pLine) continue;
-        const pParts = pLine.split(',');
-        if (pParts.length >= 3 && pParts[0]) {
-          provinceOverrides.set(pParts[0].trim(), {
-            kh: pParts[1].trim(),
-            en: pParts[2].trim(),
-          });
-        }
-      }
-    }
-
-    // Load village overrides from CambodiaVillagesList.csv if present
-    const villageCsvPath = path.resolve(__dirname, 'CambodiaVillagesList.csv');
-    const villageOverrides = new Map<string, { kh: string; en: string }>();
-    if (fs.existsSync(villageCsvPath)) {
-      const vContent = fs.readFileSync(villageCsvPath, 'utf-8');
-      const vLines = vContent.split(/\r?\n/);
-      for (let i = 1; i < vLines.length; i++) {
-        const vLine = vLines[i].trim();
-        if (!vLine) continue;
-        const vParts = vLine.split(',');
-        if (vParts.length >= 6 && vParts[3]) {
-          villageOverrides.set(vParts[3].trim(), {
-            kh: vParts[4].trim(),
-            en: vParts[5].trim(),
-          });
-        }
-      }
-    }
-
-    // Header: province_code,province_kh,province_en,district_code,district_kh,district_en,commune_code,commune_kh,commune_en,village_code,village_kh,village_en
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
-
-      const cols = line.split(',');
-      if (cols.length < 12) continue;
-
-      const pCode = cols[0].trim();
-      const pKh = cols[1].trim();
-      const pEn = cols[2].trim();
-
-      const dCode = cols[3].trim();
-      const dKh = cols[4].trim();
-      const dEn = cols[5].trim();
-
-      const cCode = cols[6].trim();
-      const cKh = cols[7].trim();
-      const cEn = cols[8].trim();
-
-      const vCode = cols[9].trim();
-      const vKh = cols[10].trim();
-      const vEn = cols[11].trim();
-
-      const pId = parseInt(pCode, 10);
-      const dId = parseInt(dCode, 10);
-      const cId = parseInt(cCode, 10);
-
-      // Province
-      if (!provinceMap.has(pCode)) {
-        const coords = provinceCoords.get(pCode);
-        const override = provinceOverrides.get(pCode);
-        const finalEn = override?.en || pEn;
-        const finalKh = override?.kh || pKh;
-        provinceMap.set(pCode, {
-          id: pId,
-          code: pCode,
-          name: finalEn,
-          name_en: finalEn,
-          name_km: finalKh,
-          level: 'province',
-          lat: coords?.lat,
-          lon: coords?.lon,
-          typeKm: coords?.typeKm || (pCode === '12' ? 'រាជធានី' : 'ខេត្ត'),
-        });
-      }
-
-      // District
-      const isKhan = pCode === '12';
-      const isKrong = KRONG_CODES.has(dCode) || dEn.toLowerCase().startsWith('krong ') || dKh.startsWith('ក្រុង');
-
-      if (!districtMap.has(dCode)) {
-        const override = districtOverrides.get(dCode);
-        const finalEn = override?.en || dEn;
-        const finalKh = override?.kh || dKh;
-        districtMap.set(dCode, {
-          id: dId,
-          code: dCode,
-          parentId: pId,
-          name: finalEn,
-          name_en: finalEn,
-          name_km: finalKh,
-          level: 'district',
-          typeKm: isKhan ? 'ខណ្ឌ' : isKrong ? 'ក្រុង' : 'ស្រុក',
-        });
-      }
-
-      // Commune
-      if (!communeMap.has(cCode)) {
-        const isSangkat = isKhan || isKrong;
-        const override = communeOverrides.get(cCode);
-        const finalEn = override?.en || cEn;
-        const finalKh = override?.kh || cKh;
-        communeMap.set(cCode, {
-          id: cId,
-          code: cCode,
-          parentId: dId,
-          name: finalEn,
-          name_en: finalEn,
-          name_km: finalKh,
-          level: 'commune',
-          typeKm: isSangkat ? 'សង្កាត់' : 'ឃុំ',
-        });
-      }
-
-      // Village
-      let resolvedVCode = vCode;
-      let resolvedVId = parseInt(vCode.replace(/[^0-9]/g, ''), 10);
-      if (vCode.includes('-') || !vCode || isNaN(resolvedVId)) {
-        let subIndex = 1;
-        while (villageMap.has(`${cCode}${String(subIndex).padStart(2, '0')}`)) {
-          subIndex++;
-        }
-        resolvedVCode = `${cCode}${String(subIndex).padStart(2, '0')}`;
-        resolvedVId = parseInt(resolvedVCode, 10);
-      }
-
-      if (!villageMap.has(resolvedVCode)) {
-        const override = villageOverrides.get(resolvedVCode) || villageOverrides.get(vCode);
-        const finalEn = override?.en || vEn;
-        const finalKh = override?.kh || vKh;
-        villageMap.set(resolvedVCode, {
-          id: resolvedVId,
-          code: resolvedVCode,
-          parentId: cId,
-          name: finalEn,
-          name_en: finalEn,
-          name_km: finalKh,
-          level: 'village',
-          typeKm: 'ភូមិ',
-        });
-      }
-    }
-
-    this.provinces = Array.from(provinceMap.values()).sort((a, b) => a.id - b.id);
-    this.districts = Array.from(districtMap.values()).sort((a, b) => a.id - b.id);
-    this.communes = Array.from(communeMap.values()).sort((a, b) => a.id - b.id);
-    this.villages = Array.from(villageMap.values()).sort((a, b) => a.id - b.id);
-    this.lastSyncAt = new Date().toISOString();
-
-    // Automatically persist synchronized seed files
-    const seedDir = path.resolve(__dirname, 'seed');
-    try {
-      if (!fs.existsSync(seedDir)) fs.mkdirSync(seedDir, { recursive: true });
-      fs.writeFileSync(path.join(seedDir, 'provinces.json'), JSON.stringify(this.provinces, null, 2), 'utf-8');
-      fs.writeFileSync(path.join(seedDir, 'districts.json'), JSON.stringify(this.districts, null, 2), 'utf-8');
-      fs.writeFileSync(path.join(seedDir, 'communes.json'), JSON.stringify(this.communes, null, 2), 'utf-8');
-      fs.writeFileSync(path.join(seedDir, 'villages.json'), JSON.stringify(this.villages, null, 2), 'utf-8');
-    } catch (err) {
-      console.warn('[AdminStore] Could not write seed files:', err);
-    }
-
-    return true;
   }
 
   private readJsonFile<T>(filePath: string, fallback: T): T {
@@ -583,6 +332,10 @@ export class AdminStore {
       total: this.provinces.length + this.districts.length + this.communes.length + this.villages.length,
       lastSyncAt: this.lastSyncAt,
     };
+  }
+
+  public getLastSyncAt(): string {
+    return this.lastSyncAt || '2026-10-27T00:00:00.000Z';
   }
 
   /**
