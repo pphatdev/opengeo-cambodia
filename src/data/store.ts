@@ -41,29 +41,30 @@ export const KRONG_CODES = new Set([
   '0305', // Kampong Cham
   '0403', // Kampong Chhnang
   '0502', // Chhbar Mon
+  '0509', // Odong Mae Chey
   '0603', // Stueng Saen
   '0708', // Kampot
   '0709', // Bokor
   '0811', // Ta Khmau
   '0812', // Sampov Poun
-  '0813', // Arak Ksat
+  '0813', // Arak Ksat / Akrey Ksat
   '0904', // Khemarak Phoumin
-  '1002', // Kratie
+  '1002', // Kracheh
   '1105', // Sen Monorom
   '1308', // Preah Vihear
   '1410', // Prey Veng
-  '1505', // Pursat
+  '1505', // Pursat / Pousat
   '1602', // Ban Lung
-  '1710', // Siem Reap
-  '1713', // Run Ta Aek Techo Sen
+  '1710', // Siem Reap / Siem Reab
+  '1715', // Run Ta Aek Techo Sen
   '1801', // Preah Sihanouk
-  '1804', // Koh Rong
-  '1902', // Stung Treng
+  '1805', // Koh Rong / Kaoh Rung
+  '1904', // Stueng Traeng
   '2006', // Svay Rieng
   '2008', // Bavet
   '2108', // Doun Kaev
-  '2205', // Samraong
-  '2301', // Kep
+  '2204', // Samraong
+  '2302', // Kep / Kaeb
   '2401', // Pailin
   '2506', // Suong
 ]);
@@ -196,6 +197,82 @@ export class AdminStore {
     const communeMap = new Map<string, AdminItem>();
     const villageMap = new Map<string, AdminItem>();
 
+    // Load commune overrides from CambodiaCommuneList.csv if present
+    const communeCsvPath = path.resolve(__dirname, 'CambodiaCommuneList.csv');
+    const communeOverrides = new Map<string, { kh: string; en: string }>();
+    if (fs.existsSync(communeCsvPath)) {
+      const cContent = fs.readFileSync(communeCsvPath, 'utf-8');
+      const cLines = cContent.split(/\r?\n/);
+      for (let i = 1; i < cLines.length; i++) {
+        const cLine = cLines[i].trim();
+        if (!cLine) continue;
+        const cParts = cLine.split(',');
+        if (cParts.length >= 5 && cParts[2]) {
+          communeOverrides.set(cParts[2].trim(), {
+            kh: cParts[3].trim(),
+            en: cParts[4].trim(),
+          });
+        }
+      }
+    }
+
+    // Load district overrides from CambodiaDistrictList.csv if present
+    const districtCsvPath = path.resolve(__dirname, 'CambodiaDistrictList.csv');
+    const districtOverrides = new Map<string, { kh: string; en: string }>();
+    if (fs.existsSync(districtCsvPath)) {
+      const dContent = fs.readFileSync(districtCsvPath, 'utf-8');
+      const dLines = dContent.split(/\r?\n/);
+      for (let i = 1; i < dLines.length; i++) {
+        const dLine = dLines[i].trim();
+        if (!dLine) continue;
+        const dParts = dLine.split(',');
+        if (dParts.length >= 4 && dParts[1]) {
+          districtOverrides.set(dParts[1].trim(), {
+            kh: dParts[2].trim(),
+            en: dParts[3].trim(),
+          });
+        }
+      }
+    }
+
+    // Load province overrides from CambodiaProvinceList.csv if present
+    const provinceCsvPath = path.resolve(__dirname, 'CambodiaProvinceList.csv');
+    const provinceOverrides = new Map<string, { kh: string; en: string }>();
+    if (fs.existsSync(provinceCsvPath)) {
+      const pContent = fs.readFileSync(provinceCsvPath, 'utf-8');
+      const pLines = pContent.split(/\r?\n/);
+      for (let i = 1; i < pLines.length; i++) {
+        const pLine = pLines[i].trim();
+        if (!pLine) continue;
+        const pParts = pLine.split(',');
+        if (pParts.length >= 3 && pParts[0]) {
+          provinceOverrides.set(pParts[0].trim(), {
+            kh: pParts[1].trim(),
+            en: pParts[2].trim(),
+          });
+        }
+      }
+    }
+
+    // Load village overrides from CambodiaVillagesList.csv if present
+    const villageCsvPath = path.resolve(__dirname, 'CambodiaVillagesList.csv');
+    const villageOverrides = new Map<string, { kh: string; en: string }>();
+    if (fs.existsSync(villageCsvPath)) {
+      const vContent = fs.readFileSync(villageCsvPath, 'utf-8');
+      const vLines = vContent.split(/\r?\n/);
+      for (let i = 1; i < vLines.length; i++) {
+        const vLine = vLines[i].trim();
+        if (!vLine) continue;
+        const vParts = vLine.split(',');
+        if (vParts.length >= 6 && vParts[3]) {
+          villageOverrides.set(vParts[3].trim(), {
+            kh: vParts[4].trim(),
+            en: vParts[5].trim(),
+          });
+        }
+      }
+    }
+
     // Header: province_code,province_kh,province_en,district_code,district_kh,district_en,commune_code,commune_kh,commune_en,village_code,village_kh,village_en
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim();
@@ -228,12 +305,15 @@ export class AdminStore {
       // Province
       if (!provinceMap.has(pCode)) {
         const coords = provinceCoords.get(pCode);
+        const override = provinceOverrides.get(pCode);
+        const finalEn = override?.en || pEn;
+        const finalKh = override?.kh || pKh;
         provinceMap.set(pCode, {
           id: pId,
           code: pCode,
-          name: pEn,
-          name_en: pEn,
-          name_km: pKh,
+          name: finalEn,
+          name_en: finalEn,
+          name_km: finalKh,
           level: 'province',
           lat: coords?.lat,
           lon: coords?.lon,
@@ -246,13 +326,16 @@ export class AdminStore {
       const isKrong = KRONG_CODES.has(dCode) || dEn.toLowerCase().startsWith('krong ') || dKh.startsWith('ក្រុង');
 
       if (!districtMap.has(dCode)) {
+        const override = districtOverrides.get(dCode);
+        const finalEn = override?.en || dEn;
+        const finalKh = override?.kh || dKh;
         districtMap.set(dCode, {
           id: dId,
           code: dCode,
           parentId: pId,
-          name: dEn,
-          name_en: dEn,
-          name_km: dKh,
+          name: finalEn,
+          name_en: finalEn,
+          name_km: finalKh,
           level: 'district',
           typeKm: isKhan ? 'ខណ្ឌ' : isKrong ? 'ក្រុង' : 'ស្រុក',
         });
@@ -261,13 +344,16 @@ export class AdminStore {
       // Commune
       if (!communeMap.has(cCode)) {
         const isSangkat = isKhan || isKrong;
+        const override = communeOverrides.get(cCode);
+        const finalEn = override?.en || cEn;
+        const finalKh = override?.kh || cKh;
         communeMap.set(cCode, {
           id: cId,
           code: cCode,
           parentId: dId,
-          name: cEn,
-          name_en: cEn,
-          name_km: cKh,
+          name: finalEn,
+          name_en: finalEn,
+          name_km: finalKh,
           level: 'commune',
           typeKm: isSangkat ? 'សង្កាត់' : 'ឃុំ',
         });
@@ -286,13 +372,16 @@ export class AdminStore {
       }
 
       if (!villageMap.has(resolvedVCode)) {
+        const override = villageOverrides.get(resolvedVCode) || villageOverrides.get(vCode);
+        const finalEn = override?.en || vEn;
+        const finalKh = override?.kh || vKh;
         villageMap.set(resolvedVCode, {
           id: resolvedVId,
           code: resolvedVCode,
           parentId: cId,
-          name: vEn,
-          name_en: vEn,
-          name_km: vKh,
+          name: finalEn,
+          name_en: finalEn,
+          name_km: finalKh,
           level: 'village',
           typeKm: 'ភូមិ',
         });

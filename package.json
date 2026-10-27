@@ -11,6 +11,11 @@
     "start": "node dist/index.js",
     "sync:overpass": "tsx src/scripts/sync-overpass.ts",
     "convert:csv": "tsx src/scripts/convert-csv.ts",
+    "update:provinces": "tsx src/scripts/update-provinces.ts",
+    "update:districts": "tsx src/scripts/update-districts.ts",
+    "update:communes": "tsx src/scripts/update-communes.ts",
+    "update:villages": "tsx src/scripts/update-villages.ts",
+    "update:all": "tsx src/scripts/update-provinces.ts && tsx src/scripts/update-districts.ts && tsx src/scripts/update-communes.ts && tsx src/scripts/update-villages.ts",
     "lint": "tsc --noEmit"
   },
   "keywords": [

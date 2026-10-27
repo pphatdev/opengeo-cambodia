@@ -53,6 +53,78 @@ export function convertCsvToSeedFiles(): {
   const content = fs.readFileSync(csvPath, 'utf-8');
   const lines = content.split(/\r?\n/);
 
+  // Load official commune overrides from CambodiaCommuneList.csv if present
+  const communeOverrides = new Map<string, { kh: string; en: string }>();
+  const communeListCsvPath = path.join(dataDir, 'CambodiaCommuneList.csv');
+  if (fs.existsSync(communeListCsvPath)) {
+    const cLines = fs.readFileSync(communeListCsvPath, 'utf-8').split(/\r?\n/);
+    for (let i = 1; i < cLines.length; i++) {
+      const line = cLines[i].trim();
+      if (!line) continue;
+      const parts = line.split(',');
+      if (parts.length >= 5 && parts[2]) {
+        communeOverrides.set(parts[2].trim(), {
+          kh: parts[3].trim(),
+          en: parts[4].trim(),
+        });
+      }
+    }
+  }
+
+  // Load official district overrides from CambodiaDistrictList.csv if present
+  const districtOverrides = new Map<string, { kh: string; en: string }>();
+  const districtListCsvPath = path.join(dataDir, 'CambodiaDistrictList.csv');
+  if (fs.existsSync(districtListCsvPath)) {
+    const dLines = fs.readFileSync(districtListCsvPath, 'utf-8').split(/\r?\n/);
+    for (let i = 1; i < dLines.length; i++) {
+      const line = dLines[i].trim();
+      if (!line) continue;
+      const parts = line.split(',');
+      if (parts.length >= 4 && parts[1]) {
+        districtOverrides.set(parts[1].trim(), {
+          kh: parts[2].trim(),
+          en: parts[3].trim(),
+        });
+      }
+    }
+  }
+
+  // Load official province overrides from CambodiaProvinceList.csv if present
+  const provinceOverrides = new Map<string, { kh: string; en: string }>();
+  const provinceListCsvPath = path.join(dataDir, 'CambodiaProvinceList.csv');
+  if (fs.existsSync(provinceListCsvPath)) {
+    const pLines = fs.readFileSync(provinceListCsvPath, 'utf-8').split(/\r?\n/);
+    for (let i = 1; i < pLines.length; i++) {
+      const line = pLines[i].trim();
+      if (!line) continue;
+      const parts = line.split(',');
+      if (parts.length >= 3 && parts[0]) {
+        provinceOverrides.set(parts[0].trim(), {
+          kh: parts[1].trim(),
+          en: parts[2].trim(),
+        });
+      }
+    }
+  }
+
+  // Load official village overrides from CambodiaVillagesList.csv if present
+  const villageOverrides = new Map<string, { kh: string; en: string }>();
+  const villageListCsvPath = path.join(dataDir, 'CambodiaVillagesList.csv');
+  if (fs.existsSync(villageListCsvPath)) {
+    const vLines = fs.readFileSync(villageListCsvPath, 'utf-8').split(/\r?\n/);
+    for (let i = 1; i < vLines.length; i++) {
+      const line = vLines[i].trim();
+      if (!line) continue;
+      const parts = line.split(',');
+      if (parts.length >= 6 && parts[3]) {
+        villageOverrides.set(parts[3].trim(), {
+          kh: parts[4].trim(),
+          en: parts[5].trim(),
+        });
+      }
+    }
+  }
+
   const provinceMap = new Map<string, AdminItem>();
   const districtMap = new Map<string, AdminItem>();
   const communeMap = new Map<string, AdminItem>();
@@ -90,12 +162,15 @@ export function convertCsvToSeedFiles(): {
     if (!provinceMap.has(pCode)) {
       const coords = provinceCoords.get(pCode);
       const isCapital = pCode === '12';
+      const override = provinceOverrides.get(pCode);
+      const finalEn = override?.en || pEn;
+      const finalKh = override?.kh || pKh;
       provinceMap.set(pCode, {
         id: pId,
         code: pCode,
-        name: pEn,
-        name_en: pEn,
-        name_km: pKh,
+        name: finalEn,
+        name_en: finalEn,
+        name_km: finalKh,
         typeKm: coords?.typeKm || (isCapital ? 'រាជធានី' : 'ខេត្ត'),
         level: 'province',
         lat: coords?.lat,
@@ -108,13 +183,16 @@ export function convertCsvToSeedFiles(): {
     const isKrong = KRONG_CODES.has(dCode) || dEn.toLowerCase().startsWith('krong ') || dKh.startsWith('ក្រុង');
 
     if (!districtMap.has(dCode)) {
+      const override = districtOverrides.get(dCode);
+      const finalEn = override?.en || dEn;
+      const finalKh = override?.kh || dKh;
       districtMap.set(dCode, {
         id: dId,
         code: dCode,
         parentId: pId,
-        name: dEn,
-        name_en: dEn,
-        name_km: dKh,
+        name: finalEn,
+        name_en: finalEn,
+        name_km: finalKh,
         typeKm: isKhan ? 'ខណ្ឌ' : isKrong ? 'ក្រុង' : 'ស្រុក',
         level: 'district',
       });
@@ -123,13 +201,16 @@ export function convertCsvToSeedFiles(): {
     // 3. Commune / Sangkat (Tier 3)
     if (!communeMap.has(cCode)) {
       const isSangkat = isKhan || isKrong;
+      const override = communeOverrides.get(cCode);
+      const finalEn = override?.en || cEn;
+      const finalKh = override?.kh || cKh;
       communeMap.set(cCode, {
         id: cId,
         code: cCode,
         parentId: dId,
-        name: cEn,
-        name_en: cEn,
-        name_km: cKh,
+        name: finalEn,
+        name_en: finalEn,
+        name_km: finalKh,
         typeKm: isSangkat ? 'សង្កាត់' : 'ឃុំ',
         level: 'commune',
       });
@@ -148,13 +229,16 @@ export function convertCsvToSeedFiles(): {
     }
 
     if (!villageMap.has(resolvedVCode)) {
+      const override = villageOverrides.get(resolvedVCode) || villageOverrides.get(vCode);
+      const finalEn = override?.en || vEn;
+      const finalKh = override?.kh || vKh;
       villageMap.set(resolvedVCode, {
         id: resolvedVId,
         code: resolvedVCode,
         parentId: cId,
-        name: vEn,
-        name_en: vEn,
-        name_km: vKh,
+        name: finalEn,
+        name_en: finalEn,
+        name_km: finalKh,
         typeKm: 'ភូមិ',
         level: 'village',
       });

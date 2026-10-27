@@ -90,6 +90,24 @@ npm start
 npm run sync:overpass
 ```
 
+### 6. Update Seed Datasets from CSV
+```bash
+# Update provinces from CambodiaProvinceList.csv
+npm run update:provinces
+
+# Update districts from CambodiaDistrictList.csv
+npm run update:districts
+
+# Update communes from CambodiaCommuneList.csv
+npm run update:communes
+
+# Update villages from CambodiaVillagesList.csv
+npm run update:villages
+
+# Update all administrative divisions in one step
+npm run update:all
+```
+
 ---
 
 ## 📡 REST API Reference
