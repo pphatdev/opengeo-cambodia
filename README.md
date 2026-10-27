@@ -1,6 +1,6 @@
 # 🇰🇭 OpenGeo Cambodia API
 
-> Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,536 Villages with smart OpenStreetMap geocoding.
+> Sub-1ms cascading lookups across all 25 Provinces, 200+ Districts, 1,600+ Communes, and 14,500+ Villages with smart OpenStreetMap geocoding
 
 [![Domain](https://img.shields.io/badge/Domain-opengeo--cambodia.pphat.me-0d9488?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
@@ -28,7 +28,7 @@ This project solves two primary challenges:
 | **Tier 1** | រាជធានី / ខេត្ត | Reachdhanie / Khaet | **25** (1 Capital + 24 Provinces) | `boundary=administrative`, `admin_level=4` |
 | **Tier 2** | ស្រុក / ខណ្ឌ / ក្រុង | Srok / Khan / Krong | **210** (14 Khans + 32 Krongs + 164 Sroks) | `boundary=administrative`, `admin_level=6` |
 | **Tier 3** | ឃុំ / សង្កាត់ | Khum / Sangkat | **1,661** | `boundary=administrative`, `admin_level=8` |
-| **Tier 4** | ភូមិ | Phum (Village) | **14,536** | `place=village` / `place=hamlet` *(Nodes)* |
+| **Tier 4** | ភូមិ | Phum (Village) | **14,576** | `place=village` / `place=hamlet` *(Nodes)* |
 
 ---
 

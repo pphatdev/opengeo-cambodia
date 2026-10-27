@@ -18,13 +18,13 @@ healthRoutes.get('/api/info', (c) => {
     name: 'OpenGeo Cambodia API',
     domain: config.domain,
     url: config.appUrl,
-    description: 'Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,536 Villages with smart OpenStreetMap geocoding',
+    description: 'Sub-1ms cascading lookups across all 25 Provinces, 200+ Districts, 1,600+ Communes, and 14,500+ Villages with smart OpenStreetMap geocoding',
     version: '1.0.0',
     convention: {
       tier1: 'City / Province (រាជធានី / ខេត្ត) - admin_level=4 (25)',
       tier2: 'District / Khan / Krong (ស្រុក / ខណ្ឌ / ក្រុង) - admin_level=6 (210)',
       tier3: 'Commune / Sangkat (ឃុំ / សង្កាត់) - admin_level=8 (1,661)',
-      tier4: 'Village / Phum (ភូមិ) - place=village / place=hamlet (14,536)',
+      tier4: 'Village / Phum (ភូមិ) - place=village / place=hamlet (14,576)',
     },
     endpoints: {
       admin: {
