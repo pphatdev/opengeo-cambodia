@@ -10,7 +10,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { etag } from "hono/etag";
 
 import { config } from "./config.js";
-import { globalRateLimiter } from "./middleware/rate-limiter.js";
+import { adminRateLimiter, globalRateLimiter } from "./middleware/rate-limiter.js";
 import { adminRoutes } from "./routes/admin.routes.js";
 import { geocodeRoutes } from "./routes/geocode.routes.js";
 import { healthRoutes } from "./routes/health.routes.js";
@@ -136,9 +136,10 @@ app.use(
     }),
 );
 
-// 2. Request Logging & JSON Formatting
-app.use("*", logger());
-app.use("*", prettyJSON());
+// 2. High-Performance Logging (Enabled in dev/debug, lightweight in production)
+if (config.nodeEnv !== "production") {
+    app.use("*", logger());
+}
 
 // 3. Automatic HTTP ETag generation & conditional request handling (304 Not Modified)
 app.use("*", etag());
@@ -157,13 +158,24 @@ app.use(
             "X-RateLimit-Remaining",
             "X-RateLimit-Reset",
             "Retry-After",
+            "CF-Cache-Status",
+            "X-Cache",
         ],
         maxAge: 86400,
     }),
 );
 
-// 5. Rate Limiting for all API routes (120 req/min/IP)
-app.use("/api/*", globalRateLimiter);
+// 5. Tiered Rate Limiting & Edge Caching
+// Administrative routes: Dedicated 10,000 req/min/IP for immutable geographic datasets
+app.use("/api/admin/*", adminRateLimiter);
+
+// General rate limiter for non-admin API endpoints (e.g. /api/info, 5,000 req/min/IP)
+app.use("/api/*", async (c, next) => {
+    if (c.req.path.startsWith("/api/admin/")) {
+        return next();
+    }
+    return globalRateLimiter(c, next);
+});
 
 // 6. LLM Documentation Endpoints (llmstxt.org Standard)
 app.get("/llms.txt", async (c) => {
