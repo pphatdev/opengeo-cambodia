@@ -2534,9 +2534,104 @@ client.<span class="tok-fn">newCall</span>(request).<span class="tok-fn">execute
         </div>
     </footer>
 
+    <!-- ========================================================================= -->
+    <!-- SHADCN / UI TOAST ALERT SYSTEM (Non-blocking, High-Performance)          -->
+    <!-- Consistent with 'Integrate in 30 Seconds' Quickstart Code Copy Alert      -->
+    <!-- ========================================================================= -->
+    <div id="shadcnToastContainer" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[120] flex flex-col gap-2.5 pointer-events-none max-w-[calc(100vw-2rem)] sm:max-w-sm w-full"></div>
+
     <script>
         const DEFAULT_API_BASE = window.location.origin;
         let currentApiBase = window.location.origin;
+
+        // =========================================================================
+        // UNIFIED SHADCN / UI TOAST ALERT SYSTEM
+        // =========================================================================
+        function showShadcnToast(options = {}) {
+            if (typeof options === 'string') {
+                options = { message: options };
+            }
+            const {
+                title = '',
+                message = '',
+                type = 'success',
+                duration = 2500
+            } = options;
+
+            const container = document.getElementById('shadcnToastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto transform translate-y-3 opacity-0 transition-all duration-300 ease-out flex items-center justify-between gap-3 p-3.5 rounded-xl bg-[#0c0e14]/95 border border-white/10 shadow-2xl backdrop-blur-md text-xs sm:text-sm text-neutral-200 select-none';
+
+            let iconHtml = '<i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0"></i>';
+            let iconBoxClass = 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
+
+            if (type === 'warning') {
+                iconHtml = '<i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 shrink-0"></i>';
+                iconBoxClass = 'bg-amber-500/10 border-amber-500/20 text-amber-400';
+            } else if (type === 'error' || type === 'destructive') {
+                iconHtml = '<i data-lucide="alert-circle" class="w-4 h-4 text-rose-400 shrink-0"></i>';
+                iconBoxClass = 'bg-rose-500/10 border-rose-500/20 text-rose-400';
+            } else if (type === 'info') {
+                iconHtml = '<i data-lucide="info" class="w-4 h-4 text-teal-400 shrink-0"></i>';
+                iconBoxClass = 'bg-teal-500/10 border-teal-500/20 text-teal-400';
+            }
+
+            toast.innerHTML = `
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-7 h-7 rounded-lg flex items-center justify-center border shrink-0 ${iconBoxClass}">
+                        ${iconHtml}
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        ${title ? `<span class="font-semibold text-white text-xs leading-tight tracking-tight">${title}</span>` : ''}
+                        <span class="text-neutral-300 text-[11px] font-normal truncate leading-tight">${message}</span>
+                    </div>
+                </div>
+                <button type="button" aria-label="Dismiss toast" class="text-neutral-500 hover:text-neutral-200 transition-colors p-1 shrink-0 ml-1 cursor-pointer" onclick="this.closest('.pointer-events-auto').remove()">
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+            if (window.lucide) window.lucide.createIcons();
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-3', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // Intercept native browser alert to use Shadcn Toast Alert
+        window.alert = function(msg) {
+            const message = String(msg || '');
+            const lower = message.toLowerCase();
+            let type = 'info';
+            let title = 'Notice';
+
+            if (lower.includes('copied')) {
+                type = 'success';
+                title = 'Copied to Clipboard';
+            } else if (lower.includes('please') || lower.includes('select') || lower.includes('required')) {
+                type = 'warning';
+                title = 'Selection Required';
+            } else if (lower.includes('error') || lower.includes('failed') || lower.includes('fail')) {
+                type = 'error';
+                title = 'Action Error';
+            }
+
+            showShadcnToast({
+                type,
+                title,
+                message
+            });
+        };
 
         function getApiUrl(path) {
             const cleanBase = currentApiBase.replace(/\/+$/, '');
@@ -2666,6 +2761,11 @@ client.<span class="tok-fn">newCall</span>(request).<span class="tok-fn">execute
         function copySnippet() {
             const text = document.getElementById('cmdCodeText')?.innerText || '';
             navigator.clipboard.writeText(text).then(() => {
+                showShadcnToast({
+                    type: 'success',
+                    title: 'Copied to Clipboard',
+                    message: text
+                });
                 const btn = document.getElementById('copyCmdBtn');
                 if (btn) {
                     btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-emerald-500"></i>';
@@ -2681,8 +2781,22 @@ client.<span class="tok-fn">newCall</span>(request).<span class="tok-fn">execute
         function copyElementText(id) {
             const el = document.getElementById(id);
             if (!el) return;
+            const btn = window.event?.currentTarget || window.event?.target?.closest('button');
             navigator.clipboard.writeText(el.innerText).then(() => {
-                alert('Copied JSON payload to clipboard!');
+                showShadcnToast({
+                    type: 'success',
+                    title: 'JSON Copied',
+                    message: 'Response payload copied to clipboard.'
+                });
+                if (btn) {
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>';
+                    if (window.lucide) window.lucide.createIcons();
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        if (window.lucide) window.lucide.createIcons();
+                    }, 2000);
+                }
             });
         }
 
@@ -3454,6 +3568,7 @@ client.<span class="tok-fn">newCall</span>(request).<span class="tok-fn">execute
         }
 
         function copyBreadcrumb(lang) {
+            const btn = window.event?.currentTarget || window.event?.target?.closest('button');
             const parts = [];
             if (lang === 'km') {
                 if (state.selectedVillage) parts.push(`ភូមិ${state.selectedVillage.name_km}`);
@@ -3468,13 +3583,28 @@ client.<span class="tok-fn">newCall</span>(request).<span class="tok-fn">execute
             }
 
             if (parts.length === 0) {
-                alert('Please select an administrative level first.');
+                showShadcnToast({
+                    type: 'warning',
+                    title: 'Selection Required',
+                    message: 'Please select an administrative level first.'
+                });
                 return;
             }
 
             const result = parts.join(', ');
             navigator.clipboard.writeText(result).then(() => {
-                alert(`Copied address (${lang.toUpperCase()}): ${result}`);
+                showShadcnToast({
+                    type: 'success',
+                    title: `Address Copied (${lang.toUpperCase()})`,
+                    message: result
+                });
+                if (btn) {
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = lang === 'km' ? '✓ បានចម្លង' : '✓ Copied!';
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                    }, 2000);
+                }
             });
         }
 
@@ -3709,6 +3839,11 @@ client.<span class="tok-fn">newCall</span>(request).<span class="tok-fn">execute
             if (!codeEl) return;
             const text = codeEl.innerText;
             navigator.clipboard.writeText(text).then(() => {
+                showShadcnToast({
+                    type: 'success',
+                    title: 'Code Copied',
+                    message: 'Snippet copied to clipboard.'
+                });
                 const originalHtml = btn.innerHTML;
                 btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i><span class="text-xs font-mono text-emerald-400">Copied!</span>';
                 if (window.lucide) window.lucide.createIcons();

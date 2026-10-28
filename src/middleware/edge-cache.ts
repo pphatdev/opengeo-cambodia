@@ -1,6 +1,49 @@
 import type { MiddlewareHandler } from "hono";
 
 /**
+ * Normalizes request URL into a deterministic cache key.
+ * Strips arbitrary cache-busting junk query parameters to defeat Cache Busting DoS attacks.
+ */
+function normalizeCacheUrl(rawUrl: string): string {
+    try {
+        const u = new URL(rawUrl);
+        u.protocol = "https:";
+
+        // For search route, only preserve whitelisted parameters
+        if (u.pathname.endsWith("/search")) {
+            const cleanParams = new URLSearchParams();
+            const allowed = ["q", "level", "limit"];
+            for (const key of allowed) {
+                const val = u.searchParams.get(key);
+                if (val !== null && val.trim() !== "") {
+                    cleanParams.set(key, val.trim().toLowerCase());
+                }
+            }
+            cleanParams.sort();
+            u.search = cleanParams.toString();
+        } else if (u.pathname.includes("/geocode/reverse")) {
+            // Round coordinates to 4 decimal places (~11m precision) to maximize edge cache reuse
+            const cleanParams = new URLSearchParams();
+            const lat = parseFloat(u.searchParams.get("lat") || "");
+            const lon = parseFloat(u.searchParams.get("lon") || "");
+            if (Number.isFinite(lat) && Number.isFinite(lon)) {
+                cleanParams.set("lat", lat.toFixed(4));
+                cleanParams.set("lon", lon.toFixed(4));
+            }
+            u.search = cleanParams.toString();
+        } else {
+            // Purely static/immutable routes (/provinces, /districts, /communes, /villages, /item/:id, /hierarchy/:id, /stats)
+            // Completely strip all query parameters so cache-busting attempts hit edge cache
+            u.search = "";
+        }
+
+        return u.toString();
+    } catch {
+        return rawUrl;
+    }
+}
+
+/**
  * Cloudflare Workers Edge Cache Middleware
  *
  * Utilizes Cloudflare's native Cache API (`caches.default`) to serve immutable
@@ -33,7 +76,8 @@ export function createEdgeCache(options?: {
             return next();
         }
 
-        const cacheKey = new Request(c.req.url, {
+        const normalizedUrl = normalizeCacheUrl(c.req.url);
+        const cacheKey = new Request(normalizedUrl, {
             method: "GET",
         });
 

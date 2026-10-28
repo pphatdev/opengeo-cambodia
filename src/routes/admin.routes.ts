@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { AdminService } from "../services/admin.service.js";
 import { createEdgeCache } from "../middleware/edge-cache.js";
+import { searchRateLimiter } from "../middleware/rate-limiter.js";
 import type { ApiResponse } from "../types/api.js";
 import type {
     AdminItem,
@@ -11,6 +12,9 @@ import type {
 
 export const adminRoutes = new Hono();
 const adminService = new AdminService();
+
+// Apply dedicated search rate limiter (120 req/min/IP) to prevent CPU resource exhaustion
+adminRoutes.use("/search", searchRateLimiter);
 
 const ALLOWED_LEVELS = new Set<string>([
     "province",
@@ -278,12 +282,12 @@ adminRoutes.get("/search", (c) => {
     const q = rawQ.trim();
 
     // Validate search length to mitigate ReDoS and CPU exhaustion
-    if (q.length > 100) {
+    if (q.length > 50) {
         return c.json<ApiResponse<null>>(
             {
                 success: false,
                 data: null,
-                error: "Search query 'q' exceeds maximum length of 100 characters",
+                error: "Search query 'q' exceeds maximum length of 50 characters",
             },
             400,
         );

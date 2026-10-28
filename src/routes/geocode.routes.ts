@@ -41,8 +41,28 @@ geocodeRoutes.get("/reverse", async (c) => {
         );
     }
 
-    const lat = parseFloat(latStr);
-    const lon = parseFloat(lonStr);
+    const cleanLat = latStr.trim();
+    const cleanLon = lonStr.trim();
+
+    // Prevent ReDoS, oversized numeric strings, and malformed non-numbers
+    if (
+        cleanLat.length > 25 ||
+        cleanLon.length > 25 ||
+        !/^-?\d+(\.\d+)?$/.test(cleanLat) ||
+        !/^-?\d+(\.\d+)?$/.test(cleanLon)
+    ) {
+        return c.json<ApiResponse<null>>(
+            {
+                success: false,
+                data: null,
+                error: "Invalid coordinates format: must be valid decimal numbers within 25 characters",
+            },
+            400,
+        );
+    }
+
+    const lat = parseFloat(cleanLat);
+    const lon = parseFloat(cleanLon);
 
     if (
         !Number.isFinite(lat) ||
@@ -63,30 +83,41 @@ geocodeRoutes.get("/reverse", async (c) => {
         );
     }
 
-    const result = await geocodeService.reverse(lat, lon);
-    const tookMs = Number((performance.now() - start).toFixed(2));
+    try {
+        const result = await geocodeService.reverse(lat, lon);
+        const tookMs = Number((performance.now() - start).toFixed(2));
 
-    if (!result) {
+        if (!result) {
+            return c.json<ApiResponse<null>>(
+                {
+                    success: false,
+                    data: null,
+                    error: "Unable to reverse geocode the requested coordinates",
+                    meta: { tookMs },
+                },
+                404,
+            );
+        }
+
+        return c.json<ApiResponse<GeocodeResult>>({
+            success: true,
+            data: result,
+            meta: {
+                tookMs,
+                timestamp: new Date().toISOString(),
+                source: "nominatim",
+            },
+        });
+    } catch (err: any) {
         return c.json<ApiResponse<null>>(
             {
                 success: false,
                 data: null,
-                error: "Unable to reverse geocode the requested coordinates",
-                meta: { tookMs },
+                error: err?.message || "Upstream geocoding service temporarily unavailable",
             },
-            404,
+            503,
         );
     }
-
-    return c.json<ApiResponse<GeocodeResult>>({
-        success: true,
-        data: result,
-        meta: {
-            tookMs,
-            timestamp: new Date().toISOString(),
-            source: "nominatim",
-        },
-    });
 });
 
 /**
@@ -121,17 +152,28 @@ geocodeRoutes.get("/search", async (c) => {
         });
     }
 
-    const results = await geocodeService.search(q, limit);
-    const tookMs = Number((performance.now() - start).toFixed(2));
+    try {
+        const results = await geocodeService.search(q, limit);
+        const tookMs = Number((performance.now() - start).toFixed(2));
 
-    return c.json<ApiResponse<GeocodeResult[]>>({
-        success: true,
-        data: results,
-        meta: {
-            total: results.length,
-            tookMs,
-            timestamp: new Date().toISOString(),
-            source: "nominatim",
-        },
-    });
+        return c.json<ApiResponse<GeocodeResult[]>>({
+            success: true,
+            data: results,
+            meta: {
+                total: results.length,
+                tookMs,
+                timestamp: new Date().toISOString(),
+                source: "nominatim",
+            },
+        });
+    } catch (err: any) {
+        return c.json<ApiResponse<null>>(
+            {
+                success: false,
+                data: null,
+                error: err?.message || "Upstream geocoding search service temporarily unavailable",
+            },
+            503,
+        );
+    }
 });

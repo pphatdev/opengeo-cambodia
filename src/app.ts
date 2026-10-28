@@ -10,7 +10,11 @@ import { secureHeaders } from "hono/secure-headers";
 import { etag } from "hono/etag";
 
 import { config } from "./config.js";
-import { adminRateLimiter, globalRateLimiter } from "./middleware/rate-limiter.js";
+import {
+    adminRateLimiter,
+    createBotShield,
+    globalRateLimiter,
+} from "./middleware/rate-limiter.js";
 import { adminRoutes } from "./routes/admin.routes.js";
 import { geocodeRoutes } from "./routes/geocode.routes.js";
 import { healthRoutes } from "./routes/health.routes.js";
@@ -165,13 +169,16 @@ app.use(
     }),
 );
 
-// 5. Tiered Rate Limiting & Edge Caching
+// 5. Bot Shield, Malicious Scanner Blocker & Exploit Trap
+app.use("*", createBotShield());
+
+// 6. Tiered Rate Limiting & Edge Caching
 // Administrative routes: Dedicated 10,000 req/min/IP for immutable geographic datasets
 app.use("/api/admin/*", adminRateLimiter);
 
 // General rate limiter for non-admin API endpoints (e.g. /api/info, 5,000 req/min/IP)
 app.use("/api/*", async (c, next) => {
-    if (c.req.path.startsWith("/api/admin/")) {
+    if (c.req.path.startsWith("/api/admin/") || c.req.path.startsWith("/api/geocode/")) {
         return next();
     }
     return globalRateLimiter(c, next);

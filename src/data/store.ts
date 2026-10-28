@@ -90,6 +90,8 @@ export class AdminStore {
   private districts: AdminItem[] = [];
   private communes: AdminItem[] = [];
   private villages: AdminItem[] = [];
+  private allItems: AdminItem[] = [];
+  private searchCache = new Map<string, AdminItem[]>();
 
   // O(1) Lookups
   private itemById = new Map<number, AdminItem>();
@@ -425,6 +427,15 @@ export class AdminStore {
         this.villagesByCommune.set(v.parentId, list);
       }
     }
+
+    // Pre-cache unified items array and pre-normalize search tokens to eliminate 49,000 normalizations / query
+    this.allItems = [...this.provinces, ...this.districts, ...this.communes, ...this.villages];
+    for (const item of this.allItems) {
+      (item as any)._normEn = AdminStore.normalize(item.name_en || '');
+      (item as any)._normKm = AdminStore.normalize(item.name_km || '');
+      (item as any)._normName = AdminStore.normalize(item.name || '');
+    }
+    this.searchCache.clear();
   }
 
   // --- Read Operations ---
@@ -478,11 +489,18 @@ export class AdminStore {
 
   /**
    * Search across all administrative boundaries with Romanization & Khmer support
+   * Hardened against ReDoS and CPU exhaustion via query bounds, pre-indexing, and query LRU caching
    */
   public search(query: string, level?: AdminLevel, limit = 20): AdminItem[] {
-    const boundedLimit = Math.max(1, Math.min(100, isNaN(limit) ? 20 : limit));
-    const cleanQuery = AdminStore.normalize(query.slice(0, 100));
+    const boundedLimit = Math.max(1, Math.min(50, isNaN(limit) ? 20 : limit));
+    const cleanQuery = AdminStore.normalize(query.slice(0, 50));
     if (!cleanQuery) return [];
+
+    const cacheKey = `${level || 'all'}:${cleanQuery}:${boundedLimit}`;
+    const cached = this.searchCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
     const pool = level
       ? (level === 'province'
@@ -492,14 +510,14 @@ export class AdminStore {
             : level === 'commune'
               ? this.communes
               : this.villages)
-      : [...this.provinces, ...this.districts, ...this.communes, ...this.villages];
+      : this.allItems;
 
     const results: { item: AdminItem; score: number }[] = [];
 
     for (const item of pool) {
-      const normEn = AdminStore.normalize(item.name_en || '');
-      const normKm = AdminStore.normalize(item.name_km || '');
-      const normName = AdminStore.normalize(item.name || '');
+      const normEn = (item as any)._normEn || AdminStore.normalize(item.name_en || '');
+      const normKm = (item as any)._normKm || AdminStore.normalize(item.name_km || '');
+      const normName = (item as any)._normName || AdminStore.normalize(item.name || '');
 
       let score = -1;
 
@@ -523,7 +541,16 @@ export class AdminStore {
 
     // Sort by relevance score descending, then alphabetically by name_en
     results.sort((a, b) => b.score - a.score || a.item.name_en.localeCompare(b.item.name_en));
-    return results.slice(0, boundedLimit).map((r) => r.item);
+    const finalResults = results.slice(0, boundedLimit).map((r) => r.item);
+
+    // LRU caching for hot queries
+    if (this.searchCache.size >= 500) {
+      const oldestKey = this.searchCache.keys().next().value;
+      if (oldestKey) this.searchCache.delete(oldestKey);
+    }
+    this.searchCache.set(cacheKey, finalResults);
+
+    return finalResults;
   }
 
   public getStats(): AdminStats {

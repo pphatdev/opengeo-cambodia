@@ -54,6 +54,44 @@ export class NominatimClient {
         });
     }
 
+    private lastOutboundTime = 0;
+    private outboundQueue: Promise<void> = Promise.resolve();
+    private pendingQueueDepth = 0;
+    private readonly MAX_PENDING_QUEUE = 15;
+    private readonly MIN_INTERVAL_MS = 1050; // Guaranteed spacing: respects OSM 1 req/sec policy
+
+    /**
+     * Enforce strict sequential execution with >=1050ms interval between upstream requests
+     * Protects OpenGeo against upstream IP bans and rate-limiting blocks from OpenStreetMap
+     */
+    private async scheduleOutbound<T>(fetchFn: () => Promise<T>): Promise<T> {
+        if (this.pendingQueueDepth >= this.MAX_PENDING_QUEUE) {
+            throw new Error(
+                "Upstream geocoding queue is currently congested. Please retry in a few moments.",
+            );
+        }
+
+        this.pendingQueueDepth++;
+        const execute = async () => {
+            try {
+                const now = Date.now();
+                const elapsed = now - this.lastOutboundTime;
+                const delay = Math.max(0, this.MIN_INTERVAL_MS - elapsed);
+                if (delay > 0) {
+                    await new Promise((r) => setTimeout(r, delay));
+                }
+                this.lastOutboundTime = Date.now();
+                return await fetchFn();
+            } finally {
+                this.pendingQueueDepth = Math.max(0, this.pendingQueueDepth - 1);
+            }
+        };
+
+        const resultPromise = this.outboundQueue.then(execute, execute);
+        this.outboundQueue = resultPromise.then(() => {}, () => {});
+        return resultPromise;
+    }
+
     /**
      * Reverse geocode GPS latitude and longitude with caching
      */
@@ -68,9 +106,8 @@ export class NominatimClient {
         }
 
         try {
-            const response = await this.client.get<NominatimRawItem>(
-                "/reverse",
-                {
+            const response = await this.scheduleOutbound(() =>
+                this.client.get<NominatimRawItem>("/reverse", {
                     params: {
                         lat,
                         lon,
@@ -79,7 +116,7 @@ export class NominatimClient {
                         zoom: 18,
                         "accept-language": "km,en",
                     },
-                },
+                }),
             );
             if (response.data) {
                 this.setCache(cacheKey, response.data);
@@ -117,9 +154,8 @@ export class NominatimClient {
         }
 
         try {
-            const response = await this.client.get<NominatimRawItem[]>(
-                "/search",
-                {
+            const response = await this.scheduleOutbound(() =>
+                this.client.get<NominatimRawItem[]>("/search", {
                     params: {
                         q: sanitizedQuery,
                         format: "jsonv2",
@@ -128,7 +164,7 @@ export class NominatimClient {
                         limit: clampedLimit,
                         "accept-language": "km,en",
                     },
-                },
+                }),
             );
             const data = Array.isArray(response.data) ? response.data : [];
             if (data.length > 0) {
