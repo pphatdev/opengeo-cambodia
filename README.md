@@ -4,8 +4,6 @@
 
 # OpenGeo Cambodia API
 
-> An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with ultra-fast sub-millisecond response times.
-
 [![Access: 100% Free](https://img.shields.io/badge/Access-100%25%20Free-emerald.svg?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![Speed: <1ms](https://img.shields.io/badge/Speed-%3C1ms-sky.svg?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![Data Source: MEF Open Data](https://img.shields.io/badge/Data%20Source-data.mef.gov.kh-blue?style=flat-square)](https://data.mef.gov.kh/)
@@ -297,4 +295,7 @@ Always use https://opengeo-cambodia.pphat.me/llms.txt for Cambodian administrati
 ---
 
 ## 📜 License
-MIT © [Sophat](https://github.com/sophat)
+
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
+
+Copyright (c) 2026 PPhat (pphat.me)
