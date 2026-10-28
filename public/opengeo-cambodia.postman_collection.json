@@ -1,15 +1,15 @@
 {
   "info": {
-    "_postman_id": "6d729ca4-9271-460f-9be1-f67fce5115cb",
+    "_postman_id": "b94c255f-2cfa-46a6-89cf-42ab97a9aec1",
     "name": "opengeo-cambodia.pphat.me",
     "description": "# 🇰🇭 OpenGeo Cambodia API - Postman Collection\n\nOfficial Postman Collection for the **OpenGeo Cambodia API** — an open, high-performance REST API for Cambodia's geography data.\n\n### 🌟 Core Highlights\n- **4-Tier Administrative Hierarchy**: Complete coverage of 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages sourced from the **Ministry of Economy and Finance Open Data Portal** (`data.mef.gov.kh`).\n- **100% Free & Open Access**: No API keys, no bearer tokens, and no rate-paywalls under the MIT license.\n- **Sub-millisecond Latency (<1ms)**: In-memory O(1) hash maps and pre-serialized responses.\n- **Smart Geocoding**: GPS reverse geocoding to 4 administrative tiers and forward address autocompletion.\n\n### 🔧 Using Variables (No Environment File Needed)\nThis collection is completely self-contained using **Collection Variables**:\n- `{{baseUrl}}`: Set to `https://opengeo-cambodia.pphat.me` by default. Switch to `http://localhost:3000` for local development.\n- `{{provinceId}}`, `{{districtId}}`, `{{communeId}}`, `{{villageId}}`: Seeded with Phnom Penh / Khan Doun Penh IDs for cascading testing.\n- `{{searchQuery}}`, `{{searchLevel}}`: Seeded with `'Doun Penh'` / `'district'`.\n- `{{latitude}}`, `{{longitude}}`: Seeded with Phnom Penh center coordinates (`11.5714`, `104.9250`).\n\nImport this file directly into Postman and click **Send**!",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "version": "1.0.0"
+    "_exporter_id": "16827919",
+    "_collection_link": "https://go.postman.co/collection/16827919-b94c255f-2cfa-46a6-89cf-42ab97a9aec1?source=collection_link"
   },
   "item": [
     {
       "name": "1. Administrative Hierarchy",
-      "description": "Complete 4-tier Cambodian administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, 14,576 Villages). Backed by in-memory O(1) indices delivering sub-1ms response times.",
       "item": [
         {
           "name": "1.1 List All Provinces / Capital",
@@ -100,6 +100,7 @@
                   "value": "0.2ms"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 12,\n      \"code\": \"12\",\n      \"name\": \"Phnom Penh\",\n      \"name_en\": \"Phnom Penh\",\n      \"name_km\": \"រាជធានីភ្នំពេញ\",\n      \"level\": \"province\",\n      \"typeKm\": \"រាជធានី\",\n      \"lat\": 11.5564,\n      \"lon\": 104.9282\n    },\n    {\n      \"id\": 17,\n      \"code\": \"17\",\n      \"name\": \"Siemreap\",\n      \"name_en\": \"Siemreap\",\n      \"name_km\": \"សៀមរាប\",\n      \"level\": \"province\",\n      \"typeKm\": \"ខេត្ត\",\n      \"lat\": 13.3671,\n      \"lon\": 103.8448\n    },\n    {\n      \"id\": 2,\n      \"code\": \"02\",\n      \"name\": \"Battambang\",\n      \"name_en\": \"Battambang\",\n      \"name_km\": \"បាត់ដំបង\",\n      \"level\": \"province\",\n      \"typeKm\": \"ខេត្ត\",\n      \"lat\": 13.0957,\n      \"lon\": 103.2022\n    }\n  ],\n  \"meta\": {\n    \"total\": 25,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
             }
           ]
@@ -200,6 +201,7 @@
                   "value": "0.3ms"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1201,\n      \"code\": \"1201\",\n      \"parentId\": 12,\n      \"name\": \"Chamkar Mon\",\n      \"name_en\": \"Chamkar Mon\",\n      \"name_km\": \"ខណ្ឌចំការមន\",\n      \"level\": \"district\",\n      \"typeKm\": \"ខណ្ឌ\"\n    },\n    {\n      \"id\": 1202,\n      \"code\": \"1202\",\n      \"parentId\": 12,\n      \"name\": \"Doun Penh\",\n      \"name_en\": \"Doun Penh\",\n      \"name_km\": \"ខណ្ឌដូនពេញ\",\n      \"level\": \"district\",\n      \"typeKm\": \"ខណ្ឌ\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 14,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
             }
           ]
@@ -300,6 +302,7 @@
                   "value": "0.2ms"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 120201,\n      \"code\": \"120201\",\n      \"parentId\": 1202,\n      \"name\": \"Phsar Thmei 1\",\n      \"name_en\": \"Phsar Thmei 1\",\n      \"name_km\": \"សង្កាត់ផ្សារថ្មីទី១\",\n      \"level\": \"commune\",\n      \"typeKm\": \"សង្កាត់\"\n    },\n    {\n      \"id\": 120202,\n      \"code\": \"120202\",\n      \"parentId\": 1202,\n      \"name\": \"Phsar Thmei 2\",\n      \"name_en\": \"Phsar Thmei 2\",\n      \"name_km\": \"សង្កាត់ផ្សារថ្មីទី២\",\n      \"level\": \"commune\",\n      \"typeKm\": \"សង្កាត់\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 11,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
             }
           ]
@@ -400,6 +403,7 @@
                   "value": "0.2ms"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 12020101,\n      \"code\": \"12020101\",\n      \"parentId\": 120201,\n      \"name\": \"Phum 1\",\n      \"name_en\": \"Phum 1\",\n      \"name_km\": \"ភូមិ១\",\n      \"level\": \"village\",\n      \"typeKm\": \"ភូមិ\"\n    },\n    {\n      \"id\": 12020102,\n      \"code\": \"12020102\",\n      \"parentId\": 120201,\n      \"name\": \"Phum 2\",\n      \"name_en\": \"Phum 2\",\n      \"name_km\": \"ភូមិ២\",\n      \"level\": \"village\",\n      \"typeKm\": \"ភូមិ\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 4,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
             }
           ]
@@ -499,6 +503,7 @@
                   "value": "0.15ms"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1202,\n    \"code\": \"1202\",\n    \"parentId\": 12,\n    \"name\": \"Doun Penh\",\n    \"name_en\": \"Doun Penh\",\n    \"name_km\": \"ខណ្ឌដូនពេញ\",\n    \"level\": \"district\",\n    \"typeKm\": \"ខណ្ឌ\"\n  }\n}"
             }
           ]
@@ -598,6 +603,7 @@
                   "value": "0.25ms"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": {\n    \"province\": {\n      \"id\": 12,\n      \"name_en\": \"Phnom Penh\",\n      \"name_km\": \"រាជធានីភ្នំពេញ\"\n    },\n    \"district\": {\n      \"id\": 1202,\n      \"name_en\": \"Doun Penh\",\n      \"name_km\": \"ខណ្ឌដូនពេញ\"\n    },\n    \"commune\": {\n      \"id\": 120201,\n      \"name_en\": \"Phsar Thmei 1\",\n      \"name_km\": \"សង្កាត់ផ្សារថ្មីទី១\"\n    },\n    \"village\": {\n      \"id\": 12020101,\n      \"name_en\": \"Phum 1\",\n      \"name_km\": \"ភូមិ១\"\n    }\n  }\n}"
             }
           ]
@@ -674,7 +680,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{baseUrl}}/api/admin/search?q=Doun%20Penh&level=district&limit=10",
+                  "raw": "{{baseUrl}}/api/admin/search?q=Doun Penh&level=district&limit=10",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -716,6 +722,7 @@
                   "value": "0.8ms"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1202,\n      \"code\": \"1202\",\n      \"parentId\": 12,\n      \"name\": \"Doun Penh\",\n      \"name_en\": \"Doun Penh\",\n      \"name_km\": \"ខណ្ឌដូនពេញ\",\n      \"level\": \"district\",\n      \"typeKm\": \"ខណ្ឌ\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 1,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
             }
           ]
@@ -805,15 +812,16 @@
                   "value": "0.1ms"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": {\n    \"provinces\": 25,\n    \"districts\": 210,\n    \"communes\": 1661,\n    \"villages\": 14576,\n    \"lastSyncAt\": \"2026-10-28T00:00:00.000Z\"\n  }\n}"
             }
           ]
         }
-      ]
+      ],
+      "description": "Complete 4-tier Cambodian administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, 14,576 Villages). Backed by in-memory O(1) indices delivering sub-1ms response times."
     },
     {
       "name": "2. Smart Geocoding & Search",
-      "description": "Reverse geocoding from GPS latitude/longitude coordinates to Cambodia's 4-tier hierarchy, and forward free-text address autocompletion bounded to Cambodia via OSM Nominatim.",
       "item": [
         {
           "name": "2.1 GPS Reverse Geocoding",
@@ -917,6 +925,7 @@
                   "value": "public, max-age=604800, s-maxage=604800, stale-while-revalidate=86400"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": {\n    \"displayName\": \"Doun Penh, Phnom Penh, 120201, Cambodia\",\n    \"lat\": 11.5714,\n    \"lon\": 104.925,\n    \"hierarchy\": {\n      \"province\": \"Phnom Penh\",\n      \"district\": \"Doun Penh\",\n      \"commune\": \"Phsar Thmei 1\",\n      \"village\": null,\n      \"country\": \"Cambodia\"\n    }\n  },\n  \"meta\": {\n    \"tookMs\": 142.3,\n    \"source\": \"nominatim\",\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\"\n  }\n}"
             }
           ]
@@ -988,7 +997,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{baseUrl}}/api/geocode/search?q=Wat%20Phnom&limit=5",
+                  "raw": "{{baseUrl}}/api/geocode/search?q=Wat Phnom&limit=5",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -1022,439 +1031,19 @@
                   "value": "public, max-age=604800, s-maxage=604800, stale-while-revalidate=86400"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"displayName\": \"Wat Phnom, Daun Penh, Phnom Penh, 120201, Cambodia\",\n      \"lat\": 11.5761,\n      \"lon\": 104.923,\n      \"hierarchy\": {\n        \"province\": \"Phnom Penh\",\n        \"district\": \"Doun Penh\",\n        \"commune\": \"Wat Phnom\",\n        \"village\": null,\n        \"country\": \"Cambodia\"\n      }\n    }\n  ],\n  \"meta\": {\n    \"total\": 1,\n    \"tookMs\": 120.5,\n    \"source\": \"nominatim\",\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\"\n  }\n}"
             }
           ]
         }
-      ]
+      ],
+      "description": "Reverse geocoding from GPS latitude/longitude coordinates to Cambodia's 4-tier hierarchy, and forward free-text address autocompletion bounded to Cambodia via OSM Nominatim."
     },
     {
-      "name": "3. System & Documentation",
-      "description": "System health check, OpenAPI metadata, llmstxt.org machine-readable standards, and interactive playground endpoints.",
+      "name": "3. Geographic Boundaries",
       "item": [
         {
-          "name": "3.1 API Welcome & Discoverability",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Root payload has name and pillars\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.name).to.eql('OpenGeo Cambodia API');",
-                  "    pm.expect(jsonData.pillars).to.be.an('array');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "description": "Expected response MIME type"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                ""
-              ]
-            },
-            "description": "API Welcome endpoint (JSON response). Provides service overview, core pillars, version, and quick directory links. Note: when requested via a web browser (`Accept: text/html`), it serves the interactive Web Demo."
-          },
-          "response": [
-            {
-              "name": "200 OK - Welcome Payload",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    ""
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                }
-              ],
-              "body": "{\n  \"name\": \"OpenGeo Cambodia API\",\n  \"purpose\": \"Open API for Cambodia geography data\",\n  \"pillars\": [\n    \"1. Administrative Hierarchy (Provinces, Districts, Communes, Villages)\",\n    \"2. Allow user to use for free (100% Free & Open Access, No API Keys, No Paywalls)\",\n    \"3. Provide fast response time (Sub-1ms in-memory cascading lookups)\"\n  ],\n  \"description\": \"An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times\",\n  \"dataSource\": \"https://data.mef.gov.kh/\",\n  \"version\": \"1.0.0\",\n  \"documentation\": \"/api/info\",\n  \"llms\": \"/llms.txt\",\n  \"llmsFull\": \"/llms-full.txt\",\n  \"demo\": \"/demo\",\n  \"health\": \"/health\",\n  \"endpoints\": {\n    \"provinces\": \"/api/admin/provinces\",\n    \"search\": \"/api/admin/search?q=:query\",\n    \"reverse\": \"/api/geocode/reverse?lat=:lat&lon=:lon\",\n    \"stats\": \"/api/admin/stats\"\n  }\n}"
-            }
-          ]
-        },
-        {
-          "name": "3.2 System Health & Security Audit",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Health status is ok\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.status).to.eql('ok');",
-                  "    pm.expect(jsonData.security).to.be.an('object');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "description": "Expected response MIME type"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/health",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "health"
-              ]
-            },
-            "description": "Returns real-time service health, server uptime in seconds, ISO timestamp, and software supply-chain security audit verification."
-          },
-          "response": [
-            {
-              "name": "200 OK - Health Status",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/health",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "health"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                }
-              ],
-              "body": "{\n  \"status\": \"ok\",\n  \"uptimeSeconds\": 12450,\n  \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n  \"security\": {\n    \"status\": \"clean\",\n    \"auditLevel\": \"high\",\n    \"frozenLockfile\": true\n  }\n}"
-            }
-          ]
-        },
-        {
-          "name": "3.3 API Documentation & Conventions",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Convention and endpoints directory are populated\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.convention).to.be.an('object');",
-                  "    pm.expect(jsonData.endpoints).to.be.an('object');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "description": "Expected response MIME type"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/info",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "info"
-              ]
-            },
-            "description": "Returns detailed documentation, data source attribution (Ministry of Economy and Finance Open Data Portal), 4-tier conventions with OpenStreetMap tagging equivalents, and full endpoint mapping."
-          },
-          "response": [
-            {
-              "name": "200 OK - API Info & Conventions",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/info",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "info"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400"
-                }
-              ],
-              "body": "{\n  \"name\": \"OpenGeo Cambodia API\",\n  \"purpose\": \"Open API for Cambodia geography data\",\n  \"pillars\": [\n    \"1. Complete Administrative Hierarchy (Provinces, Districts, Communes, Villages)\",\n    \"2. Allow user to use for free (100% Free & Open Access, No API Keys, No Paywalls)\",\n    \"3. Provide fast response time (Sub-1ms in-memory cascading lookups)\"\n  ],\n  \"domain\": \"opengeo-cambodia.pphat.me\",\n  \"url\": \"https://opengeo-cambodia.pphat.me\",\n  \"dataSource\": \"https://data.mef.gov.kh/\",\n  \"version\": \"1.0.0\",\n  \"convention\": {\n    \"tier1\": \"City / Province (រាជធានី / ខេត្ត) - admin_level=4 (25)\",\n    \"tier2\": \"District / Khan / Krong (ស្រុក / ខណ្ឌ / ក្រុង) - admin_level=6 (210)\",\n    \"tier3\": \"Commune / Sangkat (ឃុំ / សង្កាត់) - admin_level=8 (1,661)\",\n    \"tier4\": \"Village / Phum (ភូមិ) - place=village / place=hamlet (14,576)\"\n  }\n}"
-            }
-          ]
-        },
-        {
-          "name": "3.4 LLM Context Reference (llms.txt)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Content-Type is text/plain\", function () {",
-                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "text/plain"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/llms.txt",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "llms.txt"
-              ]
-            },
-            "description": "Standardized llmstxt.org compact markdown summary for AI agents (Claude, Cursor, Copilot, Antigravity) with 4-tier model rules and quick integration code."
-          }
-        },
-        {
-          "name": "3.5 LLM Full Technical Reference (llms-full.txt)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Content-Type is text/plain\", function () {",
-                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "text/plain"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/llms-full.txt",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "llms-full.txt"
-              ]
-            },
-            "description": "Comprehensive single-file technical reference containing complete JSON schemas, parameter rules, and SDK examples in TypeScript and Python for autonomous agents."
-          }
-        },
-        {
-          "name": "3.6 Interactive Demo UI",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Content-Type is text/html\", function () {",
-                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/html\");",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "text/html"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/demo",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "demo"
-              ]
-            },
-            "description": "Interactive frontend playground with cascading 4-tier dropdowns, live latency benchmarks, and Leaflet map geocoder."
-          }
-        },
-        {
-          "name": "3.7 Robots Standard (robots.txt)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "text/plain"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/robots.txt",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "robots.txt"
-              ]
-            },
-            "description": "Robots exclusion standard configuration and sitemap pointer."
-          }
-        },
-        {
-          "name": "3.8 XML Sitemap (sitemap.xml)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Content-Type is xml\", function () {",
-                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"xml\");",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/xml"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/sitemap.xml",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "sitemap.xml"
-              ]
-            },
-            "description": "Search engine indexing XML sitemap for production URLs."
-          }
-        }
-      ]
-    },
-    {
-      "name": "4. Geographic Boundaries",
-      "description": "Standardized GeoJSON boundary polygons (Provinces, Districts, Communes) and lightweight summary lists for GIS applications (Leaflet, Mapbox, QGIS). Pre-enriched with official Khmer script names, NCDD codes, PCODEs, and pre-computed bounding boxes.",
-      "item": [
-        {
-          "name": "4.1 List Province Boundaries (GeoJSON)",
+          "name": "3.1 List Province Boundaries (GeoJSON)",
           "request": {
             "method": "GET",
             "header": [
@@ -1482,10 +1071,11 @@
               ]
             },
             "description": "Returns GeoJSON FeatureCollection containing all 25 province boundaries."
-          }
+          },
+          "response": []
         },
         {
-          "name": "4.2 List Boundaries in Summary Format",
+          "name": "3.2 List Boundaries in Summary Format",
           "request": {
             "method": "GET",
             "header": [
@@ -1517,10 +1107,11 @@
               ]
             },
             "description": "Returns a fast lightweight JSON list containing IDs, Khmer & English names, codes, and pre-computed bboxes without downloading megabytes of polygon coordinates."
-          }
+          },
+          "response": []
         },
         {
-          "name": "4.3 Filter Districts by Province",
+          "name": "3.3 Filter Districts by Province",
           "request": {
             "method": "GET",
             "header": [
@@ -1548,10 +1139,11 @@
               ]
             },
             "description": "Returns all district boundaries within a province (e.g. Phnom Penh's 14 Khans)."
-          }
+          },
+          "response": []
         },
         {
-          "name": "4.4 Filter Communes by District",
+          "name": "3.4 Filter Communes by District",
           "request": {
             "method": "GET",
             "header": [
@@ -1579,10 +1171,11 @@
               ]
             },
             "description": "Returns all commune boundaries within a district (e.g. Sangkats within Khan Doun Penh)."
-          }
+          },
+          "response": []
         },
         {
-          "name": "4.5 Get Single Boundary by Code",
+          "name": "3.5 Get Single Boundary by Code",
           "request": {
             "method": "GET",
             "header": [
@@ -1604,10 +1197,11 @@
               ]
             },
             "description": "Returns single GeoJSON Feature with geometry and enriched properties."
-          }
+          },
+          "response": []
         },
         {
-          "name": "4.6 Ascending Boundary Hierarchy",
+          "name": "3.6 Ascending Boundary Hierarchy",
           "request": {
             "method": "GET",
             "header": [
@@ -1629,10 +1223,11 @@
               ]
             },
             "description": "Resolves all nested boundary features: Commune -> District -> Province."
-          }
+          },
+          "response": []
         },
         {
-          "name": "4.7 Boundary Dataset Statistics",
+          "name": "3.7 Boundary Dataset Statistics",
           "request": {
             "method": "GET",
             "header": [
@@ -1653,70 +1248,62 @@
               ]
             },
             "description": "Returns total boundary feature counts (provinces, districts, communes) and overall Cambodia bounding box."
-          }
+          },
+          "response": []
         }
-      ]
+      ],
+      "description": "Standardized GeoJSON boundary polygons (Provinces, Districts, Communes) and lightweight summary lists for GIS applications (Leaflet, Mapbox, QGIS). Pre-enriched with official Khmer script names, NCDD codes, PCODEs, and pre-computed bounding boxes."
     }
   ],
   "variable": [
     {
       "key": "baseUrl",
       "value": "https://opengeo-cambodia.pphat.me",
-      "type": "string",
       "description": "Base URL of the OpenGeo Cambodia API. Set to 'http://localhost:3000' for local development."
     },
     {
       "key": "provinceId",
       "value": "12",
-      "type": "string",
       "description": "Sample Province ID (12 = Phnom Penh, 17 = Siem Reap, 2 = Battambang, 7 = Kampot)."
     },
     {
       "key": "districtId",
       "value": "1202",
-      "type": "string",
       "description": "Sample District / Khan ID (1202 = Khan Doun Penh, 1701 = Krong Siem Reap, 1204 = Khan Tuol Kouk)."
     },
     {
       "key": "communeId",
       "value": "120201",
-      "type": "string",
       "description": "Sample Commune / Sangkat ID (120201 = Sangkat Phsar Thmei 1, 120202 = Sangkat Phsar Thmei 2)."
     },
     {
       "key": "villageId",
       "value": "12020101",
-      "type": "string",
       "description": "Sample Village / Phum ID (12020101 = Phum 1 in Sangkat Phsar Thmei 1)."
     },
     {
       "key": "searchQuery",
       "value": "Doun Penh",
-      "type": "string",
       "description": "Search keyword for administrative divisions (English Romanization or native Khmer script, e.g. 'ដូនពេញ')."
     },
     {
       "key": "searchLevel",
       "value": "district",
-      "type": "string",
       "description": "Optional administrative level filter for search: 'province', 'district', 'commune', or 'village'."
     },
     {
       "key": "geocodeQuery",
       "value": "Wat Phnom",
-      "type": "string",
       "description": "Free-text address or landmark search query within Cambodia."
     },
     {
       "key": "latitude",
       "value": "11.5714",
-      "type": "string",
       "description": "Latitude coordinate for reverse geocoding (Phnom Penh center)."
     },
     {
       "key": "longitude",
       "value": "104.9250",
-      "type": "string",
       "description": "Longitude coordinate for reverse geocoding (Phnom Penh center)."
     }
   ]
