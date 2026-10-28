@@ -1,21 +1,27 @@
+<p align="center">
+  <img src="public/cover.webp" alt="OpenGeo Cambodia Platform Banner" width="100%" />
+</p>
+
 # OpenGeo Cambodia API
 
 > An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with ultra-fast sub-millisecond response times.
 
 [![Access: 100% Free](https://img.shields.io/badge/Access-100%25%20Free-emerald.svg?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![Speed: <1ms](https://img.shields.io/badge/Speed-%3C1ms-sky.svg?style=flat-square)](https://opengeo-cambodia.pphat.me)
+[![Data Source: MEF Open Data](https://img.shields.io/badge/Data%20Source-data.mef.gov.kh-blue?style=flat-square)](https://data.mef.gov.kh/)
 [![Domain](https://img.shields.io/badge/Domain-opengeo--cambodia.pphat.me-0d9488?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![LLM Docs](https://img.shields.io/badge/LLM%20Docs-llms.txt-7c3aed?style=flat-square)](https://opengeo-cambodia.pphat.me/llms.txt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
 🔗 **Live Production URL:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me)  
+🏛️ **Official Data Source:** [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)  
 🤖 **LLM Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)
 
 ---
 
 ## 🌟 Overview & Purpose
 
-**OpenGeo Cambodia** is a dedicated open API built specifically for Cambodia's geography and administrative data. The purpose of this project is to solve the critical geographic data accessibility problem in Cambodia by delivering on three core pillars:
+**OpenGeo Cambodia** is a dedicated open API built specifically for Cambodia's geography and administrative data. The dataset is officially sourced from the **Ministry of Economy and Finance Open Data Portal** ([data.mef.gov.kh](https://data.mef.gov.kh/)). The purpose of this project is to solve the critical geographic data accessibility problem in Cambodia by delivering on three core pillars:
 
 1. **Complete Administrative Hierarchy**: Full, authoritative coverage of all 4 official tiers of Cambodian administrative divisions:
    - **Provinces & Capital** (រាជធានី / ខេត្ត) — **25** (1 Capital Municipality + 24 Provinces)

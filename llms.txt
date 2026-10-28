@@ -12,6 +12,7 @@ OpenGeo Cambodia is an open API dedicated to standardizing and distributing Camb
 - **Base URL**: `https://opengeo-cambodia.pphat.me` (or `http://localhost:3000` locally)
 - **Interactive Playground**: `https://opengeo-cambodia.pphat.me/demo`
 - **Full LLM Reference**: [llms-full.txt](https://opengeo-cambodia.pphat.me/llms-full.txt)
+- **Official Data Source**: [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)
 - **API Spec & Metadata**: `GET /api/info`
 - **Health Check**: `GET /health`
 - **Rate Limits**: 120 requests/min for `/api/admin/*`, 30 requests/min for `/api/geocode/*` (IP-based, standard `X-RateLimit-*` headers)

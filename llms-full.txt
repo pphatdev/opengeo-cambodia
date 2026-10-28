@@ -16,6 +16,7 @@ OpenGeo Cambodia is an open API built specifically for Cambodia's geography and 
 ### Primary Architecture
 1. **In-Memory Administrative Store (`AdminStore`)**:
    - Contains all official Cambodian administrative divisions: **25 Provinces**, **210 Districts**, **1,661 Communes**, and **14,576 Villages**.
+   - Officially sourced from the Ministry of Economy and Finance Open Data Portal ([https://data.mef.gov.kh/](https://data.mef.gov.kh/)).
    - Sub-millisecond ($< 1\text{ms}$) response times served directly from memory indices without external network dependencies.
    - Dual-language support: Official Khmer script (`name_km`) and Latin Romanization (`name_en`).
 2. **Normalized Smart Geocoding (`GeocodeService`)**:

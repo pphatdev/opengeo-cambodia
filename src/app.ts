@@ -410,6 +410,7 @@ app.get("/", async (c) => {
         ],
         description:
             "An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times",
+        dataSource: "https://data.mef.gov.kh/",
         version: "1.0.0",
         documentation: "/api/info",
         llms: "/llms.txt",
