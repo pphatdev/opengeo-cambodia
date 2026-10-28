@@ -6,8 +6,6 @@ import type { ApiResponse } from "../types/api.js";
 import type {
     AdminItem,
     AdminLevel,
-    AdminStats,
-    HierarchyPath,
 } from "../types/admin.js";
 
 export const adminRoutes = new Hono();
