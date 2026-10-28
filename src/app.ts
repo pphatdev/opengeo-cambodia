@@ -34,16 +34,25 @@ function resolveAppDir(): string {
 
 const currentDir = resolveAppDir();
 const rootDir = currentDir ? path.resolve(currentDir, "..") : "";
-const demoHtmlPath = currentDir ? path.resolve(currentDir, "views", "demo.html") : "";
+const demoHtmlPath = (rootDir && typeof fs?.existsSync === "function" && fs.existsSync(path.resolve(rootDir, "src", "views", "demo.html")))
+    ? path.resolve(rootDir, "src", "views", "demo.html")
+    : (currentDir ? path.resolve(currentDir, "views", "demo.html") : "");
 const llmsTxtPath = rootDir ? path.resolve(rootDir, "llms.txt") : "";
 const llmsFullTxtPath = rootDir ? path.resolve(rootDir, "llms-full.txt") : "";
 const publicDir = (rootDir && typeof fs?.existsSync === "function" && fs.existsSync(path.resolve(rootDir, "public")))
     ? path.resolve(rootDir, "public")
     : (currentDir ? path.resolve(currentDir, "..", "public") : "");
 
-// Auto-sync reference logo assets if available
+// Auto-sync reference logo assets & demo.html if available
 if (rootDir && typeof fs?.existsSync === "function") {
     try {
+        const srcDemo = path.resolve(rootDir, "src", "views", "demo.html");
+        const distViewsDir = path.resolve(rootDir, "dist", "views");
+        const distDemo = path.join(distViewsDir, "demo.html");
+        if (fs.existsSync(srcDemo) && fs.existsSync(distViewsDir)) {
+            fs.copyFileSync(srcDemo, distDemo);
+        }
+
         const khmerDatetimeLogoDir = path.resolve(
             rootDir,
             "..",
@@ -212,6 +221,20 @@ app.get("/llms-full.txt", async (c) => {
 });
 
 // 7. Static Branding & Logo Endpoints
+app.get("/cover.webp", async (c) => {
+    if (c.env && (c.env as any).ASSETS) {
+        const assetRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/cover.webp", c.req.url)));
+        if (assetRes.ok) return assetRes;
+    }
+    const filePath = path.join(publicDir, "cover.webp");
+    if (fs.existsSync(filePath)) {
+        c.header("Content-Type", "image/webp");
+        c.header("Cache-Control", "public, max-age=86400");
+        return c.body(fs.readFileSync(filePath));
+    }
+    return c.notFound();
+});
+
 app.get("/logo.jpg", (c) => {
     const filePath = path.join(publicDir, "logo.jpg");
     if (fs.existsSync(filePath)) {
