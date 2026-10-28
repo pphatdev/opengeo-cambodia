@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "6d729ca4-9271-460f-9be1-f67fce5115cb",
-    "name": "OpenGeo Cambodia API",
+    "name": "opengeo-cambodia.pphat.me",
     "description": "# 🇰🇭 OpenGeo Cambodia API - Postman Collection\n\nOfficial Postman Collection for the **OpenGeo Cambodia API** — an open, high-performance REST API for Cambodia's geography data.\n\n### 🌟 Core Highlights\n- **4-Tier Administrative Hierarchy**: Complete coverage of 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages sourced from the **Ministry of Economy and Finance Open Data Portal** (`data.mef.gov.kh`).\n- **100% Free & Open Access**: No API keys, no bearer tokens, and no rate-paywalls under the MIT license.\n- **Sub-millisecond Latency (<1ms)**: In-memory O(1) hash maps and pre-serialized responses.\n- **Smart Geocoding**: GPS reverse geocoding to 4 administrative tiers and forward address autocompletion.\n\n### 🔧 Using Variables (No Environment File Needed)\nThis collection is completely self-contained using **Collection Variables**:\n- `{{baseUrl}}`: Set to `https://opengeo-cambodia.pphat.me` by default. Switch to `http://localhost:3000` for local development.\n- `{{provinceId}}`, `{{districtId}}`, `{{communeId}}`, `{{villageId}}`: Seeded with Phnom Penh / Khan Doun Penh IDs for cascading testing.\n- `{{searchQuery}}`, `{{searchLevel}}`: Seeded with `'Doun Penh'` / `'district'`.\n- `{{latitude}}`, `{{longitude}}`: Seeded with Phnom Penh center coordinates (`11.5714`, `104.9250`).\n\nImport this file directly into Postman and click **Send**!",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "1.0.0"
@@ -1445,6 +1445,214 @@
               ]
             },
             "description": "Search engine indexing XML sitemap for production URLs."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Geographic Boundaries",
+      "description": "Standardized GeoJSON boundary polygons (Provinces, Districts, Communes) and lightweight summary lists for GIS applications (Leaflet, Mapbox, QGIS). Pre-enriched with official Khmer script names, NCDD codes, PCODEs, and pre-computed bounding boxes.",
+      "item": [
+        {
+          "name": "4.1 List Province Boundaries (GeoJSON)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries?level=province",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries"
+              ],
+              "query": [
+                {
+                  "key": "level",
+                  "value": "province",
+                  "description": "Boundary level: province, district, commune"
+                }
+              ]
+            },
+            "description": "Returns GeoJSON FeatureCollection containing all 25 province boundaries."
+          }
+        },
+        {
+          "name": "4.2 List Boundaries in Summary Format",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries?level=province&format=summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries"
+              ],
+              "query": [
+                {
+                  "key": "level",
+                  "value": "province"
+                },
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Lightweight summary list without heavy coordinate arrays"
+                }
+              ]
+            },
+            "description": "Returns a fast lightweight JSON list containing IDs, Khmer & English names, codes, and pre-computed bboxes without downloading megabytes of polygon coordinates."
+          }
+        },
+        {
+          "name": "4.3 Filter Districts by Province",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/districts?province_code={{provinceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "districts"
+              ],
+              "query": [
+                {
+                  "key": "province_code",
+                  "value": "{{provinceId}}",
+                  "description": "Filter districts by parent province code"
+                }
+              ]
+            },
+            "description": "Returns all district boundaries within a province (e.g. Phnom Penh's 14 Khans)."
+          }
+        },
+        {
+          "name": "4.4 Filter Communes by District",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/communes?district_code={{districtId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "communes"
+              ],
+              "query": [
+                {
+                  "key": "district_code",
+                  "value": "{{districtId}}",
+                  "description": "Filter communes by parent district code"
+                }
+              ]
+            },
+            "description": "Returns all commune boundaries within a district (e.g. Sangkats within Khan Doun Penh)."
+          }
+        },
+        {
+          "name": "4.5 Get Single Boundary by Code",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/item/{{provinceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "item",
+                "{{provinceId}}"
+              ]
+            },
+            "description": "Returns single GeoJSON Feature with geometry and enriched properties."
+          }
+        },
+        {
+          "name": "4.6 Ascending Boundary Hierarchy",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/hierarchy/{{communeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "hierarchy",
+                "{{communeId}}"
+              ]
+            },
+            "description": "Resolves all nested boundary features: Commune -> District -> Province."
+          }
+        },
+        {
+          "name": "4.7 Boundary Dataset Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "stats"
+              ]
+            },
+            "description": "Returns total boundary feature counts (provinces, districts, communes) and overall Cambodia bounding box."
           }
         }
       ]

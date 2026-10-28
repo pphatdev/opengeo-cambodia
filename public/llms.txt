@@ -1,0 +1,85 @@
+# OpenGeo Cambodia API
+
+> An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with ultra-fast sub-millisecond response times.
+
+## Project Purpose & Core Pillars
+
+OpenGeo Cambodia is an open API dedicated to standardizing and distributing Cambodian geographic data based on three foundational principles:
+1. **Complete Administrative Hierarchy**: Full authoritative resolution across all 4 official tiers: 25 Provinces (រាជធានី / ខេត្ត), 210 Districts (ស្រុក / ខណ្ឌ / ក្រុង), 1,661 Communes (ឃុំ / សង្កាត់), and 14,576 Villages (ភូមិ).
+2. **100% Free & Open Access**: Zero barrier to entry. No API keys, no subscriptions, no paywalls, unrestricted commercial and non-commercial usage under the MIT license.
+3. **Ultra-Fast Response Times (Sub-1ms)**: Pre-indexed in-memory O(1) hash maps and edge caching provide cascading lookups and geocoding in under 1 millisecond.
+
+- **Base URL**: `https://opengeo-cambodia.pphat.me` (or `http://localhost:3000` locally)
+- **Interactive Playground**: `https://opengeo-cambodia.pphat.me/demo`
+- **Full LLM Reference**: [llms-full.txt](https://opengeo-cambodia.pphat.me/llms-full.txt)
+- **Official Data Source**: [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)
+- **API Spec & Metadata**: `GET /api/info`
+- **Health Check**: `GET /health`
+- **Rate Limits**: 120 requests/min for `/api/admin/*`, 30 requests/min for `/api/geocode/*` (IP-based, standard `X-RateLimit-*` headers)
+- **Data Latency**: Sub-1ms for in-memory administrative lookups; ~100-300ms for Nominatim OSM reverse geocoding
+
+## Administrative Hierarchy (4 Tiers)
+
+| Tier | Cambodian Name (KM) | Latin Romanization | Total Count | Standard Code Length |
+| :--- | :--- | :--- | :--- | :--- |
+| **Tier 1: Province** | រាជធានី / ខេត្ត | Reachdhanie / Khaet | **25** (1 Capital + 24 Provinces) | 2 digits (e.g. `12`) |
+| **Tier 2: District** | ស្រុក / ខណ្ឌ / ក្រុង | Srok / Khan / Krong | **210** (14 Khans + 32 Krongs + 164 Sroks) | 4 digits (e.g. `1202`) |
+| **Tier 3: Commune** | ឃុំ / សង្កាត់ | Khum / Sangkat | **1,661** | 6 digits (e.g. `120201`) |
+| **Tier 4: Village** | ភូមិ | Phum (Village) | **14,576** | 8 digits (e.g. `12020101`) |
+
+## Quick API Reference
+
+### Administrative Lookups (In-Memory, < 1ms)
+- `GET /api/admin/provinces`: List all 25 provinces/capital with Khmer & English names, coordinates, and codes.
+- `GET /api/admin/provinces/:id/districts`: List all districts / khans / krongs within a province (e.g. `:id` = `12` for Phnom Penh).
+- `GET /api/admin/districts/:id/communes`: List all communes / sangkats within a district (e.g. `:id` = `1202` for Doun Penh).
+- `GET /api/admin/communes/:id/villages`: List all villages within a commune (e.g. `:id` = `120201` for Phsar Thmei 1).
+- `GET /api/admin/item/:id`: Fetch a single administrative record by numeric ID.
+- `GET /api/admin/hierarchy/:id`: Resolves the complete ascending 4-tier tree (Province -> District -> Commune -> Village) for any division ID.
+- `GET /api/admin/search?q=:query&level=:level&limit=:limit`: Sub-millisecond full-text search across Khmer script and Latin romanizations.
+- `GET /api/admin/stats`: Summary counts of loaded administrative units (25 provinces, 210 districts, 1,661 communes, 14,576 villages).
+
+### Smart Geocoding (OSM & Nominatim)
+- `GET /api/geocode/reverse?lat=:lat&lon=:lon`: Reverse geocode a GPS coordinate into the standardized 4-tier Cambodian address model.
+- `GET /api/geocode/search?q=:query&limit=:limit`: Free-text geocoding search bounded to Cambodia territory.
+
+### Geographic Boundaries (GeoJSON & GIS Integration)
+- `GET /api/boundaries?level=:level&province_code=:pCode&district_code=:dCode&q=:query&format=:format`: Unified Boundaries API with spatial filtering, search, pagination, and format selection (`geojson` or `summary`).
+- `GET /api/boundaries/provinces`: All 25 province boundary GeoJSON polygons with official Khmer script names and pre-calculated bounding boxes.
+- `GET /api/boundaries/districts?province_code=:pCode`: District boundaries (filterable by province).
+- `GET /api/boundaries/communes?district_code=:dCode`: Commune boundaries (filterable by district or province).
+- `GET /api/boundaries/item/:code`: Single boundary GeoJSON Feature by code (e.g. `12` or `KH12`).
+- `GET /api/boundaries/hierarchy/:code`: Ascending nested boundary polygons (Commune -> District -> Province).
+- `GET /api/boundaries/stats`: Boundary feature counts, bounds, and metadata.
+- `GET /api/boundaries/raw/:filename`: Direct download for `provinces.geojson`, `districts.geojson`, and `communes.geojson`.
+
+## Common Code Patterns
+
+### 1. Fetch Provinces & Districts (TypeScript / Fetch)
+```ts
+const API_BASE = 'https://opengeo-cambodia.pphat.me';
+
+// 1. Get all provinces
+const provinces = await fetch(`${API_BASE}/api/admin/provinces`).then(r => r.json());
+
+// 2. Get districts for Phnom Penh (ID: 12)
+const districts = await fetch(`${API_BASE}/api/admin/provinces/12/districts`).then(r => r.json());
+```
+
+### 2. Reverse Geocode GPS to Cambodian Address (Python)
+```python
+import requests
+
+res = requests.get('https://opengeo-cambodia.pphat.me/api/geocode/reverse', params={
+    'lat': 11.5564,
+    'lon': 104.9282
+}).json()
+
+print(res['data']['displayName'])
+# Output: Doun Penh, Phnom Penh, 120201, Cambodia
+```
+
+## Detailed Documentation
+- [Full LLM Specification & Schemas](https://opengeo-cambodia.pphat.me/llms-full.txt): Comprehensive schemas, status codes, gotchas, and complete TypeScript/Python SDK integration patterns.
+- [Interactive Web Playground](https://opengeo-cambodia.pphat.me/demo): Live testing interface with tree cascading selector, boundary GeoJSON polygon visualizer, interactive Leaflet map, and address search.
+- [GitHub Repository](https://github.com/pphatdev/opengeo-cambodia): Open-source source code, Overpass QL sync scripts, and CSV update utilities.
