@@ -1,12 +1,45 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="km" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenGeo Cambodia - 4-Tier Administrative API & Smart Geocoder</title>
-    <meta name="description" content="Interactive demo for OpenGeo Cambodia: Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages with smart OpenStreetMap geocoding.">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Primary SEO Meta Tags -->
+    <title>OpenGeo Cambodia - Free &amp; Open API for Cambodia Geography Data</title>
+    <meta name="title" content="OpenGeo Cambodia - Free &amp; Open API for Cambodia Geography Data">
+    <meta name="description"
+        content="OpenGeo Cambodia: Free and open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, 14,576 Villages), 100% free to use, with sub-1ms response times.">
+    <meta name="keywords"
+        content="Cambodia geography, Cambodia administrative divisions, Cambodia provinces list, Cambodia districts khans, Cambodia communes sangkats, Cambodia villages phums, reverse geocoding Cambodia, OpenGeo Cambodia, ភូមិសាស្ត្រកម្ពុជា, រាជធានី ខេត្ត, ក្រុង ស្រុក ខណ្ឌ, ឃុំ សង្កាត់, ភូមិ, OpenStreetMap Cambodia, Nominatim Cambodia, postal code Cambodia, Cambodia GIS API, free Cambodia API">
+    <meta name="author" content="OpenGeo Cambodia">
+    <meta name="creator" content="Sophat">
+    <meta name="publisher" content="OpenGeo Cambodia">
+    <meta name="application-name" content="OpenGeo Cambodia">
+    <meta name="apple-mobile-web-app-title" content="OpenGeo">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- Crawlers & Indexing Directives -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large">
+
+    <!-- Geographic & Local SEO (Cambodia) -->
+    <meta name="geo.region" content="KH">
+    <meta name="geo.placename" content="Phnom Penh, Cambodia">
+    <meta name="geo.position" content="11.5564;104.9282">
+    <meta name="ICBM" content="11.5564, 104.9282">
+
+    <!-- Canonical & Language Alternates -->
     <link rel="canonical" href="https://opengeo-cambodia.pphat.me">
+    <link rel="alternate" hreflang="km" href="https://opengeo-cambodia.pphat.me">
+    <link rel="alternate" hreflang="en" href="https://opengeo-cambodia.pphat.me">
+    <link rel="alternate" hreflang="x-default" href="https://opengeo-cambodia.pphat.me">
+    <link rel="alternate" type="text/plain" href="https://opengeo-cambodia.pphat.me/llms.txt" title="LLM Context Index">
+    <link rel="alternate" type="text/plain" href="https://opengeo-cambodia.pphat.me/llms-full.txt"
+        title="Full LLM Documentation">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
 
     <!-- Favicon & Brand Icons -->
     <link rel="icon" type="image/jpeg" href="/logo.jpg">
@@ -17,21 +50,186 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#0d9488">
 
-    <!-- Open Graph -->
+    <!-- Open Graph (Facebook, LinkedIn, Discord) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="OpenGeo Cambodia - 4-Tier Administrative API & Smart Geocoder">
-    <meta property="og:description" content="Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages.">
+    <meta property="og:url" content="https://opengeo-cambodia.pphat.me">
+    <meta property="og:title" content="OpenGeo Cambodia - Free &amp; Open API for Cambodia Geography Data">
+    <meta property="og:description"
+        content="Free &amp; Open API for Cambodia geography data: complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with sub-1ms response times.">
     <meta property="og:site_name" content="OpenGeo Cambodia">
+    <meta property="og:locale" content="km_KH">
+    <meta property="og:locale:alternate" content="en_US">
     <meta property="og:image" content="https://opengeo-cambodia.pphat.me/logo.jpg">
+    <meta property="og:image:secure_url" content="https://opengeo-cambodia.pphat.me/logo.jpg">
+    <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1024">
     <meta property="og:image:height" content="1024">
+    <meta property="og:image:alt" content="OpenGeo Cambodia - Free &amp; Open API for Cambodia Geography Data">
+
+    <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://opengeo-cambodia.pphat.me">
+    <meta name="twitter:title" content="OpenGeo Cambodia - Free &amp; Open API for Cambodia Geography Data">
+    <meta name="twitter:description"
+        content="Free &amp; Open API for Cambodia geography data: complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with sub-1ms response times.">
     <meta name="twitter:image" content="https://opengeo-cambodia.pphat.me/logo.jpg">
+    <meta name="twitter:image:alt" content="OpenGeo Cambodia - Free &amp; Open API for Cambodia Geography Data">
+
+    <!-- DNS Prefetch & Preconnect -->
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
+
+    <!-- Structured Data: Schema.org Knowledge Graph (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://opengeo-cambodia.pphat.me/#website",
+          "url": "https://opengeo-cambodia.pphat.me",
+          "name": "OpenGeo Cambodia",
+          "description": "Free and open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with sub-1ms response times",
+          "inLanguage": ["km", "en"],
+          "publisher": {
+            "@id": "https://opengeo-cambodia.pphat.me/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://opengeo-cambodia.pphat.me/api/admin/search?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://opengeo-cambodia.pphat.me/#webapp",
+          "name": "OpenGeo Cambodia API & Interactive Playground",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "All",
+          "url": "https://opengeo-cambodia.pphat.me",
+          "description": "High-performance developer platform and API providing Cambodia 4-tier administrative boundary resolution and smart OpenStreetMap geocoding services.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "browserRequirements": "Requires JavaScript. Requires HTML5.",
+          "softwareVersion": "1.0.0",
+          "featureList": [
+            "Sub-1ms cascading queries for 25 Provinces, 210 Districts, 1,661 Communes, 14,576 Villages",
+            "OpenStreetMap & Nominatim hybrid reverse geocoding",
+            "Bilingual search supporting official Khmer script and Latin romanization",
+            "Lightweight RESTful endpoints with sub-millisecond response times",
+            "Full support for llms.txt standard documentation"
+          ]
+        },
+        {
+          "@type": "Dataset",
+          "@id": "https://opengeo-cambodia.pphat.me/#dataset",
+          "name": "Cambodia 4-Tier Administrative Divisions Dataset",
+          "description": "Complete database of Cambodian administrative geography containing 25 provinces, 210 districts, 1,661 communes, and 14,576 villages with official codes, Khmer script, and Latin transliterations.",
+          "keywords": [
+            "Cambodia geography",
+            "Cambodia administrative divisions",
+            "Cambodia provinces",
+            "Cambodia districts",
+            "Cambodia communes",
+            "Cambodia villages",
+            "Khmer geographic data"
+          ],
+          "creator": {
+            "@id": "https://opengeo-cambodia.pphat.me/#organization"
+          },
+          "spatialCoverage": {
+            "@type": "Place",
+            "name": "Cambodia",
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 12.5657,
+              "longitude": 104.991
+            }
+          },
+          "license": "https://opensource.org/licenses/MIT",
+          "isAccessibleForFree": true
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://opengeo-cambodia.pphat.me/#organization",
+          "name": "OpenGeo Cambodia",
+          "url": "https://opengeo-cambodia.pphat.me",
+          "logo": "https://opengeo-cambodia.pphat.me/logo.jpg",
+          "sameAs": [
+            "https://github.com/pphatdev/opengeo-cambodia"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://opengeo-cambodia.pphat.me/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is OpenGeo Cambodia?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "OpenGeo Cambodia is a high-performance, developer-friendly geographic API and lookup service for Cambodia. It provides sub-1ms in-memory access to all 4 administrative tiers: 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages, along with smart OpenStreetMap geocoding and reverse geocoding."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How many provinces and administrative tiers exist in Cambodia?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Cambodia is divided into 4 official administrative tiers: 1) Tier 1 has 25 Provinces (ខេត្ត) including the capital municipality Phnom Penh (រាជធានី); 2) Tier 2 has 210 Districts (ស្រុក), Municipalities (ក្រុង), and Khans (ខណ្ឌ); 3) Tier 3 has 1,661 Communes (ឃុំ) and Sangkats (សង្កាត់); and 4) Tier 4 has 14,576 Villages (ភូមិ)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does OpenGeo Cambodia support both Khmer script and English Romanization?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Every administrative entity includes its official Khmer name in Khmer script (e.g., រាជធានីភ្នំពេញ, ដូនពេញ), standardized Latin English transliteration (e.g., Phnom Penh, Doun Penh), and official administrative code."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How fast is the OpenGeo Cambodia cascading lookup?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "OpenGeo Cambodia delivers sub-1ms (<1ms) response times for administrative lookups by leveraging an optimized in-memory indexed data store and edge-ready Cloudflare Workers / Node.js architecture."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does reverse geocoding work in Cambodia with OpenGeo?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "By providing latitude and longitude coordinates (e.g. 11.5564, 104.9282), OpenGeo queries OpenStreetMap Nominatim and normalizes the raw GPS location into the standardized 4-tier Cambodian administrative hierarchy (Province -> District -> Commune -> Village)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is OpenGeo Cambodia free to use?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, OpenGeo Cambodia is 100% free and open-source under the MIT license for developers, organizations, and businesses."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Kantumruy+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Kantumruy+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+        rel="stylesheet">
 
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -57,8 +255,10 @@
     </script>
 
     <!-- Leaflet Map CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <!-- Lucide Icons CDN (Pinned Version for Supply Chain Protection) -->
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js" crossorigin="anonymous"></script>
@@ -128,57 +328,13 @@
             background: rgba(148, 163, 184, 0.5);
         }
 
-        /* Ambient Backdrop Glows */
-        .ambient-glow-wrap {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: -1;
+        /* Hide scrollbars for sliders while preserving smooth scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
         }
-
-        .ambient-grid {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            stroke: rgba(255, 255, 255, 0.04);
-            mask-image: radial-gradient(100% 100% at top center, white, transparent);
-        }
-
-        .ambient-orb {
-            position: absolute;
-            border-radius: 9999px;
-            filter: blur(120px);
-            pointer-events: none;
-        }
-
-        .orb-primary {
-            top: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 750px;
-            height: 380px;
-            background: linear-gradient(90deg, #38bdf8, #14b8a6, #10b981);
-            opacity: 0.25;
-        }
-
-        .orb-secondary {
-            top: 35%;
-            left: -8%;
-            width: 420px;
-            height: 420px;
-            background: #0d9488;
-            opacity: 0.1;
-        }
-
-        .orb-tertiary {
-            top: 65%;
-            right: -8%;
-            width: 450px;
-            height: 450px;
-            background: #0284c7;
-            opacity: 0.1;
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
         /* Glassmorphism Containers */
@@ -391,7 +547,7 @@
             }
         }
 
-        /* Syntax Highlighting */
+        /* Syntax Highlighting (JSON Viewers) */
         .json-key {
             color: #38bdf8;
             font-weight: 600;
@@ -414,6 +570,61 @@
             color: #94a3b8;
             font-style: italic;
         }
+
+        /* ==========================================
+           Code Block Theme (Tokyo Dark / One Dark Pro)
+           ========================================== */
+        .code-block-theme {
+            background: linear-gradient(180deg, #08090e 0%, #050609 100%);
+            border-color: rgba(255, 255, 255, 0.08);
+            font-family: var(--font-mono);
+            font-size: 0.8125rem;
+            line-height: 1.75;
+            tab-size: 2;
+            letter-spacing: -0.01em;
+        }
+
+        .tok-kw {
+            color: #c084fc;
+            font-weight: 600;
+        }
+
+        .tok-fn {
+            color: #38bdf8;
+            font-weight: 500;
+        }
+
+        .tok-str {
+            color: #4ade80;
+        }
+
+        .tok-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .tok-num {
+            color: #fbbf24;
+            font-weight: 500;
+        }
+
+        .tok-type {
+            color: #f472b6;
+            font-weight: 600;
+        }
+
+        .tok-op {
+            color: #94a3b8;
+        }
+
+        .tok-cmd {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .tok-flag {
+            color: #fbbf24;
+        }
     </style>
 </head>
 
@@ -421,26 +632,36 @@
 
     <!-- Floating Navigation Bar -->
     <header class="fixed top-3 sm:top-4 left-0 right-0 z-50 px-3 sm:px-4 pointer-events-none">
-        <div class="w-full max-w-6xl mx-auto flex items-center justify-between gap-2">
+        <div class="w-full max-w-6xl mx-auto flex items-center justify-center gap-2">
 
-            <!-- Brand Logo -->
-            <a href="/" class="pointer-events-auto rounded-lg backdrop-blur-xl flex items-center gap-2.5 shadow-xl hover:border-teal-500/40 hover:bg-neutral-900/80 transition-all group">
-                <img src="/logo.jpg" alt="OpenGeo Cambodia Logo" class="w-14 h-15 rounded-md object-cover shadow-sm group-hover:scale-105 transition-transform border border-white/10" />
-            </a>
-
-            <!-- Controls -->
-            <nav
+            <!-- Controls & Quick Navigation -->
+            <nav aria-label="Primary Navigation"
                 class="pointer-events-auto rounded-lg border border-white/10 bg-neutral-950/60 backdrop-blur-xl p-1.5 flex items-center gap-1.5 sm:gap-2 shadow-xl">
+
+                <!-- In-page Section Navigation Links for SEO & UX -->
+                <div class="hidden lg:flex items-center gap-1 text-xs">
+                    <a href="#features"
+                        class="px-2.5 py-1 text-neutral-400 hover:text-white rounded hover:bg-white/5 transition-colors">Features</a>
+                    <a href="#administrative-structure"
+                        class="px-2.5 py-1 text-neutral-400 hover:text-white rounded hover:bg-white/5 transition-colors">Divisions</a>
+                    <a href="#quickstart"
+                        class="px-2.5 py-1 text-neutral-400 hover:text-white rounded hover:bg-white/5 transition-colors">Quickstart</a>
+                    <a href="#faq"
+                        class="px-2.5 py-1 text-neutral-400 hover:text-white rounded hover:bg-white/5 transition-colors">FAQ</a>
+                </div>
+
+                <div class="h-4 w-px bg-white/10 hidden lg:block"></div>
 
                 <!-- Live Ping Indicator -->
                 <div class="hidden md:flex items-center gap-2 px-2.5 py-1 text-xs font-medium text-neutral-400">
                     <span class="pulse-dot"></span>
                     <div id="headerPingText" class="inline-flex items-center">
-                        <span id="headerPingLabel">Online</span>
+                        <span id="headerPingLabel">Ping</span>
                         <span id="headerPingLatency" class="inline-flex items-center">
                             <span>&nbsp;(</span>
                             <span class="inline-flex items-center overflow-hidden h-[16px] leading-none">
-                                <span id="headerPingMs" class="inline-block font-mono text-emerald-400 font-semibold transform-gpu leading-none">--</span>
+                                <span id="headerPingMs"
+                                    class="inline-block font-mono text-emerald-400 font-semibold transform-gpu leading-none">--</span>
                             </span>
                             <span>ms)</span>
                         </span>
@@ -450,7 +671,7 @@
                 <div class="h-4 w-px bg-white/10 hidden md:block"></div>
 
                 <!-- API Spec Link -->
-                <a href="/api/info" target="_blank" title="API Docs & Info"
+                <a href="/api/info" target="_blank" title="API Docs &amp; Info" aria-label="API Documentation"
                     class="size-8 sm:size-9 flex items-center justify-center rounded-md text-neutral-400 hover:text-white hover:bg-white/10 transition-all">
                     <i data-lucide="book-open" class="w-4 h-4"></i>
                 </a>
@@ -460,26 +681,31 @@
 
     <!-- Main Container -->
     <main
-        class="relative z-10 flex flex-col items-center pt-28 sm:pt-36 pb-24 px-4 sm:px-8 w-full max-w-6xl mx-auto gap-14 sm:gap-18">
+        class="relative z-10 flex flex-col items-center pt-28 sm:pt-36 pb-24 px-4 w-full max-w-6xl mx-auto gap-14 sm:gap-18">
 
         <!-- HERO SECTION -->
         <section class="flex flex-col items-center text-center max-w-3xl w-full pt-2 sm:pt-4">
 
-            <!-- Brand Badge with Logo -->
-            <div class="inline-flex items-center gap-2.5 px-3.5 py-1 rounded-full border border-teal-500/30 bg-teal-500/10 backdrop-blur-md mb-6 hover:border-teal-500/50 transition-all shadow-sm">
-                <span class="text-xs font-medium tracking-wide text-teal-300">API • OpenGeo Cambodia</span>
+            <!-- Brand Badge with Cambodia Flag -->
+            <div
+                class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 backdrop-blur-md mb-6 hover:border-teal-500/50 transition-all shadow-sm">
+                <img src="/logo/Flag_of_Cambodia.svg" alt="Cambodia Flag"
+                    class="w-5 h-auto rounded-[2px] shadow-sm object-cover border border-white/15" width="20"
+                    height="13" />
+                <span class="text-xs font-medium tracking-wide text-teal-300">Cambodia Geography API</span>
             </div>
 
             <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-[1.12]">
-                The easiest way to query <br class="hidden sm:block" />
+                Free &amp; Open API for <br class="hidden sm:block" />
                 <span
                     class="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-600">Cambodia
                     Geography</span>
             </h1>
 
-            <p class="text-sm sm:text-lg text-neutral-400 mb-8 max-w-2xl leading-relaxed">
-                Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages
-                with smart OpenStreetMap geocoding
+            <p class="text-sm sm:text-lg text-neutral-300 mb-8 max-w-2xl leading-relaxed">
+                An open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces,
+                Districts, Communes, Villages), 100% free to use for everyone, with ultra-fast sub-millisecond response
+                times.
             </p>
 
             <!-- Quick Command Bar -->
@@ -495,7 +721,7 @@
                 </div>
 
                 <div
-                    class="flex items-center gap-3 bg-neutral-900/60 backdrop-blur-xl border border-white/10 p-1.5 pl-5 rounded-none w-full group hover:border-teal-500/50 transition-colors shadow-lg shadow-black/5">
+                    class="flex items-center gap-3 code-block-theme backdrop-blur-xl border border-white/10 p-1.5 pl-5 rounded-none w-full group hover:border-teal-500/50 transition-colors shadow-lg shadow-black/5">
                     <span class="text-neutral-500 font-mono select-none text-sm">$</span>
                     <code id="cmdCodeText"
                         class="text-teal-300 text-xs sm:text-sm font-mono flex-1 text-left truncate">curl http://localhost:3000/api/admin/provinces</code>
@@ -562,7 +788,8 @@
                 </div>
 
                 <!-- Tab Pills -->
-                <div class="flex overflow-x-auto w-full sm:w-fit gap-1.5 p-1 bg-neutral-900/60 rounded-none border border-white/10 backdrop-blur-xl">
+                <div
+                    class="flex overflow-x-auto w-full sm:w-fit gap-1.5 p-1 bg-neutral-900/60 rounded-none border border-white/10 backdrop-blur-xl">
                     <button id="tabBtnDropdown" onclick="switchPlaygroundTab('dropdown')"
                         class="tab-pill px-3.5 py-2 rounded-none whitespace-nowrap text-xs font-semibold transition-all bg-white text-black shadow-md flex items-center gap-1.5">
                         <i data-lucide="folder-tree" class="w-3.5 h-3.5"></i>Cascading
@@ -857,6 +1084,7 @@
                             <span id="payloadEndpoint"
                                 class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-white/10 text-neutral-300 font-semibold truncate max-w-[220px]">GET
                                 /api/admin/provinces</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
                             <button onclick="copyElementText('jsonViewer')"
                                 class="p-1.5 bg-white/5 hover:bg-white/10 rounded-none text-neutral-400 hover:text-white transition-all"
                                 title="Copy JSON">
@@ -865,7 +1093,7 @@
                         </div>
                     </div>
 
-                    <div class="relative bg-black rounded-none border border-white/10 p-4 h-[420px] overflow-auto">
+                    <div class="relative code-block-theme rounded-none border border-white/10 p-4 h-[420px] overflow-auto shadow-inner">
                         <pre id="jsonViewer"
                             class="font-mono text-xs leading-relaxed text-neutral-300 whitespace-pre">// Connecting to OpenGeo Cambodia API...</pre>
                     </div>
@@ -932,14 +1160,17 @@
                         <span class="text-xs font-mono font-bold text-neutral-300 flex items-center gap-2">
                             <i data-lucide="file-json" class="w-4 h-4 text-teal-500"></i> Normalized Nominatim Hierarchy
                         </span>
-                        <button onclick="copyElementText('reverseJsonViewer')"
-                            class="p-1.5 bg-white/5 hover:bg-white/10 rounded-none text-neutral-400 hover:text-white transition-all"
-                            title="Copy JSON">
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <span class="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <button onclick="copyElementText('reverseJsonViewer')"
+                                class="p-1.5 bg-white/5 hover:bg-white/10 rounded-none text-neutral-400 hover:text-white transition-all"
+                                title="Copy JSON">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="relative bg-black rounded-none border border-white/10 p-4 h-[420px] overflow-auto">
+                    <div class="relative code-block-theme rounded-none border border-white/10 p-4 h-[420px] overflow-auto shadow-inner">
                         <pre id="reverseJsonViewer"
                             class="font-mono text-xs leading-relaxed text-neutral-300 whitespace-pre">// Click on the map or select a preset to reverse geocode</pre>
                     </div>
@@ -983,29 +1214,36 @@
                     <div class="space-y-2 pt-2 border-t border-white/10">
                         <span class="text-xs font-medium text-neutral-400">Sample Queries:</span>
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="setSearch('Doun Penh')" class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-mono">Doun
+                            <button onclick="setSearch('Doun Penh')"
+                                class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-mono">Doun
                                 Penh</button>
-                            <button onclick="setSearch('ចំការមន')" class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-khmer">ចំការមន</button>
-                            <button onclick="setSearch('Siem Reap')" class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-mono">Siem
+                            <button onclick="setSearch('ចំការមន')"
+                                class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-khmer">ចំការមន</button>
+                            <button onclick="setSearch('Siem Reap')"
+                                class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-mono">Siem
                                 Reap</button>
-                            <button onclick="setSearch('បឹងកក់')" class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-khmer">បឹងកក់</button>
+                            <button onclick="setSearch('បឹងកក់')"
+                                class="px-2.5 py-1 text-xs rounded-none bg-white/5 hover:bg-teal-500/10 hover:text-teal-400 border border-transparent hover:border-teal-500/20 text-neutral-300 transition-all font-khmer">បឹងកក់</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-7 glass-panel p-3 flex flex-col justify-between">
-                    <div class="flex flex-row items-center justify-between">
+                    <div class="flex flex-row items-center justify-between mb-4">
                         <span class="text-xs font-mono font-bold text-neutral-300 flex items-center gap-2">
                             <i data-lucide="file-json" class="w-4 h-4 text-emerald-500"></i> Search Results
                         </span>
-                        <button onclick="copyElementText('searchJsonViewer')"
-                            class="p-1.5 bg-white/5 hover:bg-white/10 rounded-none text-neutral-400 hover:text-white transition-all"
-                            title="Copy JSON">
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <span class="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <button onclick="copyElementText('searchJsonViewer')"
+                                class="p-1.5 bg-white/5 hover:bg-white/10 rounded-none text-neutral-400 hover:text-white transition-all"
+                                title="Copy JSON">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="relative bg-black rounded-none border border-white/10 p-4 h-[420px] overflow-auto">
+                    <div class="relative code-block-theme rounded-none border border-white/10 p-4 h-[420px] overflow-auto shadow-inner">
                         <pre id="searchJsonViewer"
                             class="font-mono text-xs leading-relaxed text-neutral-300 whitespace-pre">// Execute search above...</pre>
                     </div>
@@ -1162,15 +1400,1136 @@
                 </div>
             </div>
         </section>
+
+        <!-- FEATURES & PROJECT PURPOSE PILLARS -->
+        <section id="features" class="w-full flex flex-col gap-6 scroll-mt-24">
+            <div class="flex flex-col gap-2 border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 bg-teal-500/10 text-teal-400 rounded-none border border-teal-500/20">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-teal-400">Project Purpose
+                        &amp; Pillars</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Open API for Cambodia
+                    Geography Data</h2>
+                <p class="text-sm text-neutral-400 max-w-3xl leading-relaxed">
+                    Built to solve Cambodia's address and geographic data resolution challenges through three
+                    foundational pillars: complete 4-tier hierarchy, 100% free accessibility, and ultra-fast
+                    sub-millisecond response times.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Pillar 1: Administrative Hierarchy -->
+                <div
+                    class="glass-panel p-5 flex flex-col justify-between gap-4 group hover:border-sky-500/40 transition-all">
+                    <div
+                        class="size-11 rounded-none bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 group-hover:scale-105 transition-transform">
+                        <i data-lucide="layers" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-wider mb-1">Pillar 1
+                        </div>
+                        <h3 class="text-base font-bold text-white mb-1.5">Administrative Hierarchy</h3>
+                        <p class="text-xs text-neutral-400 leading-relaxed">
+                            Complete official coverage: 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages
+                            with standardized administrative codes.
+                        </p>
+                    </div>
+                    <div class="text-[11px] font-mono text-sky-400/80 pt-2 border-t border-white/5">16,472 Total
+                        Entities</div>
+                </div>
+
+                <!-- Pillar 2: 100% Free to Use -->
+                <div
+                    class="glass-panel p-5 flex flex-col justify-between gap-4 group hover:border-emerald-500/40 transition-all">
+                    <div
+                        class="size-11 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
+                        <i data-lucide="gift" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1">
+                            Pillar 2</div>
+                        <h3 class="text-base font-bold text-white mb-1.5">100% Free to Use</h3>
+                        <p class="text-xs text-neutral-400 leading-relaxed">
+                            Zero cost, zero API keys, no subscriptions, and no paywalls. Free for developers, startups,
+                            logistics, fintech KYC, government forms, and NGOs under the MIT license.
+                        </p>
+                    </div>
+                    <div class="text-[11px] font-mono text-emerald-400/80 pt-2 border-t border-white/5">MIT License •
+                        Open Access</div>
+                </div>
+
+                <!-- Pillar 3: Fast Response Time -->
+                <div
+                    class="glass-panel p-5 flex flex-col justify-between gap-4 group hover:border-teal-500/40 transition-all">
+                    <div
+                        class="size-11 rounded-none bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 group-hover:scale-105 transition-transform">
+                        <i data-lucide="zap" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-mono font-bold text-teal-400 uppercase tracking-wider mb-1">Pillar
+                            3</div>
+                        <h3 class="text-base font-bold text-white mb-1.5">Fast Response Time</h3>
+                        <p class="text-xs text-neutral-400 leading-relaxed">
+                            Sub-1ms latency. Pre-indexed RAM architecture serves cascading dropdowns and address lookups
+                            in under 1 millisecond with zero database overhead.
+                        </p>
+                    </div>
+                    <div class="text-[11px] font-mono text-teal-400/80 pt-2 border-t border-white/5">&lt; 1ms In-Memory
+                        Speed</div>
+                </div>
+
+                <!-- Pillar 4: Bilingual Search & Smart Geocoder -->
+                <div
+                    class="glass-panel p-5 flex flex-col justify-between gap-4 group hover:border-amber-500/40 transition-all">
+                    <div
+                        class="size-11 rounded-none bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-105 transition-transform">
+                        <i data-lucide="languages" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider mb-1">
+                            Feature</div>
+                        <h3 class="text-base font-bold text-white mb-1.5">Bilingual &amp; GPS Geocoder</h3>
+                        <p class="text-xs text-neutral-400 leading-relaxed">
+                            Full support for native Khmer script (អក្សរខ្មែរ) and Latin Romanization with smart
+                            OpenStreetMap GPS reverse geocoding into 4-tier addresses.
+                        </p>
+                    </div>
+                    <div class="text-[11px] font-mono text-amber-400/80 pt-2 border-t border-white/5">Khmer + Latin +
+                        OSM</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADMINISTRATIVE DIVISIONS SECTION (Rich Informational Content & Featured Snippet Table) -->
+        <section id="administrative-structure" class="w-full flex flex-col gap-6 scroll-mt-24">
+            <div class="flex flex-col gap-2 border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 bg-sky-500/10 text-sky-400 rounded-none border border-sky-500/20">
+                        <i data-lucide="network" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-sky-400">Kingdom of
+                        Cambodia</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Cambodia 4-Tier Administrative
+                    System</h2>
+                <p class="text-sm text-neutral-400 max-w-3xl leading-relaxed">
+                    The Kingdom of Cambodia organizes territorial governance into four cascading administrative levels.
+                    OpenGeo Cambodia models each tier with standard government identification codes:
+                </p>
+            </div>
+
+            <!-- 4 Tiers Comparison Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div
+                    class="p-4 rounded-none border border-white/10 bg-neutral-900/40 flex flex-col gap-2 hover:border-sky-500/30 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-khmer font-bold text-sky-400">Tier 1 • ២៥</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-none bg-sky-500/10 text-sky-300">2-Digit
+                            Code</span>
+                    </div>
+                    <h3 class="text-sm font-bold text-white">Province &amp; Capital</h3>
+                    <p class="text-xs text-neutral-400 font-khmer">រាជធានី និង ខេត្ត (Khaet / Reach Theani)</p>
+                    <p class="text-xs text-neutral-500 mt-1">24 Provinces and 1 Autonomous Municipality (Phnom Penh
+                        Capital). Codes range from 01 to 25.</p>
+                </div>
+
+                <div
+                    class="p-4 rounded-none border border-white/10 bg-neutral-900/40 flex flex-col gap-2 hover:border-teal-500/30 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-khmer font-bold text-teal-400">Tier 2 • ២១០</span>
+                        <span
+                            class="text-[10px] font-mono px-2 py-0.5 rounded-none bg-teal-500/10 text-teal-300">4-Digit
+                            Code</span>
+                    </div>
+                    <h3 class="text-sm font-bold text-white">District, Khan &amp; Krong</h3>
+                    <p class="text-xs text-neutral-400 font-khmer">ខណ្ឌ ក្រុង និង ស្រុក (Srok / Krong / Khan)</p>
+                    <p class="text-xs text-neutral-500 mt-1">162 Rural Districts (ស្រុក), 34 Municipalities (ក្រុង), and
+                        14 Urban Khans (ខណ្ឌ) in Phnom Penh.</p>
+                </div>
+
+                <div
+                    class="p-4 rounded-none border border-white/10 bg-neutral-900/40 flex flex-col gap-2 hover:border-emerald-500/30 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-khmer font-bold text-emerald-400">Tier 3 • ១,៦៦១</span>
+                        <span
+                            class="text-[10px] font-mono px-2 py-0.5 rounded-none bg-emerald-500/10 text-emerald-300">6-Digit
+                            Code</span>
+                    </div>
+                    <h3 class="text-sm font-bold text-white">Commune &amp; Sangkat</h3>
+                    <p class="text-xs text-neutral-400 font-khmer">សង្កាត់ និង ឃុំ (Khum / Sangkat)</p>
+                    <p class="text-xs text-neutral-500 mt-1">1,405 Rural Communes (ឃុំ) and 256 Urban Quarters /
+                        Sangkats (សង្កាត់).</p>
+                </div>
+
+                <div
+                    class="p-4 rounded-none border border-white/10 bg-neutral-900/40 flex flex-col gap-2 hover:border-amber-500/30 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-khmer font-bold text-amber-400">Tier 4 • ១៤,៥៧៦</span>
+                        <span
+                            class="text-[10px] font-mono px-2 py-0.5 rounded-none bg-amber-500/10 text-amber-300">8-Digit
+                            Code</span>
+                    </div>
+                    <h3 class="text-sm font-bold text-white">Villages</h3>
+                    <p class="text-xs text-neutral-400 font-khmer">ភូមិ (Phum)</p>
+                    <p class="text-xs text-neutral-500 mt-1">Foundational human settlements across rural and urban
+                        Cambodia, mapped directly to parent communes.</p>
+                </div>
+            </div>
+
+            <!-- Key Provinces Reference Table -->
+            <div class="glass-panel p-5 flex flex-col gap-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i data-lucide="table" class="w-4 h-4 text-teal-400"></i> Selected Cambodian Provinces &amp;
+                            Geographic Codes
+                        </h3>
+                        <p class="text-xs text-neutral-400 mt-0.5">Quick reference table for major economic and cultural
+                            provincial centers.</p>
+                    </div>
+                    <a href="/api/admin/provinces" target="_blank"
+                        class="text-xs font-mono text-teal-400 hover:text-teal-300 flex items-center gap-1">
+                        View all 25 provinces JSON <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 text-neutral-400 font-mono">
+                                <th class="py-2.5 px-3">Code</th>
+                                <th class="py-2.5 px-3">Province Name (English)</th>
+                                <th class="py-2.5 px-3 font-khmer">ឈ្មោះជាភាសាខ្មែរ</th>
+                                <th class="py-2.5 px-3">Type</th>
+                                <th class="py-2.5 px-3">Districts</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 font-sans">
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-2 px-3 font-mono text-sky-400 font-bold">12</td>
+                                <td class="py-2 px-3 font-medium text-white">Phnom Penh</td>
+                                <td class="py-2 px-3 font-khmer text-neutral-300">រាជធានីភ្នំពេញ</td>
+                                <td class="py-2 px-3 text-neutral-400">Autonomous Municipality (Capital)</td>
+                                <td class="py-2 px-3 font-mono text-neutral-300">14 Khans</td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-2 px-3 font-mono text-sky-400 font-bold">17</td>
+                                <td class="py-2 px-3 font-medium text-white">Siem Reap</td>
+                                <td class="py-2 px-3 font-khmer text-neutral-300">ខេត្តសៀមរាប</td>
+                                <td class="py-2 px-3 text-neutral-400">Province (Angkor Wat Hub)</td>
+                                <td class="py-2 px-3 font-mono text-neutral-300">12 Districts</td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-2 px-3 font-mono text-sky-400 font-bold">02</td>
+                                <td class="py-2 px-3 font-medium text-white">Battambang</td>
+                                <td class="py-2 px-3 font-khmer text-neutral-300">ខេត្តបាត់ដំបង</td>
+                                <td class="py-2 px-3 text-neutral-400">Province (Northwest Agricultural Hub)</td>
+                                <td class="py-2 px-3 font-mono text-neutral-300">14 Districts</td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-2 px-3 font-mono text-sky-400 font-bold">18</td>
+                                <td class="py-2 px-3 font-medium text-white">Preah Sihanouk</td>
+                                <td class="py-2 px-3 font-khmer text-neutral-300">ខេត្តព្រះសីហនុ</td>
+                                <td class="py-2 px-3 text-neutral-400">Coastal Province (Deep Sea Port)</td>
+                                <td class="py-2 px-3 font-mono text-neutral-300">5 Districts</td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-2 px-3 font-mono text-sky-400 font-bold">08</td>
+                                <td class="py-2 px-3 font-medium text-white">Kandal</td>
+                                <td class="py-2 px-3 font-khmer text-neutral-300">ខេត្តកណ្តាល</td>
+                                <td class="py-2 px-3 text-neutral-400">Province (Metropolitan Ring)</td>
+                                <td class="py-2 px-3 font-mono text-neutral-300">11 Districts</td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-2 px-3 font-mono text-sky-400 font-bold">07</td>
+                                <td class="py-2 px-3 font-medium text-white">Kampot</td>
+                                <td class="py-2 px-3 font-khmer text-neutral-300">ខេត្តកំពត</td>
+                                <td class="py-2 px-3 text-neutral-400">Coastal Province (Agriculture &amp; Tourism)</td>
+                                <td class="py-2 px-3 font-mono text-neutral-300">8 Districts</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEVELOPER QUICKSTART SECTION (Interactive Sliding Code Carousel) -->
+        <section id="quickstart" class="w-full flex flex-col gap-6 scroll-mt-24">
+            <!-- Section Header -->
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-5">
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                        <div class="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-none border border-emerald-500/20">
+                            <i data-lucide="terminal" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Integration Guide</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Integrate in 30 Seconds</h2>
+                    <p class="text-sm text-neutral-400 max-w-2xl leading-relaxed">
+                        OpenGeo Cambodia is a frictionless REST API with CORS enabled for all origins, zero API keys required, and standard JSON responses.
+                    </p>
+                </div>
+
+                <!-- Slider Navigation Controls (Top Desktop / Mobile) -->
+                <div class="flex items-center gap-2 self-start sm:self-end shrink-0">
+                    <div class="text-xs font-mono text-neutral-400 px-2 py-1.5 bg-white/[0.02] border border-white/5 select-none">
+                        <span id="qsSlideIndicator">1</span> / <span class="text-neutral-500" id="qsTotalIndicator">10</span>
+                    </div>
+                    <button id="qsPrevBtn" onclick="slideQuickstart(-1)" aria-label="Previous example" title="Previous code example (or Swipe Left)"
+                        class="p-2 sm:px-3 sm:py-2 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-white/10 hover:border-teal-500/40 transition-all flex items-center gap-1.5 active:scale-95">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline text-xs font-mono font-medium">Prev</span>
+                    </button>
+                    <button id="qsNextBtn" onclick="slideQuickstart(1)" aria-label="Next example" title="Next code example (or Swipe Right)"
+                        class="p-2 sm:px-3 sm:py-2 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-white/10 hover:border-teal-500/40 transition-all flex items-center gap-1.5 active:scale-95">
+                        <span class="hidden sm:inline text-xs font-mono font-medium">Next</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Language Pill Filter Tabs -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs font-mono">
+                <button onclick="goToQuickstartSlide(0)" id="qsTab-0"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-teal-500/15 text-teal-300 border-teal-500/40 shadow-sm font-semibold">
+                    <i data-lucide="code" class="w-3.5 h-3.5"></i>
+                    <span>JS</span>
+                </button>
+                <button onclick="goToQuickstartSlide(1)" id="qsTab-1"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium">
+                    <i data-lucide="file-code" class="w-3.5 h-3.5"></i>
+                    <span>Python</span>
+                </button>
+                <button onclick="goToQuickstartSlide(2)" id="qsTab-2"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium">
+                    <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
+                    <span>cURL</span>
+                </button>
+                <button onclick="goToQuickstartSlide(3)" id="qsTab-3"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium">
+                    <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                    <span>PHP</span>
+                </button>
+                <button onclick="goToQuickstartSlide(4)" id="qsTab-4"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium">
+                    <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+                    <span>Go</span>
+                </button>
+                <button onclick="goToQuickstartSlide(5)" id="qsTab-5"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium">
+                    <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                    <span>Dart</span>
+                </button>
+                <button onclick="goToQuickstartSlide(6)" id="qsTab-6"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium">
+                    <i data-lucide="tablet-smartphone" class="w-3.5 h-3.5"></i>
+                    <span>Kotlin</span>
+                </button>
+                <button onclick="goToQuickstartSlide(7)" id="qsTab-7"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium">
+                    <i data-lucide="box" class="w-3.5 h-3.5"></i>
+                    <span>.NET</span>
+                </button>
+                <button onclick="goToQuickstartSlide(8)" id="qsTab-8"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium">
+                    <i data-lucide="apple" class="w-3.5 h-3.5"></i>
+                    <span>Swift (iOS)</span>
+                </button>
+                <button onclick="goToQuickstartSlide(9)" id="qsTab-9"
+                    class="qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                    <span>Rust</span>
+                </button>
+            </div>
+
+            <!-- Slide Track Carousel Container -->
+            <div id="quickstartSlider"
+                class="flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 no-scrollbar focus:outline-none select-text"
+                tabindex="0"
+                aria-label="Code integration examples carousel">
+
+                <!-- SLIDE 1: JavaScript / TypeScript -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-neutral-200 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="code" class="w-4 h-4"></i> JavaScript / TypeScript (Fetch API)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-white/5 text-neutral-300 border border-white/10">ES6+ / Node 18+</span>
+                            <button onclick="copyQuickCode('codeSnippetJS', this)" title="Copy JavaScript code"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetJS"><span class="tok-comment">// 1. Cascading lookup: Fetch all districts in Phnom Penh (Province Code: 12)</span>
+<span class="tok-kw">const</span> res = <span class="tok-kw">await</span> <span class="tok-fn">fetch</span>(<span class="tok-str">'https://opengeo-cambodia.pphat.me/api/admin/provinces/12/districts'</span>);
+<span class="tok-kw">const</span> { data: districts } = <span class="tok-kw">await</span> res.<span class="tok-fn">json</span>();
+console.<span class="tok-fn">log</span>(<span class="tok-str">'Districts found:'</span>, districts.<span class="tok-fn">map</span>(d <span class="tok-op">=&gt;</span> <span class="tok-str">`${d.code} - ${d.name_km} (${d.name_en})`</span>));
+
+<span class="tok-comment">// 2. Reverse geocode GPS coordinates to 4-tier Cambodian address</span>
+<span class="tok-kw">const</span> geoRes = <span class="tok-kw">await</span> <span class="tok-fn">fetch</span>(<span class="tok-str">'https://opengeo-cambodia.pphat.me/api/geocode/reverse?lat=11.5564&amp;lon=104.9282'</span>);
+<span class="tok-kw">const</span> location = <span class="tok-kw">await</span> geoRes.<span class="tok-fn">json</span>();
+console.<span class="tok-fn">log</span>(<span class="tok-str">`${location.province} &gt; ${location.district} &gt; ${location.commune}`</span>);
+
+<span class="tok-comment">// 3. Fast bilingual search (Khmer script &amp; Latin romanization)</span>
+<span class="tok-kw">const</span> searchRes = <span class="tok-kw">await</span> <span class="tok-fn">fetch</span>(<span class="tok-str">'https://opengeo-cambodia.pphat.me/api/admin/search?q='</span> <span class="tok-op">+</span> <span class="tok-fn">encodeURIComponent</span>(<span class="tok-str">'វត្តភ្នំ'</span>));
+<span class="tok-kw">const</span> searchData = <span class="tok-kw">await</span> searchRes.<span class="tok-fn">json</span>();
+console.<span class="tok-fn">log</span>(<span class="tok-str">'Search matches:'</span>, searchData.data);</code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Sub-1ms Latency</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">CORS Enabled (All Origins)</span>
+                        </div>
+                        <span class="text-neutral-500">Native browser fetch / Zero external dependencies</span>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Python -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-neutral-200 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="file-code" class="w-4 h-4 text-neutral-400"></i> Python (Requests / HTTPX)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-white/5 text-neutral-300 border border-white/10">Python 3.8+</span>
+                            <button onclick="copyQuickCode('codeSnippetPython', this)" title="Copy Python code"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetPython"><span class="tok-kw">import</span> requests
+
+BASE_URL = <span class="tok-str">"https://opengeo-cambodia.pphat.me"</span>
+
+<span class="tok-comment"># 1. Fuzzy search for administrative entities (Khmer or English)</span>
+response = requests.<span class="tok-fn">get</span>(<span class="tok-str">f"{BASE_URL}/api/admin/search"</span>, params={<span class="tok-str">"q"</span>: <span class="tok-str">"Doun Penh"</span>})
+matches = response.<span class="tok-fn">json</span>()
+<span class="tok-fn">print</span>(<span class="tok-str">f"Found {len(matches.get('data', []))} administrative records"</span>)
+
+<span class="tok-comment"># 2. Complete 4-tier hierarchy trace for Sangkat Phsar Thmei 1 (code 120101)</span>
+hierarchy = requests.<span class="tok-fn">get</span>(<span class="tok-str">f"{BASE_URL}/api/admin/hierarchy/120101"</span>).<span class="tok-fn">json</span>()
+<span class="tok-fn">print</span>(<span class="tok-str">"Administrative Path:"</span>, hierarchy.<span class="tok-fn">get</span>(<span class="tok-str">"path"</span>))
+
+<span class="tok-comment"># 3. GPS Reverse Geocoding (Wat Phnom: 11.5761, 104.9230)</span>
+geo = requests.<span class="tok-fn">get</span>(<span class="tok-str">f"{BASE_URL}/api/geocode/reverse"</span>, params={<span class="tok-str">"lat"</span>: <span class="tok-num">11.5761</span>, <span class="tok-str">"lon"</span>: <span class="tok-num">104.9230</span>}).<span class="tok-fn">json</span>()
+<span class="tok-fn">print</span>(<span class="tok-str">f"Address: {geo.get('commune')}, {geo.get('district')}, {geo.get('province')}"</span>)</code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Fast In-Memory Resolution</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">JSON API</span>
+                        </div>
+                        <span class="text-neutral-500">FastAPI, Django, Flask &amp; Jupyter compatible</span>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: cURL / Bash CLI -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-neutral-200 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="terminal" class="w-4 h-4 text-neutral-400"></i> cURL / Shell CLI
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-white/5 text-neutral-300 border border-white/10">POSIX CLI / Bash</span>
+                            <button onclick="copyQuickCode('codeSnippetCurl', this)" title="Copy cURL command"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetCurl"><span class="tok-comment"># 1. Fetch all 25 Provinces in Cambodia (&lt;1ms edge response)</span>
+<span class="tok-cmd">curl</span> <span class="tok-flag">-s</span> <span class="tok-str">"https://opengeo-cambodia.pphat.me/api/admin/provinces"</span> \
+  | <span class="tok-cmd">jq</span> <span class="tok-str">'.data[] | {code, name_km, name_en}'</span>
+
+<span class="tok-comment"># 2. Reverse geocode GPS coordinates (Independence Monument, Phnom Penh)</span>
+<span class="tok-cmd">curl</span> <span class="tok-flag">-s</span> <span class="tok-str">"https://opengeo-cambodia.pphat.me/api/geocode/reverse?lat=11.5564&amp;lon=104.9282"</span> \
+  | <span class="tok-cmd">jq</span> <span class="tok-str">'{province: .province, district: .district, commune: .commune}'</span>
+
+<span class="tok-comment"># 3. Bilingual administrative search in Khmer script</span>
+<span class="tok-cmd">curl</span> <span class="tok-flag">-s</span> <span class="tok-flag">-G</span> <span class="tok-str">"https://opengeo-cambodia.pphat.me/api/admin/search"</span> \
+  <span class="tok-flag">--data-urlencode</span> <span class="tok-str">"q=សៀមរាប"</span> | <span class="tok-cmd">jq</span> <span class="tok-str">'.data[0]'</span></code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Zero Auth Required</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">Direct Terminal Access</span>
+                        </div>
+                        <span class="text-neutral-500">Perfect for dev pipelines &amp; microservices</span>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: PHP -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-neutral-200 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="layers" class="w-4 h-4 text-neutral-400"></i> PHP (Vanilla / Laravel / WordPress)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-white/5 text-neutral-300 border border-white/10">PHP 7.4+ / 8.x</span>
+                            <button onclick="copyQuickCode('codeSnippetPHP', this)" title="Copy PHP code"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetPHP"><span class="tok-kw">&lt;?php</span>
+<span class="tok-comment">// 1. Fetch all districts of Siem Reap province (Province Code: 17)</span>
+$url = <span class="tok-str">'https://opengeo-cambodia.pphat.me/api/admin/provinces/17/districts'</span>;
+$response = <span class="tok-fn">file_get_contents</span>($url);
+$districts = <span class="tok-fn">json_decode</span>($response, <span class="tok-kw">true</span>)[<span class="tok-str">'data'</span>] ?? [];
+
+<span class="tok-kw">foreach</span> ($districts <span class="tok-kw">as</span> $district) {
+    <span class="tok-fn">echo</span> <span class="tok-str">"{$district['code']}: {$district['name_km']} ({$district['name_en']})\n"</span>;
+}
+
+<span class="tok-comment">// 2. Reverse geocode GPS coordinates to Cambodian Address</span>
+$geoUrl = <span class="tok-str">'https://opengeo-cambodia.pphat.me/api/geocode/reverse?lat=11.5564&amp;lon=104.9282'</span>;
+$geo = <span class="tok-fn">json_decode</span>(<span class="tok-fn">file_get_contents</span>($geoUrl), <span class="tok-kw">true</span>);
+<span class="tok-fn">echo</span> <span class="tok-str">"Location: {$geo['commune']}, {$geo['district']}, {$geo['province']}\n"</span>;</code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Simple Integration</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">No SDK Required</span>
+                        </div>
+                        <span class="text-neutral-500">Works with Laravel Http Client, Guzzle, or file_get_contents</span>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Go (Golang) -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-neutral-200 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="cpu" class="w-4 h-4 text-neutral-400"></i> Go (Golang net/http)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-white/5 text-neutral-300 border border-white/10">Go 1.18+</span>
+                            <button onclick="copyQuickCode('codeSnippetGo', this)" title="Copy Go code"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetGo"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+    <span class="tok-str">"encoding/json"</span>
+    <span class="tok-str">"fmt"</span>
+    <span class="tok-str">"net/http"</span>
+)
+
+<span class="tok-kw">type</span> <span class="tok-type">ApiResponse</span> <span class="tok-kw">struct</span> {
+    Success <span class="tok-type">bool</span>             <span class="tok-str">`json:"success"`</span>
+    Data    []<span class="tok-kw">map</span>[<span class="tok-type">string</span>]<span class="tok-type">any</span> <span class="tok-str">`json:"data"`</span>
+}
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+    <span class="tok-comment">// 1. Fetch Cambodia 25 Provinces (&lt;1ms in-memory cache)</span>
+    resp, err := http.<span class="tok-fn">Get</span>(<span class="tok-str">"https://opengeo-cambodia.pphat.me/api/admin/provinces"</span>)
+    <span class="tok-kw">if</span> err != <span class="tok-kw">nil</span> {
+        <span class="tok-fn">panic</span>(err)
+    }
+    <span class="tok-kw">defer</span> resp.Body.<span class="tok-fn">Close</span>()
+
+    <span class="tok-kw">var</span> result <span class="tok-type">ApiResponse</span>
+    <span class="tok-kw">if</span> err := json.<span class="tok-fn">NewDecoder</span>(resp.Body).<span class="tok-fn">Decode</span>(&amp;result); err == <span class="tok-kw">nil</span> {
+        fmt.<span class="tok-fn">Printf</span>(<span class="tok-str">"Loaded %d provinces successfully\n"</span>, <span class="tok-fn">len</span>(result.Data))
+    }
+}</code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Ultra High Throughput</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">Type-Safe</span>
+                        </div>
+                        <span class="text-neutral-500">Standard library only / Zero 3rd-party dependencies</span>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Dart / Flutter -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-neutral-200 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="smartphone" class="w-4 h-4 text-neutral-400"></i> Dart (Mobile Apps)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-white/5 text-neutral-300 border border-white/10">Flutter 3.x / Dart 3.x</span>
+                            <button onclick="copyQuickCode('codeSnippetDart', this)" title="Copy Dart code"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetDart"><span class="tok-kw">import</span> <span class="tok-str">'dart:convert'</span>;
+<span class="tok-kw">import</span> <span class="tok-str">'package:http/http.dart'</span> <span class="tok-kw">as</span> http;
+
+<span class="tok-type">Future</span>&lt;<span class="tok-type">void</span>&gt; <span class="tok-fn">main</span>() <span class="tok-kw">async</span> {
+  <span class="tok-kw">const</span> baseUrl = <span class="tok-str">'https://opengeo-cambodia.pphat.me'</span>;
+
+  <span class="tok-comment">// 1. Fetch Cambodia 25 Provinces for mobile address dropdown</span>
+  <span class="tok-kw">final</span> res = <span class="tok-kw">await</span> http.<span class="tok-fn">get</span>(<span class="tok-type">Uri</span>.<span class="tok-fn">parse</span>(<span class="tok-str">'$baseUrl/api/admin/provinces'</span>));
+  <span class="tok-kw">if</span> (res.statusCode == <span class="tok-num">200</span>) {
+    <span class="tok-kw">final</span> <span class="tok-type">Map</span>&lt;<span class="tok-type">String</span>, <span class="tok-type">dynamic</span>&gt; body = <span class="tok-fn">jsonDecode</span>(res.body);
+    <span class="tok-kw">final</span> <span class="tok-type">List</span> provinces = body[<span class="tok-str">'data'</span>];
+    <span class="tok-fn">print</span>(<span class="tok-str">'Loaded ${provinces.length} provinces successfully'</span>);
+  }
+
+  <span class="tok-comment">// 2. Reverse Geocode GPS coordinates (Phnom Penh)</span>
+  <span class="tok-kw">final</span> geoRes = <span class="tok-kw">await</span> http.<span class="tok-fn">get</span>(<span class="tok-type">Uri</span>.<span class="tok-fn">parse</span>(
+    <span class="tok-str">'$baseUrl/api/geocode/reverse?lat=11.5564&amp;lon=104.9282'</span>
+  ));
+  <span class="tok-kw">final</span> location = <span class="tok-fn">jsonDecode</span>(geoRes.body);
+  <span class="tok-fn">print</span>(<span class="tok-str">'Address: ${location['province']} &gt; ${location['district']} &gt; ${location['commune']}'</span>);
+}</code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Mobile-Optimized Payload</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">iOS &amp; Android Ready</span>
+                        </div>
+                        <span class="text-neutral-500">Perfect for Flutter delivery &amp; e-commerce checkout</span>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Kotlin / Android -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="tablet-smartphone" class="w-4 h-4"></i> Kotlin (Android / OkHttp)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-orange-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-orange-500/10 text-orange-300 border border-orange-500/20">Android / Kotlin 1.9+</span>
+                            <button onclick="copyQuickCode('codeSnippetKotlin', this)" title="Copy Kotlin code"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetKotlin"><span class="tok-kw">import</span> okhttp3.OkHttpClient
+<span class="tok-kw">import</span> okhttp3.Request
+<span class="tok-kw">import</span> org.json.JSONObject
+
+<span class="tok-kw">val</span> client = <span class="tok-type">OkHttpClient</span>()
+<span class="tok-kw">val</span> baseUrl = <span class="tok-str">"https://opengeo-cambodia.pphat.me"</span>
+
+<span class="tok-comment">// 1. Cascading lookup: Phnom Penh districts (Code: 12)</span>
+<span class="tok-kw">val</span> request = <span class="tok-type">Request</span>.<span class="tok-type">Builder</span>()
+    .<span class="tok-fn">url</span>(<span class="tok-str">"$baseUrl/api/admin/provinces/12/districts"</span>)
+    .<span class="tok-fn">build</span>()
+
+client.<span class="tok-fn">newCall</span>(request).<span class="tok-fn">execute</span>().<span class="tok-fn">use</span> { response <span class="tok-op">-&gt;</span>
+    <span class="tok-kw">val</span> json = <span class="tok-type">JSONObject</span>(response.body!!.<span class="tok-fn">string</span>())
+    <span class="tok-kw">val</span> districts = json.<span class="tok-fn">getJSONArray</span>(<span class="tok-str">"data"</span>)
+    <span class="tok-fn">println</span>(<span class="tok-str">"Found ${districts.length()} districts in Phnom Penh"</span>)
+}
+
+<span class="tok-comment">// 2. Reverse Geocode GPS coordinates (Wat Phnom: 11.5761, 104.9230)</span>
+<span class="tok-kw">val</span> geoRequest = <span class="tok-type">Request</span>.<span class="tok-type">Builder</span>()
+    .<span class="tok-fn">url</span>(<span class="tok-str">"$baseUrl/api/geocode/reverse?lat=11.5761&amp;lon=104.9230"</span>)
+    .<span class="tok-fn">build</span>()
+<span class="tok-kw">val</span> geo = <span class="tok-type">JSONObject</span>(client.<span class="tok-fn">newCall</span>(geoRequest).<span class="tok-fn">execute</span>().body!!.<span class="tok-fn">string</span>())
+<span class="tok-fn">println</span>(<span class="tok-str">"Location: ${geo.optString("commune")}, ${geo.optString("district")}, ${geo.optString("province")}"</span>)</code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Sub-1ms In-Memory Resolution</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">Native Android</span>
+                        </div>
+                        <span class="text-neutral-500">Works with Coroutines, Retrofit, Jetpack Compose, &amp; OkHttp</span>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: C# / .NET -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-neutral-200 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="box" class="w-4 h-4 text-neutral-400"></i> .NET (HttpClient &amp; System.Text.Json)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-white/5 text-neutral-300 border border-white/10">.NET 8 / 9 / C# 12</span>
+                            <button onclick="copyQuickCode('codeSnippetCSharp', this)" title="Copy C# code"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetCSharp"><span class="tok-kw">using</span> System;
+<span class="tok-kw">using</span> System.Net.Http;
+<span class="tok-kw">using</span> System.Text.Json;
+<span class="tok-kw">using</span> System.Threading.Tasks;
+
+<span class="tok-kw">using var</span> client = <span class="tok-kw">new</span> <span class="tok-type">HttpClient</span>();
+<span class="tok-kw">const string</span> baseUrl = <span class="tok-str">"https://opengeo-cambodia.pphat.me"</span>;
+
+<span class="tok-comment">// 1. Fetch all 25 Provinces in Cambodia (&lt;1ms response)</span>
+<span class="tok-kw">var</span> json = <span class="tok-kw">await</span> client.<span class="tok-fn">GetStringAsync</span>(<span class="tok-str">$"{baseUrl}/api/admin/provinces"</span>);
+<span class="tok-kw">using var</span> doc = <span class="tok-type">JsonDocument</span>.<span class="tok-fn">Parse</span>(json);
+<span class="tok-kw">var</span> provinces = doc.RootElement.<span class="tok-fn">GetProperty</span>(<span class="tok-str">"data"</span>);
+
+<span class="tok-kw">foreach</span> (<span class="tok-kw">var</span> p <span class="tok-kw">in</span> provinces.<span class="tok-fn">EnumerateArray</span>())
+{
+    <span class="tok-type">Console</span>.<span class="tok-fn">WriteLine</span>(<span class="tok-str">$"{p.GetProperty("code")}: {p.GetProperty("name_km")} ({p.GetProperty("name_en")})"</span>);
+}
+
+<span class="tok-comment">// 2. Reverse Geocode GPS to Cambodian Address</span>
+<span class="tok-kw">var</span> geoJson = <span class="tok-kw">await</span> client.<span class="tok-fn">GetStringAsync</span>(<span class="tok-str">$"{baseUrl}/api/geocode/reverse?lat=11.5564&amp;lon=104.9282"</span>);
+<span class="tok-kw">using var</span> geoDoc = <span class="tok-type">JsonDocument</span>.<span class="tok-fn">Parse</span>(geoJson);
+<span class="tok-type">Console</span>.<span class="tok-fn">WriteLine</span>(<span class="tok-str">$"Province: {geoDoc.RootElement.GetProperty("province")}"</span>);</code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Enterprise Ready</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">Strict Types</span>
+                        </div>
+                        <span class="text-neutral-500">ASP.NET Core, Blazor, MAUI, &amp; Azure Cloud compatible</span>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Swift / iOS -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-neutral-200 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="apple" class="w-4 h-4 text-neutral-400"></i> Swift (iOS / macOS / URLSession)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-white/5 text-neutral-300 border border-white/10">iOS 15+ / Swift 5.9+</span>
+                            <button onclick="copyQuickCode('codeSnippetSwift', this)" title="Copy Swift code"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetSwift"><span class="tok-kw">import</span> Foundation
+
+<span class="tok-kw">let</span> baseUrl = <span class="tok-str">"https://opengeo-cambodia.pphat.me"</span>
+
+<span class="tok-comment">// 1. Fetch 25 Cambodia Provinces asynchronously</span>
+<span class="tok-kw">guard let</span> url = <span class="tok-type">URL</span>(string: <span class="tok-str">"\(baseUrl)/api/admin/provinces"</span>) <span class="tok-kw">else</span> { <span class="tok-kw">return</span> }
+<span class="tok-kw">let</span> (data, _) = <span class="tok-kw">try await</span> <span class="tok-type">URLSession</span>.shared.<span class="tok-fn">data</span>(from: url)
+
+<span class="tok-kw">if let</span> json = <span class="tok-kw">try?</span> <span class="tok-type">JSONSerialization</span>.<span class="tok-fn">jsonObject</span>(with: data) <span class="tok-kw">as?</span> [<span class="tok-type">String</span>: <span class="tok-type">Any</span>],
+   <span class="tok-kw">let</span> provinces = json[<span class="tok-str">"data"</span>] <span class="tok-kw">as?</span> [[<span class="tok-type">String</span>: <span class="tok-type">Any</span>]] {
+    <span class="tok-fn">print</span>(<span class="tok-str">"Loaded \(provinces.count) Cambodian provinces"</span>)
+}
+
+<span class="tok-comment">// 2. Reverse Geocode GPS coordinates (CoreLocation integration)</span>
+<span class="tok-kw">let</span> geoUrl = <span class="tok-type">URL</span>(string: <span class="tok-str">"\(baseUrl)/api/geocode/reverse?lat=11.5564&amp;lon=104.9282"</span>)!
+<span class="tok-kw">let</span> (geoData, _) = <span class="tok-kw">try await</span> <span class="tok-type">URLSession</span>.shared.<span class="tok-fn">data</span>(from: geoUrl)
+<span class="tok-kw">if let</span> loc = <span class="tok-kw">try?</span> <span class="tok-type">JSONSerialization</span>.<span class="tok-fn">jsonObject</span>(with: geoData) <span class="tok-kw">as?</span> [<span class="tok-type">String</span>: <span class="tok-type">Any</span>] {
+    <span class="tok-fn">print</span>(<span class="tok-str">"\(loc["province"] ?? "") &gt; \(loc["district"] ?? "")"</span>)
+}</code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Swift Concurrency</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">Native Apple Frameworks</span>
+                        </div>
+                        <span class="text-neutral-500">Async/Await ready for SwiftUI, UIKit &amp; CoreLocation apps</span>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Rust -->
+                <div class="qs-slide w-full shrink-0 snap-center glass-panel flex flex-col justify-between border border-white/10 bg-neutral-950/70 overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-neutral-200 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-neutral-400"></i> Rust (reqwest &amp; serde_json)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 bg-white/5 text-neutral-400 border border-white/10"><i data-lucide="palette" class="w-3 h-3 text-neutral-400"></i>Tokyo Dark</span>
+                            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-white/5 text-neutral-300 border border-white/10">Rust 2021 / Tokio</span>
+                            <button onclick="copyQuickCode('codeSnippetRust', this)" title="Copy Rust code"
+                                class="px-2.5 py-1 text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-none transition-all flex items-center gap-1.5">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Code Block with Theme Highlighting -->
+                    <pre class="code-block-theme p-4 sm:p-5 text-neutral-200 overflow-x-auto border-b border-white/5"><code id="codeSnippetRust"><span class="tok-kw">use</span> reqwest;
+<span class="tok-kw">use</span> serde_json::<span class="tok-type">Value</span>;
+
+#[tokio::main]
+<span class="tok-kw">async fn</span> <span class="tok-fn">main</span>() <span class="tok-op">-&gt;</span> <span class="tok-type">Result</span>&lt;(), <span class="tok-type">Box</span>&lt;<span class="tok-kw">dyn</span> std::error::<span class="tok-type">Error</span>&gt;&gt; {
+    <span class="tok-kw">let</span> base_url = <span class="tok-str">"https://opengeo-cambodia.pphat.me"</span>;
+
+    <span class="tok-comment">// 1. Fetch all 25 Provinces (&lt;1ms edge response)</span>
+    <span class="tok-kw">let</span> resp: <span class="tok-type">Value</span> = reqwest::<span class="tok-fn">get</span>(<span class="tok-fn">format!</span>(<span class="tok-str">"{}/api/admin/provinces"</span>, base_url))
+        .<span class="tok-kw">await</span>?
+        .<span class="tok-fn">json</span>()
+        .<span class="tok-kw">await</span>?;
+
+    <span class="tok-kw">if let</span> <span class="tok-fn">Some</span>(provinces) = resp[<span class="tok-str">"data"</span>].<span class="tok-fn">as_array</span>() {
+        <span class="tok-fn">println!</span>(<span class="tok-str">"Loaded {} provinces successfully"</span>, provinces.<span class="tok-fn">len</span>());
+    }
+
+    <span class="tok-comment">// 2. Reverse Geocode Coordinates</span>
+    <span class="tok-kw">let</span> geo: <span class="tok-type">Value</span> = reqwest::<span class="tok-fn">get</span>(<span class="tok-fn">format!</span>(<span class="tok-str">"{}/api/geocode/reverse?lat=11.5564&amp;lon=104.9282"</span>, base_url))
+        .<span class="tok-kw">await</span>?
+        .<span class="tok-fn">json</span>()
+        .<span class="tok-kw">await</span>?;
+
+    <span class="tok-fn">println!</span>(<span class="tok-str">"Location: {} / {}"</span>, geo[<span class="tok-str">"district"</span>], geo[<span class="tok-str">"province"</span>]);
+    <span class="tok-type">Ok</span>(())
+}</code></pre>
+                    <!-- Card Footer Meta -->
+                    <div class="px-4 sm:px-5 py-2.5 bg-white/[0.015] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-emerald-400"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Memory Safe &amp; Concurrent</span>
+                            <span class="text-neutral-600">•</span>
+                            <span class="text-neutral-400">Zero Overhead</span>
+                        </div>
+                        <span class="text-neutral-500">Actix-web, Axum &amp; Tokio high-throughput microservices</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Slide Bottom Progress Bar & Navigation Indicator -->
+            <div class="flex items-center justify-between pt-1 border-t border-white/5">
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] font-mono text-neutral-500 uppercase tracking-wider hidden sm:inline">Examples:</span>
+                    <!-- 10 Dot Indicators -->
+                    <div class="flex items-center gap-1.5" id="qsDotsContainer">
+                        <button onclick="goToQuickstartSlide(0)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-7 bg-teal-400" aria-label="Go to Slide 1 (JavaScript)"></button>
+                        <button onclick="goToQuickstartSlide(1)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40" aria-label="Go to Slide 2 (Python)"></button>
+                        <button onclick="goToQuickstartSlide(2)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40" aria-label="Go to Slide 3 (cURL)"></button>
+                        <button onclick="goToQuickstartSlide(3)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40" aria-label="Go to Slide 4 (PHP)"></button>
+                        <button onclick="goToQuickstartSlide(4)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40" aria-label="Go to Slide 5 (Go)"></button>
+                        <button onclick="goToQuickstartSlide(5)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40" aria-label="Go to Slide 6 (Dart)"></button>
+                        <button onclick="goToQuickstartSlide(6)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40" aria-label="Go to Slide 7 (Kotlin)"></button>
+                        <button onclick="goToQuickstartSlide(7)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40" aria-label="Go to Slide 8 (.NET)"></button>
+                        <button onclick="goToQuickstartSlide(8)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40" aria-label="Go to Slide 9 (Swift / iOS)"></button>
+                        <button onclick="goToQuickstartSlide(9)" class="qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40" aria-label="Go to Slide 10 (Rust)"></button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 text-xs font-mono text-neutral-400">
+                    <span class="hidden md:inline text-neutral-500">Swipe or use arrows to slide</span>
+                    <button onclick="slideQuickstart(-1)" class="px-2.5 py-1 text-neutral-400 hover:text-white hover:bg-white/5 border border-white/10 transition-colors">
+                        ← Prev
+                    </button>
+                    <button onclick="slideQuickstart(1)" class="px-2.5 py-1 text-neutral-400 hover:text-white hover:bg-white/5 border border-white/10 transition-colors">
+                        Next →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ SECTION (Matching JSON-LD FAQPage Schema for Search Rich Snippets) -->
+        <section id="faq" class="w-full flex flex-col gap-6 scroll-mt-24">
+            <div class="flex flex-col gap-2 border-b border-white/10 pb-4">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 bg-amber-500/10 text-amber-400 rounded-none border border-amber-500/20">
+                        <i data-lucide="help-circle" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">Knowledge
+                        Base</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Frequently Asked Questions
+                </h2>
+                <p class="text-sm text-neutral-400 max-w-3xl leading-relaxed">
+                    Common questions regarding Cambodia administrative boundaries, geography queries, and OpenGeo API
+                    usage.
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-3 w-full">
+                <!-- Q1 -->
+                <details class="glass-panel p-4 group cursor-pointer" open>
+                    <summary
+                        class="flex items-center justify-between font-bold text-white text-sm sm:text-base list-none select-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-teal-400 font-mono text-xs">01.</span>
+                            What is OpenGeo Cambodia and its purpose?
+                        </span>
+                        <i data-lucide="chevron-down"
+                            class="w-4 h-4 text-neutral-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div
+                        class="pt-3 text-xs sm:text-sm text-neutral-400 leading-relaxed border-t border-white/5 mt-3 space-y-2">
+                        <p>OpenGeo Cambodia is an open API for Cambodia geography data designed around three core
+                            pillars:</p>
+                        <ol class="list-decimal pl-5 space-y-1 text-xs">
+                            <li><strong>Administrative Hierarchy:</strong> Complete coverage across all 4 official tiers
+                                (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages).</li>
+                            <li><strong>Allow users to use for free:</strong> 100% free and open-access under the MIT
+                                license with zero API keys and no paywalls.</li>
+                            <li><strong>Provide fast response time:</strong> Sub-1ms (&lt;1ms) in-memory query speed
+                                with zero database overhead.</li>
+                        </ol>
+                    </div>
+                </details>
+
+                <!-- Q2 -->
+                <details class="glass-panel p-4 group cursor-pointer">
+                    <summary
+                        class="flex items-center justify-between font-bold text-white text-sm sm:text-base list-none select-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-teal-400 font-mono text-xs">02.</span>
+                            How many provinces and administrative tiers exist in Cambodia?
+                        </span>
+                        <i data-lucide="chevron-down"
+                            class="w-4 h-4 text-neutral-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="pt-3 text-xs sm:text-sm text-neutral-400 leading-relaxed border-t border-white/5 mt-3">
+                        Cambodia is divided into 4 official administrative tiers: 1) Tier 1 has 25 Provinces (ខេត្ត)
+                        including the capital municipality Phnom Penh (រាជធានី); 2) Tier 2 has 210 Districts (ស្រុក),
+                        Municipalities (ក្រុង), and Khans (ខណ្ឌ); 3) Tier 3 has 1,661 Communes (ឃុំ) and Sangkats
+                        (សង្កាត់); and 4) Tier 4 has 14,576 Villages (ភូមិ).
+                    </div>
+                </details>
+
+                <!-- Q3 -->
+                <details class="glass-panel p-4 group cursor-pointer">
+                    <summary
+                        class="flex items-center justify-between font-bold text-white text-sm sm:text-base list-none select-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-teal-400 font-mono text-xs">03.</span>
+                            Does OpenGeo Cambodia support both Khmer script and English Romanization?
+                        </span>
+                        <i data-lucide="chevron-down"
+                            class="w-4 h-4 text-neutral-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="pt-3 text-xs sm:text-sm text-neutral-400 leading-relaxed border-t border-white/5 mt-3">
+                        Yes. Every administrative entity includes its official Khmer name in Khmer script (e.g.,
+                        រាជធានីភ្នំពេញ, ដូនពេញ), standardized Latin English transliteration (e.g., Phnom Penh, Doun
+                        Penh), and official administrative code. The search endpoint matches both interchangeably.
+                    </div>
+                </details>
+
+                <!-- Q4 -->
+                <details class="glass-panel p-4 group cursor-pointer">
+                    <summary
+                        class="flex items-center justify-between font-bold text-white text-sm sm:text-base list-none select-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-teal-400 font-mono text-xs">04.</span>
+                            How fast is the OpenGeo Cambodia cascading lookup?
+                        </span>
+                        <i data-lucide="chevron-down"
+                            class="w-4 h-4 text-neutral-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="pt-3 text-xs sm:text-sm text-neutral-400 leading-relaxed border-t border-white/5 mt-3">
+                        OpenGeo Cambodia delivers sub-1ms (&lt;1ms) response times for administrative lookups by
+                        leveraging an optimized in-memory indexed data store and edge-ready Cloudflare Workers / Node.js
+                        architecture.
+                    </div>
+                </details>
+
+                <!-- Q5 -->
+                <details class="glass-panel p-4 group cursor-pointer">
+                    <summary
+                        class="flex items-center justify-between font-bold text-white text-sm sm:text-base list-none select-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-teal-400 font-mono text-xs">05.</span>
+                            How does reverse geocoding work in Cambodia with OpenGeo?
+                        </span>
+                        <i data-lucide="chevron-down"
+                            class="w-4 h-4 text-neutral-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="pt-3 text-xs sm:text-sm text-neutral-400 leading-relaxed border-t border-white/5 mt-3">
+                        By providing latitude and longitude coordinates (e.g. 11.5564, 104.9282), OpenGeo queries
+                        OpenStreetMap Nominatim and normalizes the raw GPS location into the standardized 4-tier
+                        Cambodian administrative hierarchy (Province &rarr; District &rarr; Commune &rarr; Village).
+                    </div>
+                </details>
+
+                <!-- Q6 -->
+                <details class="glass-panel p-4 group cursor-pointer">
+                    <summary
+                        class="flex items-center justify-between font-bold text-white text-sm sm:text-base list-none select-none">
+                        <span class="flex items-center gap-2">
+                            <span class="text-teal-400 font-mono text-xs">06.</span>
+                            Is OpenGeo Cambodia free to use for commercial projects?
+                        </span>
+                        <i data-lucide="chevron-down"
+                            class="w-4 h-4 text-neutral-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="pt-3 text-xs sm:text-sm text-neutral-400 leading-relaxed border-t border-white/5 mt-3">
+                        Yes, OpenGeo Cambodia is 100% free and open-source under the MIT license for developers, fintech
+                        applications, delivery logistics, NGOs, and businesses across Cambodia.
+                    </div>
+                </details>
+            </div>
+        </section>
     </main>
 
-    <!-- Footer with Brand Logo -->
-    <footer class="w-full border-t border-white/5 py-8 px-4 text-xs text-neutral-500">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-4 text-neutral-400">
-                <a href="/api/info" class="hover:text-teal-400 transition-colors">API Docs</a>
-                <a href="/llms.txt" class="hover:text-teal-400 transition-colors">llms.txt</a>
-                <a href="https://github.com/pphatdev/opengeo-cambodia" target="_blank" class="hover:text-teal-400 transition-colors">GitHub</a>
+    <!-- Enhanced Semantic Footer with Structured Links & Licensing -->
+    <footer role="contentinfo"
+        class="w-full border-t border-white/10 py-12 px-4 sm:px-8 bg-neutral-950/80 backdrop-blur-md text-xs text-neutral-400">
+        <div class="max-w-6xl mx-auto flex flex-col gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Col 1: Brand & Bio -->
+                <div class="md:col-span-2 flex flex-col gap-3">
+                    <div class="flex items-center gap-3">
+                        <img src="/logo.jpg" alt="OpenGeo Cambodia Logo" width="36" height="36"
+                            class="rounded object-cover border border-white/10" />
+                        <span class="text-sm font-bold text-white font-sans">OpenGeo Cambodia</span>
+                    </div>
+                    <p class="text-xs text-neutral-400 leading-relaxed max-w-sm">
+                        An open API for Cambodia geography data providing complete 4-tier administrative hierarchy
+                        (Provinces, Districts, Communes, Villages), 100% free to use, with sub-1ms response times.
+                    </p>
+                    <div class="text-[11px] text-neutral-500 font-mono">
+                        MIT License • Free &amp; Open Source
+                    </div>
+                </div>
+
+                <!-- Col 2: Navigation Links -->
+                <nav aria-label="Platform Links" class="flex flex-col gap-2.5">
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-white">Platform</span>
+                    <a href="#features" class="hover:text-teal-400 transition-colors">Key Features</a>
+                    <a href="#administrative-structure" class="hover:text-teal-400 transition-colors">4-Tier
+                        Administrative Divisions</a>
+                    <a href="#quickstart" class="hover:text-teal-400 transition-colors">Quickstart Guide</a>
+                    <a href="#faq" class="hover:text-teal-400 transition-colors">Frequently Asked Questions</a>
+                    <a href="/api/info" class="hover:text-teal-400 transition-colors">Interactive API Docs</a>
+                </nav>
+
+                <!-- Col 3: Standards & Open Data -->
+                <nav aria-label="Developer & Data Links" class="flex flex-col gap-2.5">
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-white">Resources &amp;
+                        Data</span>
+                    <a href="/llms.txt" class="hover:text-teal-400 transition-colors">llms.txt (LLM Summary)</a>
+                    <a href="/llms-full.txt" class="hover:text-teal-400 transition-colors">llms-full.txt (Full Spec)</a>
+                    <a href="/sitemap.xml" class="hover:text-teal-400 transition-colors">Sitemap (XML)</a>
+                    <a href="/robots.txt" class="hover:text-teal-400 transition-colors">Robots.txt</a>
+                    <a href="https://github.com/pphatdev/opengeo-cambodia" target="_blank" rel="noopener noreferrer"
+                        class="hover:text-teal-400 transition-colors flex items-center gap-1">
+                        GitHub Repository <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
+                </nav>
+            </div>
+
+            <div
+                class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-white/5 text-[11px] text-neutral-500">
+                <p>&copy; 2026 OpenGeo Cambodia. Powered by OpenStreetMap &amp; official Cambodian Geographic datasets.
+                </p>
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1.5"><span class="pulse-dot"></span> 99.9% Uptime</span>
+                    <a href="#" class="hover:text-neutral-400 transition-colors">Back to top &uarr;</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -1988,7 +3347,7 @@
                     const msEl = document.getElementById('headerPingMs');
                     const latencyEl = document.getElementById('headerPingLatency');
                     const labelEl = document.getElementById('headerPingLabel');
-                    if (labelEl) labelEl.innerText = 'Online';
+                    if (labelEl) labelEl.innerText = 'Ping';
                     if (latencyEl) latencyEl.classList.remove('hidden');
                     if (msEl && healthRes.ok) {
                         animatePingMs(msEl, took);
@@ -2273,6 +3632,119 @@
 
 
 
+        // ==========================================
+        // QUICKSTART CODE EXAMPLES SLIDER
+        // ==========================================
+        let currentQsIndex = 0;
+        const totalQsSlides = 10;
+
+        function goToQuickstartSlide(index) {
+            const slider = document.getElementById('quickstartSlider');
+            if (!slider) return;
+            const slides = slider.querySelectorAll('.qs-slide');
+            if (index < 0 || index >= slides.length) return;
+
+            currentQsIndex = index;
+            slides[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+            updateQuickstartUI(index);
+        }
+
+        function slideQuickstart(direction) {
+            const slider = document.getElementById('quickstartSlider');
+            if (!slider) return;
+            const slides = slider.querySelectorAll('.qs-slide');
+            if (!slides.length) return;
+
+            const currentIndex = getCurrentQuickstartIndex();
+            let nextIndex = currentIndex + direction;
+
+            if (nextIndex < 0) nextIndex = slides.length - 1;
+            else if (nextIndex >= slides.length) nextIndex = 0;
+
+            goToQuickstartSlide(nextIndex);
+        }
+
+        function getCurrentQuickstartIndex() {
+            const slider = document.getElementById('quickstartSlider');
+            if (!slider) return 0;
+            const scrollLeft = slider.scrollLeft;
+            const slideWidth = slider.offsetWidth || 1;
+            const idx = Math.round(scrollLeft / slideWidth);
+            return Math.max(0, Math.min(totalQsSlides - 1, idx));
+        }
+
+        function updateQuickstartUI(index) {
+            currentQsIndex = index;
+
+            // 1. Update Slide Counter Indicator
+            const indicator = document.getElementById('qsSlideIndicator');
+            if (indicator) indicator.innerText = String(index + 1);
+
+            // 2. Update Language Tabs
+            for (let i = 0; i < totalQsSlides; i++) {
+                const tab = document.getElementById(`qsTab-${i}`);
+                if (tab) {
+                    if (i === index) {
+                        tab.className = 'qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-teal-500/15 text-teal-300 border-teal-500/40 shadow-sm font-semibold';
+                        tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                    } else {
+                        tab.className = 'qs-tab-btn px-3.5 py-1.5 border transition-all flex items-center gap-2 whitespace-nowrap bg-white/[0.03] text-neutral-400 border-white/10 hover:text-white hover:bg-white/[0.06] font-medium';
+                    }
+                }
+            }
+
+            // 3. Update Dots
+            const dots = document.querySelectorAll('#qsDotsContainer .qs-dot');
+            dots.forEach((dot, i) => {
+                if (i === index) {
+                    dot.className = 'qs-dot h-1.5 rounded-full transition-all duration-300 w-7 bg-teal-400';
+                } else {
+                    dot.className = 'qs-dot h-1.5 rounded-full transition-all duration-300 w-2 bg-white/20 hover:bg-white/40';
+                }
+            });
+        }
+
+        function copyQuickCode(codeId, btn) {
+            const codeEl = document.getElementById(codeId);
+            if (!codeEl) return;
+            const text = codeEl.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i><span class="text-xs font-mono text-emerald-400">Copied!</span>';
+                if (window.lucide) window.lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    if (window.lucide) window.lucide.createIcons();
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
+        function initQuickstartSlider() {
+            const slider = document.getElementById('quickstartSlider');
+            if (!slider) return;
+
+            let scrollTimeout;
+            slider.addEventListener('scroll', () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    const idx = getCurrentQuickstartIndex();
+                    updateQuickstartUI(idx);
+                }, 50);
+            }, { passive: true });
+
+            slider.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    slideQuickstart(-1);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    slideQuickstart(1);
+                }
+            });
+        }
+
         // Global Combobox Click-Outside and Escape handlers
         document.addEventListener('click', (e) => {
             if (!e.target.closest('[id^="cb-wrap-"]')) {
@@ -2294,6 +3766,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             initData();
             initLeafletMap();
+            initQuickstartSlider();
             if (window.lucide) window.lucide.createIcons();
         });
     </script>

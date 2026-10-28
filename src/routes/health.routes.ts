@@ -18,9 +18,15 @@ healthRoutes.get('/api/info', (c) => {
   c.header('Cache-Control', 'public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400');
   return c.json({
     name: 'OpenGeo Cambodia API',
+    purpose: 'Open API for Cambodia geography data',
+    pillars: [
+      '1. Complete Administrative Hierarchy (Provinces, Districts, Communes, Villages)',
+      '2. Allow user to use for free (100% Free & Open Access, No API Keys, No Paywalls)',
+      '3. Provide fast response time (Sub-1ms in-memory cascading lookups)',
+    ],
     domain: config.domain,
     url: config.appUrl,
-    description: 'Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages with smart OpenStreetMap geocoding',
+    description: 'An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times',
     version: '1.0.0',
     convention: {
       tier1: 'City / Province (រាជធានី / ខេត្ត) - admin_level=4 (25)',

@@ -1,7 +1,9 @@
 # OpenGeo Cambodia API
 
-> Sub-1ms cascading lookups across all 25 Provinces, 200+ Districts, 1,600+ Communes, and 14,500+ Villages with smart OpenStreetMap geocoding
+> An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with ultra-fast sub-millisecond response times.
 
+[![Access: 100% Free](https://img.shields.io/badge/Access-100%25%20Free-emerald.svg?style=flat-square)](https://opengeo-cambodia.pphat.me)
+[![Speed: <1ms](https://img.shields.io/badge/Speed-%3C1ms-sky.svg?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![Domain](https://img.shields.io/badge/Domain-opengeo--cambodia.pphat.me-0d9488?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![LLM Docs](https://img.shields.io/badge/LLM%20Docs-llms.txt-7c3aed?style=flat-square)](https://opengeo-cambodia.pphat.me/llms.txt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
@@ -13,13 +15,17 @@
 
 ## 🌟 Overview & Purpose
 
-Digital platforms operating in Cambodia (logistics, e-commerce, fintech KYC, ride-hailing, government forms) require a standard 4-tier administrative address selector:
+**OpenGeo Cambodia** is a dedicated open API built specifically for Cambodia's geography and administrative data. The purpose of this project is to solve the critical geographic data accessibility problem in Cambodia by delivering on three core pillars:
+
+1. **Complete Administrative Hierarchy**: Full, authoritative coverage of all 4 official tiers of Cambodian administrative divisions:
+   - **Provinces & Capital** (រាជធានី / ខេត្ត) — **25** (1 Capital Municipality + 24 Provinces)
+   - **Districts, Khans & Krongs** (ស្រុក / ខណ្ឌ / ក្រុង) — **210** (14 Khans + 32 Krongs + 164 Sroks)
+   - **Communes & Sangkats** (ឃុំ / សង្កាត់) — **1,661** (331 Sangkats + 1,330 Khums)
+   - **Villages** (ភូមិ) — **14,576** Phums
+2. **Allow Users to Use for Free**: 100% free, public, and open access for everyone. No API keys, no subscriptions, no rate-paywalls, and zero cost for developers, startups, e-commerce, logistics, fintech KYC, government initiatives, students, and NGOs under the permissive MIT license.
+3. **Provide Fast Response Time**: Ultra-low latency sub-millisecond (< 1ms) lookups. By leveraging pre-indexed, in-memory O(1) hash maps and edge-ready caching, frontend address selectors and backend APIs resolve cascading geographic queries instantly without database bottlenecks or external API delays.
 
 $$\text{City / Province (រាជធានី / ខេត្ត)} \longrightarrow \text{District / Khan / Krong (ស្រុក / ខណ្ឌ / ក្រុង)} \longrightarrow \text{Commune / Sangkat (ឃុំ / សង្កាត់)} \longrightarrow \text{Village (ភូមិ)}$$
-
-This project solves two primary challenges:
-1. **Instant Cascading Dropdowns (< 1ms)**: Serves administrative divisions directly from an indexed in-memory store without hammering external public APIs.
-2. **Smart Reverse Geocoding & Address Search**: Normalizes arbitrary OpenStreetMap (Nominatim) address schemas into the standardized Cambodian 4-tier model.
 
 ---
 

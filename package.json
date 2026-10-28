@@ -1,7 +1,7 @@
 {
     "name": "opengeo-cambodia-api",
     "version": "1.0.0",
-    "description": "Sub-1ms cascading lookups across all 25 Provinces, 200+ Districts, 1,600+ Communes, and 14,500+ Villages with smart OpenStreetMap geocoding",
+    "description": "An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with sub-1ms response times",
     "homepage": "https://opengeo-cambodia.pphat.me",
     "main": "dist/index.js",
     "type": "module",

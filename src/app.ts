@@ -258,6 +258,35 @@ app.get("/site.webmanifest", (c) => {
     return c.notFound();
 });
 
+app.get("/robots.txt", async (c) => {
+    if (c.env && (c.env as any).ASSETS) {
+        const assetRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/robots.txt", c.req.url)));
+        if (assetRes.ok) return assetRes;
+    }
+    const filePath = path.join(publicDir, "robots.txt");
+    if (fs.existsSync(filePath)) {
+        c.header("Content-Type", "text/plain; charset=utf-8");
+        c.header("Cache-Control", "public, max-age=86400");
+        return c.body(fs.readFileSync(filePath, "utf-8"));
+    }
+    return c.text("User-agent: *\nAllow: /\nDisallow: /api/geocode/reverse?*\nSitemap: https://opengeo-cambodia.pphat.me/sitemap.xml\n");
+});
+
+app.get("/sitemap.xml", async (c) => {
+    if (c.env && (c.env as any).ASSETS) {
+        const assetRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/sitemap.xml", c.req.url)));
+        if (assetRes.ok) return assetRes;
+    }
+    const filePath = path.join(publicDir, "sitemap.xml");
+    if (fs.existsSync(filePath)) {
+        c.header("Content-Type", "application/xml; charset=utf-8");
+        c.header("Cache-Control", "public, max-age=86400");
+        return c.body(fs.readFileSync(filePath, "utf-8"));
+    }
+    return c.notFound();
+});
+
+
 app.get("/favicon.ico", (c) => {
     const darkFavicon = path.join(publicDir, "logo", "4dark", "favicon.ico");
     const lightFavicon = path.join(publicDir, "logo", "4light", "favicon.ico");
@@ -331,8 +360,14 @@ app.get("/", async (c) => {
     );
     return c.json({
         name: "OpenGeo Cambodia API",
+        purpose: "Open API for Cambodia geography data",
+        pillars: [
+            "1. Administrative Hierarchy (Provinces, Districts, Communes, Villages)",
+            "2. Allow user to use for free (100% Free & Open Access, No API Keys, No Paywalls)",
+            "3. Provide fast response time (Sub-1ms in-memory cascading lookups)",
+        ],
         description:
-            "Sub-1ms cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages with smart OpenStreetMap geocoding",
+            "An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times",
         version: "1.0.0",
         documentation: "/api/info",
         llms: "/llms.txt",

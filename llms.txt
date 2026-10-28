@@ -1,11 +1,13 @@
 # OpenGeo Cambodia API
 
-> High-performance Cambodian Geographic & Administrative Division API providing sub-millisecond cascading lookups across all 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages with smart OpenStreetMap geocoding.
+> An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with ultra-fast sub-millisecond response times.
 
-## Overview & Core Architecture
+## Project Purpose & Core Pillars
 
-OpenGeo Cambodia provides standard 4-tier administrative boundary resolution for digital products operating in the Kingdom of Cambodia (logistics, e-commerce, fintech KYC, government forms):
-`City / Province (រាជធានី / ខេត្ត) -> District / Khan / Krong (ស្រុក / ខណ្ឌ / ក្រុង) -> Commune / Sangkat (ឃុំ / សង្កាត់) -> Village (ភូមិ)`
+OpenGeo Cambodia is an open API dedicated to standardizing and distributing Cambodian geographic data based on three foundational principles:
+1. **Complete Administrative Hierarchy**: Full authoritative resolution across all 4 official tiers: 25 Provinces (រាជធានី / ខេត្ត), 210 Districts (ស្រុក / ខណ្ឌ / ក្រុង), 1,661 Communes (ឃុំ / សង្កាត់), and 14,576 Villages (ភូមិ).
+2. **100% Free & Open Access**: Zero barrier to entry. No API keys, no subscriptions, no paywalls, unrestricted commercial and non-commercial usage under the MIT license.
+3. **Ultra-Fast Response Times (Sub-1ms)**: Pre-indexed in-memory O(1) hash maps and edge caching provide cascading lookups and geocoding in under 1 millisecond.
 
 - **Base URL**: `https://opengeo-cambodia.pphat.me` (or `http://localhost:3000` locally)
 - **Interactive Playground**: `https://opengeo-cambodia.pphat.me/demo`

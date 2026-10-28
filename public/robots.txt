@@ -1,0 +1,6 @@
+# robots.txt for OpenGeo Cambodia
+User-agent: *
+Allow: /
+Disallow: /api/geocode/reverse?*
+
+Sitemap: https://opengeo-cambodia.pphat.me/sitemap.xml
