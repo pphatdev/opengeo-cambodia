@@ -59,6 +59,13 @@ for (const csv of csvFiles) {
     }
 }
 
+// 4b. Copy GeoJSON Boundaries to dist/data/boundaries and public/boundaries
+const boundariesSrc = path.join(srcDir, "data", "boundaries");
+if (fs.existsSync(boundariesSrc)) {
+    copyDir(boundariesSrc, path.join(distDir, "data", "boundaries"));
+    copyDir(boundariesSrc, path.join(rootDir, "public", "boundaries"));
+}
+
 // 5. Copy LLM documentation files to dist/ and public/
 const llmFiles = ["llms.txt", "llms-full.txt"];
 for (const file of llmFiles) {

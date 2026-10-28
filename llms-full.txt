@@ -16,7 +16,6 @@ OpenGeo Cambodia is an open API built specifically for Cambodia's geography and 
 ### Primary Architecture
 1. **In-Memory Administrative Store (`AdminStore`)**:
    - Contains all official Cambodian administrative divisions: **25 Provinces**, **210 Districts**, **1,661 Communes**, and **14,576 Villages**.
-   - Officially sourced from the Ministry of Economy and Finance Open Data Portal ([https://data.mef.gov.kh/](https://data.mef.gov.kh/)).
    - Sub-millisecond ($< 1\text{ms}$) response times served directly from memory indices without external network dependencies.
    - Dual-language support: Official Khmer script (`name_km`) and Latin Romanization (`name_en`).
 2. **Normalized Smart Geocoding (`GeocodeService`)**:
@@ -403,7 +402,92 @@ Performs free-text search bounded strictly to Cambodia's geographical boundaries
 
 ---
 
-### 4.11. Health Check & Diagnostics
+### 4.11. Geographic Boundaries API (GeoJSON & GIS Integration)
+Serves official boundary polygons (Provinces, Districts, Communes) as standardized GeoJSON (`FeatureCollection` / `Feature`) or lightweight metadata lists (`format=summary`). Every feature is enriched with Khmer script names (`name_km`), NCDD administrative codes (`code`), PCODEs (`pcode`), administrative types (`type_km`), and pre-calculated 2D bounding boxes (`bbox`).
+
+#### 4.11.1. Flexible Boundaries Query
+- **Method**: `GET`
+- **Path**: `/api/boundaries`
+- **Query Parameters**:
+  - `level` (string, optional): Boundary tier (`province`, `district`, `commune`, default: `province`).
+  - `province_code` (string, optional): Filter by parent province code (e.g. `12` or `KH12`).
+  - `district_code` (string, optional): Filter by parent district code (e.g. `1201` or `KH1201`).
+  - `code` (string, optional): Exact code match (e.g. `12`, `1201`, `120101`).
+  - `q` / `search` (string, optional): Search query matching English or Khmer script names.
+  - `format` (string, optional): `geojson` (default, returns GeoJSON `FeatureCollection`) or `summary` / `list` (returns lightweight JSON list without heavy coordinates).
+  - `limit` (integer, optional): Maximum features to return.
+  - `offset` (integer, optional): Pagination offset.
+- **GeoJSON Response Format**:
+```json
+{
+  "type": "FeatureCollection",
+  "name": "cambodia_province_boundaries",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "bbox": [102.3, 10.4, 107.7, 14.7],
+  "features": [
+    {
+      "type": "Feature",
+      "id": 12,
+      "properties": {
+        "id": 12,
+        "code": "12",
+        "pcode": "KH12",
+        "name": "Phnom Penh",
+        "name_en": "Phnom Penh",
+        "name_km": "រាជធានីភ្នំពេញ",
+        "type_km": "រាជធានី",
+        "level": "province",
+        "lat": 11.5564,
+        "lon": 104.9282,
+        "bbox": [104.74, 11.42, 105.04, 11.69],
+        "shape_length": 1.95,
+        "shape_area": 0.056
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[104.74, 11.42], [105.04, 11.69]]]
+      }
+    }
+  ]
+}
+```
+
+#### 4.11.2. Summary List Format (`format=summary`)
+When fetching boundaries for UI dropdowns, tables, or map bounds without downloading megabytes of coordinates:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 12,
+      "code": "12",
+      "pcode": "KH12",
+      "name_en": "Phnom Penh",
+      "name_km": "រាជធានីភ្នំពេញ",
+      "type_km": "រាជធានី",
+      "level": "province",
+      "lat": 11.5564,
+      "lon": 104.9282,
+      "bbox": [104.74, 11.42, 105.04, 11.69]
+    }
+  ],
+  "meta": { "total": 25, "source": "local_cache" }
+}
+```
+
+#### 4.11.3. Single Boundary Lookup
+- **Method**: `GET`
+- **Path**: `/api/boundaries/item/:code` or `/api/boundaries/provinces/:code`, `/api/boundaries/districts/:code`, `/api/boundaries/communes/:code`
+- Returns single GeoJSON `Feature` with geometry and enriched properties.
+
+#### 4.11.4. Ascending Hierarchy
+- **Method**: `GET`
+- **Path**: `/api/boundaries/hierarchy/:code`
+- Resolves ascending boundary polygons: `{ province?: Feature, district?: Feature, commune?: Feature }`.
+
+---
+
+### 4.12. Health Check & Diagnostics
 Used by container orchestrators, load balancers, and uptime monitors.
 
 - **Method**: `GET`

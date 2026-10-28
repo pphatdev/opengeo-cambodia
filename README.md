@@ -13,6 +13,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
 🔗 **Live Production URL:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me)  
+🌐 **Interactive Web UI:** [https://opengeo-cambodia.pphat.me/demo](https://opengeo-cambodia.pphat.me/demo) *(Fast Open API Platform & Live Metrics)*  
 🏛️ **Official Data Source:** [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)  
 📮 **Postman Collection:** [`public/opengeo-cambodia.postman_collection.json`](public/opengeo-cambodia.postman_collection.json) *(Uses collection variables, no environment file needed)*  
 🤖 **LLM Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)
@@ -256,6 +257,36 @@ GET /api/geocode/search?q=Wat+Phnom&limit=5
 
 ---
 
+### 3. Geographic Boundaries (GeoJSON Polygons & Filters)
+
+Standardized GeoJSON (`FeatureCollection` and `Feature`) and lightweight metadata lists (`format=summary`) for map rendering (Leaflet, Mapbox, OpenLayers, Google Maps, QGIS). All boundaries are pre-enriched with Khmer script names (`name_km`), NCDD administrative codes (`code`), PCODEs (`pcode`), and pre-calculated 2D bounding boxes (`bbox`).
+
+#### Flexible Boundaries Query (List & Filters)
+```http
+GET /api/boundaries?level=:level&province_code=:pCode&district_code=:dCode&code=:code&q=:query&format=:format&limit=:limit&offset=:offset
+```
+- **`level`** (`province` | `district` | `commune`, default: `province`)
+- **`province_code`** (e.g. `12` or `KH12`) — filters districts or communes in that province
+- **`district_code`** (e.g. `1201` or `KH1201`) — filters communes in that district
+- **`code`** (e.g. `12`, `1201`, `120101`) — exact boundary match
+- **`q`** / **`search`** — searches boundary by English or Khmer name
+- **`format`** (`geojson` [default] | `summary` / `list` [lightweight JSON without heavy coordinates])
+- **`limit`** / **`offset`** — pagination controls
+
+#### Boundary Shortcuts
+- `GET /api/boundaries/provinces` — All 25 province polygons
+- `GET /api/boundaries/provinces/:code` — Single province boundary (e.g. `12` for Phnom Penh)
+- `GET /api/boundaries/districts?province_code=12` — Districts within a province
+- `GET /api/boundaries/districts/:code` — Single district boundary (e.g. `1202` for Doun Penh)
+- `GET /api/boundaries/communes?district_code=1202` — Communes within a district
+- `GET /api/boundaries/communes/:code` — Single commune boundary (e.g. `120201` for Phsar Thmei 1)
+- `GET /api/boundaries/item/:code` — Lookup any boundary by code
+- `GET /api/boundaries/hierarchy/:code` — Ascending nested boundary polygons (Commune -> District -> Province)
+- `GET /api/boundaries/stats` — Boundary counts and Cambodia bounding box
+- `GET /api/boundaries/raw/:filename` — Direct file download (`provinces.geojson`, `districts.geojson`, `communes.geojson`)
+
+---
+
 ## 🛠️ Project Structure
 
 ```text
@@ -272,29 +303,37 @@ opengeo-cambodia.pphat.me/
     ├── config.ts              # Environment settings and constants
     ├── types/
     │   ├── admin.ts           # AdminItem, AdminLevel, Hierarchy contracts
+    │   ├── boundaries.ts      # GeoJSON, BoundaryProperties, Summary types
     │   ├── geocode.ts         # GeocodeResult, Nominatim types
     │   └── api.ts             # Standardized API response envelope
     ├── data/
     │   ├── store.ts           # High-performance In-Memory repository (O(1) index)
+    │   ├── boundaries/        # GeoJSON boundary datasets
+    │   │   ├── province.geojson # 25 Provinces boundary polygons
+    │   │   ├── district.geojson # 204 Districts boundary polygons
+    │   │   └── commune.geojson  # 1,640 Communes boundary polygons
     │   └── seed/
     │       ├── provinces.json # Seed data for all 25 provinces
     │       ├── districts.json # Seed data for districts
     │       ├── communes.json  # Seed data for communes
     │       └── villages.json  # Seed data for villages
     ├── routes/
-    │   ├── admin.routes.ts    # /api/admin/* endpoints
-    │   ├── geocode.routes.ts  # /api/geocode/* endpoints
-    │   └── health.routes.ts   # /health and /api/info
+    │   ├── admin.routes.ts      # /api/admin/* endpoints
+    │   ├── boundaries.routes.ts # /api/boundaries/* GeoJSON & spatial filtering
+    │   ├── geocode.routes.ts    # /api/geocode/* endpoints
+    │   └── health.routes.ts     # /health and /api/info
     ├── services/
-    │   ├── admin.service.ts   # Dropdown cascading logic
-    │   ├── geocode.service.ts # 4-tier key normalization & fallback cascade
-    │   └── nominatim.client.ts# OSM Nominatim HTTP client
+    │   ├── admin.service.ts      # Dropdown cascading logic
+    │   ├── boundaries.service.ts # Spatial indexing, bounding boxes & filters
+    │   ├── geocode.service.ts    # 4-tier key normalization & fallback cascade
+    │   └── nominatim.client.ts   # OSM Nominatim HTTP client
     ├── scripts/
     │   ├── copy-assets.ts     # Asset bundling script for production builds
+    │   ├── generate-llms.ts   # llms.txt & llms-full.txt generator
     │   ├── sync-overpass.ts   # Background ETL pipeline from Overpass API
     │   └── convert-csv.ts     # CSV data ingestion and conversion utilities
     └── views/
-        └── demo.html          # Interactive Web UI with live timing & geocoder
+        └── demo.html          # Interactive Web UI with live ping monitor, metrics counters & quick command bar
 ```
 
 ---

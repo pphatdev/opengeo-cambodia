@@ -26,6 +26,7 @@ serve(
     🌐 API Welcome:      http://localhost:${info.port}/
     📖 API Endpoints:    http://localhost:${info.port}/api/info
     🏛️  Provinces:        http://localhost:${info.port}/api/admin/provinces
+    🗺️  Boundaries:       http://localhost:${info.port}/api/boundaries/provinces
     📍 GPS Reverse Geo:  http://localhost:${info.port}/api/geocode/reverse?lat=11.5714&lon=104.9250
     📊 Loaded Records:   ${stats.provinces} Provinces | ${stats.districts} Districts | ${stats.communes} Communes | ${stats.villages} Villages
 =========================================================

@@ -15,6 +15,7 @@ import {
     globalRateLimiter,
 } from "./middleware/rate-limiter.js";
 import { adminRoutes } from "./routes/admin.routes.js";
+import { boundariesRoutes } from "./routes/boundaries.routes.js";
 import { geocodeRoutes } from "./routes/geocode.routes.js";
 import { healthRoutes } from "./routes/health.routes.js";
 
@@ -50,6 +51,10 @@ if (rootDir && typeof fs?.existsSync === "function") {
         const distDemo = path.join(distViewsDir, "demo.html");
         if (fs.existsSync(srcDemo) && fs.existsSync(distViewsDir)) {
             fs.copyFileSync(srcDemo, distDemo);
+        }
+        if (fs.existsSync(srcDemo) && publicDir && fs.existsSync(publicDir)) {
+            fs.copyFileSync(srcDemo, path.join(publicDir, "index.html"));
+            fs.copyFileSync(srcDemo, path.join(publicDir, "demo.html"));
         }
 
         const khmerDatetimeLogoDir = path.resolve(
@@ -181,12 +186,13 @@ app.use(
 app.use("*", createBotShield());
 
 // 6. Tiered Rate Limiting & Edge Caching
-// Administrative routes: Dedicated 10,000 req/min/IP for immutable geographic datasets
+// Administrative and boundary routes: Dedicated 10,000 req/min/IP for immutable geographic datasets
 app.use("/api/admin/*", adminRateLimiter);
+app.use("/api/boundaries/*", adminRateLimiter);
 
 // General rate limiter for non-admin API endpoints (e.g. /api/info, 5,000 req/min/IP)
 app.use("/api/*", async (c, next) => {
-    if (c.req.path.startsWith("/api/admin/") || c.req.path.startsWith("/api/geocode/")) {
+    if (c.req.path.startsWith("/api/admin/") || c.req.path.startsWith("/api/geocode/") || c.req.path.startsWith("/api/boundaries")) {
         return next();
     }
     return globalRateLimiter(c, next);
@@ -441,12 +447,18 @@ app.get("/", async (c) => {
             search: "/api/admin/search?q=:query",
             reverse: "/api/geocode/reverse?lat=:lat&lon=:lon",
             stats: "/api/admin/stats",
+            boundaries: "/api/boundaries?level=:level",
+            boundaryProvinces: "/api/boundaries/provinces",
+            boundaryDistricts: "/api/boundaries/districts?province_code=:code",
+            boundaryCommunes: "/api/boundaries/communes?district_code=:code",
+            boundaryItem: "/api/boundaries/item/:code",
         },
     });
 });
 
 // 8. Mount API Routes
 app.route("/api/admin", adminRoutes);
+app.route("/api/boundaries", boundariesRoutes);
 app.route("/api/geocode", geocodeRoutes);
 app.route("/", healthRoutes);
 

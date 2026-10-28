@@ -54,7 +54,7 @@ OpenGeo Cambodia is an open API dedicated to standardizing and distributing Camb
 3. **Ultra-Fast Response Times (Sub-1ms)**: Pre-indexed in-memory O(1) hash maps and edge caching provide cascading lookups and geocoding in under 1 millisecond.
 
 - **Base URL**: \`https://opengeo-cambodia.pphat.me\` (or \`http://localhost:3000\` locally)
-- **Interactive Playground**: \`https://opengeo-cambodia.pphat.me/demo\`
+- **Interactive Web UI**: \`https://opengeo-cambodia.pphat.me/demo\`
 - **Full LLM Reference**: [llms-full.txt](https://opengeo-cambodia.pphat.me/llms-full.txt)
 - **API Spec & Metadata**: \`GET /api/info\`
 - **Health Check**: \`GET /health\`
@@ -86,6 +86,16 @@ OpenGeo Cambodia is an open API dedicated to standardizing and distributing Camb
 - \`GET /api/geocode/reverse?lat=:lat&lon=:lon\`: Reverse geocode a GPS coordinate into the standardized 4-tier Cambodian address model.
 - \`GET /api/geocode/search?q=:query&limit=:limit\`: Free-text geocoding search bounded to Cambodia territory.
 
+### Geographic Boundaries (GeoJSON & GIS Integration)
+- \`GET /api/boundaries?level=:level&province_code=:pCode&district_code=:dCode&q=:query&format=:format\`: Unified Boundaries API with spatial filtering, search, pagination, and format selection (\`geojson\` or \`summary\`).
+- \`GET /api/boundaries/provinces\`: All 25 province boundary GeoJSON polygons with official Khmer script names and pre-calculated bounding boxes.
+- \`GET /api/boundaries/districts?province_code=:pCode\`: District boundaries (filterable by province).
+- \`GET /api/boundaries/communes?district_code=:dCode\`: Commune boundaries (filterable by district or province).
+- \`GET /api/boundaries/item/:code\`: Single boundary GeoJSON Feature by code (e.g. \`12\` or \`KH12\`).
+- \`GET /api/boundaries/hierarchy/:code\`: Ascending nested boundary polygons (Commune -> District -> Province).
+- \`GET /api/boundaries/stats\`: Boundary feature counts, bounds, and metadata.
+- \`GET /api/boundaries/raw/:filename\`: Direct download for \`provinces.geojson\`, \`districts.geojson\`, and \`communes.geojson\`.
+
 ## Common Code Patterns
 
 ### 1. Fetch Provinces & Districts (TypeScript / Fetch)
@@ -114,7 +124,7 @@ print(res['data']['displayName'])
 
 ## Detailed Documentation
 - [Full LLM Specification & Schemas](https://opengeo-cambodia.pphat.me/llms-full.txt): Comprehensive schemas, status codes, gotchas, and complete TypeScript/Python SDK integration patterns.
-- [Interactive Web Playground](https://opengeo-cambodia.pphat.me/demo): Live testing interface with tree cascading selector, interactive Leaflet map, and address search.
+- [Interactive Web Playground](https://opengeo-cambodia.pphat.me/demo): Live testing interface with tree cascading selector, boundary GeoJSON polygon visualizer, interactive Leaflet map, and address search.
 - [GitHub Repository](https://github.com/pphatdev/opengeo-cambodia): Open-source source code, Overpass QL sync scripts, and CSV update utilities.
 `;
 }
@@ -530,7 +540,92 @@ Performs free-text search bounded strictly to Cambodia's geographical boundaries
 
 ---
 
-### 4.11. Health Check & Diagnostics
+### 4.11. Geographic Boundaries API (GeoJSON & GIS Integration)
+Serves official boundary polygons (Provinces, Districts, Communes) as standardized GeoJSON (\`FeatureCollection\` / \`Feature\`) or lightweight metadata lists (\`format=summary\`). Every feature is enriched with Khmer script names (\`name_km\`), NCDD administrative codes (\`code\`), PCODEs (\`pcode\`), administrative types (\`type_km\`), and pre-calculated 2D bounding boxes (\`bbox\`).
+
+#### 4.11.1. Flexible Boundaries Query
+- **Method**: \`GET\`
+- **Path**: \`/api/boundaries\`
+- **Query Parameters**:
+  - \`level\` (string, optional): Boundary tier (\`province\`, \`district\`, \`commune\`, default: \`province\`).
+  - \`province_code\` (string, optional): Filter by parent province code (e.g. \`12\` or \`KH12\`).
+  - \`district_code\` (string, optional): Filter by parent district code (e.g. \`1201\` or \`KH1201\`).
+  - \`code\` (string, optional): Exact code match (e.g. \`12\`, \`1201\`, \`120101\`).
+  - \`q\` / \`search\` (string, optional): Search query matching English or Khmer script names.
+  - \`format\` (string, optional): \`geojson\` (default, returns GeoJSON \`FeatureCollection\`) or \`summary\` / \`list\` (returns lightweight JSON list without heavy coordinates).
+  - \`limit\` (integer, optional): Maximum features to return.
+  - \`offset\` (integer, optional): Pagination offset.
+- **GeoJSON Response Format**:
+\`\`\`json
+{
+  "type": "FeatureCollection",
+  "name": "cambodia_province_boundaries",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "bbox": [102.3, 10.4, 107.7, 14.7],
+  "features": [
+    {
+      "type": "Feature",
+      "id": 12,
+      "properties": {
+        "id": 12,
+        "code": "12",
+        "pcode": "KH12",
+        "name": "Phnom Penh",
+        "name_en": "Phnom Penh",
+        "name_km": "រាជធានីភ្នំពេញ",
+        "type_km": "រាជធានី",
+        "level": "province",
+        "lat": 11.5564,
+        "lon": 104.9282,
+        "bbox": [104.74, 11.42, 105.04, 11.69],
+        "shape_length": 1.95,
+        "shape_area": 0.056
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[104.74, 11.42], [105.04, 11.69]]]
+      }
+    }
+  ]
+}
+\`\`\`
+
+#### 4.11.2. Summary List Format (\`format=summary\`)
+When fetching boundaries for UI dropdowns, tables, or map bounds without downloading megabytes of coordinates:
+\`\`\`json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 12,
+      "code": "12",
+      "pcode": "KH12",
+      "name_en": "Phnom Penh",
+      "name_km": "រាជធានីភ្នំពេញ",
+      "type_km": "រាជធានី",
+      "level": "province",
+      "lat": 11.5564,
+      "lon": 104.9282,
+      "bbox": [104.74, 11.42, 105.04, 11.69]
+    }
+  ],
+  "meta": { "total": 25, "source": "local_cache" }
+}
+\`\`\`
+
+#### 4.11.3. Single Boundary Lookup
+- **Method**: \`GET\`
+- **Path**: \`/api/boundaries/item/:code\` or \`/api/boundaries/provinces/:code\`, \`/api/boundaries/districts/:code\`, \`/api/boundaries/communes/:code\`
+- Returns single GeoJSON \`Feature\` with geometry and enriched properties.
+
+#### 4.11.4. Ascending Hierarchy
+- **Method**: \`GET\`
+- **Path**: \`/api/boundaries/hierarchy/:code\`
+- Resolves ascending boundary polygons: \`{ province?: Feature, district?: Feature, commune?: Feature }\`.
+
+---
+
+### 4.12. Health Check & Diagnostics
 Used by container orchestrators, load balancers, and uptime monitors.
 
 - **Method**: \`GET\`
