@@ -14,6 +14,7 @@ interface ClientRecord {
 
 /**
  * High-performance sliding-window in-memory rate limiter for Hono
+ * Supports Cloudflare Workers (cf-connecting-ip), Proxies (x-forwarded-for), and Direct Node.js
  */
 export function createRateLimiter(
     options: RateLimitOptions,
@@ -43,14 +44,15 @@ export function createRateLimiter(
         }
 
         // Safety cap against memory saturation in edge isolates
-        if (store.size > 5000) {
+        if (store.size > 10000) {
             store.clear();
         }
 
+        // Cloudflare Workers sends cf-connecting-ip as the authoritative client IP
+        const cfIp = c.req.header("cf-connecting-ip");
         const forwarded = c.req.header("x-forwarded-for");
         const realIp = c.req.header("x-real-ip");
-        const clientIp = (forwarded ? forwarded.split(",")[0].trim() : "") ||
-            realIp || "127.0.0.1";
+        const clientIp = cfIp || (forwarded ? forwarded.split(",")[0].trim() : "") || realIp || "127.0.0.1";
 
         const key = `${keyPrefix}:${clientIp}`;
         let record = store.get(key);
@@ -88,19 +90,28 @@ export function createRateLimiter(
     };
 }
 
-// Global API rate limit: 120 requests per minute per IP
+// Dedicated High-Throughput Administrative Data Rate Limit (10,000 req/min/IP)
+// Since geography data is 100% in-memory and immutable, high burst access is fully supported.
+export const adminRateLimiter = createRateLimiter({
+    windowMs: 60 * 1000,
+    maxRequests: parseInt(process.env.RATE_LIMIT_ADMIN_MAX || "10000", 10),
+    message: "Administrative API rate limit exceeded. Please try again shortly.",
+    keyPrefix: "admin",
+});
+
+// General API rate limit (5,000 requests per minute per IP)
 export const globalRateLimiter = createRateLimiter({
     windowMs: 60 * 1000,
-    maxRequests: 120,
-    message:
-        "API rate limit exceeded. Please wait before making more requests.",
+    maxRequests: parseInt(process.env.RATE_LIMIT_GLOBAL_MAX || "5000", 10),
+    message: "API rate limit exceeded. Please wait before making more requests.",
     keyPrefix: "global",
 });
 
 // Stricter rate limit for Geocoding / Nominatim calls: 30 requests per minute per IP
+// (Respects OpenStreetMap Nominatim 1 req/sec Fair Use Policy)
 export const geocodeRateLimiter = createRateLimiter({
     windowMs: 60 * 1000,
-    maxRequests: 30,
+    maxRequests: parseInt(process.env.RATE_LIMIT_GEOCODE_MAX || "30", 10),
     message: "Geocoding rate limit exceeded (maximum 30 requests per minute).",
     keyPrefix: "geocode",
 });
