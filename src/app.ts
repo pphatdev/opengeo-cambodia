@@ -219,6 +219,25 @@ app.get("/llms-full.txt", async (c) => {
     return c.text(getLlmsFullTxt());
 });
 
+// 6b. Postman Collection Endpoints (Auto-discoverable / Direct Download)
+app.get("/opengeo-cambodia.postman_collection.json", async (c) => {
+    if (c.env && (c.env as any).ASSETS) {
+        const assetRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/opengeo-cambodia.postman_collection.json", c.req.url)));
+        if (assetRes.ok) return assetRes;
+    }
+    const publicPath = path.join(publicDir, "opengeo-cambodia.postman_collection.json");
+    if (fs.existsSync(publicPath)) {
+        c.header("Content-Type", "application/json; charset=utf-8");
+        c.header("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+        return c.body(fs.readFileSync(publicPath, "utf-8"));
+    }
+    return c.notFound();
+});
+
+app.get("/postman", (c) => {
+    return c.redirect("/opengeo-cambodia.postman_collection.json", 302);
+});
+
 // 7. Static Branding & Logo Endpoints
 app.get("/cover.webp", async (c) => {
     if (c.env && (c.env as any).ASSETS) {
@@ -414,6 +433,7 @@ app.get("/", async (c) => {
         documentation: "/api/info",
         llms: "/llms.txt",
         llmsFull: "/llms-full.txt",
+        postman: "/opengeo-cambodia.postman_collection.json",
         demo: "/demo",
         health: "/health",
         endpoints: {

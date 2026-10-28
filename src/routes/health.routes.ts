@@ -56,6 +56,7 @@ healthRoutes.get('/api/info', (c) => {
         info: 'GET /api/info',
         llms: 'GET /llms.txt',
         llmsFull: 'GET /llms-full.txt',
+        postman: 'GET /opengeo-cambodia.postman_collection.json',
       },
     },
   });
