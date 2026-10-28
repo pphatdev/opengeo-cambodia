@@ -9,10 +9,12 @@
 [![Data Source: MEF Open Data](https://img.shields.io/badge/Data%20Source-data.mef.gov.kh-blue?style=flat-square)](https://data.mef.gov.kh/)
 [![Domain](https://img.shields.io/badge/Domain-opengeo--cambodia.pphat.me-0d9488?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![LLM Docs](https://img.shields.io/badge/LLM%20Docs-llms.txt-7c3aed?style=flat-square)](https://opengeo-cambodia.pphat.me/llms.txt)
+[![Postman](https://img.shields.io/badge/Postman-Collection-FF6C37?style=flat-square&logo=postman&logoColor=white)](public/opengeo-cambodia.postman_collection.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
 🔗 **Live Production URL:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me)  
 🏛️ **Official Data Source:** [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)  
+📮 **Postman Collection:** [`public/opengeo-cambodia.postman_collection.json`](public/opengeo-cambodia.postman_collection.json) *(Uses collection variables, no environment file needed)*  
 🤖 **LLM Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)
 
 ---
@@ -90,6 +92,7 @@ The server starts at `http://localhost:3000`:
 - **Interactive Web UI**: `http://localhost:3000/demo` (or opening `/` in a browser)
 - **API Welcome / Endpoints**: `http://localhost:3000/` (JSON)
 - **API Spec & Info**: `http://localhost:3000/api/info`
+- **Postman Collection**: `http://localhost:3000/opengeo-cambodia.postman_collection.json`
 - **LLM Summary (`llmstxt.org`)**: `http://localhost:3000/llms.txt`
 - **LLM Full Specification**: `http://localhost:3000/llms-full.txt`
 - **Health Check**: `http://localhost:3000/health`
@@ -122,6 +125,23 @@ npm run update:villages
 # Update all administrative divisions in one step
 npm run update:all
 ```
+
+---
+
+## 📮 Postman Collection (Variables Included)
+
+You can import the official Postman collection into Postman with **zero environment configuration needed**. The collection comes with built-in **Collection Variables** ready to test out of the box:
+
+- 📥 **Collection File**: [`public/opengeo-cambodia.postman_collection.json`](public/opengeo-cambodia.postman_collection.json) (or download live from `https://opengeo-cambodia.pphat.me/opengeo-cambodia.postman_collection.json`)
+- ⚙️ **Collection Variables**:
+  - `{{baseUrl}}` — Defaults to `https://opengeo-cambodia.pphat.me` (or `http://localhost:3000` for local testing)
+  - `{{provinceId}}` — Pre-set to `12` (Phnom Penh)
+  - `{{districtId}}` — Pre-set to `1202` (Khan Doun Penh)
+  - `{{communeId}}` — Pre-set to `120201` (Sangkat Phsar Thmei 1)
+  - `{{villageId}}` — Pre-set to `12020101` (Phum 1)
+  - `{{searchQuery}}` / `{{searchLevel}}` — Pre-set to `Doun Penh` / `district`
+  - `{{latitude}}` / `{{longitude}}` — Pre-set to `11.5714`, `104.9250`
+- 🧪 **Pre-built Test Assertions**: Every request includes status 200 checks, latency assertions (< 500ms), and schema validations.
 
 ---
 
