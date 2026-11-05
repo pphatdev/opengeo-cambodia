@@ -58,7 +58,7 @@
         "zod": "4.6.6"
     },
     "devDependencies": {
-        "@types/node": "26.6.5",
+        "@types/node": "26.6.6",
         "tsx": "^4.19.3",
         "typescript": "5.7.2",
         "wrangler": "^4.153.0"
