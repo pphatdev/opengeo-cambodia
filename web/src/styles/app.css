@@ -101,9 +101,9 @@
   --color-j-bool: #cbd5e1;
   --color-j-err: #f07167;
 
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  /* Display face echoes the logo wordmark (bold geometric caps); Inter stays for reading */
-  --font-display: "Montserrat", "Inter", system-ui, sans-serif;
+  /* Ubuntu for reading and UI text, as on the live site; Montserrat for display (echoes the logo wordmark) */
+  --font-sans: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Montserrat", "Ubuntu", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --font-khmer: "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS", sans-serif;
 
