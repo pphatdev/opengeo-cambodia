@@ -2,37 +2,31 @@
   "info": {
     "_postman_id": "b94c255f-2cfa-46a6-89cf-42ab97a9aec1",
     "name": "opengeo-cambodia.pphat.me",
-    "description": "# 🇰🇭 OpenGeo Cambodia API - Postman Collection\n\nOfficial Postman Collection for the **OpenGeo Cambodia API** — an open, high-performance REST API for Cambodia's geography data.\n\n### 🌟 Core Highlights\n- **4-Tier Administrative Hierarchy**: Complete coverage of 25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages sourced from the **Ministry of Economy and Finance Open Data Portal** (`data.mef.gov.kh`).\n- **100% Free & Open Access**: No API keys, no bearer tokens, and no rate-paywalls under the MIT license.\n- **Sub-millisecond Latency (<1ms)**: In-memory O(1) hash maps and pre-serialized responses.\n- **Smart Geocoding**: GPS reverse geocoding to 4 administrative tiers and forward address autocompletion.\n\n### 🔧 Using Variables (No Environment File Needed)\nThis collection is completely self-contained using **Collection Variables**:\n- `{{baseUrl}}`: Set to `https://opengeo-cambodia.pphat.me` by default. Switch to `http://localhost:3000` for local development.\n- `{{provinceId}}`, `{{districtId}}`, `{{communeId}}`, `{{villageId}}`: Seeded with Phnom Penh / Khan Doun Penh IDs for cascading testing.\n- `{{searchQuery}}`, `{{searchLevel}}`: Seeded with `'Doun Penh'` / `'district'`.\n- `{{latitude}}`, `{{longitude}}`: Seeded with Phnom Penh center coordinates (`11.5714`, `104.9250`).\n\nImport this file directly into Postman and click **Send**!",
+    "description": "# OpenGeo Cambodia API - Postman Collection\n\nPostman collection for the **OpenGeo Cambodia API**, an open REST API for Cambodia's geography data.\n\n- **Administrative hierarchy:** 25 provinces, 210 districts, 1,661 communes and 14,576 villages from the Ministry of Economy and Finance Open Data Portal (data.mef.gov.kh).\n- **Boundaries:** province, district and commune polygons as GeoJSON or lightweight summaries.\n- **Geocoding:** reverse and forward geocoding via OpenStreetMap Nominatim, normalised to the Cambodian hierarchy.\n- **Free and open:** no API keys. Only GET requests.\n\n### Rate limits (per IP)\n- `/api/admin/*` and `/api/boundaries/*`: 10,000 requests/min\n- `/api/admin/search`: 120 requests/min\n- `/api/geocode/*`: 30 requests/min\n- Other `/api/*`: 5,000 requests/min\n\n### Variables\n- `{{baseUrl}}`: defaults to `https://opengeo-cambodia.pphat.me`. Use `http://localhost:3000` for local development.\n- `{{provinceId}}`, `{{districtId}}`, `{{communeId}}`, `{{villageId}}`: numeric ids for the Administrative endpoints (12 / 1201 / 120101 / 12010101).\n- `{{provinceCode}}`, `{{districtCode}}`, `{{communeCode}}`: zero-padded codes for the Boundaries endpoints (12 / 1201 / 120101).\n- `{{searchQuery}}`, `{{geocodeQuery}}`: sample search text.\n- `{{latitude}}`, `{{longitude}}`: sample coordinates for reverse geocoding (11.5564, 104.9282).\n\nEvery request has a test script checking for 200 and the expected body shape.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "16827919",
     "_collection_link": "https://go.postman.co/collection/16827919-b94c255f-2cfa-46a6-89cf-42ab97a9aec1?source=collection_link"
   },
   "item": [
     {
-      "name": "1. Administrative Hierarchy",
+      "name": "Administrative",
+      "description": "The four-tier hierarchy as flat JSON records, without geometry. These are the endpoints for forms, address validation and lookups.\n\nAll responses use the `{ success, data, meta? }` envelope. Ids are numeric (e.g. 12 / 1201 / 120101 / 12010101).\n\n**Rate limits:** 10,000 requests/min per IP for `/api/admin/*`, except `/api/admin/search` which is limited to 120 requests/min per IP.",
       "item": [
         {
-          "name": "1.1 List All Provinces / Capital",
+          "name": "List provinces",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test(\"Response time is under 500ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
-                  "});",
-                  "",
-                  "pm.test(\"Response is valid JSON with success: true\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.be.an('object');",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data).to.be.an('array');",
-                  "    pm.expect(jsonData.data.length).to.eql(25);",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -58,71 +52,25 @@
                 "provinces"
               ]
             },
-            "description": "Returns all 25 provinces and capital municipality (Phnom Penh) of Cambodia. Response is pre-serialized in-memory (<0.05ms) and cached at CDN edge."
+            "description": "All 25 provinces and the capital, sorted by code."
           },
-          "response": [
-            {
-              "name": "200 OK - All 25 Provinces",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/admin/provinces",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "admin",
-                    "provinces"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=31536000, s-maxage=31536000, immutable"
-                },
-                {
-                  "key": "X-Response-Time",
-                  "value": "0.2ms"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 12,\n      \"code\": \"12\",\n      \"name\": \"Phnom Penh\",\n      \"name_en\": \"Phnom Penh\",\n      \"name_km\": \"រាជធានីភ្នំពេញ\",\n      \"level\": \"province\",\n      \"typeKm\": \"រាជធានី\",\n      \"lat\": 11.5564,\n      \"lon\": 104.9282\n    },\n    {\n      \"id\": 17,\n      \"code\": \"17\",\n      \"name\": \"Siemreap\",\n      \"name_en\": \"Siemreap\",\n      \"name_km\": \"សៀមរាប\",\n      \"level\": \"province\",\n      \"typeKm\": \"ខេត្ត\",\n      \"lat\": 13.3671,\n      \"lon\": 103.8448\n    },\n    {\n      \"id\": 2,\n      \"code\": \"02\",\n      \"name\": \"Battambang\",\n      \"name_en\": \"Battambang\",\n      \"name_km\": \"បាត់ដំបង\",\n      \"level\": \"province\",\n      \"typeKm\": \"ខេត្ត\",\n      \"lat\": 13.0957,\n      \"lon\": 103.2022\n    }\n  ],\n  \"meta\": {\n    \"total\": 25,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
-            }
-          ]
+          "response": []
         },
         {
-          "name": "1.2 List Districts by Province ID",
+          "name": "List districts of a province",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test(\"Districts returned are an array\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data).to.be.an('array');",
-                  "    pm.expect(jsonData.data.length).to.be.above(0);",
-                  "    pm.expect(jsonData.data[0].level).to.eql('district');",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -153,77 +101,29 @@
                 {
                   "key": "id",
                   "value": "{{provinceId}}",
-                  "description": "Province numeric ID (e.g. 12 = Phnom Penh, 17 = Siem Reap)"
+                  "description": "Province id (e.g. 12 for Phnom Penh)."
                 }
               ]
             },
-            "description": "Returns all districts (Khans, Krongs, and Sroks) within a specified province. For example, province 12 returns all 14 Khans of Phnom Penh."
+            "description": "Districts, khans and krongs belonging to a province."
           },
-          "response": [
-            {
-              "name": "200 OK - Districts of Phnom Penh (12)",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/admin/provinces/12/districts",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "admin",
-                    "provinces",
-                    "12",
-                    "districts"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=31536000, s-maxage=31536000, immutable"
-                },
-                {
-                  "key": "X-Response-Time",
-                  "value": "0.3ms"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1201,\n      \"code\": \"1201\",\n      \"parentId\": 12,\n      \"name\": \"Chamkar Mon\",\n      \"name_en\": \"Chamkar Mon\",\n      \"name_km\": \"ខណ្ឌចំការមន\",\n      \"level\": \"district\",\n      \"typeKm\": \"ខណ្ឌ\"\n    },\n    {\n      \"id\": 1202,\n      \"code\": \"1202\",\n      \"parentId\": 12,\n      \"name\": \"Doun Penh\",\n      \"name_en\": \"Doun Penh\",\n      \"name_km\": \"ខណ្ឌដូនពេញ\",\n      \"level\": \"district\",\n      \"typeKm\": \"ខណ្ឌ\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 14,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
-            }
-          ]
+          "response": []
         },
         {
-          "name": "1.3 List Communes by District ID",
+          "name": "List communes of a district",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test(\"Communes returned are an array\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data).to.be.an('array');",
-                  "    pm.expect(jsonData.data.length).to.be.above(0);",
-                  "    pm.expect(jsonData.data[0].level).to.eql('commune');",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -254,77 +154,29 @@
                 {
                   "key": "id",
                   "value": "{{districtId}}",
-                  "description": "District numeric ID (e.g. 1202 = Khan Doun Penh, 1701 = Krong Siem Reap)"
+                  "description": "District id (e.g. 1201)."
                 }
               ]
             },
-            "description": "Returns all communes and sangkats within a specified district. For example, district 1202 returns Sangkats in Khan Doun Penh (Phsar Thmei, Boeng Reang, Phsar Kandal, Voat Phnum, etc.)."
+            "description": "Communes and sangkats belonging to a district."
           },
-          "response": [
-            {
-              "name": "200 OK - Communes of Khan Doun Penh (1202)",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/admin/districts/1202/communes",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "admin",
-                    "districts",
-                    "1202",
-                    "communes"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=31536000, s-maxage=31536000, immutable"
-                },
-                {
-                  "key": "X-Response-Time",
-                  "value": "0.2ms"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 120201,\n      \"code\": \"120201\",\n      \"parentId\": 1202,\n      \"name\": \"Phsar Thmei 1\",\n      \"name_en\": \"Phsar Thmei 1\",\n      \"name_km\": \"សង្កាត់ផ្សារថ្មីទី១\",\n      \"level\": \"commune\",\n      \"typeKm\": \"សង្កាត់\"\n    },\n    {\n      \"id\": 120202,\n      \"code\": \"120202\",\n      \"parentId\": 1202,\n      \"name\": \"Phsar Thmei 2\",\n      \"name_en\": \"Phsar Thmei 2\",\n      \"name_km\": \"សង្កាត់ផ្សារថ្មីទី២\",\n      \"level\": \"commune\",\n      \"typeKm\": \"សង្កាត់\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 11,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
-            }
-          ]
+          "response": []
         },
         {
-          "name": "1.4 List Villages by Commune ID",
+          "name": "List villages of a commune",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test(\"Villages returned are an array\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data).to.be.an('array');",
-                  "    pm.expect(jsonData.data.length).to.be.above(0);",
-                  "    pm.expect(jsonData.data[0].level).to.eql('village');",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -355,78 +207,29 @@
                 {
                   "key": "id",
                   "value": "{{communeId}}",
-                  "description": "Commune numeric ID (e.g. 120201 = Sangkat Phsar Thmei 1)"
+                  "description": "Commune id (e.g. 120101)."
                 }
               ]
             },
-            "description": "Returns all villages (Phums) within a specified commune. For example, commune 120201 returns the Phums within Sangkat Phsar Thmei 1."
+            "description": "Villages (phum) belonging to a commune."
           },
-          "response": [
-            {
-              "name": "200 OK - Villages of Sangkat Phsar Thmei 1 (120201)",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/admin/communes/120201/villages",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "admin",
-                    "communes",
-                    "120201",
-                    "villages"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=31536000, s-maxage=31536000, immutable"
-                },
-                {
-                  "key": "X-Response-Time",
-                  "value": "0.2ms"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 12020101,\n      \"code\": \"12020101\",\n      \"parentId\": 120201,\n      \"name\": \"Phum 1\",\n      \"name_en\": \"Phum 1\",\n      \"name_km\": \"ភូមិ១\",\n      \"level\": \"village\",\n      \"typeKm\": \"ភូមិ\"\n    },\n    {\n      \"id\": 12020102,\n      \"code\": \"12020102\",\n      \"parentId\": 120201,\n      \"name\": \"Phum 2\",\n      \"name_en\": \"Phum 2\",\n      \"name_km\": \"ភូមិ២\",\n      \"level\": \"village\",\n      \"typeKm\": \"ភូមិ\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 4,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
-            }
-          ]
+          "response": []
         },
         {
-          "name": "1.5 Lookup Single Item by ID",
+          "name": "Get a place",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test(\"Item payload has id, name, and level\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data).to.have.property('id');",
-                  "    pm.expect(jsonData.data).to.have.property('name_en');",
-                  "    pm.expect(jsonData.data).to.have.property('name_km');",
-                  "    pm.expect(jsonData.data).to.have.property('level');",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -456,77 +259,29 @@
                 {
                   "key": "id",
                   "value": "{{districtId}}",
-                  "description": "Administrative code for any division tier (Province, District, Commune, or Village)"
+                  "description": "Id at any level (province, district, commune or village)."
                 }
               ]
             },
-            "description": "O(1) direct lookup for any administrative division by its numerical code across any level (Province: 12, District: 1202, Commune: 120201, Village: 12020101)."
+            "description": "A single record at any level, looked up by id. Returns 404 if the id does not exist."
           },
-          "response": [
-            {
-              "name": "200 OK - Single Item Lookup",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/admin/item/1202",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "admin",
-                    "item",
-                    "1202"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=31536000, s-maxage=31536000, immutable"
-                },
-                {
-                  "key": "X-Response-Time",
-                  "value": "0.15ms"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1202,\n    \"code\": \"1202\",\n    \"parentId\": 12,\n    \"name\": \"Doun Penh\",\n    \"name_en\": \"Doun Penh\",\n    \"name_km\": \"ខណ្ឌដូនពេញ\",\n    \"level\": \"district\",\n    \"typeKm\": \"ខណ្ឌ\"\n  }\n}"
-            }
-          ]
+          "response": []
         },
         {
-          "name": "1.6 Resolve Full 4-Tier Hierarchy",
+          "name": "Resolve full path",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test(\"Hierarchy includes province, district, commune, and village\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data).to.have.property('province');",
-                  "    pm.expect(jsonData.data).to.have.property('district');",
-                  "    pm.expect(jsonData.data).to.have.property('commune');",
-                  "    pm.expect(jsonData.data).to.have.property('village');",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -556,74 +311,29 @@
                 {
                   "key": "id",
                   "value": "{{villageId}}",
-                  "description": "Any division numeric ID (e.g. village ID 12020101 or commune ID 120201)"
+                  "description": "Id at any level (e.g. village 12010101)."
                 }
               ]
             },
-            "description": "Ascending path resolution. Given any division ID (such as a village or commune), traces parent references to return the complete ascending hierarchy: Province -> District -> Commune -> Village."
+            "description": "Returns the place and all its ancestors as an object keyed by level. Use it to render a full address from a single stored id."
           },
-          "response": [
-            {
-              "name": "200 OK - Resolved 4-Tier Chain",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/admin/hierarchy/12020101",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "admin",
-                    "hierarchy",
-                    "12020101"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=31536000, s-maxage=31536000, immutable"
-                },
-                {
-                  "key": "X-Response-Time",
-                  "value": "0.25ms"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"province\": {\n      \"id\": 12,\n      \"name_en\": \"Phnom Penh\",\n      \"name_km\": \"រាជធានីភ្នំពេញ\"\n    },\n    \"district\": {\n      \"id\": 1202,\n      \"name_en\": \"Doun Penh\",\n      \"name_km\": \"ខណ្ឌដូនពេញ\"\n    },\n    \"commune\": {\n      \"id\": 120201,\n      \"name_en\": \"Phsar Thmei 1\",\n      \"name_km\": \"សង្កាត់ផ្សារថ្មីទី១\"\n    },\n    \"village\": {\n      \"id\": 12020101,\n      \"name_en\": \"Phum 1\",\n      \"name_km\": \"ភូមិ១\"\n    }\n  }\n}"
-            }
-          ]
+          "response": []
         },
         {
-          "name": "1.7 Search Administrative Divisions",
+          "name": "Search places",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test(\"Search results returned successfully\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -639,7 +349,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/admin/search?q={{searchQuery}}&level={{searchLevel}}&limit=10",
+              "raw": "{{baseUrl}}/api/admin/search?q={{searchQuery}}&limit=5",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -652,99 +362,40 @@
                 {
                   "key": "q",
                   "value": "{{searchQuery}}",
-                  "description": "Search keyword in Romanized English or native Khmer script (e.g. 'Doun Penh', 'Siem Reap', 'ដូនពេញ')"
+                  "description": "Required. Search text, up to 50 characters."
                 },
                 {
                   "key": "level",
-                  "value": "{{searchLevel}}",
-                  "description": "Optional level filter: 'province', 'district', 'commune', or 'village'"
+                  "value": "district",
+                  "description": "Optional. Restrict to one level: `province`, `district`, `commune` or `village`.",
+                  "disabled": true
                 },
                 {
                   "key": "limit",
-                  "value": "10",
-                  "description": "Maximum number of results to return (1-100, default: 20)"
+                  "value": "5",
+                  "description": "Optional. Results to return, 1-100. Default 20."
                 }
               ]
             },
-            "description": "Normalized full-text search across all Cambodian administrative divisions. Supports English Romanization variants (e.g., 'Tuol Kouk' vs 'Toul Kork') and native Khmer script."
+            "description": "Matches Khmer or English names, ignoring case, spaces and accents. Exact and prefix matches rank first.\n\nRate limit: 120 requests/min per IP. An empty `q` returns an empty list."
           },
-          "response": [
-            {
-              "name": "200 OK - Search Results",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/admin/search?q=Doun Penh&level=district&limit=10",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "admin",
-                    "search"
-                  ],
-                  "query": [
-                    {
-                      "key": "q",
-                      "value": "Doun Penh"
-                    },
-                    {
-                      "key": "level",
-                      "value": "district"
-                    },
-                    {
-                      "key": "limit",
-                      "value": "10"
-                    }
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=31536000, s-maxage=31536000, immutable"
-                },
-                {
-                  "key": "X-Response-Time",
-                  "value": "0.8ms"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1202,\n      \"code\": \"1202\",\n      \"parentId\": 12,\n      \"name\": \"Doun Penh\",\n      \"name_en\": \"Doun Penh\",\n      \"name_km\": \"ខណ្ឌដូនពេញ\",\n      \"level\": \"district\",\n      \"typeKm\": \"ខណ្ឌ\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 1,\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\",\n    \"source\": \"local_cache\"\n  }\n}"
-            }
-          ]
+          "response": []
         },
         {
-          "name": "1.8 Administrative Dataset Statistics",
+          "name": "Dataset statistics",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
-                  "pm.test(\"Verify accurate 4-tier counts\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data.provinces).to.eql(25);",
-                  "    pm.expect(jsonData.data.districts).to.eql(210);",
-                  "    pm.expect(jsonData.data.communes).to.eql(1661);",
-                  "    pm.expect(jsonData.data.villages).to.eql(14576);",
+                  "",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -770,76 +421,849 @@
                 "stats"
               ]
             },
-            "description": "Returns comprehensive dataset statistics: total counts of provinces (25), districts (210), communes (1,661), and villages (14,576) in memory."
+            "description": "Record counts per level and the last data sync time."
           },
-          "response": [
-            {
-              "name": "200 OK - Dataset Statistics",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/admin/stats",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "admin",
-                    "stats"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=31536000, s-maxage=31536000, immutable"
-                },
-                {
-                  "key": "X-Response-Time",
-                  "value": "0.1ms"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"provinces\": 25,\n    \"districts\": 210,\n    \"communes\": 1661,\n    \"villages\": 14576,\n    \"lastSyncAt\": \"2026-10-28T00:00:00.000Z\"\n  }\n}"
-            }
-          ]
+          "response": []
         }
-      ],
-      "description": "Complete 4-tier Cambodian administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, 14,576 Villages). Backed by in-memory O(1) indices delivering sub-1ms response times."
+      ]
     },
     {
-      "name": "2. Smart Geocoding & Search",
+      "name": "Boundaries",
+      "description": "Polygons for provinces, districts and communes. List endpoints return GeoJSON by default (`application/geo+json`). Add `format=summary` to get lightweight JSON with centroids and bounding boxes but no coordinates. Boundary endpoints take the zero-padded code (e.g. `070203`), not the numeric id; PCODEs such as `KH12` are also accepted.\n\n**Rate limit:** 10,000 requests/min per IP.",
       "item": [
         {
-          "name": "2.1 GPS Reverse Geocoding",
+          "name": "Query boundaries",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
-                  "pm.test(\"Hierarchy includes province and district\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data).to.have.property('hierarchy');",
-                  "    pm.expect(jsonData.data.hierarchy).to.have.property('province');",
-                  "    pm.expect(jsonData.data.hierarchy).to.have.property('district');",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary returns the { success, data } envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries?level=district&province_code={{provinceCode}}&limit=3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries"
+              ],
+              "query": [
+                {
+                  "key": "level",
+                  "value": "district",
+                  "description": "Optional. `province`, `district` or `commune`. Defaults to province."
+                },
+                {
+                  "key": "province_code",
+                  "value": "{{provinceCode}}",
+                  "description": "Optional. Only children of this province. `provinceCode` is accepted as an alias."
+                },
+                {
+                  "key": "district_code",
+                  "value": "{{districtCode}}",
+                  "description": "Optional. Only children of this district. `districtCode` is accepted as an alias.",
+                  "disabled": true
+                },
+                {
+                  "key": "code",
+                  "value": "",
+                  "description": "Optional. Exact code match (e.g. `12`, `1201`, `120101`).",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "",
+                  "description": "Optional. Name filter (Khmer or English). `search` is accepted as an alias.",
+                  "disabled": true
+                },
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Optional. `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`.",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "3",
+                  "description": "Optional. Max features to return."
+                },
+                {
+                  "key": "offset",
+                  "value": "",
+                  "description": "Optional. Skip this many features (pagination).",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Filter boundaries at any level. Without level it returns provinces. Supports pagination with limit and offset."
+          },
+          "response": []
+        },
+        {
+          "name": "Province boundaries",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary returns the { success, data } envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/provinces?format=summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "provinces"
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Optional. `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`."
+                },
+                {
+                  "key": "q",
+                  "value": "",
+                  "description": "Optional. Name filter (Khmer or English). `search` is accepted as an alias.",
+                  "disabled": true
+                },
+                {
+                  "key": "code",
+                  "value": "",
+                  "description": "Optional. Exact code match (e.g. `12`, `1201`, `120101`).",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "All 25 province polygons (about 1 MB as GeoJSON). Use format=summary for centroids and bounding boxes only."
+          },
+          "response": []
+        },
+        {
+          "name": "One province boundary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary returns the { success, data } envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/provinces/:code",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "provinces",
+                ":code"
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Optional. `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`.",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "code",
+                  "value": "{{provinceCode}}",
+                  "description": "Province code (e.g. 12 or KH12)."
+                }
+              ]
+            },
+            "description": "A single province Feature."
+          },
+          "response": []
+        },
+        {
+          "name": "District boundaries",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary returns the { success, data } envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/districts?province_code={{provinceCode}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "districts"
+              ],
+              "query": [
+                {
+                  "key": "province_code",
+                  "value": "{{provinceCode}}",
+                  "description": "Optional. Parent province code. `provinceCode` is accepted as an alias."
+                },
+                {
+                  "key": "code",
+                  "value": "",
+                  "description": "Optional. Exact code match (e.g. `12`, `1201`, `120101`).",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "",
+                  "description": "Optional. Name filter (Khmer or English). `search` is accepted as an alias.",
+                  "disabled": true
+                },
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Optional. `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`.",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "description": "Optional. Max features to return.",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "",
+                  "description": "Optional. Skip this many features (pagination).",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "District polygons, usually filtered by province."
+          },
+          "response": []
+        },
+        {
+          "name": "One district boundary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary returns the { success, data } envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/districts/:code",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "districts",
+                ":code"
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Optional. `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`.",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "code",
+                  "value": "{{districtCode}}",
+                  "description": "District code (e.g. 1201 or KH1201)."
+                }
+              ]
+            },
+            "description": "A single district Feature."
+          },
+          "response": []
+        },
+        {
+          "name": "Commune boundaries",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary returns the { success, data } envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/communes?district_code={{districtCode}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "communes"
+              ],
+              "query": [
+                {
+                  "key": "district_code",
+                  "value": "{{districtCode}}",
+                  "description": "Optional. Parent district code. `districtCode` is accepted as an alias."
+                },
+                {
+                  "key": "province_code",
+                  "value": "{{provinceCode}}",
+                  "description": "Optional. Parent province code. `provinceCode` is accepted as an alias.",
+                  "disabled": true
+                },
+                {
+                  "key": "code",
+                  "value": "",
+                  "description": "Optional. Exact code match (e.g. `12`, `1201`, `120101`).",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "",
+                  "description": "Optional. Name filter (Khmer or English). `search` is accepted as an alias.",
+                  "disabled": true
+                },
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Optional. `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`.",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "description": "Optional. Max features to return.",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "",
+                  "description": "Optional. Skip this many features (pagination).",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Commune polygons, filtered by district or province."
+          },
+          "response": []
+        },
+        {
+          "name": "One commune boundary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary returns the { success, data } envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/communes/:code",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "communes",
+                ":code"
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Optional. `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`.",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "code",
+                  "value": "{{communeCode}}",
+                  "description": "Commune code, zero-padded (e.g. 120101, 070203)."
+                }
+              ]
+            },
+            "description": "A single commune Feature."
+          },
+          "response": []
+        },
+        {
+          "name": "Boundary by any code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary returns the { success, data } envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/item/:code",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "item",
+                ":code"
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Optional. `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`.",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "code",
+                  "value": "{{districtCode}}",
+                  "description": "Any province, district or commune code."
+                }
+              ]
+            },
+            "description": "Detects the level from the code length. Handy when you don't know the level in advance."
+          },
+          "response": []
+        },
+        {
+          "name": "Boundary by any code (shortcut)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary returns the { success, data } envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/:code",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                ":code"
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "Optional. `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`.",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "code",
+                  "value": "{{communeCode}}",
+                  "description": "Any province, district or commune code."
+                }
+              ]
+            },
+            "description": "Shortcut for `/api/boundaries/item/:code`: single boundary lookup by any province, district or commune code (e.g. 12, KH12, 1201, 120101)."
+          },
+          "response": []
+        },
+        {
+          "name": "Boundary with ancestors",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/hierarchy/:code",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "hierarchy",
+                ":code"
+              ],
+              "variable": [
+                {
+                  "key": "code",
+                  "value": "{{communeCode}}",
+                  "description": "Commune or district code."
+                }
+              ]
+            },
+            "description": "The Feature for a code plus its parent district and province Features, keyed by level. Returned inside the `{ success, data }` envelope."
+          },
+          "response": []
+        },
+        {
+          "name": "Boundary statistics",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "stats"
+              ]
+            },
+            "description": "Polygon counts per level, the national bounding box and the data source."
+          },
+          "response": []
+        },
+        {
+          "name": "Download raw GeoJSON",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Body is a GeoJSON FeatureCollection\", function () {",
+                  "    pm.expect(pm.response.json().type).to.eql('FeatureCollection');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/raw/:filename",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "raw",
+                ":filename"
+              ],
+              "variable": [
+                {
+                  "key": "filename",
+                  "value": "provinces.geojson",
+                  "description": "provinces.geojson, districts.geojson or communes.geojson (singular forms also accepted)."
+                }
+              ]
+            },
+            "description": "The full source file as an attachment (`Content-Disposition: attachment`). Large download."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Geocoding",
+      "description": "Address lookups backed by OpenStreetMap Nominatim, normalised into Cambodia's hierarchy and cached for a week.\n\n**Rate limit:** 30 requests/min per IP (respects OSM usage policy).",
+      "item": [
+        {
+          "name": "Reverse geocode",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -868,84 +1292,34 @@
                 {
                   "key": "lat",
                   "value": "{{latitude}}",
-                  "description": "Latitude coordinate in decimal format [-90 to 90]"
+                  "description": "Required. Latitude, decimal degrees [-90, 90]."
                 },
                 {
                   "key": "lon",
                   "value": "{{longitude}}",
-                  "description": "Longitude coordinate in decimal format [-180 to 180]"
+                  "description": "Required. Longitude, decimal degrees [-180, 180]."
                 }
               ]
             },
-            "description": "Translates a GPS coordinate (latitude and longitude) to the normalized 4-tier Cambodian administrative hierarchy (Province, District, Commune, Village) with country verification."
+            "description": "Turn coordinates into an address mapped to Cambodia's hierarchy. Returns 400 for missing/invalid coordinates, 404 if nothing is found, 503 if the upstream service is unavailable."
           },
-          "response": [
-            {
-              "name": "200 OK - Reverse Geocoded Coordinates",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/geocode/reverse?lat=11.5714&lon=104.9250",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "geocode",
-                    "reverse"
-                  ],
-                  "query": [
-                    {
-                      "key": "lat",
-                      "value": "11.5714"
-                    },
-                    {
-                      "key": "lon",
-                      "value": "104.9250"
-                    }
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=604800, s-maxage=604800, stale-while-revalidate=86400"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"displayName\": \"Doun Penh, Phnom Penh, 120201, Cambodia\",\n    \"lat\": 11.5714,\n    \"lon\": 104.925,\n    \"hierarchy\": {\n      \"province\": \"Phnom Penh\",\n      \"district\": \"Doun Penh\",\n      \"commune\": \"Phsar Thmei 1\",\n      \"village\": null,\n      \"country\": \"Cambodia\"\n    }\n  },\n  \"meta\": {\n    \"tookMs\": 142.3,\n    \"source\": \"nominatim\",\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\"\n  }\n}"
-            }
-          ]
+          "response": []
         },
         {
-          "name": "2.2 Free-text Address Autocomplete",
+          "name": "Forward geocode",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test(\"Search returns array of candidate locations\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.success).to.be.true;",
-                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "pm.test(\"Response envelope has success: true\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
                   "});"
                 ]
               }
@@ -961,7 +1335,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/geocode/search?q={{geocodeQuery}}&limit=5",
+              "raw": "{{baseUrl}}/api/geocode/search?q={{geocodeQuery}}&limit=3",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -974,108 +1348,45 @@
                 {
                   "key": "q",
                   "value": "{{geocodeQuery}}",
-                  "description": "Free-text address, place of interest, or landmark query in Cambodia"
+                  "description": "Required. Search text, up to 100 characters."
                 },
                 {
                   "key": "limit",
-                  "value": "5",
-                  "description": "Maximum number of search candidates (1-50, default: 10)"
+                  "value": "3",
+                  "description": "Optional. Results to return, 1-50. Default 10."
                 }
               ]
             },
-            "description": "Forward geocoding and address search restricted strictly to the territory of Cambodia (`countrycodes=kh`). Returns normalized hierarchy and coordinates."
-          },
-          "response": [
-            {
-              "name": "200 OK - Geocode Search Candidates",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{baseUrl}}/api/geocode/search?q=Wat Phnom&limit=5",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "geocode",
-                    "search"
-                  ],
-                  "query": [
-                    {
-                      "key": "q",
-                      "value": "Wat Phnom"
-                    },
-                    {
-                      "key": "limit",
-                      "value": "5"
-                    }
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "public, max-age=604800, s-maxage=604800, stale-while-revalidate=86400"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"displayName\": \"Wat Phnom, Daun Penh, Phnom Penh, 120201, Cambodia\",\n      \"lat\": 11.5761,\n      \"lon\": 104.923,\n      \"hierarchy\": {\n        \"province\": \"Phnom Penh\",\n        \"district\": \"Doun Penh\",\n        \"commune\": \"Wat Phnom\",\n        \"village\": null,\n        \"country\": \"Cambodia\"\n      }\n    }\n  ],\n  \"meta\": {\n    \"total\": 1,\n    \"tookMs\": 120.5,\n    \"source\": \"nominatim\",\n    \"timestamp\": \"2026-10-28T00:00:00.000Z\"\n  }\n}"
-            }
-          ]
-        }
-      ],
-      "description": "Reverse geocoding from GPS latitude/longitude coordinates to Cambodia's 4-tier hierarchy, and forward free-text address autocompletion bounded to Cambodia via OSM Nominatim."
-    },
-    {
-      "name": "3. Geographic Boundaries",
-      "item": [
-        {
-          "name": "3.1 List Province Boundaries (GeoJSON)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/geo+json, application/json",
-                "description": "Expected response MIME type"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/boundaries?level=province",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "boundaries"
-              ],
-              "query": [
-                {
-                  "key": "level",
-                  "value": "province",
-                  "description": "Boundary level: province, district, commune"
-                }
-              ]
-            },
-            "description": "Returns GeoJSON FeatureCollection containing all 25 province boundaries."
+            "description": "Find addresses, landmarks and points of interest in Cambodia by name. An empty `q` returns an empty list."
           },
           "response": []
-        },
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "description": "Service metadata, health and machine-readable documentation. These responses do not use the `{ success, data }` envelope.\n\n**Rate limit:** `/api/info` falls under the general API limit of 5,000 requests/min per IP.",
+      "item": [
         {
-          "name": "3.2 List Boundaries in Summary Format",
+          "name": "API root",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response lists endpoints\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('endpoints');",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -1086,173 +1397,217 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/boundaries?level=province&format=summary",
+              "raw": "{{baseUrl}}/",
               "host": [
                 "{{baseUrl}}"
               ],
-              "path": [
-                "api",
-                "boundaries"
-              ],
-              "query": [
-                {
-                  "key": "level",
-                  "value": "province"
-                },
-                {
-                  "key": "format",
-                  "value": "summary",
-                  "description": "Lightweight summary list without heavy coordinate arrays"
-                }
-              ]
+              "path": []
             },
-            "description": "Returns a fast lightweight JSON list containing IDs, Khmer & English names, codes, and pre-computed bboxes without downloading megabytes of polygon coordinates."
+            "description": "Welcome document with links to documentation and key endpoints. Browsers (Accept: text/html) get the web app instead; send `Accept: application/json` or `?json=1` for JSON."
           },
           "response": []
         },
         {
-          "name": "3.3 Filter Districts by Province",
+          "name": "Health check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Service reports status ok\", function () {",
+                  "    pm.expect(pm.response.json().status).to.eql('ok');",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Accept",
-                "value": "application/geo+json, application/json"
+                "value": "application/json",
+                "description": "Expected response MIME type"
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/boundaries/districts?province_code={{provinceId}}",
+              "raw": "{{baseUrl}}/health",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
-                "boundaries",
-                "districts"
-              ],
-              "query": [
-                {
-                  "key": "province_code",
-                  "value": "{{provinceId}}",
-                  "description": "Filter districts by parent province code"
-                }
+                "health"
               ]
             },
-            "description": "Returns all district boundaries within a province (e.g. Phnom Penh's 14 Khans)."
+            "description": "Liveness probe with uptime."
           },
           "response": []
         },
         {
-          "name": "3.4 Filter Communes by District",
+          "name": "API index",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response lists endpoints\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('endpoints');",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Accept",
-                "value": "application/geo+json, application/json"
+                "value": "application/json",
+                "description": "Expected response MIME type"
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/boundaries/communes?district_code={{districtId}}",
+              "raw": "{{baseUrl}}/api/info",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
-                "boundaries",
-                "communes"
-              ],
-              "query": [
-                {
-                  "key": "district_code",
-                  "value": "{{districtId}}",
-                  "description": "Filter communes by parent district code"
-                }
+                "info"
               ]
             },
-            "description": "Returns all commune boundaries within a district (e.g. Sangkats within Khan Doun Penh)."
+            "description": "Machine-readable list of every endpoint and the level conventions."
           },
           "response": []
         },
         {
-          "name": "3.5 Get Single Boundary by Code",
+          "name": "llms.txt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Accept",
-                "value": "application/geo+json, application/json"
+                "value": "text/plain",
+                "description": "Expected response MIME type"
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/boundaries/item/{{provinceId}}",
+              "raw": "{{baseUrl}}/llms.txt",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
-                "boundaries",
-                "item",
-                "{{provinceId}}"
+                "llms.txt"
               ]
             },
-            "description": "Returns single GeoJSON Feature with geometry and enriched properties."
+            "description": "Concise API summary for LLMs (llmstxt.org standard)."
           },
           "response": []
         },
         {
-          "name": "3.6 Ascending Boundary Hierarchy",
+          "name": "llms-full.txt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Accept",
-                "value": "application/json"
+                "value": "text/plain",
+                "description": "Expected response MIME type"
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/boundaries/hierarchy/{{communeId}}",
+              "raw": "{{baseUrl}}/llms-full.txt",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
-                "boundaries",
-                "hierarchy",
-                "{{communeId}}"
+                "llms-full.txt"
               ]
             },
-            "description": "Resolves all nested boundary features: Commune -> District -> Province."
+            "description": "Full API reference for LLMs (llmstxt.org standard)."
           },
           "response": []
         },
         {
-          "name": "3.7 Boundary Dataset Statistics",
+          "name": "Postman collection",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Body is a Postman v2.1 collection\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.info.schema).to.include('collection/v2.1.0');",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Accept",
-                "value": "application/json"
+                "value": "application/json",
+                "description": "Expected response MIME type"
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/boundaries/stats",
+              "raw": "{{baseUrl}}/opengeo-cambodia.postman_collection.json",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
-                "boundaries",
-                "stats"
+                "opengeo-cambodia.postman_collection.json"
               ]
             },
-            "description": "Returns total boundary feature counts (provinces, districts, communes) and overall Cambodia bounding box."
+            "description": "This Postman collection as JSON. `/postman` redirects here."
           },
           "response": []
         }
-      ],
-      "description": "Standardized GeoJSON boundary polygons (Provinces, Districts, Communes) and lightweight summary lists for GIS applications (Leaflet, Mapbox, QGIS). Pre-enriched with official Khmer script names, NCDD codes, PCODEs, and pre-computed bounding boxes."
+      ]
     }
   ],
   "variable": [
@@ -1264,47 +1619,57 @@
     {
       "key": "provinceId",
       "value": "12",
-      "description": "Sample Province ID (12 = Phnom Penh, 17 = Siem Reap, 2 = Battambang, 7 = Kampot)."
+      "description": "Province id for Administrative endpoints (12 = Phnom Penh)."
     },
     {
       "key": "districtId",
-      "value": "1202",
-      "description": "Sample District / Khan ID (1202 = Khan Doun Penh, 1701 = Krong Siem Reap, 1204 = Khan Tuol Kouk)."
+      "value": "1201",
+      "description": "District id for Administrative endpoints (1201 = Khan Chamkar Mon)."
     },
     {
       "key": "communeId",
-      "value": "120201",
-      "description": "Sample Commune / Sangkat ID (120201 = Sangkat Phsar Thmei 1, 120202 = Sangkat Phsar Thmei 2)."
+      "value": "120101",
+      "description": "Commune id for Administrative endpoints (120101 = Sangkat Tonle Basak)."
     },
     {
       "key": "villageId",
-      "value": "12020101",
-      "description": "Sample Village / Phum ID (12020101 = Phum 1 in Sangkat Phsar Thmei 1)."
+      "value": "12010101",
+      "description": "Village id for Administrative endpoints (12010101 = Phum Muoy, Sangkat Tonle Basak)."
+    },
+    {
+      "key": "provinceCode",
+      "value": "12",
+      "description": "Province code for Boundaries endpoints (zero-padded, e.g. 07; PCODE KH12 also accepted)."
+    },
+    {
+      "key": "districtCode",
+      "value": "1201",
+      "description": "District code for Boundaries endpoints (zero-padded, e.g. 0702)."
+    },
+    {
+      "key": "communeCode",
+      "value": "120101",
+      "description": "Commune code for Boundaries endpoints (zero-padded, e.g. 070203)."
     },
     {
       "key": "searchQuery",
-      "value": "Doun Penh",
-      "description": "Search keyword for administrative divisions (English Romanization or native Khmer script, e.g. 'ដូនពេញ')."
-    },
-    {
-      "key": "searchLevel",
-      "value": "district",
-      "description": "Optional administrative level filter for search: 'province', 'district', 'commune', or 'village'."
+      "value": "siem reap",
+      "description": "Search text for /api/admin/search (Khmer or English, up to 50 characters)."
     },
     {
       "key": "geocodeQuery",
-      "value": "Wat Phnom",
-      "description": "Free-text address or landmark search query within Cambodia."
+      "value": "Angkor Wat",
+      "description": "Search text for /api/geocode/search (up to 100 characters)."
     },
     {
       "key": "latitude",
-      "value": "11.5714",
-      "description": "Latitude coordinate for reverse geocoding (Phnom Penh center)."
+      "value": "11.5564",
+      "description": "Latitude for reverse geocoding (Phnom Penh)."
     },
     {
       "key": "longitude",
-      "value": "104.9250",
-      "description": "Longitude coordinate for reverse geocoding (Phnom Penh center)."
+      "value": "104.9282",
+      "description": "Longitude for reverse geocoding (Phnom Penh)."
     }
   ]
 }
