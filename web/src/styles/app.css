@@ -140,6 +140,23 @@
   animation: og-pop 120ms ease-out;
 }
 
+/* Hero map: active province rises off the page and stays lifted */
+@keyframes og-lift {
+  from { opacity: 0; scale: .97; }
+  to { opacity: 1; scale: 1.025; }
+}
+@utility animate-lift {
+  animation: og-lift 650ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Content swap inside a card that is itself sliding */
+@keyframes og-fade-up {
+  from { opacity: 0; translate: 0 4px; }
+}
+@utility animate-fade-up {
+  animation: og-fade-up 380ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
 @utility scrollbar-thin {
   scrollbar-width: thin;
 }

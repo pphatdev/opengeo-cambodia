@@ -18,10 +18,18 @@ interface Live {
     server: string;
 }
 
+// One easing for every movement so the pin, card and highlight feel like one motion
+const EASE = "ease-[cubic-bezier(.22,1,.36,1)]";
+
+/**
+ * The card itself stays mounted (so it can glide); only its contents are keyed,
+ * which cross-fades the text when the province changes.
+ */
 function Callout({ province, info, className, style }: { province: HeroProvince; info?: Live; className?: string; style?: CSSProperties }) {
     const { t } = useI18n();
     return (
-        <div className={cx("animate-pop pointer-events-none rounded-xl border border-line bg-surface/95 p-3.5 shadow-card backdrop-blur", className)} style={style}>
+        <div className={cx("pointer-events-none rounded-xl border border-line bg-surface/95 p-3.5 shadow-card backdrop-blur", className)} style={style}>
+            <div key={province.code} className="animate-fade-up">
             <div className="mb-1.5 flex items-center justify-between gap-2">
                 <span className="rounded-md bg-accent-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-accent km:font-khmer km:normal-case km:tracking-normal km:text-[11px]">
                     {t("hero.provinceTag")}
@@ -35,6 +43,7 @@ function Callout({ province, info, className, style }: { province: HeroProvince;
                 <span className="flex-none">
                     {info ? (<><span className={info.status < 400 ? "text-j-str" : "text-j-err"}>{info.status}</span> · {info.server}</>) : "…"}
                 </span>
+            </div>
             </div>
         </div>
     );
@@ -130,35 +139,45 @@ export function HeroMap() {
                             </path>
                         );
                     })}
-                    {/* Redraw the active outline on top so its full border is visible */}
-                    <path d={active.d} vectorEffect="non-scaling-stroke" className="pointer-events-none fill-none stroke-accent stroke-[1.75]" />
+                    {/* Active province "lifts" off the map: a raised copy scaled from its own centre.
+                        Keyed so the lift replays for each province. */}
+                    <path
+                        key={active.code}
+                        d={active.d}
+                        vectorEffect="non-scaling-stroke"
+                        className="animate-lift pointer-events-none fill-accent/10 stroke-accent stroke-[1.75] [transform-box:fill-box] [transform-origin:center] drop-shadow-[0_6px_10px_rgba(180,68,28,.28)]"
+                    />
                 </svg>
 
-                {/* Pin */}
-                <span
-                    className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-1/2 transition-[left,top] duration-500 ease-out"
-                    style={{ left: `${leftPct}%`, top: `calc(20px + (100% - 40px) * ${active.cy / MAP_HEIGHT})` }}
+                {/* Moving layer: covers exactly the drawn map area, and its translate(x%, y%) is
+                    relative to its own (= the map's) size, so it lands its origin on the centroid.
+                    Transform-only movement is GPU-composited and glides between provinces. */}
+                <div
+                    className={cx("pointer-events-none absolute inset-x-0 bottom-5 top-5 z-10 transition-transform duration-700 will-change-transform", EASE)}
+                    style={{ transform: `translate(${leftPct}%, ${topPct}%)` }}
                     aria-hidden="true"
                 >
-                    <span className="absolute inset-0 animate-ping rounded-full bg-accent/40 motion-reduce:hidden" />
-                    <span className="relative block size-3 rounded-full border-2 border-bg bg-accent shadow" />
-                </span>
+                    {/* Pin at the layer's origin */}
+                    <span className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2">
+                        <span className="absolute inset-0 animate-ping rounded-full bg-accent/40 motion-reduce:hidden" />
+                        <span className="relative block size-3 rounded-full border-2 border-bg bg-accent shadow" />
+                    </span>
 
-                {/* Callout beside the pin (sm and up) */}
-                <Callout
-                    key={active.code}
-                    province={active}
-                    info={info}
-                    className={cx(
-                        "absolute z-20 w-[min(250px,62%)] -translate-y-1/2 max-sm:hidden",
-                        flip ? "-translate-x-[calc(100%+18px)]" : "translate-x-4.5",
-                    )}
-                    style={{ left: `${leftPct}%`, top: `calc(20px + (100% - 40px) * ${topPct / 100})` }}
-                />
+                    {/* Callout beside the pin (sm and up); side switch animates too */}
+                    <Callout
+                        province={active}
+                        info={info}
+                        className={cx(
+                            "absolute left-0 top-0 w-[min(250px,62%)] -translate-y-1/2 transition-transform duration-700 max-sm:hidden",
+                            EASE,
+                            flip ? "-translate-x-[calc(100%+18px)]" : "translate-x-4.5",
+                        )}
+                    />
+                </div>
             </div>
 
             {/* Phones: no room beside the pin, so the same card sits under the map */}
-            <Callout key={`m-${active.code}`} province={active} info={info} className="mt-1 sm:hidden" />
+            <Callout province={active} info={info} className="mt-1 sm:hidden" />
 
             <figcaption className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-ink-3">
                 <span className="inline-flex items-center gap-1.5">
