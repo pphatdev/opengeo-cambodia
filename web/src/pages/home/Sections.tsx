@@ -4,6 +4,7 @@ import { btn, btnGhost, codeCopy, codePre, codeTab, cx, kicker, lvl, sectionH2, 
 import { useI18n, type MessageKey } from "../../i18n";
 import { PROD_ORIGIN } from "../../lib/api";
 import { highlightCode } from "../../lib/highlight";
+import { MAP_HEIGHT, MAP_WIDTH, PROVINCES } from "./cambodiaMap";
 import { useToast } from "../../lib/toast";
 
 /** Kicker + serif title on the left, a short intro on the right. */
@@ -19,7 +20,24 @@ export function SectionHead({ kicker: k, title, intro }: { kicker: string; title
     );
 }
 
-const section = "pb-16 pt-6 sm:pb-22";
+/* Section bands: alternating grounds give the page rhythm. */
+const pad = "py-20 sm:py-24";
+const section = pad;
+/** Logo navy, whichever theme the page is in (scheme-dark swaps the tokens for everything inside). */
+const navyBand = cx("scheme-dark relative overflow-hidden border-y border-line bg-bg dark:bg-[#04061a]", pad);
+/** Soft cyan → mint wash. */
+const washBand = cx("relative border-y border-line bg-[linear-gradient(135deg,var(--og-water-soft),var(--og-bg)_45%,var(--og-accent-soft))]", pad);
+
+/** Cyan and mint light pools for the navy band. */
+function Glows() {
+    return (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+            <div className="absolute -left-40 -top-40 size-[520px] rounded-full bg-[#3ec6f0]/15 blur-3xl" />
+            <div className="absolute -bottom-48 -right-32 size-[560px] rounded-full bg-[#36e2a3]/12 blur-3xl" />
+            <div className="bg-dot-grid absolute inset-0 opacity-40" />
+        </div>
+    );
+}
 
 const FEATURES: { icon: IconName; n: 1 | 2 | 3 | 4 | 5 | 6 }[] = [
     { icon: "layers", n: 1 },
@@ -40,8 +58,9 @@ const HIER = [
 export function DataModel() {
     const { t, rt } = useI18n();
     return (
-        <section className={section} id="data">
-            <div className={wrap}>
+        <section className={navyBand} id="data">
+            <Glows />
+            <div className={cx(wrap, "relative")}>
                 <SectionHead kicker={t("data.kicker")} title={t("data.title")} intro={t("data.intro")} />
                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
                     {HIER.map((h) => (
@@ -142,7 +161,7 @@ export function Downloads() {
         { href: "/opengeo-cambodia.postman_collection.json", ext: "json", kind: "json", name: t("downloads.postman"), sub: t("downloads.postmanSub") },
     ];
     return (
-        <section className={section}>
+        <section className={washBand}>
             <div className={wrap}>
                 <SectionHead kicker={t("downloads.kicker")} title={t("downloads.title")} intro={t("downloads.intro")} />
                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
@@ -169,18 +188,22 @@ export function Downloads() {
 export function Cta() {
     const { t } = useI18n();
     return (
-        <section className="pb-16 pt-2 sm:pb-22">
-            <div className={wrap}>
-                <div className="grid items-center gap-8 rounded-[20px] bg-ink px-6 py-8 text-bg sm:p-14 lg:grid-cols-[1.4fr_1fr]">
-                    <div>
-                        <h2 className="mb-2.5 mt-0 font-serif text-[clamp(32px,4vw,46px)] font-normal leading-[1.05] km:font-khmer km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
-                        <p className="m-0 opacity-70">{t("cta.body")}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-3 lg:justify-end">
-                        {/* Inverted buttons on the dark band (built from `btn` so colours don't conflict) */}
-                        <Link className={cx(btn, "bg-bg text-ink hover:bg-bg/90")} to="/docs">{t("cta.docs")} <Icon name="arrow" /></Link>
-                        <a className={cx(btn, "border-bg/30 bg-transparent text-bg hover:border-bg/60")} href="/api/info" target="_blank" rel="noopener noreferrer">/api/info</a>
-                    </div>
+        // The logo's gradient as a full-bleed band, with navy type like the wordmark's ground.
+        // Fixed colours (not theme tokens): the band looks the same in light and dark mode.
+        <section className="relative overflow-hidden bg-[linear-gradient(120deg,#43cdf2_0%,#36e2a3_100%)] py-16 text-[#07102a] sm:py-20">
+            {/* Faint outline of Cambodia on the right */}
+            <svg aria-hidden="true" viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} className="pointer-events-none absolute -right-24 top-1/2 h-[150%] -translate-y-1/2 opacity-[0.16] max-lg:hidden">
+                {PROVINCES.map((p) => <path key={p.code} d={p.d} className="fill-none stroke-[#07102a]" strokeWidth={2} vectorEffect="non-scaling-stroke" />)}
+            </svg>
+            <div className={cx(wrap, "relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]")}>
+                <div>
+                    <h2 className="mb-2.5 mt-0 font-serif text-[clamp(32px,4vw,46px)] font-normal leading-[1.05] km:font-khmer km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
+                    <p className="m-0 text-[#07102a]/75">{t("cta.body")}</p>
+                </div>
+                <div className="flex flex-wrap gap-3 lg:justify-end">
+                    {/* Built from `btn` so colours don't conflict with the theme recipes */}
+                    <Link className={cx(btn, "bg-[#07102a] text-white shadow-[0_10px_24px_-12px_rgba(7,16,42,.6)] hover:bg-[#0c1a44]")} to="/docs">{t("cta.docs")} <Icon name="arrow" /></Link>
+                    <a className={cx(btn, "border-[#07102a]/30 bg-white/25 text-[#07102a] hover:border-[#07102a]/60 hover:bg-white/40")} href="/api/info" target="_blank" rel="noopener noreferrer">/api/info</a>
                 </div>
             </div>
         </section>

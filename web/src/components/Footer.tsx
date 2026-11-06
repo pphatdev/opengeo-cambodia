@@ -43,7 +43,7 @@ function Column({ title, children }: { title: string; children: ReactNode }) {
 export function Footer() {
     const { t, rt } = useI18n();
     return (
-        <footer className="pt-14 text-[13.5px] text-ink-3">
+        <footer className="scheme-dark bg-bg pt-14 text-[13.5px] text-ink-3 dark:bg-[#04061a]">
             <div className={wrap}>
                 <div className="grid grid-cols-1 gap-8 border-b border-line pb-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
                     <div>

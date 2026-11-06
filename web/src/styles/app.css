@@ -47,7 +47,9 @@
     color-scheme: dark;
   }
 }
-:root[data-theme="dark"] {
+/* `.scheme-dark` gives any section the dark palette regardless of the page theme (navy bands) */
+:root[data-theme="dark"],
+.scheme-dark {
   --og-bg: #070b1f; --og-surface: #0c1330; --og-surface-2: #121a3b; --og-surface-3: #19234a;
   --og-ink: #e9f1f8; --og-ink-2: #a8b5cb; --og-ink-3: #74839f; --og-line: #1c2749; --og-line-2: #2a3961;
   --og-accent: #36e2a3; --og-accent-soft: #0d3b34; --og-water: #3ec6f0; --og-water-soft: #0d2e48;
@@ -57,6 +59,9 @@
   --og-shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.35);
   color-scheme: dark;
 }
+
+/* Text inside a navy band must use the band's ink, not the inherited body colour */
+.scheme-dark { color: var(--og-ink); }
 
 /* `inline` keeps utilities pointing at the live variables, so they follow the theme */
 @theme inline {
