@@ -87,9 +87,14 @@ npm install
 
 ### 3. Run Development Server
 ```bash
-pnpm dev        # API server (Hono) on http://localhost:3000
-pnpm dev:web    # React web app (Vite, hot reload) on http://localhost:5173 — run in a second terminal
+pnpm dev        # both servers, with live reload — open http://localhost:5173
 ```
+
+`pnpm dev` runs [scripts/dev.mjs](scripts/dev.mjs), which starts two processes. Their output is prefixed `[api]` and `[web]`, and Ctrl+C stops both:
+- `[api]` is `pnpm dev:api` (`tsx watch src/index.ts`). It serves the API on http://localhost:3000 and restarts on `src/` changes.
+- `[web]` is `pnpm dev:web` (`vite web`). It serves the site on http://localhost:5173 and hot-reloads on `web/` changes.
+
+Use port 5173 while developing. Port 3000 only serves the last `pnpm build:web` output, so it won't show edits in `web/`. You can still run either process on its own.
 
 The web app lives in [`web/`](web/) (React + TypeScript + Vite, Tailwind CSS v4, React Router, react-leaflet). It's bilingual (English / ខ្មែរ): the switch in the nav saves the choice, `?lang=km` or `?lang=en` in a link picks the language, and Khmer-language browsers get Khmer by default. To add or change text, edit `web/src/i18n/en.ts` and `km.ts`. The type check fails if a key is missing from either. In development, Vite proxies `/api`, `/health` and `/llms*.txt` to the API on port 3000 (override with `API_URL`). `pnpm build:web` writes the production bundle to `dist/client`. That folder is what Cloudflare Workers Assets serves, and the Node server serves it at `/`, `/demo` and `/docs`.
 
