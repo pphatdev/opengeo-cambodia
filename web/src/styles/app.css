@@ -22,34 +22,39 @@
 /* ==========================================================================
    Design tokens — raw values switch with the theme; Tailwind maps onto them
    ========================================================================== */
+/* Palette from the logo: deep navy ground, a cyan → mint-green mark, white type.
+   Dark mode uses the logo colours as-is; light mode deepens them so text on white stays readable. */
 :root {
-  --og-bg: #f5f3ee; --og-surface: #ffffff; --og-surface-2: #efece4; --og-surface-3: #e7e3d8;
-  --og-ink: #16181d; --og-ink-2: #4a4f59; --og-ink-3: #7b808a; --og-line: #e0dcd2; --og-line-2: #cfc9bb;
-  --og-accent: #b4441c; --og-accent-soft: #f6e3d8;
-  --og-water: #1f6f78; --og-water-soft: #dcecec;
-  --og-ok: #2f7d4f; --og-warn: #a86a12; --og-err: #b3261e;
-  --og-code-bg: #1a1c21; --og-code-ink: #e6e4dd; --og-code-line: #2c2f36;
-  --og-shadow: 0 1px 2px rgba(22,24,29,.04), 0 8px 24px rgba(22,24,29,.06);
+  --og-bg: #f3f6f9; --og-surface: #ffffff; --og-surface-2: #eaf0f4; --og-surface-3: #dde6ec;
+  --og-ink: #0a1430; --og-ink-2: #3d4b66; --og-ink-3: #6a788f; --og-line: #dae2ea; --og-line-2: #c3cfdb;
+  --og-accent: #0a8466; --og-accent-soft: #dcf5ec;
+  --og-water: #1876b8; --og-water-soft: #deeef9;
+  --og-ok: #1e8a55; --og-warn: #a86a12; --og-err: #c0362c;
+  --og-code-bg: #0a1028; --og-code-ink: #e3eaf5; --og-code-line: #1c2747;
+  --og-brand: linear-gradient(120deg, #0e8fc4 0%, #0a9e77 100%);
+  --og-shadow: 0 1px 2px rgba(10,20,48,.05), 0 8px 24px rgba(10,20,48,.07);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --og-bg: #111214; --og-surface: #18191c; --og-surface-2: #1f2125; --og-surface-3: #27292e;
-    --og-ink: #ecebe6; --og-ink-2: #b3b1aa; --og-ink-3: #84827c; --og-line: #2a2c31; --og-line-2: #3a3d43;
-    --og-accent: #e0703f; --og-accent-soft: #3a2219; --og-water: #4fb3bd; --og-water-soft: #15292b;
-    --og-ok: #5cbf83; --og-warn: #e0a64a; --og-err: #f07167;
-    --og-code-bg: #0c0d0f; --og-code-line: #23252a;
-    --og-shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    --og-bg: #070b1f; --og-surface: #0c1330; --og-surface-2: #121a3b; --og-surface-3: #19234a;
+    --og-ink: #e9f1f8; --og-ink-2: #a8b5cb; --og-ink-3: #74839f; --og-line: #1c2749; --og-line-2: #2a3961;
+    --og-accent: #36e2a3; --og-accent-soft: #0d3b34; --og-water: #3ec6f0; --og-water-soft: #0d2e48;
+    --og-ok: #4fd18f; --og-warn: #e8b04e; --og-err: #f27a70;
+    --og-code-bg: #050818; --og-code-line: #18213f;
+    --og-brand: linear-gradient(120deg, #43cdf2 0%, #34e3a4 100%);
+    --og-shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.35);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --og-bg: #111214; --og-surface: #18191c; --og-surface-2: #1f2125; --og-surface-3: #27292e;
-  --og-ink: #ecebe6; --og-ink-2: #b3b1aa; --og-ink-3: #84827c; --og-line: #2a2c31; --og-line-2: #3a3d43;
-  --og-accent: #e0703f; --og-accent-soft: #3a2219; --og-water: #4fb3bd; --og-water-soft: #15292b;
-  --og-ok: #5cbf83; --og-warn: #e0a64a; --og-err: #f07167;
-  --og-code-bg: #0c0d0f; --og-code-line: #23252a;
-  --og-shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  --og-bg: #070b1f; --og-surface: #0c1330; --og-surface-2: #121a3b; --og-surface-3: #19234a;
+  --og-ink: #e9f1f8; --og-ink-2: #a8b5cb; --og-ink-3: #74839f; --og-line: #1c2749; --og-line-2: #2a3961;
+  --og-accent: #36e2a3; --og-accent-soft: #0d3b34; --og-water: #3ec6f0; --og-water-soft: #0d2e48;
+  --og-ok: #4fd18f; --og-warn: #e8b04e; --og-err: #f27a70;
+  --og-code-bg: #050818; --og-code-line: #18213f;
+  --og-brand: linear-gradient(120deg, #43cdf2 0%, #34e3a4 100%);
+  --og-shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.35);
   color-scheme: dark;
 }
 
@@ -79,15 +84,15 @@
 
 @theme {
   /* Code surfaces are always dark, in both themes */
-  --color-code-dim: #8d8b85;
-  --color-code-faint: #6f6d68;
-  --color-code-hi: #f1efe9;
-  --color-code-tab: #26292f;
-  --color-code-pill: #1f2227;
-  --color-j-key: #e9a77d;
-  --color-j-str: #a8d4a0;
-  --color-j-num: #8fc1e8;
-  --color-j-bool: #d6a6e6;
+  --color-code-dim: #8a96b3;
+  --color-code-faint: #5d6a8a;
+  --color-code-hi: #f1f6fd;
+  --color-code-tab: #16203f;
+  --color-code-pill: #101a36;
+  --color-j-key: #7dd3fc;
+  --color-j-str: #86efac;
+  --color-j-num: #fcd38d;
+  --color-j-bool: #c4b5fd;
   --color-j-err: #f07167;
 
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -155,6 +160,15 @@
 }
 @utility animate-fade-up {
   animation: og-fade-up 380ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Logo gradient as text fill; small right padding keeps italic overhang from clipping */
+@utility text-brand {
+  background-image: var(--og-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-right: .06em;
 }
 
 @utility scrollbar-thin {

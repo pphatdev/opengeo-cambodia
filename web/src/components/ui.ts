@@ -21,9 +21,9 @@ export const kicker =
 
 /** Serif display type; Khmer swaps to Kantumruy (no italics, taller lines). */
 const khmerHeading = "km:font-khmer km:font-semibold km:tracking-normal km:leading-[1.4] km:[&_em]:not-italic";
-export const displayH1 = cx("my-5 font-serif text-[clamp(44px,6.2vw,76px)] font-normal leading-[1.02] tracking-[-.02em] [&_em]:text-accent km:text-[clamp(34px,4.8vw,56px)]", khmerHeading);
+export const displayH1 = cx("my-5 font-serif text-[clamp(44px,6.2vw,76px)] font-normal leading-[1.02] tracking-[-.02em] [&_em]:text-brand km:text-[clamp(34px,4.8vw,56px)]", khmerHeading);
 export const sectionH2 = cx("m-0 font-serif text-[clamp(34px,4.2vw,50px)] font-normal leading-[1.05] tracking-[-.015em] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
-export const docsH1 = cx("mb-4 font-serif text-[clamp(42px,5vw,60px)] font-normal leading-[1.02] tracking-[-.02em] [&_em]:text-accent km:text-[clamp(32px,4vw,46px)]", khmerHeading);
+export const docsH1 = cx("mb-4 font-serif text-[clamp(42px,5vw,60px)] font-normal leading-[1.02] tracking-[-.02em] [&_em]:text-brand km:text-[clamp(32px,4vw,46px)]", khmerHeading);
 export const docsH2 = cx("mb-3.5 mt-16 pt-2 font-serif text-[36px] font-normal leading-[1.1] tracking-[-.01em] max-sm:text-[30px] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
 
 const LEVEL_COLORS: Record<Level, string> = {

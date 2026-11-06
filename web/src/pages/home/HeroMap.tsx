@@ -145,7 +145,7 @@ export function HeroMap() {
                         key={active.code}
                         d={active.d}
                         vectorEffect="non-scaling-stroke"
-                        className="animate-lift pointer-events-none fill-accent/10 stroke-accent stroke-[1.75] [transform-box:fill-box] [transform-origin:center] drop-shadow-[0_6px_10px_rgba(180,68,28,.28)]"
+                        className="animate-lift pointer-events-none fill-accent/10 stroke-accent stroke-[1.75] [transform-box:fill-box] [transform-origin:center] drop-shadow-[0_6px_12px_color-mix(in_srgb,var(--og-accent)_35%,transparent)]"
                     />
                 </svg>
 
