@@ -132,11 +132,10 @@ export class BoundariesService {
         }
 
         const candidates = [
-            path.resolve(currentDir, "..", "data", "boundaries"),
-            path.resolve(currentDir, "boundaries"),
-            path.resolve(process.cwd(), "src", "data", "boundaries"),
-            path.resolve(process.cwd(), "dist", "data", "boundaries"),
+            path.resolve(currentDir, "..", "..", "public", "boundaries"),
+            path.resolve(currentDir, "..", "public", "boundaries"),
             path.resolve(process.cwd(), "public", "boundaries"),
+            path.resolve(process.cwd(), "dist", "public", "boundaries"),
         ];
 
         for (const candidate of candidates) {

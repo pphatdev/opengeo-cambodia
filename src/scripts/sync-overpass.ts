@@ -122,7 +122,7 @@ async function syncFromOverpass() {
         );
 
         // Read existing communes and villages from seed if not full synced
-        const seedDir = path.resolve(__dirname, "..", "data", "seed");
+        const seedDir = path.resolve(__dirname, "..", "..", "public", "data", "seed");
         const existingCommunes = JSON.parse(
             fs.readFileSync(path.join(seedDir, "communes.json"), "utf-8"),
         );

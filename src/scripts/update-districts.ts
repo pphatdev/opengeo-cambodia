@@ -40,7 +40,7 @@ export function updateDistrictsFromCsv(): {
     removed: number;
     diffs: Array<{ code: string; type: string; before?: any; after?: any }>;
 } {
-    const dataDir = path.resolve(__dirname, "..", "data");
+    const dataDir = path.resolve(__dirname, "..", "..", "public", "data");
     const seedDir = path.join(dataDir, "seed");
     const csvPath = path.join(dataDir, "CambodiaDistrictList.csv");
     const seedDistrictsPath = path.join(seedDir, "districts.json");

@@ -23,7 +23,7 @@
         "update:communes": "tsx src/scripts/update-communes.ts",
         "update:villages": "tsx src/scripts/update-villages.ts",
         "update:all": "tsx src/scripts/update-provinces.ts && tsx src/scripts/update-districts.ts && tsx src/scripts/update-communes.ts && tsx src/scripts/update-villages.ts",
-        "lint": "tsc --noEmit",
+        "lint": "tsc --noEmit && tsc -p tsconfig.worker.json",
         "audit:security": "pnpm audit --audit-level=high",
         "verify:lockfile": "pnpm install --frozen-lockfile",
         "security:check": "pnpm audit --audit-level=high && tsc --noEmit",

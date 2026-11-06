@@ -461,11 +461,10 @@ boundariesRoutes.get("/raw/:filename", (c) => {
     }
 
     const candidates = [
-        path.resolve(currentDir, "..", "data", "boundaries", targetFile),
-        path.resolve(currentDir, "boundaries", targetFile),
-        path.resolve(process.cwd(), "src", "data", "boundaries", targetFile),
-        path.resolve(process.cwd(), "dist", "data", "boundaries", targetFile),
+        path.resolve(currentDir, "..", "..", "public", "boundaries", targetFile),
+        path.resolve(currentDir, "..", "public", "boundaries", targetFile),
         path.resolve(process.cwd(), "public", "boundaries", targetFile),
+        path.resolve(process.cwd(), "dist", "public", "boundaries", targetFile),
     ];
 
     for (const filePath of candidates) {
