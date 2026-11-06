@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Icon } from "../../components/Icon";
+import { RollingNumber } from "../../components/RollingNumber";
 import { btnGhost, btnPrimary, cx, displayH1, wrap } from "../../components/ui";
 import { useI18n } from "../../i18n";
 import { apiGet, fmt, PROD_ORIGIN } from "../../lib/api";
@@ -89,8 +90,12 @@ export function Hero() {
                                         <Icon name="arrow" className="size-5" />
                                     </li>
                                 )}
-                                <li className={cx("flex items-baseline gap-3 px-6 py-5", i % 2 === 1 && "max-lg:border-l max-lg:border-line", i >= 2 && "max-lg:border-t max-lg:border-line")}>
-                                    <span className="font-serif text-[38px] leading-none tracking-[-.02em] tabular-nums sm:text-[46px]">{fmt(Number(stats?.[tier.stat] ?? tier.fallback))}</span>
+                                <li className={cx("flex items-center gap-3 px-6 py-5", i % 2 === 1 && "max-lg:border-l max-lg:border-line", i >= 2 && "max-lg:border-t max-lg:border-line")}>
+                                    <RollingNumber
+                                        value={Number(stats?.[tier.stat] ?? tier.fallback)}
+                                        stagger={90 + i * 15}
+                                        className="font-serif text-[38px] leading-none tracking-[-.02em] sm:text-[46px]"
+                                    />
                                     <span className="min-w-0">
                                         <span className="block text-sm font-semibold">{lang === "km" ? tier.km : tier.en}</span>
                                         <span className={cx("block truncate text-[12.5px] text-ink-3", lang !== "km" && "font-khmer")}>{lang === "km" ? tier.en : tier.km}</span>
