@@ -45,6 +45,11 @@ const en = {
         server: "server",
         moreDistricts: "// … {n} more districts",
         datasetSize: "Dataset size",
+        mapAlt: "Map of Cambodia's 25 provinces, highlighting one at a time with live data from the API",
+        liveTag: "Live from the API",
+        clickHint: "Hover to inspect · click to explore",
+        provinceTag: "Province",
+        hierarchyNote: "Each level nests inside the one before it",
     },
     explore: {
         kicker: "Live explorer",

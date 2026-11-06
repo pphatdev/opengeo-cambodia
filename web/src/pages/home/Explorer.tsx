@@ -6,6 +6,7 @@ import { ApiError, apiGet, type RequestLog } from "../../lib/api";
 import { useToast } from "../../lib/toast";
 import { LEVEL_KM, LEVELS, type AdminItem, type ApiEnvelope, type BoundaryLevel, type HierarchyPath, type Level } from "../../lib/types";
 import { DetailCard } from "./DetailCard";
+import { SELECT_PROVINCE_EVENT } from "./HeroMap";
 import { RequestConsole } from "./RequestConsole";
 import { SearchBox } from "./SearchBox";
 
@@ -131,6 +132,17 @@ export function Explorer() {
         [choose, log, toast],
     );
 
+    // A province clicked on the hero map selects it here
+    useEffect(() => {
+        const onSelect = (e: Event) => {
+            const id = (e as CustomEvent<{ id: number }>).detail?.id;
+            if (!id) return;
+            setShowMap(true);
+            void jumpTo(id);
+        };
+        window.addEventListener(SELECT_PROVINCE_EVENT, onSelect);
+        return () => window.removeEventListener(SELECT_PROVINCE_EVENT, onSelect);
+    }, [jumpTo]);
 
     const selectByCode = useCallback(
         (level: BoundaryLevel, code: string) => {
