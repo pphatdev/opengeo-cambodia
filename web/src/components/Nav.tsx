@@ -67,7 +67,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                 )}
                 <Link className="flex items-center gap-2.5 font-semibold tracking-[-.01em] text-ink no-underline" to="/" aria-label={t("nav.home")}>
                     <img src="/logo.jpg" alt="" width={30} height={30} className="size-7.5 rounded-lg object-cover" />
-                    <span className="font-sans max-xs:hidden">OpenGeo Cambodia</span>
+                    <span className="font-sans max-md:hidden">OpenGeo Cambodia</span>
                     {isDocs ? (
                         <>
                             <span className="font-normal text-line-2">/</span>

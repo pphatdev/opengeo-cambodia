@@ -9,7 +9,7 @@ export const cx = (...parts: (string | false | null | undefined)[]) => parts.fil
 export const wrap = "mx-auto w-full max-w-[1360px] px-6 max-sm:px-4";
 
 export const btn =
-    "inline-flex h-11 items-center gap-2 rounded-[10px] border border-transparent px-[18px] text-[14.5px] font-semibold no-underline transition-[transform,background-color,border-color] active:translate-y-px km:font-khmer [&_svg]:size-4";
+    "inline-flex h-11 items-center gap-2 rounded-[10px] border border-transparent px-[18px] text-[14.5px] font-medium no-underline transition-[transform,background-color,border-color] active:translate-y-px km:font-khmer [&_svg]:size-4";
 export const btnPrimary = cx(btn, "bg-ink text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))]");
 export const btnGhost = cx(btn, "border-line bg-surface text-ink hover:border-line-2");
 

@@ -41,7 +41,7 @@ export function RollingNumber({ value, className, duration = 1400, stagger = 90 
     return (
         <span ref={ref} className={cx("relative inline-flex tabular-nums", className)}>
             <span className="sr-only">{text}</span>
-            <span aria-hidden="true" className="inline-flex">
+            <span aria-hidden="true" className="inline-flex select-none">
                 {chars.map((ch, i) => {
                     const place = chars.length - i; // stable key: position from the right
                     if (!/\d/.test(ch)) {
