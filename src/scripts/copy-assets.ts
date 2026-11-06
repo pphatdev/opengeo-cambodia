@@ -24,11 +24,9 @@ function copyDir(src: string, dest: string) {
 
 console.log("📦 Copying non-TypeScript assets to dist/ ...");
 
-// 1. Copy Seed Data (JSON)
-copyDir(path.join(srcDir, "data", "seed"), path.join(distDir, "data", "seed"));
+// 1. Seed Data (JSON) lives in public/data/seed and is copied with public/ in step 6.
 
-// 2. Copy HTML Views
-copyDir(path.join(srcDir, "views"), path.join(distDir, "views"));
+// 2. The web UI is a React app in web/, built separately with `pnpm build:web` → dist/client.
 
 // 3. Copy Synced Data if exists
 if (fs.existsSync(path.join(srcDir, "data", "synced"))) {
@@ -38,33 +36,8 @@ if (fs.existsSync(path.join(srcDir, "data", "synced"))) {
     );
 }
 
-// 4. Copy 4 Official CSV datasets
-const csvFiles = [
-    "CambodiaProvinceList.csv",
-    "CambodiaDistrictList.csv",
-    "CambodiaCommuneList.csv",
-    "CambodiaVillagesList.csv",
-];
-for (const csv of csvFiles) {
-    const src = path.join(srcDir, "data", csv);
-    const dest = path.join(distDir, "data", csv);
-    if (fs.existsSync(src)) {
-        fs.mkdirSync(path.dirname(dest), { recursive: true });
-        fs.copyFileSync(src, dest);
-        console.log(
-            `📄 Copied ${path.relative(rootDir, src)} -> ${
-                path.relative(rootDir, dest)
-            }`,
-        );
-    }
-}
-
-// 4b. Copy GeoJSON Boundaries to dist/data/boundaries and public/boundaries
-const boundariesSrc = path.join(srcDir, "data", "boundaries");
-if (fs.existsSync(boundariesSrc)) {
-    copyDir(boundariesSrc, path.join(distDir, "data", "boundaries"));
-    copyDir(boundariesSrc, path.join(rootDir, "public", "boundaries"));
-}
+// 4. Official CSV datasets (public/data) and GeoJSON boundaries (public/boundaries)
+//    live in public/ and are copied to dist/public in step 6.
 
 // 5. Copy LLM documentation files to dist/ and public/
 const llmFiles = ["llms.txt", "llms-full.txt"];
@@ -83,13 +56,6 @@ for (const file of llmFiles) {
     }
 }
 
-// 5b. Sync demo.html to public/index.html and public/demo.html for Cloudflare Workers Static Assets
-const demoHtmlSrc = path.join(srcDir, "views", "demo.html");
-if (fs.existsSync(demoHtmlSrc)) {
-    fs.copyFileSync(demoHtmlSrc, path.join(rootDir, "public", "index.html"));
-    fs.copyFileSync(demoHtmlSrc, path.join(rootDir, "public", "demo.html"));
-    console.log("🌐 Synced demo.html -> public/index.html & public/demo.html");
-}
 
 // 6. Ensure Public Assets & Logos are synchronized and copied to dist/public
 const publicSrcDir = path.join(rootDir, "public");

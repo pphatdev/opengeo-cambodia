@@ -13,7 +13,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
 🔗 **Live Production URL:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me)  
-🌐 **Interactive Web UI:** [https://opengeo-cambodia.pphat.me/demo](https://opengeo-cambodia.pphat.me/demo) *(Fast Open API Platform & Live Metrics)*  
+🌐 **Interactive Explorer:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me) *(live map, cascading selectors, search & request console)*  
+📚 **API Documentation:** [https://opengeo-cambodia.pphat.me/docs](https://opengeo-cambodia.pphat.me/docs) *(every endpoint with a live "Send" button)*  
 🏛️ **Official Data Source:** [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)  
 📮 **Postman Collection:** [`public/opengeo-cambodia.postman_collection.json`](public/opengeo-cambodia.postman_collection.json) *(Uses collection variables, no environment file needed)*  
 🤖 **LLM Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)
@@ -86,11 +87,14 @@ npm install
 
 ### 3. Run Development Server
 ```bash
-npm run dev
+pnpm dev        # API server (Hono) on http://localhost:3000
+pnpm dev:web    # React web app (Vite, hot reload) on http://localhost:5173 — run in a second terminal
 ```
 
-The server starts at `http://localhost:3000`:
-- **Interactive Web UI**: `http://localhost:3000/demo` (or opening `/` in a browser)
+The web app lives in [`web/`](web/) (React + TypeScript + Vite, Tailwind CSS v4, React Router, react-leaflet). It's bilingual (English / ខ្មែរ): the switch in the nav saves the choice, `?lang=km` or `?lang=en` in a link picks the language, and Khmer-language browsers get Khmer by default. To add or change text, edit `web/src/i18n/en.ts` and `km.ts`. The type check fails if a key is missing from either. In development, Vite proxies `/api`, `/health` and `/llms*.txt` to the API on port 3000 (override with `API_URL`). `pnpm build:web` writes the production bundle to `dist/client`. That folder is what Cloudflare Workers Assets serves, and the Node server serves it at `/`, `/demo` and `/docs`.
+
+The API server starts at `http://localhost:3000`:
+- **Web UI**: `http://localhost:3000/` and `/docs` (after `pnpm build:web`)
 - **API Welcome / Endpoints**: `http://localhost:3000/` (JSON)
 - **API Spec & Info**: `http://localhost:3000/api/info`
 - **Postman Collection**: `http://localhost:3000/opengeo-cambodia.postman_collection.json`
@@ -297,6 +301,18 @@ opengeo-cambodia.pphat.me/
 ├── .gitignore
 ├── README.md
 ├── context.md
+├── public/                    # Static assets (served by Cloudflare Workers Assets)
+│   ├── data/                  # Official source CSV datasets + generated seed JSON
+│   │   ├── seed/              # provinces/districts/communes/villages.json (bundled into the Worker)
+│   │   ├── CambodiaGeographicalList.csv
+│   │   ├── CambodiaProvinceList.csv
+│   │   ├── CambodiaDistrictList.csv
+│   │   ├── CambodiaCommuneList.csv
+│   │   └── CambodiaVillagesList.csv
+│   └── boundaries/            # GeoJSON boundary datasets
+│       ├── province.geojson   # 25 Provinces boundary polygons
+│       ├── district.geojson   # 204 Districts boundary polygons
+│       └── commune.geojson    # 1,640 Communes boundary polygons
 └── src/
     ├── index.ts               # Server entry point using @hono/node-server
     ├── app.ts                 # Hono app configuration, CORS, Logger, routes
@@ -307,16 +323,7 @@ opengeo-cambodia.pphat.me/
     │   ├── geocode.ts         # GeocodeResult, Nominatim types
     │   └── api.ts             # Standardized API response envelope
     ├── data/
-    │   ├── store.ts           # High-performance In-Memory repository (O(1) index)
-    │   ├── boundaries/        # GeoJSON boundary datasets
-    │   │   ├── province.geojson # 25 Provinces boundary polygons
-    │   │   ├── district.geojson # 204 Districts boundary polygons
-    │   │   └── commune.geojson  # 1,640 Communes boundary polygons
-    │   └── seed/
-    │       ├── provinces.json # Seed data for all 25 provinces
-    │       ├── districts.json # Seed data for districts
-    │       ├── communes.json  # Seed data for communes
-    │       └── villages.json  # Seed data for villages
+    │   └── store.ts           # High-performance In-Memory repository (O(1) index)
     ├── routes/
     │   ├── admin.routes.ts      # /api/admin/* endpoints
     │   ├── boundaries.routes.ts # /api/boundaries/* GeoJSON & spatial filtering
@@ -332,8 +339,17 @@ opengeo-cambodia.pphat.me/
     │   ├── generate-llms.ts   # llms.txt & llms-full.txt generator
     │   ├── sync-overpass.ts   # Background ETL pipeline from Overpass API
     │   └── convert-csv.ts     # CSV data ingestion and conversion utilities
-    └── views/
-        └── demo.html          # Interactive Web UI with live ping monitor, metrics counters & quick command bar
+web/                           # React web app (Vite) → builds to dist/client
+├── index.html                 # HTML shell, SEO meta
+├── vite.config.ts             # publicDir = ../public, dev proxy to the API
+└── src/
+    ├── App.tsx                # Routes: / (and /demo) → Home, /docs → Docs
+    ├── i18n/                  # English/Khmer UI text: en.ts (source keys), km.ts (type-checked against en)
+    ├── lib/                   # API client, theme, toast, JSON highlighting, shared types
+    ├── components/            # Nav, Footer, Icon, ui.ts (shared Tailwind class recipes)
+    ├── pages/home/            # Hero, Explorer (map, search, console), sections
+    ├── pages/docs/            # Docs page, endpoint spec + live "Try it" cards
+    └── styles/app.css         # Tailwind entry: design tokens, dark/km variants, Leaflet overrides
 ```
 
 ---

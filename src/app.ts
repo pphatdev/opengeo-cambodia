@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
@@ -34,29 +34,18 @@ function resolveAppDir(): string {
 
 const currentDir = resolveAppDir();
 const rootDir = currentDir ? path.resolve(currentDir, "..") : "";
-const demoHtmlPath = (rootDir && typeof fs?.existsSync === "function" && fs.existsSync(path.resolve(rootDir, "src", "views", "demo.html")))
-    ? path.resolve(rootDir, "src", "views", "demo.html")
-    : (currentDir ? path.resolve(currentDir, "views", "demo.html") : "");
+// React web app build output (`pnpm build:web` → dist/client). Served by Cloudflare Workers Assets in production.
+const clientDir = rootDir ? path.resolve(rootDir, "dist", "client") : "";
+const spaHtmlPath = clientDir ? path.join(clientDir, "index.html") : "";
 const llmsTxtPath = rootDir ? path.resolve(rootDir, "llms.txt") : "";
 const llmsFullTxtPath = rootDir ? path.resolve(rootDir, "llms-full.txt") : "";
 const publicDir = (rootDir && typeof fs?.existsSync === "function" && fs.existsSync(path.resolve(rootDir, "public")))
     ? path.resolve(rootDir, "public")
     : (currentDir ? path.resolve(currentDir, "..", "public") : "");
 
-// Auto-sync reference logo assets & demo.html if available
+// Auto-sync reference logo assets if available
 if (rootDir && typeof fs?.existsSync === "function") {
     try {
-        const srcDemo = path.resolve(rootDir, "src", "views", "demo.html");
-        const distViewsDir = path.resolve(rootDir, "dist", "views");
-        const distDemo = path.join(distViewsDir, "demo.html");
-        if (fs.existsSync(srcDemo) && fs.existsSync(distViewsDir)) {
-            fs.copyFileSync(srcDemo, distDemo);
-        }
-        if (fs.existsSync(srcDemo) && publicDir && fs.existsSync(publicDir)) {
-            fs.copyFileSync(srcDemo, path.join(publicDir, "index.html"));
-            fs.copyFileSync(srcDemo, path.join(publicDir, "demo.html"));
-        }
-
         const khmerDatetimeLogoDir = path.resolve(
             rootDir,
             "..",
@@ -78,17 +67,29 @@ if (rootDir && typeof fs?.existsSync === "function") {
     }
 }
 
-let cachedDemoHtml: string | null = null;
-function getDemoHtml(): string {
-    if (config.nodeEnv === "production" && cachedDemoHtml) {
-        return cachedDemoHtml;
+let cachedSpaHtml: string | null = null;
+function getSpaHtml(): string {
+    if (config.nodeEnv === "production" && cachedSpaHtml) {
+        return cachedSpaHtml;
     }
-    if (demoHtmlPath && typeof fs?.existsSync === "function" && fs.existsSync(demoHtmlPath)) {
-        const content = fs.readFileSync(demoHtmlPath, "utf-8");
-        if (config.nodeEnv === "production") cachedDemoHtml = content;
+    if (spaHtmlPath && typeof fs?.existsSync === "function" && fs.existsSync(spaHtmlPath)) {
+        const content = fs.readFileSync(spaHtmlPath, "utf-8");
+        if (config.nodeEnv === "production") cachedSpaHtml = content;
         return content;
     }
-    return "<!DOCTYPE html><html><body><h1>OpenGeo Cambodia</h1></body></html>";
+    return "<!DOCTYPE html><html><body style=\"font-family:system-ui;padding:24px\"><h1>OpenGeo Cambodia</h1>"
+        + "<p>The web app hasn't been built. Run <code>pnpm build:web</code>, or <code>pnpm dev:web</code> for live development.</p>"
+        + "<p>The API is available at <a href=\"/api/info\">/api/info</a>.</p></body></html>";
+}
+
+/** Serve the React app shell from Workers Assets when deployed, or from dist/client in Node. */
+async function serveSpa(c: Context): Promise<Response> {
+    const assets = (c.env as { ASSETS?: { fetch: (req: Request) => Promise<Response> } } | undefined)?.ASSETS;
+    if (assets) {
+        const res = await assets.fetch(new Request(new URL("/index.html", c.req.url)));
+        if (res.ok) return res;
+    }
+    return c.html(getSpaHtml());
 }
 
 let cachedLlmsTxt: string | null = null;
@@ -396,28 +397,56 @@ app.get("/logo/*", (c) => {
     return c.notFound();
 });
 
-// 8. Interactive Demo UI Endpoint
-app.get("/demo", async (c) => {
-    if (c.env && (c.env as any).ASSETS) {
-        const demoRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/demo.html", c.req.url)));
-        if (demoRes.ok) return demoRes;
-        const indexRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/index.html", c.req.url)));
-        if (indexRes.ok) return indexRes;
+// Bulk data downloads (public/data). On Cloudflare these are served directly as static assets.
+app.get("/data/*", (c) => {
+    const relativeSubPath = c.req.path.replace(/^\/data\//, "");
+    const safePath = path.normalize(relativeSubPath).replace(/^(\.\.[\/\\])+/, "");
+    const dataDir = path.join(publicDir, "data");
+    const filePath = path.join(dataDir, safePath);
+    if (!filePath.startsWith(dataDir + path.sep)) return c.notFound();
+
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        const ext = path.extname(filePath).toLowerCase();
+        const mimeTypes: Record<string, string> = {
+            ".csv": "text/csv; charset=utf-8",
+            ".json": "application/json; charset=utf-8",
+        };
+        c.header("Content-Type", mimeTypes[ext] || "application/octet-stream");
+        c.header("Cache-Control", "public, max-age=86400");
+        return c.body(fs.readFileSync(filePath));
     }
-    return c.html(getDemoHtml());
+    return c.notFound();
 });
+
+// Hashed JS/CSS bundles of the React app (Node only; Cloudflare serves these as static assets)
+app.get("/assets/*", (c) => {
+    if (!clientDir) return c.notFound();
+    const assetsDir = path.join(clientDir, "assets");
+    const filePath = path.join(assetsDir, path.normalize(c.req.path.replace(/^\/assets\//, "")));
+    if (!filePath.startsWith(assetsDir + path.sep) || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+        return c.notFound();
+    }
+    const types: Record<string, string> = {
+        ".js": "text/javascript; charset=utf-8",
+        ".css": "text/css; charset=utf-8",
+        ".svg": "image/svg+xml",
+        ".png": "image/png",
+        ".woff2": "font/woff2",
+    };
+    c.header("Content-Type", types[path.extname(filePath).toLowerCase()] || "application/octet-stream");
+    c.header("Cache-Control", "public, max-age=31536000, immutable");
+    return c.body(fs.readFileSync(filePath));
+});
+
+// 8. Web app pages (React SPA: landing/explorer and API docs)
+app.get("/docs", serveSpa);
+app.get("/demo", serveSpa);
 
 // 8. API Root Welcome Endpoint (Auto-detects Browser vs API client)
 app.get("/", async (c) => {
     const accept = c.req.header("Accept") || "";
     if (accept.includes("text/html") && !c.req.query("json")) {
-        if (c.env && (c.env as any).ASSETS) {
-            const indexRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/index.html", c.req.url)));
-            if (indexRes.ok) return indexRes;
-            const demoRes = await (c.env as any).ASSETS.fetch(new Request(new URL("/demo.html", c.req.url)));
-            if (demoRes.ok) return demoRes;
-        }
-        return c.html(getDemoHtml());
+        return serveSpa(c);
     }
 
     c.header(

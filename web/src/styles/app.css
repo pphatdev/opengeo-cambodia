@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Variants
+   ========================================================================== */
+
+/* Dark mode follows the theme toggle (data-theme) and falls back to the OS setting */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+/* Khmer UI: `km:font-khmer` etc. Applies when <html lang="km"> */
+@custom-variant km (&:where(:root[lang="km"], :root[lang="km"] *));
+
+/* ==========================================================================
+   Design tokens — raw values switch with the theme; Tailwind maps onto them
+   ========================================================================== */
+:root {
+  --og-bg: #f5f3ee; --og-surface: #ffffff; --og-surface-2: #efece4; --og-surface-3: #e7e3d8;
+  --og-ink: #16181d; --og-ink-2: #4a4f59; --og-ink-3: #7b808a; --og-line: #e0dcd2; --og-line-2: #cfc9bb;
+  --og-accent: #b4441c; --og-accent-soft: #f6e3d8;
+  --og-water: #1f6f78; --og-water-soft: #dcecec;
+  --og-ok: #2f7d4f; --og-warn: #a86a12; --og-err: #b3261e;
+  --og-code-bg: #1a1c21; --og-code-ink: #e6e4dd; --og-code-line: #2c2f36;
+  --og-shadow: 0 1px 2px rgba(22,24,29,.04), 0 8px 24px rgba(22,24,29,.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --og-bg: #111214; --og-surface: #18191c; --og-surface-2: #1f2125; --og-surface-3: #27292e;
+    --og-ink: #ecebe6; --og-ink-2: #b3b1aa; --og-ink-3: #84827c; --og-line: #2a2c31; --og-line-2: #3a3d43;
+    --og-accent: #e0703f; --og-accent-soft: #3a2219; --og-water: #4fb3bd; --og-water-soft: #15292b;
+    --og-ok: #5cbf83; --og-warn: #e0a64a; --og-err: #f07167;
+    --og-code-bg: #0c0d0f; --og-code-line: #23252a;
+    --og-shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --og-bg: #111214; --og-surface: #18191c; --og-surface-2: #1f2125; --og-surface-3: #27292e;
+  --og-ink: #ecebe6; --og-ink-2: #b3b1aa; --og-ink-3: #84827c; --og-line: #2a2c31; --og-line-2: #3a3d43;
+  --og-accent: #e0703f; --og-accent-soft: #3a2219; --og-water: #4fb3bd; --og-water-soft: #15292b;
+  --og-ok: #5cbf83; --og-warn: #e0a64a; --og-err: #f07167;
+  --og-code-bg: #0c0d0f; --og-code-line: #23252a;
+  --og-shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+
+/* `inline` keeps utilities pointing at the live variables, so they follow the theme */
+@theme inline {
+  --color-bg: var(--og-bg);
+  --color-surface: var(--og-surface);
+  --color-surface-2: var(--og-surface-2);
+  --color-surface-3: var(--og-surface-3);
+  --color-ink: var(--og-ink);
+  --color-ink-2: var(--og-ink-2);
+  --color-ink-3: var(--og-ink-3);
+  --color-line: var(--og-line);
+  --color-line-2: var(--og-line-2);
+  --color-accent: var(--og-accent);
+  --color-accent-soft: var(--og-accent-soft);
+  --color-water: var(--og-water);
+  --color-water-soft: var(--og-water-soft);
+  --color-ok: var(--og-ok);
+  --color-warn: var(--og-warn);
+  --color-err: var(--og-err);
+  --color-code: var(--og-code-bg);
+  --color-code-ink: var(--og-code-ink);
+  --color-code-line: var(--og-code-line);
+  --shadow-card: var(--og-shadow);
+}
+
+@theme {
+  /* Code surfaces are always dark, in both themes */
+  --color-code-dim: #8d8b85;
+  --color-code-faint: #6f6d68;
+  --color-code-hi: #f1efe9;
+  --color-code-tab: #26292f;
+  --color-code-pill: #1f2227;
+  --color-j-key: #e9a77d;
+  --color-j-str: #a8d4a0;
+  --color-j-num: #8fc1e8;
+  --color-j-bool: #d6a6e6;
+  --color-j-err: #f07167;
+
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Instrument Serif", "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-khmer: "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS", sans-serif;
+
+  --breakpoint-xs: 27.5rem; /* 440px */
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body { @apply bg-bg text-ink font-sans text-[15px] leading-[1.6] antialiased; }
+  /* Khmer script needs a Khmer face and taller lines */
+  html[lang="km"] body { @apply font-khmer leading-[1.75]; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-accent rounded-[4px]; }
+  button, input, select { font: inherit; }
+  img { max-width: 100%; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+}
+
+/* ==========================================================================
+   Utilities that Tailwind can't express as one class
+   ========================================================================== */
+
+/* Inline markup inside translated text (rendered from <code>, <a>, <strong>) */
+@utility rich {
+  & code { @apply font-mono text-[0.87em] bg-surface-2 border border-line px-[5px] py-px rounded-[5px] text-ink whitespace-nowrap; }
+  & a { @apply text-accent underline-offset-[3px]; }
+  & strong { @apply text-ink font-semibold; }
+}
+
+/* Dotted map-paper texture behind the hero */
+@utility bg-dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--og-line) 1px, transparent 0);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 70% 30%, #000 20%, transparent 75%);
+}
+
+/* Popover open animation (uses the standalone scale property so it never fights transforms) */
+@keyframes og-pop {
+  from { opacity: 0; scale: .97; }
+}
+@utility animate-pop {
+  animation: og-pop 120ms ease-out;
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+/* ==========================================================================
+   Third-party DOM (Leaflet) — not rendered by React, so it's styled here
+   ========================================================================== */
+@layer components {
+  .leaflet-container { @apply font-sans text-[13px] bg-surface-2; }
+  .leaflet-bar a { background: var(--og-surface) !important; color: var(--og-ink) !important; border-color: var(--og-line) !important; }
+  .leaflet-control-attribution { background: color-mix(in srgb, var(--og-surface) 85%, transparent) !important; color: var(--og-ink-3) !important; }
+  .leaflet-control-attribution a { color: var(--og-ink-2) !important; }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip { @apply bg-surface text-ink shadow-card; }
+  .leaflet-popup-content-wrapper { @apply rounded-xl border border-line; }
+  .leaflet-popup-content { margin: 12px 14px; line-height: 1.5; }
+  .leaflet-tooltip.og-tip { @apply bg-ink text-bg border-0 rounded-[7px] px-[9px] py-[5px] shadow-none font-medium; }
+  .leaflet-tooltip.og-tip::before { display: none; }
+  /* Quiet the OSM basemap so boundaries read first; invert it for dark mode */
+  .og-map .leaflet-tile-pane { filter: grayscale(.55) contrast(.95) brightness(1.03); }
+  .og-map.og-map-dark .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) grayscale(.5) brightness(.82) contrast(.9); }
+  .og-map.og-picking .leaflet-container { cursor: crosshair; }
+}
