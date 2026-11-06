@@ -19,8 +19,8 @@ function Wordmark() {
                 <defs>
                     {/* User-space gradient so it spans exactly "OPEN GEO" (0 → ~470), like the logo */}
                     <linearGradient id="wm-brand" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="470" y2="0">
-                        <stop offset="0" stopColor="#43cdf2" />
-                        <stop offset="1" stopColor="#34e3a4" />
+                        <stop offset="0" className="[stop-color:var(--og-ink)]" />
+                        <stop offset="1" className="[stop-color:var(--og-ink-2)]" />
                     </linearGradient>
                     <linearGradient id="wm-ink" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0" className="[stop-color:var(--og-ink)]" stopOpacity="0.95" />
@@ -28,7 +28,7 @@ function Wordmark() {
                     </linearGradient>
                 </defs>
                 <text x="0" y="60" textLength="1000" lengthAdjust="spacing" className="font-display text-[83px] font-extrabold">
-                    <tspan fill="url(#wm-brand)">OPEN GEO</tspan> <tspan fill="url(#wm-ink)">CAMBODIA</tspan>
+                    <tspan fill="url(#wm-brand)">OPEN GEO</tspan> <tspan fill="none" strokeWidth={1.2} className="stroke-ink-2">CAMBODIA</tspan>
                 </text>
             </svg>
         </div>
@@ -47,7 +47,7 @@ function Column({ title, children }: { title: string; children: ReactNode }) {
 export function Footer() {
     const { t, rt } = useI18n();
     return (
-        <footer className="scheme-dark bg-bg pt-14 text-[13.5px] text-ink-3 dark:bg-[#04061a]">
+        <footer className="scheme-dark bg-bg pt-14 text-[13.5px] text-ink-3 dark:bg-[#030407]">
             <div className={wrap}>
                 <div className="grid grid-cols-1 gap-8 border-b border-line pb-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
                     <div>

@@ -23,17 +23,17 @@ export function SectionHead({ kicker: k, title, intro }: { kicker: string; title
 /* Section bands: alternating grounds give the page rhythm. */
 const pad = "py-20 sm:py-24";
 const section = pad;
-/** Logo navy, whichever theme the page is in (scheme-dark swaps the tokens for everything inside). */
-const navyBand = cx("scheme-dark relative overflow-hidden border-y border-line bg-bg dark:bg-[#04061a]", pad);
-/** Soft cyan → mint wash. */
+/** Inverted (black) band, whichever theme the page is in (scheme-dark swaps the tokens for everything inside). */
+const navyBand = cx("scheme-dark relative overflow-hidden border-y border-line bg-bg dark:bg-[#030407]", pad);
+/** Soft grey wash. */
 const washBand = cx("relative border-y border-line bg-[linear-gradient(135deg,var(--og-water-soft),var(--og-bg)_45%,var(--og-accent-soft))]", pad);
 
-/** Cyan and mint light pools for the navy band. */
+/** Soft white light pools for the black band. */
 function Glows() {
     return (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            <div className="absolute -left-40 -top-40 size-130 rounded-full bg-[#3ec6f0]/15 blur-3xl" />
-            <div className="absolute -bottom-48 -right-32 size-140 rounded-full bg-[#36e2a3]/12 blur-3xl" />
+            <div className="absolute -left-40 -top-40 size-130 rounded-full bg-white/[0.07] blur-3xl" />
+            <div className="absolute -bottom-48 -right-32 size-140 rounded-full bg-white/[0.05] blur-3xl" />
             <div className="bg-dot-grid absolute inset-0 opacity-40" />
         </div>
     );
@@ -188,22 +188,21 @@ export function Downloads() {
 export function Cta() {
     const { t } = useI18n();
     return (
-        // The logo's gradient as a full-bleed band, with navy type like the wordmark's ground.
-        // Fixed colours (not theme tokens): the band looks the same in light and dark mode.
-        <section className="relative overflow-hidden bg-[linear-gradient(120deg,#43cdf2_0%,#36e2a3_100%)] py-16 text-[#07102a] sm:py-20">
+        // Inverted ink band: black with white type in light mode, white with black type in dark mode.
+        <section className="relative overflow-hidden bg-ink py-16 text-bg sm:py-20">
             {/* Faint outline of Cambodia on the right */}
             <svg aria-hidden="true" viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} className="pointer-events-none absolute -right-24 top-1/2 h-[150%] -translate-y-1/2 opacity-[0.16] max-lg:hidden">
-                {PROVINCES.map((p) => <path key={p.code} d={p.d} className="fill-none stroke-[#07102a]" strokeWidth={2} vectorEffect="non-scaling-stroke" />)}
+                {PROVINCES.map((p) => <path key={p.code} d={p.d} className="fill-none stroke-bg" strokeWidth={2} vectorEffect="non-scaling-stroke" />)}
             </svg>
             <div className={cx(wrap, "relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]")}>
                 <div>
                     <h2 className="mb-2.5 mt-0 font-display text-[clamp(28px,3.4vw,40px)] font-bold leading-[1.12] tracking-[-.03em] km:font-khmer km:tracking-normal km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
-                    <p className="m-0 text-[#07102a]/75">{t("cta.body")}</p>
+                    <p className="m-0 opacity-70">{t("cta.body")}</p>
                 </div>
                 <div className="flex flex-wrap gap-3 lg:justify-end">
                     {/* Built from `btn` so colours don't conflict with the theme recipes */}
-                    <Link className={cx(btn, "bg-[#07102a] text-white shadow-[0_10px_24px_-12px_rgba(7,16,42,.6)] hover:bg-[#0c1a44]")} to="/docs">{t("cta.docs")} <Icon name="arrow" /></Link>
-                    <a className={cx(btn, "border-[#07102a]/30 bg-white/25 text-[#07102a] hover:border-[#07102a]/60 hover:bg-white/40")} href="/api/info" target="_blank" rel="noopener noreferrer">/api/info</a>
+                    <Link className={cx(btn, "bg-bg text-ink hover:opacity-90")} to="/docs">{t("cta.docs")} <Icon name="arrow" /></Link>
+                    <a className={cx(btn, "border-bg/30 bg-transparent text-bg hover:border-bg/70")} href="/api/info" target="_blank" rel="noopener noreferrer">/api/info</a>
                 </div>
             </div>
         </section>

@@ -132,7 +132,7 @@ export function HeroMap() {
                                 onClick={() => select(p)}
                                 className={cx(
                                     "cursor-pointer stroke-[1.1] transition-[fill,stroke] duration-300",
-                                    on ? "fill-accent/20 stroke-accent" : "fill-surface stroke-line-2 hover:fill-surface-2",
+                                    on ? "fill-accent/12 stroke-accent" : "fill-surface stroke-line-2 hover:fill-surface-2",
                                 )}
                             >
                                 <title>{lang === "km" ? `${p.km} · ${p.en}` : `${p.en} · ${p.km}`}</title>

@@ -26,11 +26,12 @@ export const sectionH2 = cx("m-0 font-display text-[clamp(28px,3.4vw,42px)] font
 export const docsH1 = cx("mb-4 font-display text-[clamp(36px,4.4vw,54px)] font-bold leading-[1.06] tracking-[-.035em] [&_em]:not-italic [&_em]:text-brand km:text-[clamp(32px,4vw,46px)]", khmerHeading);
 export const docsH2 = cx("mb-3.5 mt-16 pt-2 font-display text-[30px] font-bold leading-[1.15] tracking-[-.025em] max-sm:text-[26px] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
 
+/* Monochrome: levels differ by treatment (solid → filled → outlined → dashed) rather than hue */
 const LEVEL_COLORS: Record<Level, string> = {
-    province: "bg-accent-soft text-accent",
-    district: "bg-water-soft text-water",
-    commune: "bg-warn/15 text-warn",
-    village: "bg-ok/15 text-ok",
+    province: "bg-ink text-bg",
+    district: "bg-surface-3 text-ink",
+    commune: "border border-line-2 text-ink-2",
+    village: "border border-dashed border-line-2 text-ink-3",
 };
 export const lvl = (level: Level | string | undefined) =>
     cx(

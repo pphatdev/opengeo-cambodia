@@ -22,45 +22,46 @@
 /* ==========================================================================
    Design tokens — raw values switch with the theme; Tailwind maps onto them
    ========================================================================== */
-/* Palette from the logo: deep navy ground, a cyan → mint-green mark, white type.
-   Dark mode uses the logo colours as-is; light mode deepens them so text on white stays readable. */
+/* Colour concept from the live site (opengeo-cambodia.pphat.me): near-black #050507 ground, white type,
+   slate greys (#94a3b8 / #64748b) for secondary text, hairline white/8% borders, white as the accent and
+   emerald (#10b981) only for "live/ok". Dark mode is the concept itself; light mode is its mirror image. */
 :root {
-  --og-bg: #f3f6f9; --og-surface: #ffffff; --og-surface-2: #eaf0f4; --og-surface-3: #dde6ec;
-  --og-ink: #0a1430; --og-ink-2: #3d4b66; --og-ink-3: #6a788f; --og-line: #dae2ea; --og-line-2: #c3cfdb;
-  --og-accent: #0a8466; --og-accent-soft: #dcf5ec;
-  --og-water: #1876b8; --og-water-soft: #deeef9;
-  --og-ok: #1e8a55; --og-warn: #a86a12; --og-err: #c0362c;
-  --og-code-bg: #0a1028; --og-code-ink: #e3eaf5; --og-code-line: #1c2747;
-  --og-brand: linear-gradient(120deg, #0e8fc4 0%, #0a9e77 100%);
-  --og-shadow: 0 1px 2px rgba(10,20,48,.05), 0 8px 24px rgba(10,20,48,.07);
+  --og-bg: #fafafa; --og-surface: #ffffff; --og-surface-2: #f4f5f7; --og-surface-3: #eceef2;
+  --og-ink: #050507; --og-ink-2: #475569; --og-ink-3: #64748b; --og-line: #e2e8f0; --og-line-2: #cbd5e1;
+  --og-accent: #050507; --og-accent-soft: #eef0f3;
+  --og-water: #334155; --og-water-soft: #f1f3f6;
+  --og-ok: #059669; --og-warn: #b45309; --og-err: #dc2626;
+  --og-code-bg: #030407; --og-code-ink: #e2e8f0; --og-code-line: #1c1f2a;
+  --og-brand: linear-gradient(120deg, #050507 0%, #64748b 100%);
+  --og-shadow: 0 1px 2px rgba(5,5,7,.05), 0 10px 30px -5px rgba(5,5,7,.12);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --og-bg: #070b1f; --og-surface: #0c1330; --og-surface-2: #121a3b; --og-surface-3: #19234a;
-    --og-ink: #e9f1f8; --og-ink-2: #a8b5cb; --og-ink-3: #74839f; --og-line: #1c2749; --og-line-2: #2a3961;
-    --og-accent: #36e2a3; --og-accent-soft: #0d3b34; --og-water: #3ec6f0; --og-water-soft: #0d2e48;
-    --og-ok: #4fd18f; --og-warn: #e8b04e; --og-err: #f27a70;
-    --og-code-bg: #050818; --og-code-line: #18213f;
-    --og-brand: linear-gradient(120deg, #43cdf2 0%, #34e3a4 100%);
-    --og-shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.35);
+    --og-bg: #050507; --og-surface: #0f1117; --og-surface-2: #111420; --og-surface-3: #1a1d2b;
+    --og-ink: #f8fafc; --og-ink-2: #94a3b8; --og-ink-3: #64748b; --og-line: rgba(255,255,255,.08); --og-line-2: rgba(255,255,255,.15);
+    --og-accent: #ffffff; --og-accent-soft: rgba(255,255,255,.08); --og-water: #cbd5e1; --og-water-soft: rgba(255,255,255,.06);
+    --og-ok: #10b981; --og-warn: #fbbf24; --og-err: #f87171;
+    --og-code-bg: #030407; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
+    --og-brand: linear-gradient(120deg, #ffffff 0%, #94a3b8 100%);
+    --og-shadow: 0 10px 30px -5px rgba(0,0,0,.5);
     color-scheme: dark;
   }
 }
-/* `.scheme-dark` gives any section the dark palette regardless of the page theme (navy bands) */
+/* `.scheme-dark` gives any section the dark (concept) palette regardless of the page theme */
 :root[data-theme="dark"],
 .scheme-dark {
-  --og-bg: #070b1f; --og-surface: #0c1330; --og-surface-2: #121a3b; --og-surface-3: #19234a;
-  --og-ink: #e9f1f8; --og-ink-2: #a8b5cb; --og-ink-3: #74839f; --og-line: #1c2749; --og-line-2: #2a3961;
-  --og-accent: #36e2a3; --og-accent-soft: #0d3b34; --og-water: #3ec6f0; --og-water-soft: #0d2e48;
-  --og-ok: #4fd18f; --og-warn: #e8b04e; --og-err: #f27a70;
-  --og-code-bg: #050818; --og-code-line: #18213f;
-  --og-brand: linear-gradient(120deg, #43cdf2 0%, #34e3a4 100%);
-  --og-shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.35);
+  --og-bg: #050507; --og-surface: #0f1117; --og-surface-2: #111420; --og-surface-3: #1a1d2b;
+  --og-ink: #f8fafc; --og-ink-2: #94a3b8; --og-ink-3: #64748b; --og-line: rgba(255,255,255,.08); --og-line-2: rgba(255,255,255,.15);
+  --og-accent: #ffffff; --og-accent-soft: rgba(255,255,255,.08); --og-water: #cbd5e1; --og-water-soft: rgba(255,255,255,.06);
+  --og-ok: #10b981; --og-warn: #fbbf24; --og-err: #f87171;
+  --og-code-bg: #030407; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
+  --og-brand: linear-gradient(120deg, #ffffff 0%, #94a3b8 100%);
+  --og-shadow: 0 10px 30px -5px rgba(0,0,0,.5);
   color-scheme: dark;
 }
 
-/* Text inside a navy band must use the band's ink, not the inherited body colour */
+/* Text inside an inverted band must use the band's ink, not the inherited body colour */
 .scheme-dark { color: var(--og-ink); }
 
 /* `inline` keeps utilities pointing at the live variables, so they follow the theme */
@@ -89,15 +90,15 @@
 
 @theme {
   /* Code surfaces are always dark, in both themes */
-  --color-code-dim: #8a96b3;
-  --color-code-faint: #5d6a8a;
-  --color-code-hi: #f1f6fd;
-  --color-code-tab: #16203f;
-  --color-code-pill: #101a36;
-  --color-j-key: #7dd3fc;
-  --color-j-str: #86efac;
-  --color-j-num: #fcd38d;
-  --color-j-bool: #c4b5fd;
+  --color-code-dim: #94a3b8;
+  --color-code-faint: #64748b;
+  --color-code-hi: #f8fafc;
+  --color-code-tab: #161924;
+  --color-code-pill: #0d0f16;
+  --color-j-key: #f8fafc;
+  --color-j-str: #94a3b8;
+  --color-j-num: #cbd5e1;
+  --color-j-bool: #cbd5e1;
   --color-j-err: #f07167;
 
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -199,7 +200,7 @@
   .leaflet-tooltip.og-tip { @apply bg-ink text-bg border-0 rounded-[7px] px-2.25 py-1.25 shadow-none font-medium; }
   .leaflet-tooltip.og-tip::before { display: none; }
   /* Quiet the OSM basemap so boundaries read first; invert it for dark mode */
-  .og-map .leaflet-tile-pane { filter: grayscale(.55) contrast(.95) brightness(1.03); }
-  .og-map.og-map-dark .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) grayscale(.5) brightness(.82) contrast(.9); }
+  .og-map .leaflet-tile-pane { filter: grayscale(1) contrast(.92) brightness(1.04); }
+  .og-map.og-map-dark .leaflet-tile-pane { filter: grayscale(1) invert(1) brightness(.8) contrast(.9); }
   .og-map.og-picking .leaflet-container { cursor: crosshair; }
 }
