@@ -71,7 +71,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                     {isDocs ? (
                         <>
                             <span className="font-normal text-line-2">/</span>
-                            <span className="font-serif text-[21px] font-normal italic text-accent km:font-khmer km:text-base km:font-semibold km:not-italic">{t("nav.docs")}</span>
+                            <span className="font-display text-[13px] font-bold uppercase tracking-[.14em] text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal">{t("nav.docs")}</span>
                         </>
                     ) : (
                         <small className="rounded-full border border-line px-2 py-px text-xs font-medium text-ink-3 max-xs:hidden">v1</small>

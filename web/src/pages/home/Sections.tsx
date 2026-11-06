@@ -32,8 +32,8 @@ const washBand = cx("relative border-y border-line bg-[linear-gradient(135deg,va
 function Glows() {
     return (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            <div className="absolute -left-40 -top-40 size-[520px] rounded-full bg-[#3ec6f0]/15 blur-3xl" />
-            <div className="absolute -bottom-48 -right-32 size-[560px] rounded-full bg-[#36e2a3]/12 blur-3xl" />
+            <div className="absolute -left-40 -top-40 size-130 rounded-full bg-[#3ec6f0]/15 blur-3xl" />
+            <div className="absolute -bottom-48 -right-32 size-140 rounded-full bg-[#36e2a3]/12 blur-3xl" />
             <div className="bg-dot-grid absolute inset-0 opacity-40" />
         </div>
     );
@@ -197,7 +197,7 @@ export function Cta() {
             </svg>
             <div className={cx(wrap, "relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]")}>
                 <div>
-                    <h2 className="mb-2.5 mt-0 font-serif text-[clamp(32px,4vw,46px)] font-normal leading-[1.05] km:font-khmer km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
+                    <h2 className="mb-2.5 mt-0 font-display text-[clamp(28px,3.4vw,40px)] font-bold leading-[1.12] tracking-[-.03em] km:font-khmer km:tracking-normal km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
                     <p className="m-0 text-[#07102a]/75">{t("cta.body")}</p>
                 </div>
                 <div className="flex flex-wrap gap-3 lg:justify-end">

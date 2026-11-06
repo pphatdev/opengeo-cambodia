@@ -36,14 +36,14 @@ export function Hero() {
         <section className="relative overflow-hidden pb-12 pt-10 sm:pt-16">
             <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
             {/* Warm glow behind the map */}
-            <div className="pointer-events-none absolute -right-40 top-10 size-[640px] rounded-full bg-accent/10 blur-3xl max-lg:hidden" aria-hidden="true" />
+            <div className="pointer-events-none absolute -right-40 top-10 size-160 rounded-full bg-accent/10 blur-3xl max-lg:hidden" aria-hidden="true" />
 
             <div className={cx(wrap, "relative")}>
                 <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-14">
                     <div className="min-w-0">
-                        <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface py-[5px] pl-1.5 pr-3 text-[13px] font-medium text-ink-2">
+                        <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1.25 pl-1.5 pr-3 text-[13px] font-medium text-ink-2">
                             <span className="grid size-5 place-items-center rounded-full bg-accent-soft text-accent">
-                                <span className="size-[7px] rounded-full bg-current shadow-[0_0_0_3px_color-mix(in_srgb,currentColor_25%,transparent)]" />
+                                <span className="size-1.75 rounded-full bg-current shadow-[0_0_0_3px_color-mix(in_srgb,currentColor_25%,transparent)]" />
                             </span>
                             {t("hero.eyebrow")}
                         </span>
@@ -55,20 +55,20 @@ export function Hero() {
                         </div>
 
                         {/* One-line quickstart */}
-                        <div className="mt-6 flex max-w-[34rem] items-center gap-2 rounded-[10px] border border-code-line bg-code py-1.5 pl-3.5 pr-1.5 text-code-ink shadow-[0_12px_30px_-18px_rgba(0,0,0,.5)]">
-                            <code className="scrollbar-thin min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-[12.5px]">
+                        <div className="mt-6 flex max-w-136 items-center gap-2 rounded-[10px] border border-code-line bg-code py-1.5 pl-3.5 pr-1.5 text-code-ink shadow-[0_12px_30px_-18px_rgba(0,0,0,.5)]">
+                            <code className="scrollbar-thin min-w-0 flex-1 overflow-x-hidden whitespace-nowrap font-mono text-[12.5px]">
                                 <span className="select-none text-code-faint">$ </span>curl <span className="text-j-key">{PROD_ORIGIN}/api/admin/provinces</span>
                             </code>
                             <button
                                 type="button"
                                 onClick={() => copy(COMMAND)}
-                                className="inline-flex h-8 flex-none cursor-pointer items-center gap-1.5 rounded-md border-0 bg-code-tab px-2.5 text-xs font-medium text-code-hi hover:bg-[#30343b] km:font-khmer [&_svg]:size-[13px]"
+                                className="inline-flex h-8 flex-none cursor-pointer items-center gap-1.5 rounded-md border-0 bg-code-tab px-2.5 text-xs font-medium text-code-hi hover:bg-[#30343b] km:font-khmer [&_svg]:size-3.25"
                             >
                                 <Icon name="copy" />{t("common.copy")}
                             </button>
                         </div>
 
-                        <div className="mt-5 flex flex-wrap gap-[18px] text-[13px] text-ink-3 [&_svg]:size-[15px] [&_svg]:text-ok">
+                        <div className="mt-5 flex flex-wrap gap-4.5 text-[13px] text-ink-3 [&_svg]:size-3.75 [&_svg]:text-ok">
                             <span className="inline-flex items-center gap-1.5"><Icon name="check" />{t("hero.noSignup")}</span>
                             <span className="inline-flex items-center gap-1.5"><Icon name="check" />{t("hero.cors")}</span>
                             <span className="inline-flex items-center gap-1.5"><Icon name="check" />{t("hero.edge")}</span>
@@ -94,7 +94,7 @@ export function Hero() {
                                     <RollingNumber
                                         value={Number(stats?.[tier.stat] ?? tier.fallback)}
                                         stagger={90 + i * 15}
-                                        className="font-serif text-[38px] leading-none tracking-[-.02em] sm:text-[46px]"
+                                        className="font-display text-[34px] font-bold leading-none tracking-[-.03em] sm:text-[42px]"
                                     />
                                     <span className="min-w-0">
                                         <span className="block text-sm font-semibold">{lang === "km" ? tier.km : tier.en}</span>

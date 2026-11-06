@@ -17,14 +17,14 @@ export const iconBtn =
     "inline-grid size-9 cursor-pointer place-items-center rounded-[9px] border border-line bg-surface p-0 text-ink-2 hover:border-line-2 hover:text-ink [&_svg]:size-[17px]";
 
 export const kicker =
-    "mb-2.5 font-mono text-xs font-medium uppercase tracking-[.12em] text-accent km:font-khmer km:text-[13.5px] km:font-semibold km:normal-case km:tracking-normal";
+    "mb-3 font-display text-xs font-bold uppercase tracking-[.16em] text-accent km:font-khmer km:text-[13.5px] km:font-semibold km:normal-case km:tracking-normal";
 
-/** Serif display type; Khmer swaps to Kantumruy (no italics, taller lines). */
+/** Bold geometric display type (Montserrat, like the logo); Khmer swaps to Kantumruy with taller lines. */
 const khmerHeading = "km:font-khmer km:font-semibold km:tracking-normal km:leading-[1.4] km:[&_em]:not-italic";
-export const displayH1 = cx("my-5 font-serif text-[clamp(44px,6.2vw,76px)] font-normal leading-[1.02] tracking-[-.02em] [&_em]:text-brand km:text-[clamp(34px,4.8vw,56px)]", khmerHeading);
-export const sectionH2 = cx("m-0 font-serif text-[clamp(34px,4.2vw,50px)] font-normal leading-[1.05] tracking-[-.015em] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
-export const docsH1 = cx("mb-4 font-serif text-[clamp(42px,5vw,60px)] font-normal leading-[1.02] tracking-[-.02em] [&_em]:text-brand km:text-[clamp(32px,4vw,46px)]", khmerHeading);
-export const docsH2 = cx("mb-3.5 mt-16 pt-2 font-serif text-[36px] font-normal leading-[1.1] tracking-[-.01em] max-sm:text-[30px] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
+export const displayH1 = cx("my-5 font-display text-[clamp(38px,5.2vw,64px)] font-bold leading-[1.06] tracking-[-.035em] [&_em]:not-italic [&_em]:text-brand km:text-[clamp(34px,4.8vw,56px)]", khmerHeading);
+export const sectionH2 = cx("m-0 font-display text-[clamp(28px,3.4vw,42px)] font-bold leading-[1.12] tracking-[-.03em] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
+export const docsH1 = cx("mb-4 font-display text-[clamp(36px,4.4vw,54px)] font-bold leading-[1.06] tracking-[-.035em] [&_em]:not-italic [&_em]:text-brand km:text-[clamp(32px,4vw,46px)]", khmerHeading);
+export const docsH2 = cx("mb-3.5 mt-16 pt-2 font-display text-[30px] font-bold leading-[1.15] tracking-[-.025em] max-sm:text-[26px] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
 
 const LEVEL_COLORS: Record<Level, string> = {
     province: "bg-accent-soft text-accent",

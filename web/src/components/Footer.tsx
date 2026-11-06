@@ -12,19 +12,23 @@ import { wrap } from "./ui";
 function Wordmark() {
     return (
         <div className="pointer-events-none mt-12 select-none leading-none" aria-hidden="true">
-            <svg viewBox="0 0 1000 118" preserveAspectRatio="xMidYMax meet" focusable="false" className="block h-auto w-full overflow-visible">
+            {/* Set like the logo: Montserrat ExtraBold caps, "OPEN GEO" in the cyan → mint gradient, "CAMBODIA" in ink.
+                Sizes come from measuring the real font (100px → 1194.5 wide, cap height 70): at 83px the natural
+                width is ~991, so textLength only nudges the spacing and never squeezes glyphs together. */}
+            <svg viewBox="0 0 1000 62" preserveAspectRatio="xMidYMax meet" focusable="false" className="block h-auto w-full overflow-visible">
                 <defs>
-                    <linearGradient id="wm-ink" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" className="[stop-color:var(--og-ink)]" stopOpacity="0.9" />
-                        <stop offset="1" className="[stop-color:var(--og-ink)]" stopOpacity="0.06" />
+                    {/* User-space gradient so it spans exactly "OPEN GEO" (0 → ~470), like the logo */}
+                    <linearGradient id="wm-brand" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="470" y2="0">
+                        <stop offset="0" stopColor="#43cdf2" />
+                        <stop offset="1" stopColor="#34e3a4" />
                     </linearGradient>
-                    <linearGradient id="wm-accent" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" className="[stop-color:var(--og-accent)]" stopOpacity="1" />
-                        <stop offset="1" className="[stop-color:var(--og-accent)]" stopOpacity="0.1" />
+                    <linearGradient id="wm-ink" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" className="[stop-color:var(--og-ink)]" stopOpacity="0.95" />
+                        <stop offset="1" className="[stop-color:var(--og-ink)]" stopOpacity="0.55" />
                     </linearGradient>
                 </defs>
-                <text x="0" y="112" textLength="1000" lengthAdjust="spacing" fill="url(#wm-ink)" className="font-serif text-[136px] font-black tracking-[-.01em]">
-                    OPEN <tspan fill="url(#wm-accent)">GEO</tspan> CAMBODIA
+                <text x="0" y="60" textLength="1000" lengthAdjust="spacing" className="font-display text-[83px] font-extrabold">
+                    <tspan fill="url(#wm-brand)">OPEN GEO</tspan> <tspan fill="url(#wm-ink)">CAMBODIA</tspan>
                 </text>
             </svg>
         </div>
@@ -72,7 +76,7 @@ export function Footer() {
                     </Column>
                 </div>
                 <Wordmark />
-                <div className="flex flex-wrap justify-between gap-4 py-6 mb-5">
+                <div className="flex flex-wrap justify-between gap-4 py-6">
                     <span>{t("footer.builtBy")} <a className="text-ink-2" href="https://github.com/pphatdev" target="_blank" rel="noopener noreferrer">pphatdev</a></span>
                     <span className="font-khmer">{t("footer.tagline")}</span>
                 </div>

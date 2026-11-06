@@ -101,7 +101,8 @@
   --color-j-err: #f07167;
 
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Instrument Serif", "Times New Roman", serif;
+  /* Display face echoes the logo wordmark (bold geometric caps); Inter stays for reading */
+  --font-display: "Montserrat", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --font-khmer: "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS", sans-serif;
 
@@ -116,8 +117,12 @@
   body { @apply bg-bg text-ink font-sans text-[15px] leading-[1.6] antialiased; }
   /* Khmer script needs a Khmer face and taller lines */
   html[lang="km"] body { @apply font-khmer leading-[1.75]; }
-  :focus-visible { @apply outline-2 outline-offset-2 outline-accent rounded-[4px]; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-accent rounded-sm; }
   button, input, select { font: inherit; }
+  /* Typesetting: balanced headings, no orphans in paragraphs, crisp text */
+  h1, h2, h3 { text-wrap: balance; }
+  p, li, figcaption { text-wrap: pretty; }
+  body { text-rendering: optimizeLegibility; font-optical-sizing: auto; }
   img { max-width: 100%; }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
@@ -130,7 +135,7 @@
 
 /* Inline markup inside translated text (rendered from <code>, <a>, <strong>) */
 @utility rich {
-  & code { @apply font-mono text-[0.87em] bg-surface-2 border border-line px-[5px] py-px rounded-[5px] text-ink whitespace-nowrap; }
+  & code { @apply font-mono text-[0.87em] bg-surface-2 border border-line px-1.25 py-px rounded-[5px] text-ink whitespace-nowrap; }
   & a { @apply text-accent underline-offset-[3px]; }
   & strong { @apply text-ink font-semibold; }
 }
@@ -167,7 +172,7 @@
   animation: og-fade-up 380ms cubic-bezier(.22, 1, .36, 1) both;
 }
 
-/* Logo gradient as text fill; small right padding keeps italic overhang from clipping */
+/* Logo gradient as text fill (the small right padding stops the last glyph's edge being clipped) */
 @utility text-brand {
   background-image: var(--og-brand);
   -webkit-background-clip: text;
@@ -191,7 +196,7 @@
   .leaflet-popup-content-wrapper, .leaflet-popup-tip { @apply bg-surface text-ink shadow-card; }
   .leaflet-popup-content-wrapper { @apply rounded-xl border border-line; }
   .leaflet-popup-content { margin: 12px 14px; line-height: 1.5; }
-  .leaflet-tooltip.og-tip { @apply bg-ink text-bg border-0 rounded-[7px] px-[9px] py-[5px] shadow-none font-medium; }
+  .leaflet-tooltip.og-tip { @apply bg-ink text-bg border-0 rounded-[7px] px-2.25 py-1.25 shadow-none font-medium; }
   .leaflet-tooltip.og-tip::before { display: none; }
   /* Quiet the OSM basemap so boundaries read first; invert it for dark mode */
   .og-map .leaflet-tile-pane { filter: grayscale(.55) contrast(.95) brightness(1.03); }
