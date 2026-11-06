@@ -7,7 +7,7 @@
     "nodejs_compat"
   ],
   "assets": {
-    "directory": "./public",
+    "directory": "./dist/client",
     "binding": "ASSETS"
   },
   "routes": [

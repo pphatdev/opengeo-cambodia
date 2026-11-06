@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Variants
+   ========================================================================== */
+
+/* Dark mode follows the theme toggle (data-theme) and falls back to the OS setting */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+/* Khmer UI: `km:font-khmer` etc. Applies when <html lang="km"> */
+@custom-variant km (&:where(:root[lang="km"], :root[lang="km"] *));
+
+/* ==========================================================================
+   Design tokens — raw values switch with the theme; Tailwind maps onto them
+   ========================================================================== */
+/* Colour concept from the live site (opengeo-cambodia.pphat.me): near-black #050507 ground, white type,
+   slate greys (#94a3b8 / #64748b) for secondary text, hairline white/8% borders, white as the accent and
+   emerald (#10b981) only for "live/ok". Dark mode is the concept itself; light mode is its mirror image. */
+:root {
+  --og-bg: #fafafa; --og-surface: #ffffff; --og-surface-2: #f4f5f7; --og-surface-3: #eceef2;
+  --og-ink: #050507; --og-ink-2: #475569; --og-ink-3: #64748b; --og-line: #e2e8f0; --og-line-2: #cbd5e1;
+  --og-accent: #050507; --og-accent-soft: #eef0f3;
+  --og-water: #334155; --og-water-soft: #f1f3f6;
+  --og-ok: #059669; --og-warn: #b45309; --og-err: #dc2626;
+  --og-code-bg: #030407; --og-code-ink: #e2e8f0; --og-code-line: #1c1f2a;
+  --og-brand: linear-gradient(120deg, #050507 0%, #64748b 100%);
+  --og-shadow: 0 1px 2px rgba(5,5,7,.05), 0 10px 30px -5px rgba(5,5,7,.12);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --og-bg: #050507; --og-surface: #0f1117; --og-surface-2: #111420; --og-surface-3: #1a1d2b;
+    --og-ink: #f8fafc; --og-ink-2: #94a3b8; --og-ink-3: #64748b; --og-line: rgba(255,255,255,.08); --og-line-2: rgba(255,255,255,.15);
+    --og-accent: #ffffff; --og-accent-soft: rgba(255,255,255,.08); --og-water: #cbd5e1; --og-water-soft: rgba(255,255,255,.06);
+    --og-ok: #10b981; --og-warn: #fbbf24; --og-err: #f87171;
+    --og-code-bg: #030407; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
+    --og-brand: linear-gradient(120deg, #ffffff 0%, #94a3b8 100%);
+    --og-shadow: 0 10px 30px -5px rgba(0,0,0,.5);
+    color-scheme: dark;
+  }
+}
+/* `.scheme-dark` gives any section the dark (concept) palette regardless of the page theme */
+:root[data-theme="dark"],
+.scheme-dark {
+  --og-bg: #050507; --og-surface: #0f1117; --og-surface-2: #111420; --og-surface-3: #1a1d2b;
+  --og-ink: #f8fafc; --og-ink-2: #94a3b8; --og-ink-3: #64748b; --og-line: rgba(255,255,255,.08); --og-line-2: rgba(255,255,255,.15);
+  --og-accent: #ffffff; --og-accent-soft: rgba(255,255,255,.08); --og-water: #cbd5e1; --og-water-soft: rgba(255,255,255,.06);
+  --og-ok: #10b981; --og-warn: #fbbf24; --og-err: #f87171;
+  --og-code-bg: #030407; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
+  --og-brand: linear-gradient(120deg, #ffffff 0%, #94a3b8 100%);
+  --og-shadow: 0 10px 30px -5px rgba(0,0,0,.5);
+  color-scheme: dark;
+}
+
+/* Text inside an inverted band must use the band's ink, not the inherited body colour */
+.scheme-dark { color: var(--og-ink); }
+
+/* `inline` keeps utilities pointing at the live variables, so they follow the theme */
+@theme inline {
+  --color-bg: var(--og-bg);
+  --color-surface: var(--og-surface);
+  --color-surface-2: var(--og-surface-2);
+  --color-surface-3: var(--og-surface-3);
+  --color-ink: var(--og-ink);
+  --color-ink-2: var(--og-ink-2);
+  --color-ink-3: var(--og-ink-3);
+  --color-line: var(--og-line);
+  --color-line-2: var(--og-line-2);
+  --color-accent: var(--og-accent);
+  --color-accent-soft: var(--og-accent-soft);
+  --color-water: var(--og-water);
+  --color-water-soft: var(--og-water-soft);
+  --color-ok: var(--og-ok);
+  --color-warn: var(--og-warn);
+  --color-err: var(--og-err);
+  --color-code: var(--og-code-bg);
+  --color-code-ink: var(--og-code-ink);
+  --color-code-line: var(--og-code-line);
+  --shadow-card: var(--og-shadow);
+}
+
+@theme {
+  /* Code surfaces are always dark, in both themes */
+  --color-code-dim: #94a3b8;
+  --color-code-faint: #64748b;
+  --color-code-hi: #f8fafc;
+  --color-code-tab: #161924;
+  --color-code-pill: #0d0f16;
+  --color-j-key: #f8fafc;
+  --color-j-str: #94a3b8;
+  --color-j-num: #cbd5e1;
+  --color-j-bool: #cbd5e1;
+  --color-j-err: #f07167;
+
+  /* Ubuntu for reading and UI text, as on the live site; Montserrat for display (echoes the logo wordmark) */
+  --font-sans: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Montserrat", "Ubuntu", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-khmer: "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS", sans-serif;
+
+  --breakpoint-xs: 27.5rem; /* 440px */
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body { @apply bg-bg text-ink font-sans text-[15px] leading-[1.6] antialiased; }
+  /* Khmer script needs a Khmer face and taller lines */
+  html[lang="km"] body { @apply font-khmer leading-[1.75]; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-accent rounded-sm; }
+  button, input, select { font: inherit; }
+  /* Typesetting: balanced headings, no orphans in paragraphs, crisp text */
+  h1, h2, h3 { text-wrap: balance; }
+  p, li, figcaption { text-wrap: pretty; }
+  body { text-rendering: optimizeLegibility; font-optical-sizing: auto; }
+  img { max-width: 100%; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+}
+
+/* ==========================================================================
+   Utilities that Tailwind can't express as one class
+   ========================================================================== */
+
+/* Inline markup inside translated text (rendered from <code>, <a>, <strong>) */
+@utility rich {
+  & code { @apply font-mono text-[0.87em] bg-surface-2 border border-line px-1.25 py-px rounded-[5px] text-ink whitespace-nowrap; }
+  & a { @apply text-accent underline-offset-[3px]; }
+  & strong { @apply text-ink font-semibold; }
+}
+
+/* Dotted map-paper texture behind the hero */
+@utility bg-dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--og-line) 1px, transparent 0);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 70% 30%, #000 20%, transparent 75%);
+}
+
+/* Popover open animation (uses the standalone scale property so it never fights transforms) */
+@keyframes og-pop {
+  from { opacity: 0; scale: .97; }
+}
+@utility animate-pop {
+  animation: og-pop 120ms ease-out;
+}
+
+/* Hero map: active province rises off the page and stays lifted */
+@keyframes og-lift {
+  from { opacity: 0; scale: .97; }
+  to { opacity: 1; scale: 1.025; }
+}
+@utility animate-lift {
+  animation: og-lift 650ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Content swap inside a card that is itself sliding */
+@keyframes og-fade-up {
+  from { opacity: 0; translate: 0 4px; }
+}
+@utility animate-fade-up {
+  animation: og-fade-up 380ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Logo gradient as text fill (the small right padding stops the last glyph's edge being clipped) */
+@utility text-brand {
+  background-image: var(--og-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-right: .06em;
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+/* ==========================================================================
+   Third-party DOM (Leaflet) — not rendered by React, so it's styled here
+   ========================================================================== */
+@layer components {
+  .leaflet-container { @apply font-sans text-[13px] bg-surface-2; }
+  .leaflet-bar a { background: var(--og-surface) !important; color: var(--og-ink) !important; border-color: var(--og-line) !important; }
+  .leaflet-control-attribution { background: color-mix(in srgb, var(--og-surface) 85%, transparent) !important; color: var(--og-ink-3) !important; }
+  .leaflet-control-attribution a { color: var(--og-ink-2) !important; }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip { @apply bg-surface text-ink shadow-card; }
+  .leaflet-popup-content-wrapper { @apply rounded-xl border border-line; }
+  .leaflet-popup-content { margin: 12px 14px; line-height: 1.5; }
+  .leaflet-tooltip.og-tip { @apply bg-ink text-bg border-0 rounded-[7px] px-2.25 py-1.25 shadow-none font-medium; }
+  .leaflet-tooltip.og-tip::before { display: none; }
+  /* Quiet the OSM basemap so boundaries read first; invert it for dark mode */
+  .og-map .leaflet-tile-pane { filter: grayscale(1) contrast(.92) brightness(1.04); }
+  .og-map.og-map-dark .leaflet-tile-pane { filter: grayscale(1) invert(1) brightness(.8) contrast(.9); }
+  .og-map.og-picking .leaflet-container { cursor: crosshair; }
+}

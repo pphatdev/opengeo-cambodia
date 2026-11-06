@@ -1,96 +1,139 @@
-# OpenGeo Cambodia API - Full LLM & Agent Documentation
+# OpenGeo Cambodia API — full reference
 
-> An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with ultra-fast sub-millisecond response times.
-> Comprehensive developer and AI agent reference manual for the OpenGeo Cambodia REST API.
+> Free, keyless, read-only REST API for Cambodia's administrative geography: 25 provinces, 210 districts, 1,661 communes and 14,576 villages (16,472 places) with official NCDD codes, Khmer and English names, GeoJSON boundaries and geocoding.
 
----
+Generated 2026-11-06 from the API itself: the endpoint list comes from the Postman collection and every example response below is a real response captured in-process. The short index is at https://opengeo-cambodia.pphat.me/llms.txt.
 
-## 1. Project Purpose & Core Capabilities
+## Essentials
 
-OpenGeo Cambodia is an open API built specifically for Cambodia's geography and administrative divisions. Its mission is defined by three core pillars:
+- **Base URL:** `https://opengeo-cambodia.pphat.me` (local development: `http://localhost:3000`).
+- **Auth:** none. No API key, no signup. CORS is open, so browsers can call it directly.
+- **User-Agent required:** requests without a `User-Agent` header get `403` `{"success":false,"error":"Access Denied: Missing User-Agent header."}`. Browsers send one automatically; set it explicitly in scripts and agent tools.
+- **Methods:** GET only. Other methods return `405`.
+- **Formats:** JSON (UTF-8, Khmer script included). Boundary geometry is GeoJSON (`application/geo+json`).
+- **Speed:** administrative and boundary data is served from memory and edge-cached; typical server time is under 1 ms (see the `X-Response-Time` header). Geocoding calls OpenStreetMap Nominatim and is slower.
 
-1. **Complete Administrative Hierarchy**: Full, authoritative coverage of all 4 official tiers: **25 Provinces & Capital**, **210 Districts, Khans & Krongs**, **1,661 Communes & Sangkats**, and **14,576 Villages**.
-2. **Allow Users to Use for Free**: 100% free, public, and open access for everyone. No API keys, no paywalls, zero usage costs, and fully MIT-licensed for commercial and non-commercial systems.
-3. **Provide Fast Response Time**: Ultra-low latency sub-millisecond ($< 1\text{ms}$) in-memory lookups powered by O(1) hash map indices and edge caching without database bottlenecks.
+### Rate limits (per IP, rolling 1-minute window)
 
-### Primary Architecture
-1. **In-Memory Administrative Store (`AdminStore`)**:
-   - Contains all official Cambodian administrative divisions: **25 Provinces**, **210 Districts**, **1,661 Communes**, and **14,576 Villages**.
-   - Officially sourced from the Ministry of Economy and Finance Open Data Portal ([https://data.mef.gov.kh/](https://data.mef.gov.kh/)).
-   - Sub-millisecond ($< 1\text{ms}$) response times served directly from memory indices without external network dependencies.
-   - Dual-language support: Official Khmer script (`name_km`) and Latin Romanization (`name_en`).
-2. **Normalized Smart Geocoding (`GeocodeService`)**:
-   - Reverse geocodes GPS coordinates (`lat`, `lon`) through OpenStreetMap Nominatim.
-   - Normalizes varied OSM tagging conventions (`admin_level`, `suburb`, `quarter`, `municipality`, `county`) into Cambodia's strict 4-tier administrative hierarchy.
+| Endpoints | Limit |
+| --- | --- |
+| `/api/admin/*`, `/api/boundaries/*` | 10,000 / min |
+| `/api/admin/search` | 120 / min |
+| `/api/geocode/*` | 30 / min (OpenStreetMap Nominatim fair use) |
+| other `/api/*` | 5,000 / min |
 
----
+Every response carries `X-RateLimit-Limit`, `X-RateLimit-Remaining` and `X-RateLimit-Reset` (Unix seconds); a `429` means wait until the reset time.
+Administrative and boundary responses are cacheable for a year (`Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable, stale-while-revalidate=86400`) and carry an `ETag`; send `If-None-Match` to get `304 Not Modified`.
 
-## 2. Cambodian Administrative Hierarchy Model
+## Data model
 
-Cambodia's official administrative structure adheres to four distinct levels:
+Cambodia has four administrative levels. Every place has an official NCDD **code** whose leading digits are its parents' codes, so a code alone tells you its whole ancestry.
 
-| Tier | Level Name | Cambodian (KM) | Latin Romanization | Count | Code Format | Hierarchy Example |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Tier 1** | Province / Capital | រាជធានី / ខេត្ត | Reachdhanie / Khaet | **25** | 2 digits (`12`) | Phnom Penh (`12`) |
-| **Tier 2** | District / Khan / Krong | ស្រុក / ខណ្ឌ / ក្រុង | Srok / Khan / Krong | **210** | 4 digits (`1202`) | Doun Penh (`1202`) |
-| **Tier 3** | Commune / Sangkat | ឃុំ / សង្កាត់ | Khum / Sangkat | **1,661** | 6 digits (`120201`) | Phsar Thmei 1 (`120201`) |
-| **Tier 4** | Village | ភូមិ | Phum | **14,576** | 8 digits (`12020101`) | Phum 1 (`12020101`) |
+| Level | Khmer types | Code digits | Count | Boundary polygons |
+| --- | --- | --- | --- | --- |
+| province | រាជធានី (capital), ខេត្ត | 2 | 25 | 25 |
+| district | ក្រុង, ស្រុក, ខណ្ឌ | 4 | 210 | 197 |
+| commune | ឃុំ, សង្កាត់ | 6 | 1,661 | 1,633 |
+| village | ភូមិ | 8 | 14,576 | none (no polygons) |
 
-### Key Domain Rules
-1. **ID Hierarchical Prefix Inheritance**:
-   - A District's 4-digit code starts with its parent Province's 2-digit code (e.g., Province `12` -> District `1202`).
-   - A Commune's 6-digit code starts with its parent District's 4-digit code (e.g., District `1202` -> Commune `120201`).
-   - A Village's 8-digit code starts with its parent Commune's 6-digit code (e.g., Commune `120201` -> Village `12020101`).
-2. **Administrative Types**:
-   - **Capital (រាជធានី)**: Phnom Penh (single capital).
-   - **Provinces (ខេត្ត)**: 24 provinces (e.g., Siem Reap, Kandal, Battambang, Kampot).
-   - **Khan (ខណ្ឌ)**: Urban municipal subdivisions inside Phnom Penh (14 Khans).
-   - **Krong (ក្រុង)**: Urban municipal cities outside Phnom Penh (32 Krongs, e.g., Krong Siem Reap).
-   - **Srok (ស្រុក)**: Rural districts (164 Sroks).
-   - **Sangkat (សង្កាត់)**: Urban communes inside Khans and Krongs.
-   - **Khum (ឃុំ)**: Rural communes inside Sroks.
-   - **Phum (ភូមិ)**: Villages (the smallest administrative unit).
+A real chain, from `GET /api/admin/hierarchy/12010101`:
 
----
+- province `12`: Phnom Penh (រាជធានីភ្នំពេញ; type រាជធានី)
+- district `1201`: Chamkar Mon (ចំការមន; type ខណ្ឌ)
+- commune `120101`: Tonle Basak (ទន្លេបាសាក់; type សង្កាត់)
+- village `12010101`: Phum Muoy (ភូមិ ១; type ភូមិ)
 
-## 3. Network & Connection Details
+**id vs code.** Admin endpoints (`/api/admin/*`) use the numeric **id**, which is the code without leading zeros (commune code `070203` → id `70203`). Boundary endpoints (`/api/boundaries/*`) use the zero-padded **code** (`070203`); P-codes like `KH070203` are also accepted.
 
-- **Production Base URL**: `https://opengeo-cambodia.pphat.me`
-- **Local Development URL**: `http://localhost:3000`
-- **Default Port**: `3000`
-- **Protocols**: HTTPS (HTTP/1.1 and HTTP/2 supported)
-- **CORS**: `Access-Control-Allow-Origin: *` enabled for all origins with `GET` and `OPTIONS`
-- **ETag Support**: Generates standard HTTP `ETag` headers. Clients can pass `If-None-Match` to receive `304 Not Modified`
-- **Rate Limits**:
-  - Administrative routes (`/api/admin/*`): `120` requests per minute per IP.
-  - Geocoding routes (`/api/geocode/*`): `30` requests per minute per IP.
-  - Response headers include: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, `Retry-After`.
+### AdminItem (every `/api/admin` record)
 
----
+| Field | Type | Notes |
+| --- | --- | --- |
+| `id` | number | Numeric code; use it in admin URLs. |
+| `code` | string | Official NCDD code, zero-padded (2/4/6/8 digits). |
+| `name`, `name_en` | string | Romanised name (`name` mirrors `name_en`). |
+| `name_km` | string | Khmer script name. |
+| `level` | `province` \| `district` \| `commune` \| `village` | |
+| `typeKm` | string | Khmer unit type, e.g. `ខេត្ត`, `ខណ្ឌ`, `សង្កាត់`, `ភូមិ`. |
+| `parentId` | number? | Parent's id; absent on provinces. |
+| `lat`, `lon` | number? | Approximate centroid, where available (provinces always). |
 
-## 4. Complete REST API Endpoint Reference
+Records also contain internal search fields starting with `_` (`_normEn`, `_normKm`, `_normName`). Ignore them; they are not part of the contract. They are omitted from the examples below.
 
-### 4.1. List All Provinces
-Returns all 25 provinces and the capital city of Cambodia.
+### Boundary feature properties
 
-- **Method**: `GET`
-- **Path**: `/api/admin/provinces`
-- **Query Parameters**: None
-- **Response Format**:
+`code`, `pcode` (`KH` + code), `name_en`, `name_km`, `type_km`, `level`, `province_code` / `province_name_en` / `province_name_km`, `district_code` / `district_name_en` / `district_name_km` (communes), `lat`, `lon` (centroid), `bbox` (`[minLon, minLat, maxLon, maxLat]`), `shape_length`, `shape_area`. `format=summary` returns these properties without geometry.
+
+### GeocodeResult (geocoding endpoints)
+
+`displayName` (full address, often Khmer), `lat`, `lon`, `hierarchy` (`{ province, district, commune, village, country }`, missing levels are `null`), `osmId`, `osmType`, `type`, `importance`, `rawAddress` (unmodified Nominatim address). Display "© OpenStreetMap contributors" when you show these results.
+
+## Responses and errors
+
+JSON endpoints wrap results in an envelope: `{ "success": true, "data": …, "meta"?: { "total", "source" } }`. GeoJSON endpoints return a bare `Feature` or `FeatureCollection` (no envelope) unless you ask for `format=summary`.
+
+Errors use `{ "success": false, "data": null, "error": "…" }`. Real examples:
+
+- Invalid id → `400` `{"success":false,"data":null,"error":"Invalid ID format. Must be a positive integer."}`
+- Unknown id → `404` `{"success":false,"data":null,"error":"Item not found"}`
+- Invalid level → `400` `{"success":false,"data":null,"error":"Invalid 'level' parameter. Allowed values: province, district, commune, village"}`
+
+| Status | Meaning |
+| --- | --- |
+| 200 | Success |
+| 304 | Not modified (you sent a matching `If-None-Match`) |
+| 400 | Invalid parameter: non-numeric id, unknown `level`, `q` too long, malformed coordinates |
+| 403 | Missing `User-Agent` header |
+| 404 | No place or boundary with that id/code |
+| 405 | Method other than GET |
+| 429 | Rate limit exceeded; wait for `X-RateLimit-Reset` |
+| 502/503 | Geocoding upstream (Nominatim) unavailable |
+
+## Endpoints
+
+### Administrative
+
+The four-tier hierarchy as flat JSON records, without geometry. These are the endpoints for forms, address validation and lookups.
+
+All responses use the `{ success, data, meta? }` envelope. Ids are numeric (e.g. 12 / 1201 / 120101 / 12010101).
+
+**Rate limits:** 10,000 requests/min per IP for `/api/admin/*`, except `/api/admin/search` which is limited to 120 requests/min per IP.
+
+#### List provinces
+
+`GET /api/admin/provinces`
+
+All 25 provinces and the capital, sorted by code.
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/admin/provinces`
+
+Response `200` (`application/json`); arrays are cut to the first 2 items (of 25), internal `_norm*` search fields are omitted:
+
 ```json
 {
   "success": true,
   "data": [
     {
-      "id": 12,
-      "code": "12",
-      "name": "Phnom Penh",
-      "name_en": "Phnom Penh",
-      "name_km": "រាជធានីភ្នំពេញ",
-      "typeKm": "រាជធានី",
+      "id": 1,
+      "code": "01",
+      "name": "Banteay Meanchey",
+      "name_en": "Banteay Meanchey",
+      "name_km": "បន្ទាយមានជ័យ",
       "level": "province",
-      "lat": 11.5564,
-      "lon": 104.9282
+      "lat": 13.6672,
+      "lon": 102.8975,
+      "typeKm": "ខេត្ត"
+    },
+    {
+      "id": 2,
+      "code": "02",
+      "name": "Battambang",
+      "name_en": "Battambang",
+      "name_km": "បាត់ដំបង",
+      "level": "province",
+      "lat": 13.0957,
+      "lon": 103.2022,
+      "typeKm": "ខេត្ត"
     }
   ],
   "meta": {
@@ -101,30 +144,43 @@ Returns all 25 provinces and the capital city of Cambodia.
 }
 ```
 
----
+#### List districts of a province
 
-### 4.2. List Districts within a Province
-Returns all districts, khans, or krongs belonging to a specific province.
+`GET /api/admin/provinces/:id/districts`
 
-- **Method**: `GET`
-- **Path**: `/api/admin/provinces/:id/districts`
-- **Path Parameters**:
-  - `id` (integer, required): Province ID (e.g. `12` for Phnom Penh, `17` for Siem Reap).
-- **Validation**: `:id` must be a positive integer ($1-9$ digits).
-- **Response Format**:
+Districts, khans and krongs belonging to a province.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `id` | path | required | Province id (e.g. 12 for Phnom Penh). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/admin/provinces/12/districts`
+
+Response `200` (`application/json`); arrays are cut to the first 2 items (of 14), internal `_norm*` search fields are omitted:
+
 ```json
 {
   "success": true,
   "data": [
+    {
+      "id": 1201,
+      "code": "1201",
+      "parentId": 12,
+      "name": "Chamkar Mon",
+      "name_en": "Chamkar Mon",
+      "name_km": "ចំការមន",
+      "level": "district",
+      "typeKm": "ខណ្ឌ"
+    },
     {
       "id": 1202,
       "code": "1202",
       "parentId": 12,
       "name": "Doun Penh",
       "name_en": "Doun Penh",
-      "name_km": "ខណ្ឌដូនពេញ",
-      "typeKm": "ខណ្ឌ",
-      "level": "district"
+      "name_km": "ដូនពេញ",
+      "level": "district",
+      "typeKm": "ខណ្ឌ"
     }
   ],
   "meta": {
@@ -135,172 +191,225 @@ Returns all districts, khans, or krongs belonging to a specific province.
 }
 ```
 
----
+#### List communes of a district
 
-### 4.3. List Communes within a District
-Returns all communes or sangkats belonging to a specific district.
+`GET /api/admin/districts/:id/communes`
 
-- **Method**: `GET`
-- **Path**: `/api/admin/districts/:id/communes`
-- **Path Parameters**:
-  - `id` (integer, required): District ID (e.g. `1202` for Doun Penh).
-- **Validation**: `:id` must be a positive integer ($1-9$ digits).
-- **Response Format**:
+Communes and sangkats belonging to a district.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `id` | path | required | District id (e.g. 1201). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/admin/districts/1201/communes`
+
+Response `200` (`application/json`); arrays are cut to the first 2 items (of 5), internal `_norm*` search fields are omitted:
+
 ```json
 {
   "success": true,
   "data": [
     {
-      "id": 120201,
-      "code": "120201",
-      "parentId": 1202,
-      "name": "Phsar Thmei 1",
-      "name_en": "Phsar Thmei 1",
-      "name_km": "សង្កាត់ផ្សារថ្មីទី១",
-      "typeKm": "សង្កាត់",
-      "level": "commune"
+      "id": 120101,
+      "code": "120101",
+      "parentId": 1201,
+      "name": "Tonle Basak",
+      "name_en": "Tonle Basak",
+      "name_km": "ទន្លេបាសាក់",
+      "level": "commune",
+      "typeKm": "សង្កាត់"
+    },
+    {
+      "id": 120109,
+      "code": "120109",
+      "parentId": 1201,
+      "name": "Tuol Tumpung Ti Pir",
+      "name_en": "Tuol Tumpung Ti Pir",
+      "name_km": "ទួលទំពូងទី ២",
+      "level": "commune",
+      "typeKm": "សង្កាត់"
     }
   ],
   "meta": {
-    "total": 11,
+    "total": 5,
     "timestamp": "2026-10-27T00:00:00.000Z",
     "source": "local_cache"
   }
 }
 ```
 
----
+#### List villages of a commune
 
-### 4.4. List Villages within a Commune
-Returns all villages (phums) belonging to a specific commune.
+`GET /api/admin/communes/:id/villages`
 
-- **Method**: `GET`
-- **Path**: `/api/admin/communes/:id/villages`
-- **Path Parameters**:
-  - `id` (integer, required): Commune ID (e.g. `120201` for Phsar Thmei 1).
-- **Validation**: `:id` must be a positive integer ($1-9$ digits).
-- **Response Format**:
+Villages (phum) belonging to a commune.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `id` | path | required | Commune id (e.g. 120101). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/admin/communes/120101/villages`
+
+Response `200` (`application/json`); arrays are cut to the first 2 items (of 16), internal `_norm*` search fields are omitted:
+
 ```json
 {
   "success": true,
   "data": [
     {
-      "id": 12020101,
-      "code": "12020101",
-      "parentId": 120201,
-      "name": "Phum 1",
-      "name_en": "Phum 1",
-      "name_km": "ភូមិ១",
-      "typeKm": "ភូមិ",
-      "level": "village"
+      "id": 12010101,
+      "code": "12010101",
+      "parentId": 120101,
+      "name": "Phum Muoy",
+      "name_en": "Phum Muoy",
+      "name_km": "ភូមិ ១",
+      "level": "village",
+      "typeKm": "ភូមិ"
+    },
+    {
+      "id": 12010102,
+      "code": "12010102",
+      "parentId": 120101,
+      "name": "Phum Pir",
+      "name_en": "Phum Pir",
+      "name_km": "ភូមិ ២",
+      "level": "village",
+      "typeKm": "ភូមិ"
     }
   ],
   "meta": {
-    "total": 3,
+    "total": 16,
     "timestamp": "2026-10-27T00:00:00.000Z",
     "source": "local_cache"
   }
 }
 ```
 
----
+#### Get a place
 
-### 4.5. Single Item Lookup by ID
-Retrieves details of any single administrative division by its ID.
+`GET /api/admin/item/:id`
 
-- **Method**: `GET`
-- **Path**: `/api/admin/item/:id`
-- **Path Parameters**:
-  - `id` (integer, required): Administrative division ID.
-- **Response Format (200 OK)**:
+A single record at any level, looked up by id. Returns 404 if the id does not exist.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `id` | path | required | Id at any level (province, district, commune or village). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/admin/item/1201`
+
+Response `200` (`application/json`); internal `_norm*` search fields are omitted:
+
 ```json
 {
   "success": true,
   "data": {
-    "id": 1202,
-    "code": "1202",
+    "id": 1201,
+    "code": "1201",
     "parentId": 12,
-    "name": "Doun Penh",
-    "name_en": "Doun Penh",
-    "name_km": "ខណ្ឌដូនពេញ",
-    "typeKm": "ខណ្ឌ",
-    "level": "district"
+    "name": "Chamkar Mon",
+    "name_en": "Chamkar Mon",
+    "name_km": "ចំការមន",
+    "level": "district",
+    "typeKm": "ខណ្ឌ"
   }
 }
 ```
 
----
+#### Resolve full path
 
-### 4.6. Resolve Ascending Hierarchy Tree
-Given any division ID (e.g., a village ID or commune ID), returns the complete ascending hierarchy: Province -> District -> Commune -> Village.
+`GET /api/admin/hierarchy/:id`
 
-- **Method**: `GET`
-- **Path**: `/api/admin/hierarchy/:id`
-- **Path Parameters**:
-  - `id` (integer, required): Any administrative division ID.
-- **Response Format**:
+Returns the place and all its ancestors as an object keyed by level. Use it to render a full address from a single stored id.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `id` | path | required | Id at any level (e.g. village 12010101). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/admin/hierarchy/12010101`
+
+Response `200` (`application/json`); internal `_norm*` search fields are omitted:
+
 ```json
 {
   "success": true,
   "data": {
+    "village": {
+      "id": 12010101,
+      "code": "12010101",
+      "parentId": 120101,
+      "name": "Phum Muoy",
+      "name_en": "Phum Muoy",
+      "name_km": "ភូមិ ១",
+      "level": "village",
+      "typeKm": "ភូមិ"
+    },
+    "commune": {
+      "id": 120101,
+      "code": "120101",
+      "parentId": 1201,
+      "name": "Tonle Basak",
+      "name_en": "Tonle Basak",
+      "name_km": "ទន្លេបាសាក់",
+      "level": "commune",
+      "typeKm": "សង្កាត់"
+    },
+    "district": {
+      "id": 1201,
+      "code": "1201",
+      "parentId": 12,
+      "name": "Chamkar Mon",
+      "name_en": "Chamkar Mon",
+      "name_km": "ចំការមន",
+      "level": "district",
+      "typeKm": "ខណ្ឌ"
+    },
     "province": {
       "id": 12,
       "code": "12",
       "name": "Phnom Penh",
       "name_en": "Phnom Penh",
       "name_km": "រាជធានីភ្នំពេញ",
-      "level": "province"
-    },
-    "district": {
-      "id": 1202,
-      "code": "1202",
-      "name": "Doun Penh",
-      "name_en": "Doun Penh",
-      "name_km": "ខណ្ឌដូនពេញ",
-      "level": "district"
-    },
-    "commune": {
-      "id": 120201,
-      "code": "120201",
-      "name": "Phsar Thmei 1",
-      "name_en": "Phsar Thmei 1",
-      "name_km": "សង្កាត់ផ្សារថ្មីទី១",
-      "level": "commune"
-    },
-    "village": {
-      "id": 12020101,
-      "code": "12020101",
-      "name": "Phum 1",
-      "name_en": "Phum 1",
-      "name_km": "ភូមិ១",
-      "level": "village"
+      "level": "province",
+      "lat": 11.5564,
+      "lon": 104.9282,
+      "typeKm": "រាជធានី"
     }
   }
 }
 ```
 
----
+#### Search places
 
-### 4.7. Fast In-Memory Administrative Search
-Performs instant text search across Khmer script, Latin romanizations, and division IDs.
+`GET /api/admin/search`
 
-- **Method**: `GET`
-- **Path**: `/api/admin/search`
-- **Query Parameters**:
-  - `q` (string, required): Search query string (maximum 100 characters).
-  - `level` (string, optional): Filter by tier (`province`, `district`, `commune`, `village`).
-  - `limit` (integer, optional): Maximum results ($1-100$, default: `20`).
-- **Response Format**:
+Matches Khmer or English names, ignoring case, spaces and accents. Exact and prefix matches rank first.
+
+Rate limit: 120 requests/min per IP. An empty `q` returns an empty list.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `q` | query | required | Search text, up to 50 characters. |
+| `level` | query | optional | Restrict to one level: `province`, `district`, `commune` or `village`. |
+| `limit` | query | optional | Results to return, 1-100. Default 20. |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/admin/search?q=siem%20reap&limit=5`
+
+Response `200` (`application/json`); internal `_norm*` search fields are omitted:
+
 ```json
 {
   "success": true,
   "data": [
     {
-      "id": 1202,
-      "name_en": "Doun Penh",
-      "name_km": "ខណ្ឌដូនពេញ",
-      "level": "district",
-      "parentId": 12
+      "id": 17,
+      "code": "17",
+      "name": "Siemreap",
+      "name_en": "Siemreap",
+      "name_km": "សៀមរាប",
+      "level": "province",
+      "lat": 13.3671,
+      "lon": 103.8448,
+      "typeKm": "ខេត្ត"
     }
   ],
   "meta": {
@@ -311,14 +420,16 @@ Performs instant text search across Khmer script, Latin romanizations, and divis
 }
 ```
 
----
+#### Dataset statistics
 
-### 4.8. Summary Statistics
-Returns the record counts of all loaded administrative divisions.
+`GET /api/admin/stats`
 
-- **Method**: `GET`
-- **Path**: `/api/admin/stats`
-- **Response Format**:
+Record counts per level and the last data sync time.
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/admin/stats`
+
+Response `200` (`application/json`):
+
 ```json
 {
   "success": true,
@@ -327,229 +438,1107 @@ Returns the record counts of all loaded administrative divisions.
     "districts": 210,
     "communes": 1661,
     "villages": 14576,
+    "total": 16472,
     "lastSyncAt": "2026-10-27T00:00:00.000Z"
   }
 }
 ```
 
----
+### Boundaries
 
-### 4.9. Reverse Geocode (GPS to Cambodian Address)
-Converts latitude and longitude into normalized Cambodian administrative components.
+Polygons for provinces, districts and communes. List endpoints return GeoJSON by default (`application/geo+json`). Add `format=summary` to get lightweight JSON with centroids and bounding boxes but no coordinates. Boundary endpoints take the zero-padded code (e.g. `070203`), not the numeric id; PCODEs such as `KH12` are also accepted.
 
-- **Method**: `GET`
-- **Path**: `/api/geocode/reverse`
-- **Query Parameters**:
-  - `lat` (float, required): Latitude between `-90.0` and `90.0` (Cambodia is roughly `10.0` to `14.7`).
-  - `lon` (float, required): Longitude between `-180.0` and `180.0` (Cambodia is roughly `102.3` to `107.6`).
-- **Response Format**:
+**Rate limit:** 10,000 requests/min per IP.
+
+#### Query boundaries
+
+`GET /api/boundaries`
+
+Filter boundaries at any level. Without level it returns provinces. Supports pagination with limit and offset.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `level` | query | optional | `province`, `district` or `commune`. Defaults to province. |
+| `province_code` | query | optional | Only children of this province. `provinceCode` is accepted as an alias. |
+| `district_code` | query | optional | Only children of this district. `districtCode` is accepted as an alias. |
+| `code` | query | optional | Exact code match (e.g. `12`, `1201`, `120101`). |
+| `q` | query | optional | Name filter (Khmer or English). `search` is accepted as an alias. |
+| `format` | query | optional | `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`. |
+| `limit` | query | optional | Max features to return. |
+| `offset` | query | optional | Skip this many features (pagination). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries?level=district&province_code=12&limit=3`
+
+Response `200` (`application/geo+json`); arrays are cut to the first 2 items (of 3), geometry coordinates are abbreviated:
+
 ```json
 {
-  "success": true,
-  "data": {
-    "displayName": "Doun Penh, Phnom Penh, 120201, Cambodia",
-    "province": "Phnom Penh",
-    "district": "Doun Penh",
-    "commune": "Voat Phnum",
-    "village": null,
-    "postcode": "120201",
-    "lat": 11.5714,
-    "lon": 104.9250,
-    "osmId": 1234567,
-    "osmType": "relation"
+  "type": "FeatureCollection",
+  "name": "cambodia_district_boundaries",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
   },
-  "meta": {
-    "tookMs": 142.5,
-    "timestamp": "2026-10-27T00:00:00.000Z",
-    "source": "nominatim"
-  }
+  "bbox": [
+    102.3,
+    10.4,
+    107.7,
+    14.7
+  ],
+  "features": [
+    {
+      "type": "Feature",
+      "id": 1201,
+      "properties": {
+        "id": 1201,
+        "code": "1201",
+        "pcode": "KH1201",
+        "name": "Chamkar Mon",
+        "name_en": "Chamkar Mon",
+        "name_km": "ចំការមន",
+        "type_km": "ខណ្ឌ",
+        "level": "district",
+        "province_code": "12",
+        "province_name_en": "Phnom Penh",
+        "province_name_km": "រាជធានីភ្នំពេញ",
+        "lat": 11.541901,
+        "lon": 104.924774,
+        "bbox": [
+          104.898071,
+          11.525696,
+          104.951477,
+          11.558105
+        ],
+        "shape_length": 0.140871782778,
+        "shape_area": 0.000915726653145,
+        "date": "2014/10/14",
+        "validOn": "2018/10/04"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": "<1,196 bytes of coordinates>"
+      },
+      "bbox": [
+        104.898071,
+        11.525696,
+        104.951477,
+        11.558105
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 1212,
+      "properties": {
+        "id": 1212,
+        "code": "1212",
+        "pcode": "KH1212",
+        "name": "Preaek Pnov",
+        "name_en": "Preaek Pnov",
+        "name_km": "ព្រែកព្នៅ",
+        "type_km": "ខណ្ឌ",
+        "level": "district",
+        "province_code": "12",
+        "province_name_en": "Phnom Penh",
+        "province_name_km": "រាជធានីភ្នំពេញ",
+        "lat": 11.509796,
+        "lon": 104.990387,
+        "bbox": [
+          104.931702,
+          11.461487,
+          105.049072,
+          11.558105
+        ],
+        "shape_length": 0.379720025453,
+        "shape_area": 0.00719093530996,
+        "date": "2014/10/14",
+        "validOn": "2018/10/04"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": "<3,071 bytes of coordinates>"
+      },
+      "bbox": [
+        104.931702,
+        11.461487,
+        105.049072,
+        11.558105
+      ]
+    }
+  ]
 }
 ```
 
----
+#### Province boundaries
 
-### 4.10. Free-text Geocoding Search
-Performs free-text search bounded strictly to Cambodia's geographical boundaries.
+`GET /api/boundaries/provinces`
 
-- **Method**: `GET`
-- **Path**: `/api/geocode/search`
-- **Query Parameters**:
-  - `q` (string, required): Place or landmark name (maximum 100 characters).
-  - `limit` (integer, optional): Maximum results ($1-50$, default: `10`).
-- **Response Format**:
+All 25 province polygons (about 1 MB as GeoJSON). Use format=summary for centroids and bounding boxes only.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `format` | query | optional | `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`. |
+| `q` | query | optional | Name filter (Khmer or English). `search` is accepted as an alias. |
+| `code` | query | optional | Exact code match (e.g. `12`, `1201`, `120101`). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/provinces?format=summary`
+
+Response `200` (`application/json`); arrays are cut to the first 2 items (of 25):
+
 ```json
 {
   "success": true,
   "data": [
     {
-      "displayName": "Angkor Wat, Siem Reap, Cambodia",
-      "province": "Siem Reap",
-      "district": "Siem Reap",
-      "commune": "Nokor Thum",
-      "village": null,
-      "postcode": "171201",
-      "lat": 13.4125,
-      "lon": 103.8670
+      "id": 1,
+      "code": "01",
+      "pcode": "KH01",
+      "name": "Banteay Meanchey",
+      "name_en": "Banteay Meanchey",
+      "name_km": "បន្ទាយមានជ័យ",
+      "type_km": "ខេត្ត",
+      "level": "province",
+      "province_code": "01",
+      "province_name_en": "Banteay Meanchey",
+      "province_name_km": "បន្ទាយមានជ័យ",
+      "lat": 13.6672,
+      "lon": 102.8975,
+      "bbox": [
+        102.3349,
+        13.358521,
+        103.442322,
+        14.250305
+      ],
+      "shape_length": 4.3257240538,
+      "shape_area": 0.51355572794
+    },
+    {
+      "id": 2,
+      "code": "02",
+      "pcode": "KH02",
+      "name": "Battambang",
+      "name_en": "Battambang",
+      "name_km": "បាត់ដំបង",
+      "type_km": "ខេត្ត",
+      "level": "province",
+      "province_code": "02",
+      "province_name_en": "Battambang",
+      "province_name_km": "បាត់ដំបង",
+      "lat": 13.0957,
+      "lon": 103.2022,
+      "bbox": [
+        102.345276,
+        12.371521,
+        103.772095,
+        13.479492
+      ],
+      "shape_length": 5.78071443863,
+      "shape_area": 0.988874539761
     }
   ],
   "meta": {
-    "total": 1,
-    "tookMs": 180.2,
-    "timestamp": "2026-10-27T00:00:00.000Z",
-    "source": "nominatim"
+    "total": 25,
+    "source": "local_cache"
   }
 }
 ```
 
----
+#### One province boundary
 
-### 4.11. Geographic Boundaries API (GeoJSON & GIS Integration)
-Serves official boundary polygons (Provinces, Districts, Communes) as standardized GeoJSON (`FeatureCollection` / `Feature`) or lightweight metadata lists (`format=summary`). Every feature is enriched with Khmer script names (`name_km`), NCDD administrative codes (`code`), PCODEs (`pcode`), administrative types (`type_km`), and pre-calculated 2D bounding boxes (`bbox`).
+`GET /api/boundaries/provinces/:code`
 
-#### 4.11.1. Flexible Boundaries Query
-- **Method**: `GET`
-- **Path**: `/api/boundaries`
-- **Query Parameters**:
-  - `level` (string, optional): Boundary tier (`province`, `district`, `commune`, default: `province`).
-  - `province_code` (string, optional): Filter by parent province code (e.g. `12` or `KH12`).
-  - `district_code` (string, optional): Filter by parent district code (e.g. `1201` or `KH1201`).
-  - `code` (string, optional): Exact code match (e.g. `12`, `1201`, `120101`).
-  - `q` / `search` (string, optional): Search query matching English or Khmer script names.
-  - `format` (string, optional): `geojson` (default, returns GeoJSON `FeatureCollection`) or `summary` / `list` (returns lightweight JSON list without heavy coordinates).
-  - `limit` (integer, optional): Maximum features to return.
-  - `offset` (integer, optional): Pagination offset.
+A single province Feature.
 
-#### 4.11.2. Shortcut Endpoints
-- `GET /api/boundaries/provinces`: All 25 province boundaries.
-- `GET /api/boundaries/districts?province_code=12`: District boundaries within a province.
-- `GET /api/boundaries/communes?district_code=1201`: Commune boundaries within a district.
-- `GET /api/boundaries/item/:code`: Lookup single boundary by code (e.g. `12` or `KH12`).
-- `GET /api/boundaries/hierarchy/:code`: Ascending nested boundary polygons (Commune -> District -> Province).
-- `GET /api/boundaries/stats`: Feature counts and Cambodia bounding box.
-- `GET /api/boundaries/raw/:filename`: Direct file download for `provinces.geojson`, `districts.geojson`, and `communes.geojson`.
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `code` | path | required | Province code (e.g. 12 or KH12). |
+| `format` | query | optional | `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`. |
 
----
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/provinces/12`
 
-### 4.12. Health Check & Diagnostics
-Used by container orchestrators, load balancers, and uptime monitors.
+Response `200` (`application/geo+json`); geometry coordinates are abbreviated:
 
-- **Method**: `GET`
-- **Path**: `/health`
-- **Response Format (200 OK)**:
+```json
+{
+  "type": "Feature",
+  "id": 12,
+  "properties": {
+    "id": 12,
+    "code": "12",
+    "pcode": "KH12",
+    "name": "Phnom Penh",
+    "name_en": "Phnom Penh",
+    "name_km": "រាជធានីភ្នំពេញ",
+    "type_km": "រាជធានី",
+    "level": "province",
+    "province_code": "12",
+    "province_name_en": "Phnom Penh",
+    "province_name_km": "រាជធានីភ្នំពេញ",
+    "lat": 11.5564,
+    "lon": 104.9282,
+    "bbox": [
+      104.712708,
+      11.421509,
+      105.049072,
+      11.736511
+    ],
+    "shape_length": 1.45685991518,
+    "shape_area": 0.0567541588326,
+    "date": "2014/10/14",
+    "validOn": "2018/10/04"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": "<13,039 bytes of coordinates>"
+  },
+  "bbox": [
+    104.712708,
+    11.421509,
+    105.049072,
+    11.736511
+  ]
+}
+```
+
+#### District boundaries
+
+`GET /api/boundaries/districts`
+
+District polygons, usually filtered by province.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `province_code` | query | optional | Parent province code. `provinceCode` is accepted as an alias. |
+| `code` | query | optional | Exact code match (e.g. `12`, `1201`, `120101`). |
+| `q` | query | optional | Name filter (Khmer or English). `search` is accepted as an alias. |
+| `format` | query | optional | `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`. |
+| `limit` | query | optional | Max features to return. |
+| `offset` | query | optional | Skip this many features (pagination). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/districts?province_code=12`
+
+Response `200` (`application/geo+json`); arrays are cut to the first 2 items (of 12), geometry coordinates are abbreviated:
+
+```json
+{
+  "type": "FeatureCollection",
+  "name": "cambodia_district_boundaries",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "bbox": [
+    102.3,
+    10.4,
+    107.7,
+    14.7
+  ],
+  "features": [
+    {
+      "type": "Feature",
+      "id": 1201,
+      "properties": {
+        "id": 1201,
+        "code": "1201",
+        "pcode": "KH1201",
+        "name": "Chamkar Mon",
+        "name_en": "Chamkar Mon",
+        "name_km": "ចំការមន",
+        "type_km": "ខណ្ឌ",
+        "level": "district",
+        "province_code": "12",
+        "province_name_en": "Phnom Penh",
+        "province_name_km": "រាជធានីភ្នំពេញ",
+        "lat": 11.541901,
+        "lon": 104.924774,
+        "bbox": [
+          104.898071,
+          11.525696,
+          104.951477,
+          11.558105
+        ],
+        "shape_length": 0.140871782778,
+        "shape_area": 0.000915726653145,
+        "date": "2014/10/14",
+        "validOn": "2018/10/04"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": "<1,196 bytes of coordinates>"
+      },
+      "bbox": [
+        104.898071,
+        11.525696,
+        104.951477,
+        11.558105
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 1212,
+      "properties": {
+        "id": 1212,
+        "code": "1212",
+        "pcode": "KH1212",
+        "name": "Preaek Pnov",
+        "name_en": "Preaek Pnov",
+        "name_km": "ព្រែកព្នៅ",
+        "type_km": "ខណ្ឌ",
+        "level": "district",
+        "province_code": "12",
+        "province_name_en": "Phnom Penh",
+        "province_name_km": "រាជធានីភ្នំពេញ",
+        "lat": 11.509796,
+        "lon": 104.990387,
+        "bbox": [
+          104.931702,
+          11.461487,
+          105.049072,
+          11.558105
+        ],
+        "shape_length": 0.379720025453,
+        "shape_area": 0.00719093530996,
+        "date": "2014/10/14",
+        "validOn": "2018/10/04"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": "<3,071 bytes of coordinates>"
+      },
+      "bbox": [
+        104.931702,
+        11.461487,
+        105.049072,
+        11.558105
+      ]
+    }
+  ]
+}
+```
+
+#### One district boundary
+
+`GET /api/boundaries/districts/:code`
+
+A single district Feature.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `code` | path | required | District code (e.g. 1201 or KH1201). |
+| `format` | query | optional | `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`. |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/districts/1201`
+
+Response `200` (`application/geo+json`); geometry coordinates are abbreviated:
+
+```json
+{
+  "type": "Feature",
+  "id": 1201,
+  "properties": {
+    "id": 1201,
+    "code": "1201",
+    "pcode": "KH1201",
+    "name": "Chamkar Mon",
+    "name_en": "Chamkar Mon",
+    "name_km": "ចំការមន",
+    "type_km": "ខណ្ឌ",
+    "level": "district",
+    "province_code": "12",
+    "province_name_en": "Phnom Penh",
+    "province_name_km": "រាជធានីភ្នំពេញ",
+    "lat": 11.541901,
+    "lon": 104.924774,
+    "bbox": [
+      104.898071,
+      11.525696,
+      104.951477,
+      11.558105
+    ],
+    "shape_length": 0.140871782778,
+    "shape_area": 0.000915726653145,
+    "date": "2014/10/14",
+    "validOn": "2018/10/04"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": "<1,196 bytes of coordinates>"
+  },
+  "bbox": [
+    104.898071,
+    11.525696,
+    104.951477,
+    11.558105
+  ]
+}
+```
+
+#### Commune boundaries
+
+`GET /api/boundaries/communes`
+
+Commune polygons, filtered by district or province.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `district_code` | query | optional | Parent district code. `districtCode` is accepted as an alias. |
+| `province_code` | query | optional | Parent province code. `provinceCode` is accepted as an alias. |
+| `code` | query | optional | Exact code match (e.g. `12`, `1201`, `120101`). |
+| `q` | query | optional | Name filter (Khmer or English). `search` is accepted as an alias. |
+| `format` | query | optional | `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`. |
+| `limit` | query | optional | Max features to return. |
+| `offset` | query | optional | Skip this many features (pagination). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/communes?district_code=1201`
+
+Response `200` (`application/geo+json`); arrays are cut to the first 2 items (of 12), geometry coordinates are abbreviated:
+
+```json
+{
+  "type": "FeatureCollection",
+  "name": "cambodia_commune_boundaries",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "bbox": [
+    102.3,
+    10.4,
+    107.7,
+    14.7
+  ],
+  "features": [
+    {
+      "type": "Feature",
+      "id": 120104,
+      "properties": {
+        "id": 120104,
+        "code": "120104",
+        "pcode": "KH120104",
+        "name": "Boeng Keng Kang Ti Bei",
+        "name_en": "Boeng Keng Kang Ti Bei",
+        "name_km": "",
+        "type_km": "ឃុំ",
+        "level": "commune",
+        "district_code": "1201",
+        "district_name_en": "Chamkar Mon",
+        "district_name_km": "ចំការមន",
+        "province_code": "12",
+        "province_name_en": "Phnom Penh",
+        "province_name_km": "រាជធានីភ្នំពេញ",
+        "lat": 11.547424,
+        "lon": 104.917999,
+        "bbox": [
+          104.913696,
+          11.542725,
+          104.922302,
+          11.552124
+        ],
+        "shape_length": 0.030586849455,
+        "shape_area": 0.0000623911631543,
+        "date": "2014/10/14",
+        "validOn": "2018/10/04"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": "<272 bytes of coordinates>"
+      },
+      "bbox": [
+        104.913696,
+        11.542725,
+        104.922302,
+        11.552124
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 120102,
+      "properties": {
+        "id": 120102,
+        "code": "120102",
+        "pcode": "KH120102",
+        "name": "Boeng Keng Kang Ti Muoy",
+        "name_en": "Boeng Keng Kang Ti Muoy",
+        "name_km": "",
+        "type_km": "ឃុំ",
+        "level": "commune",
+        "district_code": "1201",
+        "district_name_en": "Chamkar Mon",
+        "district_name_km": "ចំការមន",
+        "province_code": "12",
+        "province_name_en": "Phnom Penh",
+        "province_name_km": "រាជធានីភ្នំពេញ",
+        "lat": 11.550507,
+        "lon": 104.924194,
+        "bbox": [
+          104.919495,
+          11.544495,
+          104.928894,
+          11.556519
+        ],
+        "shape_length": 0.0381941181077,
+        "shape_area": 0.0000840034329615,
+        "date": "2014/10/14",
+        "validOn": "2018/10/04"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": "<394 bytes of coordinates>"
+      },
+      "bbox": [
+        104.919495,
+        11.544495,
+        104.928894,
+        11.556519
+      ]
+    }
+  ]
+}
+```
+
+#### One commune boundary
+
+`GET /api/boundaries/communes/:code`
+
+A single commune Feature.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `code` | path | required | Commune code, zero-padded (e.g. 120101, 070203). |
+| `format` | query | optional | `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`. |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/communes/120101`
+
+Response `200` (`application/geo+json`); geometry coordinates are abbreviated:
+
+```json
+{
+  "type": "Feature",
+  "id": 120101,
+  "properties": {
+    "id": 120101,
+    "code": "120101",
+    "pcode": "KH120101",
+    "name": "Tonle Basak",
+    "name_en": "Tonle Basak",
+    "name_km": "ទន្លេបាសាក់",
+    "type_km": "សង្កាត់",
+    "level": "commune",
+    "district_code": "1201",
+    "district_name_en": "Chamkar Mon",
+    "district_name_km": "ចំការមន",
+    "province_code": "12",
+    "province_name_en": "Phnom Penh",
+    "province_name_km": "រាជធានីភ្នំពេញ",
+    "lat": 11.544189,
+    "lon": 104.93689,
+    "bbox": [
+      104.922302,
+      11.530273,
+      104.951477,
+      11.558105
+    ],
+    "shape_length": 0.0960253137179,
+    "shape_area": 0.00037795864885,
+    "date": "2014/10/14",
+    "validOn": "2018/10/04"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": "<679 bytes of coordinates>"
+  },
+  "bbox": [
+    104.922302,
+    11.530273,
+    104.951477,
+    11.558105
+  ]
+}
+```
+
+#### Boundary by any code
+
+`GET /api/boundaries/item/:code`
+
+Detects the level from the code length. Handy when you don't know the level in advance.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `code` | path | required | Any province, district or commune code. |
+| `format` | query | optional | `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`. |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/item/1201`
+
+Response `200` (`application/geo+json`); geometry coordinates are abbreviated:
+
+```json
+{
+  "type": "Feature",
+  "id": 1201,
+  "properties": {
+    "id": 1201,
+    "code": "1201",
+    "pcode": "KH1201",
+    "name": "Chamkar Mon",
+    "name_en": "Chamkar Mon",
+    "name_km": "ចំការមន",
+    "type_km": "ខណ្ឌ",
+    "level": "district",
+    "province_code": "12",
+    "province_name_en": "Phnom Penh",
+    "province_name_km": "រាជធានីភ្នំពេញ",
+    "lat": 11.541901,
+    "lon": 104.924774,
+    "bbox": [
+      104.898071,
+      11.525696,
+      104.951477,
+      11.558105
+    ],
+    "shape_length": 0.140871782778,
+    "shape_area": 0.000915726653145,
+    "date": "2014/10/14",
+    "validOn": "2018/10/04"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": "<1,196 bytes of coordinates>"
+  },
+  "bbox": [
+    104.898071,
+    11.525696,
+    104.951477,
+    11.558105
+  ]
+}
+```
+
+#### Boundary by any code (shortcut)
+
+`GET /api/boundaries/:code`
+
+Shortcut for `/api/boundaries/item/:code`: single boundary lookup by any province, district or commune code (e.g. 12, KH12, 1201, 120101).
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `code` | path | required | Any province, district or commune code. |
+| `format` | query | optional | `geojson` (default, raw GeoJSON) or `summary` (lightweight `{ success, data }` JSON with centroids and bounding boxes, no coordinates). `list` is accepted as an alias of `summary`. |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/120101`
+
+Response `200` (`application/geo+json`); geometry coordinates are abbreviated:
+
+```json
+{
+  "type": "Feature",
+  "id": 120101,
+  "properties": {
+    "id": 120101,
+    "code": "120101",
+    "pcode": "KH120101",
+    "name": "Tonle Basak",
+    "name_en": "Tonle Basak",
+    "name_km": "ទន្លេបាសាក់",
+    "type_km": "សង្កាត់",
+    "level": "commune",
+    "district_code": "1201",
+    "district_name_en": "Chamkar Mon",
+    "district_name_km": "ចំការមន",
+    "province_code": "12",
+    "province_name_en": "Phnom Penh",
+    "province_name_km": "រាជធានីភ្នំពេញ",
+    "lat": 11.544189,
+    "lon": 104.93689,
+    "bbox": [
+      104.922302,
+      11.530273,
+      104.951477,
+      11.558105
+    ],
+    "shape_length": 0.0960253137179,
+    "shape_area": 0.00037795864885,
+    "date": "2014/10/14",
+    "validOn": "2018/10/04"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": "<679 bytes of coordinates>"
+  },
+  "bbox": [
+    104.922302,
+    11.530273,
+    104.951477,
+    11.558105
+  ]
+}
+```
+
+#### Boundary with ancestors
+
+`GET /api/boundaries/hierarchy/:code`
+
+The Feature for a code plus its parent district and province Features, keyed by level. Returned inside the `{ success, data }` envelope.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `code` | path | required | Commune or district code. |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/hierarchy/120101`
+
+Response `200` (`application/json`); geometry coordinates are abbreviated:
+
+```json
+{
+  "success": true,
+  "data": {
+    "commune": {
+      "type": "Feature",
+      "id": 120101,
+      "properties": {
+        "id": 120101,
+        "code": "120101",
+        "pcode": "KH120101",
+        "name": "Tonle Basak",
+        "name_en": "Tonle Basak",
+        "name_km": "ទន្លេបាសាក់",
+        "type_km": "សង្កាត់",
+        "level": "commune",
+        "district_code": "1201",
+        "district_name_en": "Chamkar Mon",
+        "district_name_km": "ចំការមន",
+        "province_code": "12",
+        "province_name_en": "Phnom Penh",
+        "province_name_km": "រាជធានីភ្នំពេញ",
+        "lat": 11.544189,
+        "lon": 104.93689,
+        "bbox": [
+          104.922302,
+          11.530273,
+          104.951477,
+          11.558105
+        ],
+        "shape_length": 0.0960253137179,
+        "shape_area": 0.00037795864885,
+        "date": "2014/10/14",
+        "validOn": "2018/10/04"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": "<679 bytes of coordinates>"
+      },
+      "bbox": [
+        104.922302,
+        11.530273,
+        104.951477,
+        11.558105
+      ]
+    },
+    "district": {
+      "type": "Feature",
+      "id": 1201,
+      "properties": {
+        "id": 1201,
+        "code": "1201",
+        "pcode": "KH1201",
+        "name": "Chamkar Mon",
+        "name_en": "Chamkar Mon",
+        "name_km": "ចំការមន",
+        "type_km": "ខណ្ឌ",
+        "level": "district",
+        "province_code": "12",
+        "province_name_en": "Phnom Penh",
+        "province_name_km": "រាជធានីភ្នំពេញ",
+        "lat": 11.541901,
+        "lon": 104.924774,
+        "bbox": [
+          104.898071,
+          11.525696,
+          104.951477,
+          11.558105
+        ],
+        "shape_length": 0.140871782778,
+        "shape_area": 0.000915726653145,
+        "date": "2014/10/14",
+        "validOn": "2018/10/04"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": "<1,196 bytes of coordinates>"
+      },
+      "bbox": [
+        104.898071,
+        11.525696,
+        104.951477,
+        11.558105
+      ]
+    },
+    "province": {
+      "type": "Feature",
+      "id": 12,
+      "properties": {
+        "id": 12,
+        "code": "12",
+        "pcode": "KH12",
+        "name": "Phnom Penh",
+        "name_en": "Phnom Penh",
+        "name_km": "រាជធានីភ្នំពេញ",
+        "type_km": "រាជធានី",
+        "level": "province",
+        "province_code": "12",
+        "province_name_en": "Phnom Penh",
+        "province_name_km": "រាជធានីភ្នំពេញ",
+        "lat": 11.5564,
+        "lon": 104.9282,
+        "bbox": [
+          104.712708,
+          11.421509,
+          105.049072,
+          11.736511
+        ],
+        "shape_length": 1.45685991518,
+        "shape_area": 0.0567541588326,
+        "date": "2014/10/14",
+        "validOn": "2018/10/04"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": "<13,039 bytes of coordinates>"
+      },
+      "bbox": [
+        104.712708,
+        11.421509,
+        105.049072,
+        11.736511
+      ]
+    }
+  }
+}
+```
+
+#### Boundary statistics
+
+`GET /api/boundaries/stats`
+
+Polygon counts per level, the national bounding box and the data source.
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/stats`
+
+Response `200` (`application/json`):
+
+```json
+{
+  "success": true,
+  "data": {
+    "provinces": 25,
+    "districts": 197,
+    "communes": 1633,
+    "total": 1855,
+    "levels": [
+      "province",
+      "district",
+      "commune"
+    ],
+    "bbox": [
+      102.3,
+      10.4,
+      107.7,
+      14.7
+    ],
+    "isLoaded": true,
+    "source": "Department of Geography, Ministry of Land Management, Urban Planning and Construction / MEF Open Data"
+  }
+}
+```
+
+#### Download raw GeoJSON
+
+`GET /api/boundaries/raw/:filename`
+
+The full source file as an attachment (`Content-Disposition: attachment`). Large download.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `filename` | path | required | provinces.geojson, districts.geojson or communes.geojson (singular forms also accepted). |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/boundaries/raw/provinces.geojson`
+
+### Geocoding
+
+Address lookups backed by OpenStreetMap Nominatim, normalised into Cambodia's hierarchy and cached for a week.
+
+**Rate limit:** 30 requests/min per IP (respects OSM usage policy).
+
+#### Reverse geocode
+
+`GET /api/geocode/reverse`
+
+Turn coordinates into an address mapped to Cambodia's hierarchy. Returns 400 for missing/invalid coordinates, 404 if nothing is found, 503 if the upstream service is unavailable.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `lat` | query | required | Latitude, decimal degrees [-90, 90]. |
+| `lon` | query | required | Longitude, decimal degrees [-180, 180]. |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/geocode/reverse?lat=11.5564&lon=104.9282`
+
+Response: `data` is a GeocodeResult (search: an array of them). See the data model above.
+
+#### Forward geocode
+
+`GET /api/geocode/search`
+
+Find addresses, landmarks and points of interest in Cambodia by name. An empty `q` returns an empty list.
+
+| Parameter | In | | Description |
+| --- | --- | --- | --- |
+| `q` | query | required | Search text, up to 100 characters. |
+| `limit` | query | optional | Results to return, 1-50. Default 10. |
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/geocode/search?q=Angkor%20Wat&limit=3`
+
+Response: `data` is a GeocodeResult (search: an array of them). See the data model above.
+
+### System
+
+Service metadata, health and machine-readable documentation. These responses do not use the `{ success, data }` envelope.
+
+**Rate limit:** `/api/info` falls under the general API limit of 5,000 requests/min per IP.
+
+#### API root
+
+`GET /`
+
+Welcome document with links to documentation and key endpoints. Browsers (Accept: text/html) get the web app instead; send `Accept: application/json` or `?json=1` for JSON.
+
+Example: `GET https://opengeo-cambodia.pphat.me/`
+
+#### Health check
+
+`GET /health`
+
+Liveness probe with uptime.
+
+Example: `GET https://opengeo-cambodia.pphat.me/health`
+
+Response `200` (`application/json`):
+
 ```json
 {
   "status": "ok",
-  "uptimeSeconds": 86400,
-  "timestamp": "2026-10-27T00:00:00.000Z"
+  "uptimeSeconds": 0,
+  "timestamp": "2026-11-06T10:30:11.571Z",
+  "security": {
+    "timestamp": "2026-11-06T10:30:11.571Z",
+    "prototypePollutionProtected": false,
+    "configSealed": false,
+    "allowedOutboundHosts": [
+      "nominatim.openstreetmap.org",
+      "overpass-api.de",
+      "opengeo-cambodia.pphat.me",
+      "localhost",
+      "127.0.0.1"
+    ]
+  }
 }
 ```
 
----
+#### API index
 
-## 5. Standard Error Responses
+`GET /api/info`
 
-All error payloads follow a uniform structure:
-```json
-{
-  "success": false,
-  "data": null,
-  "error": "Error description message"
-}
+Machine-readable list of every endpoint and the level conventions.
+
+Example: `GET https://opengeo-cambodia.pphat.me/api/info`
+
+#### llms.txt
+
+`GET /llms.txt`
+
+Concise API summary for LLMs (llmstxt.org standard).
+
+Example: `GET https://opengeo-cambodia.pphat.me/llms.txt`
+
+#### llms-full.txt
+
+`GET /llms-full.txt`
+
+Full API reference for LLMs (llmstxt.org standard).
+
+Example: `GET https://opengeo-cambodia.pphat.me/llms-full.txt`
+
+#### Postman collection
+
+`GET /opengeo-cambodia.postman_collection.json`
+
+This Postman collection as JSON. `/postman` redirects here.
+
+Example: `GET https://opengeo-cambodia.pphat.me/opengeo-cambodia.postman_collection.json`
+
+## Recipes
+
+### Cascading address picker
+
+```ts
+const API = "https://opengeo-cambodia.pphat.me/api/admin";
+const get = async (path: string) => {
+  const body = await fetch(API + path).then((r) => r.json());
+  if (!body.success) throw new Error(body.error);
+  return body.data as { id: number; code: string; name_en: string; name_km: string }[];
+};
+
+const provinces = await get("/provinces");                       // 25
+const districts = await get(`/provinces/${provinces[0].id}/districts`);
+const communes  = await get(`/districts/${districts[0].id}/communes`);
+const villages  = await get(`/communes/${communes[0].id}/villages`);
 ```
 
-| HTTP Code | Description | Typical Cause |
-| :--- | :--- | :--- |
-| `400 Bad Request` | Missing or invalid parameters | Invalid integer ID, query length > 100, lat/lon out of range |
-| `404 Not Found` | Resource not found | Invalid division ID, geocoding returned no results |
-| `429 Too Many Requests` | Rate limit exceeded | Exceeded 120 req/min for admin or 30 req/min for geocode |
-| `500 Internal Error` | Server execution error | Sanitized error message without leaking internal stack traces |
+Cache the province and district lists on your side; they change rarely.
 
----
+### Full address from one stored id
 
-## 6. Client Integration Code Examples
-
-### 6.1. Complete Cascading Address Selector (TypeScript / Node.js)
-```typescript
-class OpenGeoClient {
-  private baseUrl: string;
-
-  constructor(baseUrl = 'https://opengeo-cambodia.pphat.me') {
-    this.baseUrl = baseUrl;
-  }
-
-  async getProvinces() {
-    const res = await fetch(`${this.baseUrl}/api/admin/provinces`);
-    const json = await res.json();
-    return json.data;
-  }
-
-  async getDistricts(provinceId: number) {
-    const res = await fetch(`${this.baseUrl}/api/admin/provinces/${provinceId}/districts`);
-    const json = await res.json();
-    return json.data;
-  }
-
-  async getCommunes(districtId: number) {
-    const res = await fetch(`${this.baseUrl}/api/admin/districts/${districtId}/communes`);
-    const json = await res.json();
-    return json.data;
-  }
-
-  async getVillages(communeId: number) {
-    const res = await fetch(`${this.baseUrl}/api/admin/communes/${communeId}/villages`);
-    const json = await res.json();
-    return json.data;
-  }
-
-  async reverseGeocode(lat: number, lon: number) {
-    const res = await fetch(`${this.baseUrl}/api/geocode/reverse?lat=${lat}&lon=${lon}`);
-    const json = await res.json();
-    return json.data;
-  }
-}
-
-// Example usage:
-const client = new OpenGeoClient();
-const provinces = await client.getProvinces();
-console.log(`Loaded ${provinces.length} provinces.`);
-```
-
-### 6.2. Python Integration
 ```python
 import requests
 
-class OpenGeoCambodia:
-    def __init__(self, base_url="https://opengeo-cambodia.pphat.me"):
-        self.base_url = base_url.rstrip("/")
-
-    def get_provinces(self):
-        r = requests.get(f"{self.base_url}/api/admin/provinces")
-        r.raise_for_status()
-        return r.json().get("data", [])
-
-    def get_districts(self, province_id: int):
-        r = requests.get(f"{self.base_url}/api/admin/provinces/{province_id}/districts")
-        r.raise_for_status()
-        return r.json().get("data", [])
-
-    def reverse_geocode(self, lat: float, lon: float):
-        r = requests.get(f"{self.base_url}/api/geocode/reverse", params={"lat": lat, "lon": lon})
-        r.raise_for_status()
-        return r.json().get("data")
-
-# Example usage:
-geo = OpenGeoCambodia()
-provinces = geo.get_provinces()
-print(f"Total Provinces: {len(provinces)}")
+r = requests.get("https://opengeo-cambodia.pphat.me/api/admin/hierarchy/12010101",
+                 headers={"User-Agent": "my-app/1.0"}, timeout=10).json()
+h = r["data"]  # keys: province, district, commune, village
+print(", ".join(h[k]["name_en"] for k in ("village", "commune", "district", "province") if k in h))
 ```
 
----
+### Draw boundaries on a map
 
-## 7. LLM & AI Agent Guidelines (Best Practices)
+```js
+// Leaflet: districts of Phnom Penh (code 12). Response is a bare FeatureCollection.
+const fc = await fetch("https://opengeo-cambodia.pphat.me/api/boundaries/districts?province_code=12").then((r) => r.json());
+L.geoJSON(fc, { onEachFeature: (f, layer) => layer.bindTooltip(f.properties.name_en) }).addTo(map);
+```
 
-When generating code or addressing user questions about Cambodian geography:
-1. **Always Use 4 Tiers**: Never conflate District (Khan/Srok) with Commune (Sangkat/Khum). Cambodian addresses are strictly 4 levels.
-2. **Khmer vs Romanized**: When storing user data, preserve both `name_km` and `name_en` for dual-language invoices, KYC, and waybills.
-3. **Phnom Penh Special Case**: Remember that Phnom Penh has **Khans** (not Sroks) and **Sangkats** (not Khums).
-4. **Sub-millisecond Cascades**: Instruct developers to call `/api/admin/*` directly from front-ends as it has built-in CORS and $<1\text{ms}$ latency.
-5. **Rate Limit Handling**: When writing high-throughput scripts, handle `429 Too Many Requests` with exponential backoff using the `Retry-After` header.
+Use `format=summary` when you only need names, centroids or bounding boxes (much smaller than full polygons).
+
+### Search-as-you-type
+
+Debounce input by ~200 ms and call `GET /api/admin/search?q=…&limit=8`. It matches Khmer or English, ignores case, spaces and accents, ranks exact and prefix matches first, and accepts `level` to restrict results. Mind the 120 requests/min limit and the 50-character cap on `q`.
+
+## Gotchas for agents
+
+1. **Send a `User-Agent`.** Without one every request is rejected with 403.
+2. **id vs code.** Admin URLs take numeric ids (`70203`); boundary URLs take zero-padded codes (`070203`). Passing an id to a boundary endpoint usually 404s for codes with a leading zero.
+3. **Not every place has a polygon.** The boundary dataset predates recent reorganisations: 197 of 210 districts and 1,633 of 1,661 communes have boundaries; villages have none. Treat 404 from boundary endpoints as "no polygon", not as "no such place".
+4. **Always pass `level` to `GET /api/boundaries`.** Without it the endpoint returns all provinces and ignores the other filters.
+5. **GeoJSON responses have no envelope.** Check `type === "FeatureCollection"` instead of `success`, unless you request `format=summary`.
+6. **Ignore fields starting with `_`.** They are internal search indexes.
+7. **Geocoding is external and slow-limited** (30/min, results cached for a week). Prefer the admin search for names you already know; use geocoding for street addresses and coordinates.
+8. **`/` serves the web app to browsers.** Send `Accept: application/json` (or `?json=1`) to get the JSON welcome document.
+
+## Links
+
+- Interactive docs: https://opengeo-cambodia.pphat.me/docs
+- Explorer (map, search, live console): https://opengeo-cambodia.pphat.me/
+- Postman collection: https://opengeo-cambodia.pphat.me/opengeo-cambodia.postman_collection.json
+- Source code: https://github.com/pphatdev/opengeo-cambodia (MIT)
+- Data: Ministry of Economy and Finance Open Data Portal, https://data.mef.gov.kh/ ; boundaries from the Ministry of Land Management, Urban Planning and Construction; geocoding by OpenStreetMap Nominatim (© OpenStreetMap contributors)

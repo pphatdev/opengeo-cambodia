@@ -1,0 +1,129 @@
+import { useEffect, useMemo, useState } from "react";
+import { Icon } from "../../components/Icon";
+import { cx, focusRing } from "../../components/ui";
+import { useI18n, type MessageKey } from "../../i18n";
+import { ENDPOINTS, GROUPS } from "./endpoints";
+
+interface NavLink {
+    href: string;
+    label: string;
+    verb?: boolean;
+    filter: string;
+}
+
+const GUIDE: [string, MessageKey][] = [
+    ["introduction", "docs.navIntro"],
+    ["quickstart", "docs.navQuickstart"],
+    ["concepts", "docs.navConcepts"],
+    ["responses", "docs.navResponses"],
+    ["rate-limits", "docs.navLimits"],
+];
+
+const REFERENCE: [string, MessageKey][] = [
+    ["model-admin", "docs.navAdminItem"],
+    ["model-boundary", "docs.navBoundary"],
+    ["model-geocode", "docs.navGeocode"],
+    ["downloads", "docs.navDownloads"],
+    ["llms", "docs.navLlms"],
+    ["source", "docs.navSource"],
+];
+
+export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
+    const { t, tx } = useI18n();
+    const [query, setQuery] = useState("");
+    const [active, setActive] = useState("introduction");
+
+    const groups = useMemo(() => {
+        const plain = (items: [string, MessageKey][]): NavLink[] =>
+            items.map(([href, key]) => {
+                const label = t(key);
+                return { href, label, filter: label.toLowerCase() };
+            });
+        return [
+            { title: t("docs.groupGuide"), links: plain(GUIDE) },
+            ...GROUPS.map((g) => ({
+                title: tx(g.title),
+                links: ENDPOINTS.filter((e) => e.group === g.id).map((e) => ({
+                    href: `ep-${e.id}`,
+                    label: e.path.replace(/^\/api/, ""),
+                    verb: true,
+                    // Filter matches the path and the title in both languages
+                    filter: `${e.path} ${e.title.en} ${e.title.km}`.toLowerCase(),
+                })),
+            })),
+            { title: t("docs.groupReference"), links: plain(REFERENCE) },
+        ];
+    }, [t, tx]);
+
+    // Scrollspy: highlight the first visible section (ids don't change with language)
+    useEffect(() => {
+        const ids = [...GUIDE.map((g) => g[0]), ...ENDPOINTS.map((e) => `ep-${e.id}`), ...REFERENCE.map((r) => r[0])];
+        const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
+        const visible = new Map<string, boolean>();
+        const io = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((e) => visible.set(e.target.id, e.isIntersecting));
+                const first = els.find((el) => visible.get(el.id));
+                if (first) setActive(first.id);
+            },
+            { rootMargin: "-80px 0px -65% 0px" },
+        );
+        els.forEach((el) => io.observe(el));
+        return () => io.disconnect();
+    }, []);
+
+    const q = query.trim().toLowerCase();
+    return (
+        <aside
+            id="sidebar"
+            aria-label={t("docs.navLabel")}
+            className={cx(
+                // Off-canvas drawer below lg; sticky column from lg up
+                "scrollbar-thin fixed bottom-0 left-0 top-16 z-90 w-[min(320px,86vw)] overflow-y-auto border-r border-line bg-bg px-4 py-5 transition-transform",
+                "lg:sticky lg:top-16 lg:z-auto lg:h-[calc(100vh-64px)] lg:w-auto lg:translate-x-0 lg:border-r-0 lg:bg-transparent lg:py-7 lg:pl-0 lg:pr-2",
+                open ? "translate-x-0 shadow-card" : "translate-x-[-105%]",
+            )}
+        >
+            <div className="relative mb-4.5">
+                <Icon name="search" className="absolute left-2.5 top-2.5 size-3.75 text-ink-3" />
+                <input
+                    type="search"
+                    placeholder={t("docs.filter")}
+                    aria-label={t("docs.filterLabel")}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className={cx("h-9 w-full rounded-[9px] border border-line bg-surface pl-8 pr-2.5 text-[13.5px] text-ink km:font-khmer", focusRing)}
+                />
+            </div>
+            {groups.map((g) => {
+                const links = g.links.filter((l) => !q || l.filter.includes(q));
+                if (!links.length) return null;
+                return (
+                    <div className="mb-5" key={g.title}>
+                        <h6 className="mb-1.5 mt-0 pl-2.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-ink-3 km:font-khmer km:text-xs km:normal-case km:tracking-normal">{g.title}</h6>
+                        {links.map((l) => (
+                            <a
+                                key={l.href}
+                                href={`#${l.href}`}
+                                onClick={onNavigate}
+                                className={cx(
+                                    "flex items-center gap-2 rounded-[7px] px-2.5 py-1.25 text-[13.5px] leading-[1.4] no-underline",
+                                    active === l.href ? "bg-surface font-medium text-ink shadow-[inset_2px_0_0_var(--og-accent)]" : "text-ink-2 hover:bg-surface-2 hover:text-ink",
+                                )}
+                            >
+                                {l.verb ? (
+                                    <>
+                                        <span className="w-6.5 flex-none font-mono text-[9.5px] font-semibold text-ok">GET</span>
+                                        <span className="truncate font-mono text-[12.5px]">{l.label}</span>
+                                    </>
+                                ) : (
+                                    l.label
+                                )}
+                            </a>
+                        ))}
+                    </div>
+                );
+            })}
+        </aside>
+    );
+}
