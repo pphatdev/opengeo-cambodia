@@ -142,7 +142,7 @@ export function Hero() {
 
                                     {/* Log-scale bar so 25 → 14,576 still reads as a steady progression */}
                                     <div aria-hidden="true" className="mt-auto h-1.5 overflow-hidden rounded-full bg-surface-2/80 p-px shadow-inner">
-                                        <div className="h-full rounded-full bg-gradient-to-r from-accent via-water to-emerald-400 shadow-[0_0_8px_var(--og-accent)] transition-all duration-1000" style={{ width: `${(Math.log10(value) / Math.log10(MAX_SCALE)) * 100}%` }} />
+                                        <div className="h-full rounded-full bg-linear-to-r from-accent via-water to-emerald-400 shadow-[0_0_8px_var(--og-accent)] transition-all duration-1000" style={{ width: `${(Math.log10(value) / Math.log10(MAX_SCALE)) * 100}%` }} />
                                     </div>
                                 </li>
                             );

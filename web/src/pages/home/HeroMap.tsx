@@ -153,7 +153,7 @@ export function HeroMap() {
                         key={active.code}
                         d={active.d}
                         vectorEffect="non-scaling-stroke"
-                        className="animate-lift pointer-events-none fill-accent/25 stroke-accent stroke-[2] transform-fill origin-center drop-shadow-[0_8px_20px_color-mix(in_srgb,var(--og-accent)_45%,transparent)]"
+                        className="animate-lift pointer-events-none fill-accent/25 stroke-accent stroke-2 transform-fill origin-center drop-shadow-[0_8px_20px_color-mix(in_srgb,var(--og-accent)_45%,transparent)]"
                     />
                 </svg>
 

@@ -20,8 +20,8 @@ export const kicker = "mb-3 font-display text-xs font-bold uppercase tracking-[.
 const khmerHeading = "km:font-khmer km:font-semibold km:tracking-normal km:leading-[1.4] km:[&_em]:not-italic";
 export const displayH1 = cx("my-5 font-display text-[clamp(32px,4.5vw,56px)] font-bold leading-[1.12] tracking-[-.03em] [&_em]:not-italic [&_em]:text-brand km:text-[clamp(34px,4.8vw,56px)]", khmerHeading);
 export const sectionH2 = cx("m-0 font-display text-[clamp(24px,3vw,38px)] font-bold leading-[1.15] tracking-[-.025em] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
-export const docsH1 = cx("mb-4 font-display text-[clamp(30px,3.8vw,48px)] font-bold leading-[1.12] tracking-[-.03em] [&_em]:not-italic [&_em]:text-brand km:text-[clamp(32px,4vw,46px)]", khmerHeading);
-export const docsH2 = cx("mb-3.5 mt-16 pt-2 font-display text-[26px] font-bold leading-[1.2] tracking-[-.02em] max-sm:text-[22px] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
+export const docsH1 = cx("mb-4 font-display text-[clamp(36px,4.4vw,54px)] font-bold leading-[1.06] tracking-[-.035em] [&_em]:not-italic [&_em]:text-brand km:text-[clamp(32px,4vw,46px)]", khmerHeading);
+export const docsH2 = cx("mb-3.5 mt-16 pt-2 font-display text-[30px] font-bold leading-[1.15] tracking-[-.025em] max-sm:text-[26px] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
 
 /* Administrative division hierarchy badges: province (accent), district (water), commune (amber), village (emerald) */
 const LEVEL_COLORS: Record<Level, string> = {

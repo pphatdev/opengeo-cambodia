@@ -107,9 +107,9 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
             aria-label={t("docs.navLabel")}
             className={cx(
                 // Off-canvas drawer below lg; sticky column from lg up
-                "scrollbar-thin fixed bottom-0 left-0 top-16 z-90 w-[min(320px,86vw)] overflow-y-auto border-r border-line/60 glass-panel px-4 py-5 transition-transform backdrop-blur-2xl",
-                "lg:sticky lg:top-16 lg:z-auto lg:h-[calc(100vh-64px)] lg:w-auto lg:translate-x-0 lg:border-r-0 lg:bg-transparent lg:py-7 lg:pl-0 lg:pr-2 lg:backdrop-blur-none lg:border-none lg:shadow-none",
-                open ? "translate-x-0 shadow-glass-lg" : "translate-x-[-105%]",
+                "scrollbar-thin fixed bottom-0 left-0 top-16 z-90 w-[min(320px,86vw)] overflow-y-auto border-r border-line bg-bg px-4 py-5 transition-transform",
+                "lg:sticky lg:top-16 lg:z-auto lg:h-[calc(100vh-64px)] lg:w-auto lg:translate-x-0 lg:border-r-0 lg:bg-transparent lg:py-7 lg:pl-0 lg:pr-2",
+                open ? "translate-x-0 shadow-card" : "translate-x-[-105%]",
             )}
         >
             <div className="relative mb-4.5">
@@ -120,7 +120,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
                     aria-label={t("docs.filterLabel")}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className={cx("h-9 w-full rounded-xl border border-line/70 bg-surface/80 pl-8 pr-2.5 text-[13.5px] text-ink backdrop-blur-sm transition-all focus:bg-surface focus:border-accent km:font-khmer", focusRing)}
+                    className={cx("h-9 w-full rounded-[9px] border border-line bg-surface pl-8 pr-2.5 text-[13.5px] text-ink km:font-khmer", focusRing)}
                 />
             </div>
             {groups.map((g) => {
@@ -147,8 +147,8 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
                                                 : "ml-8.5 border-l border-line/40 pl-2.5 pr-2"
                                             : "px-2.5",
                                         active === l.href
-                                            ? "glass-pill font-medium text-ink shadow-[inset_2px_0_0_var(--og-accent)]"
-                                            : "text-ink-2 hover:bg-surface-2/60 hover:text-ink",
+                                            ? "bg-surface font-medium text-ink shadow-[inset_2px_0_0_var(--og-accent)]"
+                                            : "text-ink-2 hover:bg-surface-2 hover:text-ink",
                                     )}
                                 >
                                     {l.verb ? (
