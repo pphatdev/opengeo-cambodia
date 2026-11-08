@@ -16,7 +16,7 @@ export const iconBtn = "glass-pill inline-grid size-9 cursor-pointer place-items
 
 export const kicker = "mb-3 font-display text-xs font-bold uppercase tracking-[.16em] text-accent km:font-khmer km:text-[13.5px] km:font-semibold km:normal-case km:tracking-normal";
 
-/** Bold geometric display type (Montserrat, like the logo); Khmer swaps to Kantumruy with taller lines. */
+/** Bold developer-centric display type (JetBrains Mono); Khmer swaps to Kantumruy with taller lines. */
 const khmerHeading = "km:font-khmer km:font-semibold km:tracking-normal km:leading-[1.4] km:[&_em]:not-italic";
 export const displayH1 = cx("my-5 font-display text-[clamp(38px,5.2vw,64px)] font-bold leading-[1.06] tracking-[-.035em] [&_em]:not-italic [&_em]:text-brand km:text-[clamp(34px,4.8vw,56px)]", khmerHeading);
 export const sectionH2 = cx("m-0 font-display text-[clamp(28px,3.4vw,42px)] font-bold leading-[1.12] tracking-[-.03em] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
