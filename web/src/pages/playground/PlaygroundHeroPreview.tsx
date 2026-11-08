@@ -267,9 +267,9 @@ export function PlaygroundHeroPreview({
                     )}
                 </div>
 
-                {/* SVG Cambodia Hero Map */}
-                <figure className="relative m-0 w-full select-none" onMouseLeave={leave}>
-                    <div className="relative pt-4 pb-4" style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT + 60}` }}>
+                {/* SVG Cambodia Hero Map (Constrained compact size) */}
+                <figure className="relative m-0 w-full max-w-[620px] mx-auto select-none" onMouseLeave={leave}>
+                    <div className="relative pt-2 pb-2" style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT + 20}` }}>
                         {/* Coordinates frame markers */}
                         <span className="absolute left-0 top-0 font-mono text-[10px] tracking-wide text-ink-3">14.7°N · 102.3°E</span>
                         <span className="absolute bottom-0 right-0 font-mono text-[10px] tracking-wide text-ink-3">10.4°N · 107.7°E</span>
