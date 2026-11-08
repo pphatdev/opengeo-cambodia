@@ -17,7 +17,8 @@
 📚 **API Documentation:** [https://opengeo-cambodia.pphat.me/docs](https://opengeo-cambodia.pphat.me/docs) *(every endpoint with a live "Send" button)*  
 🏛️ **Official Data Source:** [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)  
 📮 **Postman Collection:** [`public/opengeo-cambodia.postman_collection.json`](public/opengeo-cambodia.postman_collection.json) *(Uses collection variables, no environment file needed)*  
-🤖 **LLM Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)
+🤖 **LLM Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)  
+📰 **Developer Guide & Deep Dive (Blog Post):** [`blog/introducing-opengeo-cambodia.md`](blog/introducing-opengeo-cambodia.md)
 
 ---
 
