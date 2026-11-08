@@ -145,8 +145,19 @@ function pointInGeometry(lon: number, lat: number, geometry: any): boolean {
     return false;
 }
 
+export interface BoundariesSeedData {
+    provinces?: BoundaryFeatureCollection | BoundaryFeature[];
+    districts?: BoundaryFeatureCollection | BoundaryFeature[];
+    communes?: BoundaryFeatureCollection | BoundaryFeature[];
+}
+
 export class BoundariesService {
     private static instance: BoundariesService | null = null;
+    private static bundledSeed: BoundariesSeedData | null = null;
+
+    public static registerSeed(seed: BoundariesSeedData): void {
+        BoundariesService.bundledSeed = seed;
+    }
     private isInitialized = false;
 
     // Feature collections
@@ -213,6 +224,50 @@ export class BoundariesService {
      */
     public ensureLoaded(): boolean {
         if (this.isInitialized) return true;
+
+        if (BoundariesService.bundledSeed) {
+            try {
+                const adminStore = AdminStore.getInstance();
+                const seed = BoundariesService.bundledSeed;
+
+                const provFeatures = Array.isArray(seed.provinces)
+                    ? seed.provinces
+                    : (seed.provinces as any)?.features || [];
+                this.loadProvinceFeatures(provFeatures, adminStore);
+
+                const distFeatures = Array.isArray(seed.districts)
+                    ? seed.districts
+                    : (seed.districts as any)?.features || [];
+                this.loadDistrictFeatures(distFeatures, adminStore);
+
+                const comFeatures = Array.isArray(seed.communes)
+                    ? seed.communes
+                    : (seed.communes as any)?.features || [];
+                this.loadCommuneFeatures(comFeatures, adminStore);
+
+                this.featuresByLevel.set("province", this.provinceFeatures);
+                this.featuresByLevel.set("district", this.districtFeatures);
+                this.featuresByLevel.set("commune", this.communeFeatures);
+
+                this.summariesByLevel.set(
+                    "province",
+                    this.provinceFeatures.map((f) => this.toSummary(f)),
+                );
+                this.summariesByLevel.set(
+                    "district",
+                    this.districtFeatures.map((f) => this.toSummary(f)),
+                );
+                this.summariesByLevel.set(
+                    "commune",
+                    this.communeFeatures.map((f) => this.toSummary(f)),
+                );
+
+                this.isInitialized = true;
+                return true;
+            } catch (err) {
+                console.error("[BoundariesService] Error loading bundled boundary seed:", err);
+            }
+        }
 
         const dataDir = this.findBoundariesDir();
         if (!dataDir) {

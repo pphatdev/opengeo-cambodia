@@ -181,6 +181,7 @@ app.use(
                 "'unsafe-inline'",
                 "https://cdn.tailwindcss.com",
                 "https://unpkg.com",
+                "https://static.cloudflareinsights.com",
             ],
             styleSrc: [
                 "'self'",
@@ -196,6 +197,7 @@ app.use(
                 "https://nominatim.openstreetmap.org",
                 "https://unpkg.com",
                 "https://cdn.tailwindcss.com",
+                "https://cloudflareinsights.com",
             ],
         },
     }),
