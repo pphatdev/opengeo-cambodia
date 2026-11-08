@@ -14,6 +14,7 @@ const en = {
         explorer: "Explorer",
         data: "Data",
         docs: "Docs",
+        blog: "Blog",
         apiIndex: "API index",
         github: "GitHub repository",
         theme: "Toggle color theme",

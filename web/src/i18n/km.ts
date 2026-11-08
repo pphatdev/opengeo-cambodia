@@ -12,6 +12,7 @@ const km: Messages = {
         explorer: "រុករក",
         data: "ទិន្នន័យ",
         docs: "ឯកសារ",
+        blog: "ប្លុក",
         apiIndex: "បញ្ជី API",
         github: "ឃ្លាំងកូដ GitHub",
         theme: "ប្តូរពណ៌ផ្ទៃ",
