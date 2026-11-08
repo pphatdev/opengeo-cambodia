@@ -274,9 +274,9 @@ export function PlaygroundHeroPreview({
     };
 
     return (
-        <div className="space-y-4">
+        <div>
             {/* The Hero Map Canvas Container */}
-            <div className="relative overflow-hidden rounded-2xl">
+            <div className="relative overflow-hidden rounded">
                 {/* Top Overlay Bar */}
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2 pb-3">
                     <div className="flex items-center gap-2">
@@ -298,8 +298,12 @@ export function PlaygroundHeroPreview({
                             <span>{fmtBytes(log.size)}</span>
                         </div>
                     ) : (
-                        <div className="font-mono text-xs text-ink-3">
-                            Click any province to test live
+                        <div className="flex text-xs items-center gap-2 py-1! px-2 border leading-none border-teal-500 bg-teal-100 rounded-full">
+                            <span className="relative flex size-2">
+                                <span className="absolute inset-0 animate-ping rounded-full bg-ok opacity-75 motion-reduce:hidden" />
+                                <span className="relative block size-2 rounded-full bg-ok" />
+                            </span>
+                            <span>Live</span>
                         </div>
                     )}
                 </div>
@@ -347,8 +351,8 @@ export function PlaygroundHeroPreview({
                                             isCurrent
                                                 ? "fill-accent/20 stroke-accent"
                                                 : isHighlighted
-                                                ? "fill-water/20 stroke-water hover:fill-water/30"
-                                                : "fill-surface stroke-line-2 hover:fill-surface-2",
+                                                    ? "fill-water/20 stroke-water hover:fill-water/30"
+                                                    : "fill-surface stroke-line-2 hover:fill-surface-2",
                                         )}
                                     >
                                         <title>{lang === "km" ? `${p.km} · ${p.en}` : `${p.en} · ${p.km}`}</title>
@@ -672,28 +676,6 @@ export function PlaygroundHeroPreview({
                     </div>
                 </div>
             )}
-
-            {/* Footer quick navigation links */}
-            <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-ink-3">
-                {onSwitchTab && (
-                    <div className="flex items-center gap-3">
-                        <button
-                            type="button"
-                            onClick={() => onSwitchTab("table")}
-                            className="cursor-pointer font-medium text-water hover:underline"
-                        >
-                            View as Data Table →
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => onSwitchTab("raw")}
-                            className="cursor-pointer font-medium text-accent hover:underline"
-                        >
-                            View Raw JSON →
-                        </button>
-                    </div>
-                )}
-            </div>
         </div>
     );
 }

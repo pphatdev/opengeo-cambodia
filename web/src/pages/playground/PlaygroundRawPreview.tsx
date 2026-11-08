@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Icon } from "../../components/Icon";
-import { codeCopy, cx } from "../../components/ui";
+import { cx, iconBtn } from "../../components/ui";
 import { useI18n } from "../../i18n";
 import { fmtBytes, forDisplay, type RequestLog } from "../../lib/api";
 import { JsonView } from "../../lib/highlight";
@@ -44,7 +44,7 @@ export function PlaygroundRawPreview({ log, endpointPath }: PlaygroundRawPreview
     return (
         <div className="overflow-hidden rounded-xl border border-line bg-code-bg">
             {/* Top Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-code-line bg-code-bg px-4 py-2 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-accent bg-code-bg px-4 py-2 text-xs">
                 <div className="flex items-center gap-3 font-mono text-code-dim">
                     <span>{fmtBytes(log.size)}</span>
                     <span>·</span>
@@ -64,19 +64,19 @@ export function PlaygroundRawPreview({ log, endpointPath }: PlaygroundRawPreview
                 </div>
 
                 <div className="flex items-center gap-2">
+
                     <button
                         type="button"
                         onClick={handleCopy}
-                        className={codeCopy}
-                    >
+                        className={iconBtn} aria-label={t("nav.github")}
+                        rel="noopener noreferrer">
                         <Icon name="copy" />
                         {t("playground.copyJson")}
                     </button>
+
                     <button
                         type="button"
-                        onClick={handleDownload}
-                        className={codeCopy}
-                    >
+                        onClick={handleDownload}>
                         <Icon name="download" />
                         {t("playground.downloadJson")}
                     </button>

@@ -130,151 +130,151 @@ export default function Playground() {
             <main id="request-console" className={cx(wrap, "flex-1 py-8")}>
                 <div className="space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl">
-                            <div className="inline-flex items-center rounded-lg border border-line bg-surface-2 p-1">
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab("map")}
-                                    className={cx(
-                                        "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                        activeTab === "map" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
-                                    )}
-                                >
-                                    <Icon name="map" className="size-3.5" />
-                                    <span>{t("playground.tabMap")}</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab("table")}
-                                    className={cx(
-                                        "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                        activeTab === "table" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
-                                    )}
-                                >
-                                    <Icon name="table" className="size-3.5" />
-                                    <span>{t("playground.tabTable")}</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab("raw")}
-                                    className={cx(
-                                        "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                        activeTab === "raw" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
-                                    )}
-                                >
-                                    <Icon name="code" className="size-3.5" />
-                                    <span>{t("playground.tabRaw")}</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab("headers")}
-                                    className={cx(
-                                        "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                        activeTab === "headers" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
-                                    )}
-                                >
-                                    <Icon name="layers" className="size-3.5" />
-                                    <span>{t("playground.tabHeaders")}</span>
-                                </button>
-                            </div>
-
-                            {/* Response Status Pill */}
-                            {log && (
-                                <div className="flex items-center gap-2 font-mono text-xs">
-                                    <span
-                                        className={cx(
-                                            "inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-bold",
-                                            log.status >= 200 && log.status < 300
-                                                ? "bg-accent/15 text-accent border border-accent/20"
-                                                : "bg-warn/15 text-warn border border-warn/20",
-                                        )}
-                                    >
-                                        <span className="size-1.5 rounded-full bg-current" />
-                                        {log.status} {log.statusText || (log.status === 200 ? "OK" : "")}
-                                    </span>
-                                    <span className="text-ink-3 font-semibold">
-                                        {log.ms.toFixed(2)}ms
-                                    </span>
-                                    <span className="text-line">·</span>
-                                    <span className="text-ink-3">
-                                        {fmtBytes(log.size)}
-                                    </span>
-                                    {log.server && (
-                                        <>
-                                            <span className="text-line">·</span>
-                                            <span className="text-[11px] text-ink-3">
-                                                {log.server}
-                                            </span>
-                                        </>
-                                    )}
-                                </div>
-                            )}
+                        <div className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 p-0">
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab("map")}
+                                className={cx(
+                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    activeTab === "map" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                )}
+                            >
+                                <Icon name="map" className="size-3.5" />
+                                <span>{t("playground.tabMap")}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab("table")}
+                                className={cx(
+                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    activeTab === "table" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                )}
+                            >
+                                <Icon name="table" className="size-3.5" />
+                                <span>{t("playground.tabTable")}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab("raw")}
+                                className={cx(
+                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    activeTab === "raw" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                )}
+                            >
+                                <Icon name="code" className="size-3.5" />
+                                <span>{t("playground.tabRaw")}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab("headers")}
+                                className={cx(
+                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    activeTab === "headers" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                )}
+                            >
+                                <Icon name="layers" className="size-3.5" />
+                                <span>{t("playground.tabHeaders")}</span>
+                            </button>
                         </div>
 
-                        {/* Response Body Content */}
-                        {pending ? (
-                            <div className="flex min-h-105 flex-col items-center justify-center rounded-xl border border-line bg-surface p-8 text-center">
-                                <div className="size-8 rounded-full border-2 border-accent border-t-transparent animate-spin mb-3" />
-                                <div className="text-xs font-mono text-ink-2">
-                                    Fetching {customUrl}...
-                                </div>
-                            </div>
-                        ) : result?.error && !log ? (
-                            <div className="rounded-xl border border-warn/30 bg-warn/10 p-6 text-center text-sm text-warn">
-                                <div className="font-semibold mb-1">Request Failed</div>
-                                <div className="font-mono text-xs">{result.error}</div>
-                            </div>
-                        ) : activeTab === "map" ? (
-                            <div className="space-y-4">
-                                <PlaygroundHeroPreview
-                                    log={log}
-                                    endpointPath={customUrl}
-                                    onDrillDown={handleDrillDown}
-                                    onSwitchTab={(tab) => setActiveTab(tab)}
-                                />
-                            </div>
-                        ) : !log ? (
-                            <div className="flex min-h-105 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-surface/50 p-8 text-center">
-                                <div className="size-12 rounded-2xl bg-surface-2 border border-line flex items-center justify-center text-accent mb-4">
-                                    <Icon name="play" className="size-6" />
-                                </div>
-                                <h3 className="m-0 text-base font-bold text-ink">
-                                    {t("playground.readyTitle")}
-                                </h3>
-                                <p className="m-0 mt-1 max-w-sm text-xs text-ink-3">
-                                    {t("playground.readyDesc")}
-                                </p>
-                                <button
-                                    type="button"
-                                    onClick={() => handleSend()}
-                                    className="mt-5 inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] cursor-pointer transition-colors"
+                        {/* Response Status Pill */}
+                        {log && (
+                            <div className="flex items-center gap-2 font-mono text-xs">
+                                <span
+                                    className={cx(
+                                        "inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-bold",
+                                        log.status >= 200 && log.status < 300
+                                            ? "bg-accent/15 text-accent border border-accent/20"
+                                            : "bg-warn/15 text-warn border border-warn/20",
+                                    )}
                                 >
-                                    <Icon name="play" className="size-3" />
-                                    {t("playground.sendRequest")}
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {activeTab === "raw" && (
-                                    <PlaygroundRawPreview
-                                        log={log}
-                                        endpointPath={customUrl}
-                                    />
-                                )}
-                                {activeTab === "table" && (
-                                    <PlaygroundUiPreview
-                                        log={log}
-                                        onDrillDown={handleDrillDown}
-                                    />
-                                )}
-                                {activeTab === "headers" && (
-                                    <PlaygroundHeaders
-                                        log={log}
-                                        customUrl={fullProdUrl}
-                                    />
+                                    <span className="size-1.5 rounded-full bg-current" />
+                                    {log.status} {log.statusText || (log.status === 200 ? "OK" : "")}
+                                </span>
+                                <span className="text-ink-3 font-semibold">
+                                    {log.ms.toFixed(2)}ms
+                                </span>
+                                <span className="text-line">·</span>
+                                <span className="text-ink-3">
+                                    {fmtBytes(log.size)}
+                                </span>
+                                {log.server && (
+                                    <>
+                                        <span className="text-line">·</span>
+                                        <span className="text-[11px] text-ink-3">
+                                            {log.server}
+                                        </span>
+                                    </>
                                 )}
                             </div>
                         )}
                     </div>
+
+                    {/* Response Body Content */}
+                    {pending ? (
+                        <div className="flex min-h-105 flex-col items-center justify-center rounded-xl border border-line bg-surface p-8 text-center">
+                            <div className="size-8 rounded-full border-2 border-accent border-t-transparent animate-spin mb-3" />
+                            <div className="text-xs font-mono text-ink-2">
+                                Fetching {customUrl}...
+                            </div>
+                        </div>
+                    ) : result?.error && !log ? (
+                        <div className="rounded-xl border border-warn/30 bg-warn/10 p-6 text-center text-sm text-warn">
+                            <div className="font-semibold mb-1">Request Failed</div>
+                            <div className="font-mono text-xs">{result.error}</div>
+                        </div>
+                    ) : activeTab === "map" ? (
+                        <div className="space-y-4">
+                            <PlaygroundHeroPreview
+                                log={log}
+                                endpointPath={customUrl}
+                                onDrillDown={handleDrillDown}
+                                onSwitchTab={(tab) => setActiveTab(tab)}
+                            />
+                        </div>
+                    ) : !log ? (
+                        <div className="flex min-h-105 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-surface/50 p-8 text-center">
+                            <div className="size-12 rounded-2xl bg-surface-2 border border-line flex items-center justify-center text-accent mb-4">
+                                <Icon name="play" className="size-6" />
+                            </div>
+                            <h3 className="m-0 text-base font-bold text-ink">
+                                {t("playground.readyTitle")}
+                            </h3>
+                            <p className="m-0 mt-1 max-w-sm text-xs text-ink-3">
+                                {t("playground.readyDesc")}
+                            </p>
+                            <button
+                                type="button"
+                                onClick={() => handleSend()}
+                                className="mt-5 inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] cursor-pointer transition-colors"
+                            >
+                                <Icon name="play" className="size-3" />
+                                {t("playground.sendRequest")}
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {activeTab === "raw" && (
+                                <PlaygroundRawPreview
+                                    log={log}
+                                    endpointPath={customUrl}
+                                />
+                            )}
+                            {activeTab === "table" && (
+                                <PlaygroundUiPreview
+                                    log={log}
+                                    onDrillDown={handleDrillDown}
+                                />
+                            )}
+                            {activeTab === "headers" && (
+                                <PlaygroundHeaders
+                                    log={log}
+                                    customUrl={fullProdUrl}
+                                />
+                            )}
+                        </div>
+                    )}
+                </div>
             </main>
 
             {/* Floating Request Console in Bottom-Right Corner */}
