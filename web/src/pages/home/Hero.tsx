@@ -62,6 +62,7 @@ export function Hero() {
                         <p className="rich mb-7 mt-0 max-w-[34em] text-lg text-ink-2">{rt("hero.lede", { total: fmt(stats?.total ?? 16472) })}</p>
                         <div className="flex flex-wrap gap-3">
                             <a className={btnPrimary} href="#explore">{t("hero.explore")} <Icon name="arrow" /></a>
+                            <Link className={btnGhost} to="/playground"><Icon name="play" /> {t("nav.playground")}</Link>
                             <Link className={btnGhost} to="/docs"><Icon name="book" /> {t("hero.docs")}</Link>
                         </div>
 

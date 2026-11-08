@@ -8,7 +8,9 @@ import { useI18n } from "../../i18n";
 import { apiGet, fmtBytes, PROD_ORIGIN, type RequestLog } from "../../lib/api";
 import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, GROUPS, type Endpoint, type EndpointGroup } from "../docs/endpoints";
+import type { HeroProvince } from "../home/cambodiaMap";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
+import { PlaygroundHeroMap } from "./PlaygroundHeroMap";
 import { PlaygroundMapPreview } from "./PlaygroundMapPreview";
 import { PlaygroundRawPreview } from "./PlaygroundRawPreview";
 import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
@@ -121,6 +123,21 @@ export default function Playground() {
         handleSend(path);
     };
 
+    // Handle province selection from the Hero Map
+    const handleSelectProvince = (p: HeroProvince) => {
+        const ep = ENDPOINTS.find((e) => e.id === "admin-districts") ?? ENDPOINTS[0];
+        setSelectedEndpoint(ep);
+        const newParams = { id: String(p.id) };
+        setParamValues(newParams);
+        const built = `/api/admin/provinces/${p.id}/districts`;
+        setCustomUrl(built);
+        setSearchParams({ ep: ep.id, id: String(p.id) }, { replace: true });
+        handleSend(built);
+
+        // Smooth scroll to request console
+        document.getElementById("request-console")?.scrollIntoView({ behavior: "smooth" });
+    };
+
     // Filtered endpoints for combobox
     const filteredEndpoints = useMemo(() => {
         return ENDPOINTS.filter((e) => {
@@ -136,47 +153,78 @@ export default function Playground() {
         <div className="min-h-screen bg-bg text-ink flex flex-col font-sans">
             <Nav variant="playground" />
 
-            {/* Header Hero Banner */}
-            <div className="border-b border-line bg-surface/50 py-6">
-                <div className={wrap}>
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1.5">
-                                <span className="rounded-md bg-accent px-2 py-0.5 font-display text-[11px] font-bold uppercase tracking-wider text-bg">
-                                    Interactive
+            {/* Header Hero with Interactive Map */}
+            <section className="relative overflow-hidden border-b border-line bg-surface/40 py-8 lg:py-12">
+                <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
+                <div className="pointer-events-none absolute -right-40 top-5 size-140 rounded-full bg-accent/8 blur-3xl max-lg:hidden" aria-hidden="true" />
+
+                <div className={cx(wrap, "relative")}>
+                    <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
+                        {/* Left Column: Hero Text & Quick Actions */}
+                        <div className="lg:col-span-7">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1 pl-1.5 pr-3 text-xs font-semibold text-ink-2">
+                                <span className="grid size-4.5 place-items-center rounded-full bg-accent-soft text-accent">
+                                    <span className="size-1.5 rounded-full bg-current shadow-[0_0_0_3px_color-mix(in_srgb,currentColor_25%,transparent)]" />
                                 </span>
-                                <h1 className="m-0 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-                                    {t("playground.title")}
-                                </h1>
-                            </div>
-                            <p className="m-0 text-sm text-ink-2 max-w-2xl">
-                                {t("playground.subtitle")}
+                                {t("playground.heroBadge")}
+                            </span>
+
+                            <h1 className="my-3.5 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl leading-[1.1]">
+                                {t("playground.heroTitleA")} <span className="text-accent">{t("playground.heroTitleB")}</span>
+                            </h1>
+
+                            <p className="m-0 mb-6 max-w-xl text-base text-ink-2">
+                                {t("playground.heroDesc")}
                             </p>
+
+                            {/* Quick Presets Pills */}
+                            <div className="mb-6 space-y-2">
+                                <span className="font-mono text-xs font-semibold uppercase tracking-wider text-ink-3 flex items-center gap-1.5">
+                                    <Icon name="sparkles" className="size-3.5 text-accent" />
+                                    {t("playground.presets")}
+                                </span>
+                                <div className="flex flex-wrap gap-2">
+                                    {PRESETS.slice(0, 6).map((p) => (
+                                        <button
+                                            key={p.id}
+                                            type="button"
+                                            onClick={() => {
+                                                handleApplyPreset(p);
+                                                document.getElementById("request-console")?.scrollIntoView({ behavior: "smooth" });
+                                            }}
+                                            className="cursor-pointer rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink-2 hover:border-line-2 hover:text-ink hover:bg-surface-2 transition-all shadow-sm"
+                                        >
+                                            {tx(p.label)}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Scroll Jump CTA */}
+                            <div className="flex items-center gap-3">
+                                <a
+                                    href="#request-console"
+                                    className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] transition-colors no-underline"
+                                >
+                                    <Icon name="arrow" className="size-3.5 rotate-90" />
+                                    {t("playground.jumpToConsole")}
+                                </a>
+                            </div>
                         </div>
 
-                        {/* Quick Presets Pills */}
-                        <div className="flex flex-wrap items-center gap-1.5">
-                            <span className="font-mono text-xs font-medium text-ink-3 mr-1 flex items-center gap-1">
-                                <Icon name="sparkles" className="size-3 text-accent" />
-                                {t("playground.presets")}:
-                            </span>
-                            {PRESETS.slice(0, 5).map((p) => (
-                                <button
-                                    key={p.id}
-                                    type="button"
-                                    onClick={() => handleApplyPreset(p)}
-                                    className="cursor-pointer rounded-lg border border-line bg-surface px-2.5 py-1 text-xs font-medium text-ink-2 hover:border-line-2 hover:text-ink transition-colors"
-                                >
-                                    {tx(p.label)}
-                                </button>
-                            ))}
+                        {/* Right Column: Hero Map */}
+                        <div className="lg:col-span-5">
+                            <PlaygroundHeroMap
+                                activeProvinceCode={paramValues.id ? paramValues.id.padStart(2, "0") : undefined}
+                                onSelectProvince={handleSelectProvince}
+                            />
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
             {/* Main Playground Content */}
-            <main className={cx(wrap, "flex-1 py-8")}>
+            <main id="request-console" className={cx(wrap, "flex-1 py-8 scroll-mt-20")}>
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     {/* Left Column: Request Builder (5 cols on lg) */}
                     <div className="lg:col-span-5 space-y-5">

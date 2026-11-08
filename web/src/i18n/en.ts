@@ -311,6 +311,13 @@ const en = {
     playground: {
         title: "API Playground",
         subtitle: "Test, inspect, and visualize all OpenGeo Cambodia endpoints with live UI and raw JSON.",
+        heroBadge: "Interactive API Workbench",
+        heroTitleA: "Cambodia's Map,",
+        heroTitleB: "as a Live Playground.",
+        heroDesc: "Click any province on the map to test endpoints instantly, or craft custom requests with path and query parameters below.",
+        jumpToConsole: "Jump to Console ↓",
+        testInPlayground: "Test in Playground",
+        clickToTest: "Click any province to test live in console",
         selectEndpoint: "Select Endpoint",
         searchEndpoints: "Search endpoints…",
         allGroups: "All Endpoints",

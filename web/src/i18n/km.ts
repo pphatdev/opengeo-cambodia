@@ -309,6 +309,13 @@ const km: Messages = {
     playground: {
         title: "ផ្ទាំងសាកល្បង API",
         subtitle: "ធ្វើតេស្ត ពិនិត្យ និងបង្ហាញទិន្នន័យ endpoint ទាំងអស់របស់ OpenGeo Cambodia ជាទម្រង់ UI និង Raw JSON។",
+        heroBadge: "ផ្ទាំងការងារ API អន្តរកម្ម",
+        heroTitleA: "ផែនទីរដ្ឋបាលកម្ពុជា",
+        heroTitleB: "ជាផ្ទាំងសាកល្បងផ្ទាល់។",
+        heroDesc: "ចុចលើខេត្តណាមួយលើផែនទីដើម្បីធ្វើតេស្ត endpoint ភ្លាមៗ ឬបង្កើតសំណើតាមតម្រូវការខាងក្រោម។",
+        jumpToConsole: "ទៅកាន់ផ្ទាំងសំណើ ↓",
+        testInPlayground: "តេស្តក្នុងផ្ទាំងសាកល្បង",
+        clickToTest: "ចុចលើខេត្តណាមួយដើម្បីធ្វើតេស្តផ្ទាល់ក្នុងផ្ទាំងខាងក្រោម",
         selectEndpoint: "ជ្រើសរើស Endpoint",
         searchEndpoints: "ស្វែងរក endpoint…",
         allGroups: "គ្រប់ Endpoint",
