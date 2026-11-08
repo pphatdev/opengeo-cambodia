@@ -196,7 +196,7 @@ export function Cta() {
             </svg>
             <div className={cx(wrap, "relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]")}>
                 <div>
-                    <h2 className="mb-2.5 mt-0 font-display text-[clamp(28px,3.4vw,40px)] font-bold leading-[1.12] tracking-[-.03em] km:font-khmer km:tracking-normal km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
+                    <h2 className="mb-2.5 mt-0 font-display text-[clamp(24px,3vw,36px)] font-bold leading-[1.15] tracking-[-.025em] km:font-khmer km:tracking-normal km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
                     <p className="m-0 opacity-70">{t("cta.body")}</p>
                 </div>
                 <div className="flex flex-wrap gap-3 lg:justify-end">

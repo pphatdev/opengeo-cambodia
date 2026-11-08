@@ -21,10 +21,12 @@ export function DetailCard({ level, item, selection, childCount, onCrumb }: Prop
 
     if (!level || !item) {
         return (
-            <div className="flex-1 overflow-y-auto px-4 py-4.5" aria-live="polite">
-                <div className="grid place-items-center gap-2.5 px-2.5 py-7 text-center text-sm text-ink-3">
-                    <Icon name="map" className="size-8 text-line-2" />
-                    <div>{rt("explore.emptyDetail")}</div>
+            <div className="flex-1 overflow-y-auto px-4 py-6" aria-live="polite">
+                <div className="grid place-items-center gap-3 rounded-2xl p-8 text-center text-sm text-ink-3">
+                    <div className="grid size-12 place-items-center rounded-2xl glass-pill text-accent">
+                        <Icon name="map" className="size-6 text-accent" />
+                    </div>
+                    <div className="max-w-50 text-xs sm:text-sm text-ink-2">{rt("explore.emptyDetail")}</div>
                 </div>
             </div>
         );

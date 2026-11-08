@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { useI18n } from "../i18n";
 import { REPO_URL } from "./Nav";
-import { wrap } from "./ui";
+import { cx, wrap } from "./ui";
 
 /**
  * Edge-to-edge "OPEN GEO CAMBODIA" wordmark. SVG `textLength` stretches the letter
@@ -47,8 +47,13 @@ function Column({ title, children }: { title: string; children: ReactNode }) {
 export function Footer() {
     const { t, rt } = useI18n();
     return (
-        <footer className="scheme-dark bg-bg pt-14 text-[13.5px] text-ink-3">
-            <div className={wrap}>
+        <footer className="scheme-dark relative overflow-hidden bg-bg pt-16 text-[13.5px] text-ink-3 border-t border-line/60">
+            {/* Luminous ambient glow pool */}
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+                <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 size-180 rounded-full bg-accent/8 blur-[120px]" />
+                <div className="bg-dot-grid absolute inset-0 opacity-20" />
+            </div>
+            <div className={cx(wrap, "relative")}>
                 <div className="grid grid-cols-1 gap-8 border-b border-line pb-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
                     <div>
                         <Link className="flex items-center gap-2.5 font-semibold text-ink no-underline" to="/">

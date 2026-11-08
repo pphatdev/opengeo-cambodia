@@ -34,9 +34,9 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
         return (
             <div className="space-y-4">
                 {/* GeoJSON Summary Header */}
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface px-4 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl glass-panel px-4 py-3 shadow-glass">
                     <div className="flex items-center gap-2.5">
-                        <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-xs font-semibold text-accent">
+                        <span className="rounded-full bg-accent-soft px-2.5 py-0.5 font-mono text-xs font-semibold text-accent">
                             {body.type}
                         </span>
                         <span className="text-sm font-semibold text-ink">
@@ -55,8 +55,8 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
 
                 {/* Features List Table (collapsible or preview) */}
                 {count > 0 && (
-                    <div className="overflow-hidden rounded-xl border border-line bg-surface">
-                        <div className="border-b border-line bg-surface-2 px-4 py-2.5 text-xs font-semibold text-ink">
+                    <div className="overflow-hidden rounded-2xl glass-panel shadow-glass">
+                        <div className="border-b border-line/60 bg-surface-2/60 px-4 py-2.5 text-xs font-semibold text-ink">
                             Features in Geometry ({count})
                         </div>
                         <div className="overflow-y-auto divide-y divide-line/60">
@@ -122,7 +122,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
 
         return (
             <div className="space-y-4">
-                <div className="rounded-xl border border-line bg-surface p-4">
+                <div className="rounded-2xl glass-panel p-4.5 shadow-glass">
                     <div className="mb-3 flex items-center gap-2">
                         <span className="rounded-md bg-water-soft px-2 py-0.5 font-mono text-xs font-semibold text-water">
                             Geocoding
@@ -214,10 +214,10 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
 
         return (
             <div className="space-y-4">
-                <div className="rounded-xl border border-line bg-surface p-5">
+                <div className="rounded-2xl glass-panel p-5 shadow-glass">
                     <div className="mb-4 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-xs font-semibold text-accent">
+                            <span className="rounded-full bg-accent-soft px-2.5 py-0.5 font-mono text-xs font-semibold text-accent">
                                 Hierarchy
                             </span>
                             <span className="text-sm font-semibold text-ink">
@@ -248,8 +248,8 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                             const unit = d.administrative_unit || d.type_km || "";
 
                             return (
-                                <div key={tier.level} className="relative rounded-lg border border-line bg-surface-2 p-3.5 shadow-sm">
-                                    <div className="absolute -left-6.75 top-4 size-3 rounded-full border-2 border-surface bg-accent" />
+                                <div key={tier.level} className="relative rounded-xl glass-card p-4 shadow-xs">
+                                    <div className="absolute -left-6.75 top-4.5 size-3 rounded-full border-2 border-surface bg-accent shadow-[0_0_8px_var(--og-accent)]" />
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <div className="flex items-center gap-2">
                                             <span className={lvl(tier.level)}>{tier.level}</span>
@@ -309,20 +309,20 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
         return (
             <div className="space-y-4">
                 {/* Search / Filter toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface p-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl glass-panel p-3 shadow-glass">
                     <div className="flex items-center gap-2">
                         {/* Tab switcher: Table vs Query */}
-                        <div className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 p-0.5">
+                        <div className="inline-flex h-8 items-center rounded-xl glass-pill p-0.5">
                             <button
                                 type="button"
                                 onClick={() => setSubTab("table")}
                                 className={cx(
-                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                    subTab === "table" ? "bg-surface text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink"
+                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-all",
+                                    subTab === "table" ? "glass-pill text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink"
                                 )}
                             >
                                 <span>Table</span>
-                                <span className="rounded bg-ok/15 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-ok">
+                                <span className="rounded-full bg-ok/15 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-ok">
                                     {totalCount}
                                 </span>
                             </button>
@@ -330,8 +330,8 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                                 type="button"
                                 onClick={() => setSubTab("query")}
                                 className={cx(
-                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                    subTab === "query" ? "bg-surface text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink"
+                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-all",
+                                    subTab === "query" ? "glass-pill text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink"
                                 )}
                             >
                                 <Icon name="code" className="size-3.5" />
@@ -354,7 +354,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                                 value={filterText}
                                 onChange={(e) => setFilterText(e.target.value)}
                                 placeholder="Filter records…"
-                                className="h-8 w-full rounded-lg border border-line bg-surface-2 pl-8 pr-3 text-xs text-ink placeholder:text-ink-3 focus:border-accent focus:outline-none"
+                                className="h-8.5 w-full rounded-xl border border-line/70 bg-surface/75 pl-8 pr-3 text-xs text-ink placeholder:text-ink-3 backdrop-blur-sm focus:border-accent focus:outline-none transition-all"
                             />
                         </div>
                     )}
@@ -362,7 +362,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
 
                 {/* Sub-tab Content: Query vs Data Table */}
                 {subTab === "query" ? (
-                    <div className="rounded-xl border border-line bg-surface p-4 space-y-4">
+                    <div className="rounded-2xl glass-panel p-4.5 space-y-4 shadow-glass">
                         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3">
                             <div className="flex items-center gap-2">
                                 <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-xs font-bold text-accent">
@@ -413,10 +413,10 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                     </div>
                 ) : (
                     /* Data Table */
-                    <div className="overflow-x-auto rounded-xl border border-line bg-surface">
+                    <div className="overflow-x-auto rounded-2xl glass-panel shadow-glass">
                     <table className="w-full text-left text-xs">
                         <thead>
-                            <tr className="border-b border-line bg-surface-2 text-ink-3">
+                            <tr className="border-b border-line/60 bg-surface-2/60 text-ink-3">
                                 <th className="px-3.5 py-2.5 font-mono font-semibold">ID / Code</th>
                                 <th className="px-3.5 py-2.5 font-semibold">Name (English)</th>
                                 <th className="px-3.5 py-2.5 font-semibold">Name (Khmer)</th>
@@ -522,15 +522,15 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
 
         return (
             <div className="space-y-4">
-                <div className="rounded-xl border border-line bg-surface p-6 shadow-sm">
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-4">
+                <div className="rounded-2xl glass-panel p-6 shadow-glass">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-4">
                         <div className="flex items-center gap-2.5">
                             {level && <span className={lvl(level)}>{level}</span>}
                             <span className="font-mono text-sm font-bold text-ink">ID: {item.id}</span>
                             {item.code && <span className="font-mono text-xs text-ink-3">Code: {item.code}</span>}
                         </div>
                         {item.administrative_unit && (
-                            <span className="rounded bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink border border-line">
+                            <span className="rounded-md glass-pill px-2.5 py-1 text-xs font-semibold text-ink border border-line/60">
                                 {item.administrative_unit}
                             </span>
                         )}
@@ -545,7 +545,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                         {Object.entries(item)
                             .filter(([k]) => !k.startsWith("_") && !["name_en", "name_km"].includes(k))
                             .map(([key, val]) => (
-                                <div key={key} className="rounded-lg border border-line bg-surface-2 p-2.5">
+                                <div key={key} className="rounded-xl glass-card p-3">
                                     <div className="font-mono text-[11px] text-ink-3">{key}</div>
                                     <div className="mt-0.5 font-mono text-xs font-semibold text-ink truncate">
                                         {String(val ?? "-")}
@@ -555,11 +555,11 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                     </div>
 
                     {onDrillDown && (
-                        <div className="mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
+                        <div className="mt-5 flex flex-wrap gap-2.5 border-t border-line/60 pt-4">
                             <button
                                 type="button"
                                 onClick={() => onDrillDown(`/api/admin/hierarchy/${item.id}`, { id: String(item.id) })}
-                                className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-ink hover:border-line-2 cursor-pointer"
+                                className="inline-flex items-center gap-1.5 rounded-xl glass-pill px-3.5 py-1.75 text-xs font-semibold text-ink hover:text-accent cursor-pointer transition-all"
                             >
                                 <Icon name="layers" />
                                 Resolve Full Hierarchy
@@ -567,7 +567,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                             <button
                                 type="button"
                                 onClick={() => onDrillDown(`/api/boundaries/item/${item.code || item.id}`, { code: String(item.code || item.id) })}
-                                className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-ink hover:border-line-2 cursor-pointer"
+                                className="inline-flex items-center gap-1.5 rounded-xl glass-pill px-3.5 py-1.75 text-xs font-semibold text-ink hover:text-accent cursor-pointer transition-all"
                             >
                                 <Icon name="polygon" />
                                 View Boundary Polygon

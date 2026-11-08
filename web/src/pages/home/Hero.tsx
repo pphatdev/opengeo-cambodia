@@ -54,9 +54,10 @@ export function Hero() {
 
                     {/* Text content below map for small screens, left column for desktop */}
                     <div className="min-w-0 lg:col-start-1 lg:row-start-1">
-                        <span className="inline-flex items-center gap-2 rounded-full glass-pill py-1.25 pl-1.5 pr-3 text-[13px] font-medium text-ink-2">
-                            <span className="grid size-5 place-items-center rounded-full bg-accent-soft text-accent">
-                                <span className="size-1.75 rounded-full bg-current shadow-[0_0_0_3px_color-mix(in_srgb,currentColor_25%,transparent)]" />
+                        <span className="inline-flex items-center gap-2 rounded-full glass-pill py-1.25 pl-2 pr-3.5 text-[12.5px] font-medium text-ink-2 shadow-xs">
+                            <span className="relative flex size-2 items-center justify-center">
+                                <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
+                                <span className="relative inline-flex size-2 rounded-full bg-accent" />
                             </span>
                             {t("hero.eyebrow")}
                         </span>
@@ -131,7 +132,7 @@ export function Hero() {
                                     <RollingNumber
                                         value={value}
                                         stagger={90 + i * 15}
-                                        className="font-display text-[30px] font-bold leading-none tracking-[-.03em] sm:text-[38px] xl:text-[44px]"
+                                        className="font-display text-[28px] font-bold leading-none tracking-tight sm:text-[36px] xl:text-[42px]"
                                     />
 
                                     <div className="min-w-0">
@@ -140,8 +141,8 @@ export function Hero() {
                                     </div>
 
                                     {/* Log-scale bar so 25 → 14,576 still reads as a steady progression */}
-                                    <div aria-hidden="true" className="mt-auto h-0.75 overflow-hidden rounded-full bg-line">
-                                        <div className="h-full rounded-full bg-ink" style={{ width: `${(Math.log10(value) / Math.log10(MAX_SCALE)) * 100}%` }} />
+                                    <div aria-hidden="true" className="mt-auto h-1.5 overflow-hidden rounded-full bg-surface-2/80 p-px shadow-inner">
+                                        <div className="h-full rounded-full bg-gradient-to-r from-accent via-water to-emerald-400 shadow-[0_0_8px_var(--og-accent)] transition-all duration-1000" style={{ width: `${(Math.log10(value) / Math.log10(MAX_SCALE)) * 100}%` }} />
                                     </div>
                                 </li>
                             );

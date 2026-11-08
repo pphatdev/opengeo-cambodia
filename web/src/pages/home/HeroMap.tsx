@@ -116,8 +116,8 @@ export function HeroMap() {
         <figure className="relative m-0 w-full select-none" onMouseLeave={leave}>
             <div className="relative pt-5 pb-5" style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT + 80}` }}>
                 {/* Corner coordinates: the dataset's bounding box, like a map sheet's margin */}
-                <span className="absolute left-0 top-0 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">14.7°N · 102.3°E</span>
-                <span className="absolute bottom-0 right-0 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">10.4°N · 107.7°E</span>
+                <span className="absolute left-0 top-0 rounded-md glass-pill px-2 py-0.5 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">14.7°N · 102.3°E</span>
+                <span className="absolute bottom-0 right-0 rounded-md glass-pill px-2 py-0.5 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">10.4°N · 107.7°E</span>
 
                 <svg
                     viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
@@ -139,8 +139,8 @@ export function HeroMap() {
                                 onMouseEnter={() => hover(p)}
                                 onClick={() => select(p)}
                                 className={cx(
-                                    "cursor-pointer stroke-[1.1] transition-[fill,stroke] duration-300",
-                                    on ? "fill-accent/12 stroke-accent" : "fill-surface stroke-line-2 hover:fill-surface-2",
+                                    "cursor-pointer stroke-[1.2] transition-[fill,stroke,filter] duration-300",
+                                    on ? "fill-accent/22 stroke-accent drop-shadow-[0_0_8px_var(--og-accent)]" : "fill-surface/85 stroke-line-2 hover:fill-accent/12 hover:stroke-accent/50",
                                 )}
                             >
                                 <title>{lang === "km" ? `${p.km} · ${p.en}` : `${p.en} · ${p.km}`}</title>
@@ -153,7 +153,7 @@ export function HeroMap() {
                         key={active.code}
                         d={active.d}
                         vectorEffect="non-scaling-stroke"
-                        className="animate-lift pointer-events-none fill-accent/10 stroke-accent stroke-[1.75] transform-fill origin-center drop-shadow-[0_6px_12px_color-mix(in_srgb,var(--og-accent)_35%,transparent)]"
+                        className="animate-lift pointer-events-none fill-accent/25 stroke-accent stroke-[2] transform-fill origin-center drop-shadow-[0_8px_20px_color-mix(in_srgb,var(--og-accent)_45%,transparent)]"
                     />
                 </svg>
 
@@ -187,12 +187,12 @@ export function HeroMap() {
             {/* Phones: no room beside the pin, so the same card sits under the map */}
             <Callout province={active} info={info} className="mt-1 sm:hidden" />
 
-            <figcaption className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-ink-3">
-                <span className="inline-flex items-center gap-1.5">
-                    <span className="size-1.5 rounded-full bg-ok shadow-[0_0_0_3px_color-mix(in_srgb,var(--og-ok)_25%,transparent)]" />
+            <figcaption className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-ink-3">
+                <span className="inline-flex items-center gap-1.5 rounded-full glass-pill px-2.5 py-1">
+                    <span className="size-1.5 rounded-full bg-ok shadow-[0_0_8px_var(--og-ok)] animate-pulse" />
                     {t("hero.liveTag")}
                 </span>
-                <span>{t("hero.clickHint")}</span>
+                <span className="rounded-full glass-pill px-2.5 py-1">{t("hero.clickHint")}</span>
             </figcaption>
         </figure>
     );

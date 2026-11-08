@@ -23,13 +23,13 @@ markedInstance.use({
             const text = rawText.replace(/\s*\{#[\w-]+\}\s*$/, "");
 
             if (depth === 1) {
-                return `<h1 id="${id}" class="mb-4 font-display text-[clamp(36px,4.4vw,54px)] font-bold leading-[1.06] tracking-[-.035em] text-ink km:text-[clamp(32px,4vw,46px)] km:font-khmer km:font-semibold">${text}</h1>\n`;
+                return `<h1 id="${id}" class="mb-4 font-display text-[clamp(30px,3.8vw,48px)] font-bold leading-[1.12] tracking-[-.03em] text-ink km:text-[clamp(32px,4vw,46px)] km:font-khmer km:font-semibold">${text}</h1>\n`;
             }
             if (depth === 2) {
-                return `<h2 id="${id}" class="mb-3.5 mt-16 pt-2 font-display text-[30px] font-bold leading-[1.15] tracking-[-.025em] text-ink max-sm:text-[26px] km:text-[clamp(26px,3.2vw,38px)] km:font-khmer km:font-semibold"><a class="group text-inherit no-underline" href="#${id}">${text}<span class="ml-2 text-ink-3 opacity-0 group-hover:opacity-100">#</span></a></h2>\n`;
+                return `<h2 id="${id}" class="mb-3.5 mt-16 pt-2 font-display text-[26px] font-bold leading-[1.2] tracking-[-.02em] text-ink max-sm:text-[22px] km:text-[clamp(26px,3.2vw,38px)] km:font-khmer km:font-semibold"><a class="group text-inherit no-underline" href="#${id}">${text}<span class="ml-2 text-ink-3 opacity-0 group-hover:opacity-100">#</span></a></h2>\n`;
             }
             if (depth === 3) {
-                return `<h3 id="${id}" class="mb-2 mt-6 font-display text-[20px] font-bold text-ink km:font-khmer km:font-semibold">${text}</h3>\n`;
+                return `<h3 id="${id}" class="mb-2 mt-6 font-display text-[18px] font-bold leading-[1.3] text-ink km:font-khmer km:font-semibold">${text}</h3>\n`;
             }
             return `<h${depth} id="${id}">${text}</h${depth}>\n`;
         },

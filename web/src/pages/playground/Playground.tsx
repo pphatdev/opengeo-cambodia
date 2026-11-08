@@ -330,7 +330,7 @@ export default function Playground() {
                         <div className="space-y-4">
                             <div className="rounded-2xl">
                                 <div className="mb-6">
-                                    <div className="inline-flex items-center gap-2 rounded-lg border border-line/70 bg-surface-2 px-2.5 py-1 font-mono text-[11px] text-accent font-semibold mb-2 shadow-xs">
+                                    <div className="inline-flex items-center gap-2 rounded-full glass-pill px-3 py-1 font-mono text-[11px] text-accent font-semibold mb-2 shadow-xs">
                                         <span className="size-1.5 rounded-full bg-accent animate-pulse" />
                                         <span>{t("explore.kicker")}</span>
                                     </div>

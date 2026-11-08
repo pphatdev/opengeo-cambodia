@@ -189,14 +189,36 @@ export function Combobox({
                 <span className="flex min-w-0 items-baseline gap-1.5">
                     {selected ? (
                         <>
-                            <span className={cx("truncate", selected.labelClassName)}>{selected.label}</span>
+                            <span className={cx("truncate font-medium", selected.labelClassName)}>{selected.label}</span>
                             {selected.hint && <span className={cx("truncate text-xs text-ink-3", selected.hintClassName)}>{selected.hint}</span>}
                         </>
                     ) : (
                         <span className="truncate text-ink-3">{placeholder}</span>
                     )}
                 </span>
-                <Icon name="chevrons" className="size-4 flex-none text-ink-3" />
+                <div className="flex items-center gap-1.5 flex-none">
+                    {clearable && selected && !disabled && (
+                        <span
+                            role="button"
+                            tabIndex={0}
+                            title="Clear"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onChange(null);
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    e.stopPropagation();
+                                    onChange(null);
+                                }
+                            }}
+                            className="grid size-4.5 place-items-center rounded-full text-ink-3 hover:bg-surface-2 hover:text-ink transition-colors cursor-pointer"
+                        >
+                            <Icon name="x" className="size-3" />
+                        </span>
+                    )}
+                    <Icon name="chevrons" className={cx("size-4 flex-none text-ink-3 transition-transform duration-200", open && "rotate-180 text-accent")} />
+                </div>
             </button>
 
             {open &&
@@ -254,15 +276,16 @@ export function Combobox({
                                             onPointerDown={(e) => e.preventDefault() /* keep focus in the popover */}
                                             onClick={() => choose(o)}
                                             className={cx(
-                                                "flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm data-active:bg-surface-2",
+                                                "group/opt flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-all",
+                                                isSelected ? "bg-accent/12 font-medium text-accent" : "text-ink hover:bg-surface-2/70 data-active:bg-surface-2/80",
                                                 itemClassName,
                                             )}
                                         >
                                             <span className="flex min-w-0 flex-1 items-baseline gap-1.5">
                                                 <span className={cx("truncate", o.labelClassName)}>{o.label}</span>
-                                                {o.hint && <span className={cx("truncate text-xs text-ink-3", o.hintClassName)}>{o.hint}</span>}
+                                                {o.hint && <span className={cx("truncate text-xs text-ink-3 group-hover/opt:text-ink-2", o.hintClassName)}>{o.hint}</span>}
                                             </span>
-                                            <Icon name="check" className={cx("size-4 flex-none text-accent", isSelected ? "opacity-100" : "opacity-0")} />
+                                            <Icon name="check" className={cx("size-4 flex-none text-accent transition-all duration-150", isSelected ? "opacity-100 scale-100" : "opacity-0 scale-75")} />
                                         </div>
                                     );
                                 })
