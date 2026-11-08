@@ -291,7 +291,7 @@ export function PlaygroundHeroPreview({
     return (
         <div className="space-y-4">
             {/* The Hero Map Canvas Container */}
-            <div className="relative overflow-hidden rounded-2xl border border-line bg-surface/80 p-4 sm:p-6 shadow-sm backdrop-blur-md">
+            <div className="relative overflow-hidden rounded-2xl sm:p-6">
                 {/* Ambient Radial Accent Glow */}
                 <div className="pointer-events-none absolute inset-0 bg-radial-[circle_at_50%_45%] from-accent/8 via-transparent to-transparent" aria-hidden="true" />
 
@@ -311,10 +311,11 @@ export function PlaygroundHeroPreview({
                         <button
                             type="button"
                             onClick={() => setPaused((p) => !p)}
-                            className="cursor-pointer inline-flex items-center gap-1 rounded-lg border border-line/70 bg-surface/90 px-2.5 py-1 font-mono text-[11px] text-ink-3 hover:text-ink hover:border-accent shadow-xs backdrop-blur transition-colors"
+                            className="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-line/70 bg-surface/90 px-2.5 py-1 font-mono text-[11px] text-ink-3 hover:text-ink hover:border-accent shadow-xs backdrop-blur transition-colors"
                             title={paused ? "Resume Province Auto-Tour" : "Pause Auto-Tour"}
                         >
-                            <span>{paused ? "▶ Tour" : "⏸ Pause"}</span>
+                            <Icon name={paused ? "play" : "pause"} className="size-3 text-accent" />
+                            <span>{paused ? "Tour" : "Pause"}</span>
                         </button>
                     </div>
                 </div>

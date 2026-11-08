@@ -30,11 +30,19 @@ const paths = {
     sparkles: (<><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" /></>),
 } as const;
 
-export type IconName = keyof typeof paths | "play" | "github";
+export type IconName = keyof typeof paths | "play" | "pause" | "github";
 
 export function Icon({ name, ...rest }: { name: IconName } & SVGProps<SVGSVGElement>) {
     if (name === "play") {
         return (<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...rest}><path d="M7 4.5v15l13-7.5-13-7.5Z" /></svg>);
+    }
+    if (name === "pause") {
+        return (
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...rest}>
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+            </svg>
+        );
     }
     if (name === "github") {
         return (
