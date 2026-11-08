@@ -315,6 +315,8 @@ const km: Messages = {
         sendRequest: "ផ្ញើសំណើ",
         sending: "កំពុងផ្ញើ…",
         urlPlaceholder: "បញ្ចូលផ្លូវ endpoint ឧ. /api/admin/provinces",
+        tabMap: "ទិដ្ឋភាពផែនទី",
+        tabTable: "ទិដ្ឋភាពតារាង",
         tabUi: "ទិដ្ឋភាព UI",
         tabRaw: "Raw JSON",
         tabHeaders: "Headers",

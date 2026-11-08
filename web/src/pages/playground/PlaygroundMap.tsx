@@ -1,7 +1,9 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { Icon } from "../../components/Icon";
+import { cx, lvl } from "../../components/ui";
 import { cssVar, useTheme } from "../../lib/theme";
 
 const KH_BOUNDS: L.LatLngBoundsExpression = [[10.35, 102.3], [14.75, 107.65]];
@@ -12,12 +14,28 @@ export interface MapMarker {
     lon: number;
     title?: string;
     subtitle?: string;
+    properties?: Record<string, any>;
+}
+
+export interface SelectedMapItem {
+    id?: string | number;
+    code?: string;
+    name_en?: string;
+    name_km?: string;
+    administrative_unit?: string;
+    level?: string;
+    properties?: Record<string, any>;
+    coordinates?: [number, number];
 }
 
 interface PlaygroundMapProps {
     geojson?: unknown;
     markers?: MapMarker[];
     className?: string;
+    title?: string;
+    selectedCode?: string | null;
+    onSelectFeature?: (item: SelectedMapItem | null) => void;
+    onDrillDown?: (path: string, params?: Record<string, string>) => void;
 }
 
 function esc(s: unknown): string {
@@ -28,10 +46,23 @@ function esc(s: unknown): string {
         .replace(/"/g, "&quot;");
 }
 
-function MapUpdater({ geojson, markers }: { geojson?: unknown; markers?: MapMarker[] }) {
+function MapUpdater({
+    geojson,
+    markers,
+    selectedCode,
+    onFeatureClick,
+    onFeatureHover,
+}: {
+    geojson?: unknown;
+    markers?: MapMarker[];
+    selectedCode?: string | null;
+    onFeatureClick: (item: SelectedMapItem) => void;
+    onFeatureHover: (item: SelectedMapItem | null) => void;
+}) {
     const map = useMap();
     const geoJsonLayer = useRef<L.GeoJSON | null>(null);
     const markerLayers = useRef<L.LayerGroup | null>(null);
+    const layersByCode = useRef<Map<string, L.Path>>(new Map());
 
     useEffect(() => {
         // Clean up previous layers
@@ -43,6 +74,7 @@ function MapUpdater({ geojson, markers }: { geojson?: unknown; markers?: MapMark
             map.removeLayer(markerLayers.current);
             markerLayers.current = null;
         }
+        layersByCode.current.clear();
 
         const group = L.featureGroup();
 
@@ -55,60 +87,71 @@ function MapUpdater({ geojson, markers }: { geojson?: unknown; markers?: MapMark
 
                 if (isFc || isFeature || isGeom) {
                     const layer = L.geoJSON(geojson as any, {
-                        style: () => ({
-                            color: cssVar("--og-accent") || "#e11d48",
-                            weight: 1.5,
-                            opacity: 0.85,
-                            fillColor: cssVar("--og-accent") || "#e11d48",
-                            fillOpacity: 0.12,
-                        }),
+                        style: (feat) => {
+                            const p = feat?.properties || {};
+                            const code = String(p.code || p.id || "");
+                            const isSelected = selectedCode && code === selectedCode;
+
+                            return {
+                                color: isSelected ? (cssVar("--og-accent") || "#e11d48") : (cssVar("--og-water") || "#0ea5e9"),
+                                weight: isSelected ? 3 : 1.5,
+                                opacity: isSelected ? 1 : 0.85,
+                                fillColor: isSelected ? (cssVar("--og-accent") || "#e11d48") : (cssVar("--og-water") || "#0ea5e9"),
+                                fillOpacity: isSelected ? 0.35 : 0.12,
+                            };
+                        },
                         onEachFeature: (feature, featLayer) => {
                             const p = feature.properties || {};
-                            const title = p.name_en || p.name || `Feature ${p.id || p.code || ""}`;
+                            const code = String(p.code || p.id || "");
+                            const title = p.name_en || p.name || `Feature ${code}`;
                             const sub = p.name_km || "";
                             const unit = p.administrative_unit || p.type_km || p.level || "";
 
+                            if (code && featLayer instanceof L.Path) {
+                                layersByCode.current.set(code, featLayer);
+                            }
+
                             // Hover tooltip
                             featLayer.bindTooltip(
-                                `<div class="font-sans text-xs font-semibold">${esc(title)} ${sub ? `<span class="font-khmer font-normal opacity-80">(${esc(sub)})</span>` : ""}</div>`,
+                                `<div class="font-sans text-xs font-semibold">${esc(title)} ${sub ? `<span class="font-khmer font-normal opacity-85">(${esc(sub)})</span>` : ""}</div>`,
                                 { sticky: true, className: "og-leaflet-tooltip" },
-                            );
-
-                            // Click popup with properties table
-                            const rows = Object.entries(p)
-                                .filter(([k]) => !k.startsWith("_") && k !== "bbox")
-                                .slice(0, 10)
-                                .map(
-                                    ([k, v]) => `
-                                    <div class="flex items-center justify-between gap-3 border-b border-line/40 py-1 text-xs">
-                                        <span class="font-mono text-ink-3">${esc(k)}</span>
-                                        <span class="font-medium text-ink max-w-[180px] truncate text-right">${esc(v)}</span>
-                                    </div>`,
-                                )
-                                .join("");
-
-                            featLayer.bindPopup(
-                                `<div class="min-w-[200px] max-w-[280px] p-1 font-sans">
-                                    <div class="mb-1.5 flex items-center justify-between gap-2">
-                                        <h4 class="m-0 text-sm font-bold text-ink">${esc(title)}</h4>
-                                        ${unit ? `<span class="rounded bg-accent/15 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-accent">${esc(unit)}</span>` : ""}
-                                    </div>
-                                    ${sub ? `<p class="m-0 mb-2 font-khmer text-xs text-ink-2">${esc(sub)}</p>` : ""}
-                                    <div class="space-y-0.5">${rows}</div>
-                                </div>`,
-                                { maxWidth: 320 },
                             );
 
                             featLayer.on({
                                 mouseover: (e) => {
                                     const target = e.target;
-                                    target.setStyle?.({
-                                        weight: 2.5,
-                                        fillOpacity: 0.28,
+                                    if (target !== layersByCode.current.get(selectedCode || "")) {
+                                        target.setStyle?.({
+                                            weight: 2.5,
+                                            fillOpacity: 0.28,
+                                        });
+                                    }
+                                    onFeatureHover({
+                                        id: p.id,
+                                        code,
+                                        name_en: title,
+                                        name_km: sub,
+                                        administrative_unit: unit,
+                                        level: p.level,
+                                        properties: p,
                                     });
                                 },
                                 mouseout: (e) => {
-                                    layer.resetStyle(e.target);
+                                    const target = e.target;
+                                    if (target !== layersByCode.current.get(selectedCode || "")) {
+                                        layer.resetStyle(target);
+                                    }
+                                },
+                                click: () => {
+                                    onFeatureClick({
+                                        id: p.id,
+                                        code,
+                                        name_en: title,
+                                        name_km: sub,
+                                        administrative_unit: unit,
+                                        level: p.level,
+                                        properties: p,
+                                    });
                                 },
                             });
                         },
@@ -136,15 +179,20 @@ function MapUpdater({ geojson, markers }: { geojson?: unknown; markers?: MapMark
                         fillOpacity: 1,
                     });
 
-                    if (m.title || m.subtitle) {
-                        circle.bindPopup(
-                            `<div class="p-1 font-sans">
-                                ${m.title ? `<div class="text-xs font-semibold text-ink">${esc(m.title)}</div>` : ""}
-                                ${m.subtitle ? `<div class="text-[11px] text-ink-3">${esc(m.subtitle)}</div>` : ""}
-                                <div class="mt-1 font-mono text-[10px] text-accent">${m.lat.toFixed(5)}, ${m.lon.toFixed(5)}</div>
-                            </div>`,
-                        );
-                    }
+                    circle.bindTooltip(
+                        `<div class="font-sans text-xs font-semibold">${esc(m.title || "Location")}</div>`,
+                        { sticky: true },
+                    );
+
+                    circle.on("click", () => {
+                        onFeatureClick({
+                            name_en: m.title,
+                            name_km: m.subtitle,
+                            coordinates: [m.lat, m.lon],
+                            properties: m.properties,
+                        });
+                    });
+
                     circle.addTo(markersGroup);
                     group.addLayer(circle);
                 }
@@ -164,31 +212,202 @@ function MapUpdater({ geojson, markers }: { geojson?: unknown; markers?: MapMark
                 // Ignore bounds fitting errors
             }
         }
-    }, [geojson, markers, map]);
+    }, [geojson, markers, map, onFeatureClick, onFeatureHover, selectedCode]);
+
+    // Handle selectedCode programmatic highlight
+    useEffect(() => {
+        if (!selectedCode || !geoJsonLayer.current) return;
+        const targetLayer = layersByCode.current.get(selectedCode);
+        if (targetLayer && "getBounds" in targetLayer) {
+            try {
+                const b = (targetLayer as any).getBounds();
+                if (b && b.isValid()) {
+                    map.fitBounds(b, { padding: [40, 40], maxZoom: 12 });
+                }
+            } catch {
+                // Ignore
+            }
+        }
+    }, [selectedCode, map]);
 
     return null;
 }
 
-export function PlaygroundMap({ geojson, markers, className }: PlaygroundMapProps) {
-    const { dark } = useTheme();
+function MapControls() {
+    const map = useMap();
+
+    const handleCenterCambodia = () => {
+        map.fitBounds(KH_BOUNDS, { padding: [20, 20] });
+    };
 
     return (
-        <div className={`relative overflow-hidden rounded-xl border border-line bg-surface ${className || "h-[420px] w-full"}`}>
+        <div className="absolute top-3 right-3 z-500 flex flex-col gap-1.5">
+            <button
+                type="button"
+                onClick={handleCenterCambodia}
+                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-line bg-surface/90 text-ink shadow-card backdrop-blur-md hover:border-line-2 hover:bg-surface transition-colors"
+                title="Fit Cambodia Bounds"
+            >
+                <Icon name="map" className="size-4" />
+            </button>
+            <button
+                type="button"
+                onClick={() => map.zoomIn()}
+                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-line bg-surface/90 text-ink shadow-card backdrop-blur-md hover:border-line-2 hover:bg-surface transition-colors font-mono font-bold text-sm"
+                title="Zoom In"
+            >
+                +
+            </button>
+            <button
+                type="button"
+                onClick={() => map.zoomOut()}
+                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-line bg-surface/90 text-ink shadow-card backdrop-blur-md hover:border-line-2 hover:bg-surface transition-colors font-mono font-bold text-sm"
+                title="Zoom Out"
+            >
+                −
+            </button>
+        </div>
+    );
+}
+
+export function PlaygroundMap({
+    geojson,
+    markers,
+    className,
+    title,
+    selectedCode,
+    onSelectFeature,
+    onDrillDown,
+}: PlaygroundMapProps) {
+    const { dark } = useTheme();
+    const [inspected, setInspected] = useState<SelectedMapItem | null>(null);
+
+    const handleFeatureClick = (item: SelectedMapItem) => {
+        setInspected(item);
+        onSelectFeature?.(item);
+    };
+
+    const handleFeatureHover = (item: SelectedMapItem | null) => {
+        if (!inspected && item) {
+            setInspected(item);
+        }
+    };
+
+    // Calculate features count
+    let featuresCount = 0;
+    if (geojson && typeof geojson === "object") {
+        if ("features" in geojson && Array.isArray((geojson as any).features)) {
+            featuresCount = (geojson as any).features.length;
+        } else if ("type" in geojson && (geojson as any).type === "Feature") {
+            featuresCount = 1;
+        }
+    } else if (markers) {
+        featuresCount = markers.length;
+    }
+
+    return (
+        <div className={cx("relative overflow-hidden rounded-2xl border border-line bg-surface shadow-card", className || "h-[540px] w-full")}>
+            {/* Top Floating Badge Bar */}
+            <div className="absolute top-3 left-3 z-500 flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface/90 px-3 py-1.5 text-xs font-semibold text-ink shadow-card backdrop-blur-md">
+                    <span className="size-2 rounded-full bg-accent animate-pulse" />
+                    <span>{title || "Map Preview"}</span>
+                    {featuresCount > 0 && (
+                        <span className="ml-1 rounded bg-surface-2 px-1.5 py-0.2 text-[10.5px] font-mono text-ink-3">
+                            {featuresCount} {featuresCount === 1 ? "feature" : "features"}
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            {/* Map Container */}
             <MapContainer
                 bounds={KH_BOUNDS}
                 minZoom={6}
                 maxBounds={MAX_BOUNDS}
-                className={`h-full w-full ${dark ? "og-map-dark" : ""}`}
+                className={cx("h-full w-full", dark && "og-map-dark")}
                 attributionControl={false}
             >
                 <TileLayer
                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                     maxZoom={19}
                 />
-                <MapUpdater geojson={geojson} markers={markers} />
+                <MapControls />
+                <MapUpdater
+                    geojson={geojson}
+                    markers={markers}
+                    selectedCode={selectedCode}
+                    onFeatureClick={handleFeatureClick}
+                    onFeatureHover={handleFeatureHover}
+                />
             </MapContainer>
+
+            {/* Floating Inspection HUD / Card */}
+            {inspected && (
+                <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-md z-500 rounded-xl border border-line bg-surface/95 p-3.5 shadow-xl backdrop-blur-md transition-all">
+                    <div className="flex items-start justify-between gap-3">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                {inspected.level && <span className={lvl(inspected.level)}>{inspected.level}</span>}
+                                {inspected.code && (
+                                    <span className="font-mono text-xs font-semibold text-ink-3">#{inspected.code}</span>
+                                )}
+                                {inspected.administrative_unit && (
+                                    <span className="rounded bg-surface-2 px-1.5 py-0.5 text-[10.5px] text-ink-2 border border-line">
+                                        {inspected.administrative_unit}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex items-baseline gap-2">
+                                <h4 className="m-0 text-sm font-bold text-ink">{inspected.name_en || "Place Details"}</h4>
+                                {inspected.name_km && (
+                                    <span className="font-khmer text-xs text-ink-2">({inspected.name_km})</span>
+                                )}
+                            </div>
+                            {inspected.coordinates && (
+                                <div className="mt-1 font-mono text-[11px] text-accent">
+                                    {inspected.coordinates[0].toFixed(5)}, {inspected.coordinates[1].toFixed(5)}
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => setInspected(null)}
+                            className="size-5 rounded text-ink-3 hover:text-ink text-xs font-mono"
+                        >
+                            ✕
+                        </button>
+                    </div>
+
+                    {/* Drill down action if code is present */}
+                    {onDrillDown && inspected.code && (
+                        <div className="mt-2.5 pt-2 border-t border-line/60 flex items-center justify-between text-xs">
+                            <span className="text-ink-3 text-[11px]">Explore deeper:</span>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => onDrillDown(`/api/boundaries/item/${inspected.code}`, { code: String(inspected.code) })}
+                                    className="cursor-pointer font-semibold text-accent hover:underline text-[11.5px]"
+                                >
+                                    Boundary →
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => onDrillDown(`/api/admin/hierarchy/${inspected.code}`, { id: String(inspected.code) })}
+                                    className="cursor-pointer font-semibold text-water hover:underline text-[11.5px]"
+                                >
+                                    Hierarchy →
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Copyright attribution badge */}
             <div className="pointer-events-none absolute bottom-2 right-2 z-500 rounded bg-bg/85 px-2 py-0.5 text-[10px] text-ink-3 backdrop-blur">
-                © OpenStreetMap
+                © OpenStreetMap contributors
             </div>
         </div>
     );

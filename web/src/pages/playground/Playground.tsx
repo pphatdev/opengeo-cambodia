@@ -9,11 +9,12 @@ import { apiGet, fmtBytes, PROD_ORIGIN, type RequestLog } from "../../lib/api";
 import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, GROUPS, type Endpoint, type EndpointGroup } from "../docs/endpoints";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
+import { PlaygroundMapPreview } from "./PlaygroundMapPreview";
 import { PlaygroundRawPreview } from "./PlaygroundRawPreview";
 import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
 import { PRESETS, type PlaygroundPreset } from "./presets";
 
-type PreviewTab = "ui" | "raw" | "headers";
+type PreviewTab = "map" | "raw" | "table" | "headers";
 
 export default function Playground() {
     const { t, tx, lang } = useI18n();
@@ -36,7 +37,7 @@ export default function Playground() {
     );
     const [customUrl, setCustomUrl] = useState<string>(() => displayPath(initialEp, Object.fromEntries((initialEp.params ?? []).map((p) => [p.name, p.example ?? ""]))));
 
-    const [activeTab, setActiveTab] = useState<PreviewTab>("ui");
+    const [activeTab, setActiveTab] = useState<PreviewTab>("map");
     const [pending, setPending] = useState(false);
     const [result, setResult] = useState<{ log: RequestLog | null; error?: string } | null>(null);
 
@@ -357,14 +358,14 @@ export default function Playground() {
                             <div className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 p-0.5">
                                 <button
                                     type="button"
-                                    onClick={() => setActiveTab("ui")}
+                                    onClick={() => setActiveTab("map")}
                                     className={cx(
                                         "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                        activeTab === "ui" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                        activeTab === "map" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
                                     )}
                                 >
-                                    <Icon name="eye" className="size-3.5" />
-                                    {t("playground.tabUi")}
+                                    <Icon name="map" className="size-3.5 text-accent" />
+                                    {t("playground.tabMap")}
                                 </button>
                                 <button
                                     type="button"
@@ -379,13 +380,24 @@ export default function Playground() {
                                 </button>
                                 <button
                                     type="button"
+                                    onClick={() => setActiveTab("table")}
+                                    className={cx(
+                                        "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                        activeTab === "table" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                    )}
+                                >
+                                    <Icon name="table" className="size-3.5" />
+                                    {t("playground.tabTable")}
+                                </button>
+                                <button
+                                    type="button"
                                     onClick={() => setActiveTab("headers")}
                                     className={cx(
                                         "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
                                         activeTab === "headers" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
                                     )}
                                 >
-                                    <Icon name="table" className="size-3.5" />
+                                    <Icon name="info" className="size-3.5" />
                                     {t("playground.tabHeaders")}
                                 </button>
                             </div>
@@ -452,16 +464,24 @@ export default function Playground() {
                         ) : (
                             /* Active Tab View */
                             <div className="space-y-4">
-                                {activeTab === "ui" && (
-                                    <PlaygroundUiPreview
+                                {activeTab === "map" && (
+                                    <PlaygroundMapPreview
                                         log={log}
+                                        endpointPath={customUrl}
                                         onDrillDown={handleDrillDown}
+                                        onSwitchTab={(tab) => setActiveTab(tab)}
                                     />
                                 )}
                                 {activeTab === "raw" && (
                                     <PlaygroundRawPreview
                                         log={log}
                                         endpointPath={customUrl}
+                                    />
+                                )}
+                                {activeTab === "table" && (
+                                    <PlaygroundUiPreview
+                                        log={log}
+                                        onDrillDown={handleDrillDown}
                                     />
                                 )}
                                 {activeTab === "headers" && (
@@ -478,3 +498,4 @@ export default function Playground() {
         </div>
     );
 }
+

@@ -78,3 +78,4 @@ export function PlaygroundHeaders({ log, customUrl }: PlaygroundHeadersProps) {
         </div>
     );
 }
+

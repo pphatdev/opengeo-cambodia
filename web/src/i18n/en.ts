@@ -317,6 +317,8 @@ const en = {
         sendRequest: "Send Request",
         sending: "Sending…",
         urlPlaceholder: "Enter endpoint path, e.g. /api/admin/provinces",
+        tabMap: "Map Preview",
+        tabTable: "Table View",
         tabUi: "UI Preview",
         tabRaw: "Raw JSON",
         tabHeaders: "Headers",
