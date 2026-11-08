@@ -278,15 +278,7 @@ export function PlaygroundHeroPreview({
             {/* The Hero Map Canvas Container */}
             <div className="relative overflow-hidden rounded">
                 {/* Top Overlay Bar */}
-                <div className="mb-2 flex flex-wrap items-center justify-between gap-2 pb-3">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-ink-2">
-                            {highlightedProvinceCodes.size > 0
-                                ? `${highlightedProvinceCodes.size} Provinces Highlighted`
-                                : `Active: ${active.en} (${active.km})`}
-                        </span>
-                    </div>
-
+                <div className="mb-2 flex flex-wrap items-center justify-end gap-2 pb-3">
                     {log ? (
                         <div className="flex items-center gap-2 font-mono text-xs text-ink-3">
                             <span className={log.status < 400 ? "text-ok font-bold" : "text-warn font-bold"}>
