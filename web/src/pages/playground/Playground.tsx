@@ -10,7 +10,7 @@ import { useTheme } from "../../lib/theme";
 import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoints";
 import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "../home/cambodiaMap";
-import { AtlasCanvas } from "./AtlasCanvas";
+import { AtlasRealMap } from "./AtlasRealMap";
 import { AtlasCockpitSidebar, type CockpitTab } from "./AtlasCockpitSidebar";
 import { type AtlasActivePanel, AtlasDrawers } from "./AtlasDrawers";
 import { AtlasInspector } from "./AtlasInspector";
@@ -460,15 +460,16 @@ export default function Playground() {
                             />
                         </div>
 
-                        {/* Center Stage: 3D Holographic Map Canvas */}
+                        {/* Center Stage: Real Interactive Geographic Map Canvas */}
                         <div className="flex-1 relative h-full overflow-hidden flex flex-col bg-[#060911]">
-                            <AtlasCanvas
+                            <AtlasRealMap
                                 activeProvince={activeProvince}
                                 highlightedCodes={highlightedProvinceCodes}
                                 geocodeMarker={geocodeMarker}
                                 networkEnabled={networkEnabled}
                                 onSelectProvince={handleSelectProvince}
                                 onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
+                                log={log}
                             />
 
                             {/* Center Floating Inspector Card (Bottom-Left) */}

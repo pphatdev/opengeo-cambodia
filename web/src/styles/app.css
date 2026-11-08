@@ -224,4 +224,10 @@
   .og-map .leaflet-tile-pane { filter: grayscale(0.4) contrast(0.96) brightness(1.02); }
   .og-map.og-map-dark .leaflet-tile-pane { filter: invert(1) hue-rotate(190deg) brightness(0.82) contrast(0.92) grayscale(0.4); }
   .og-map.og-picking .leaflet-container { cursor: crosshair; }
+
+  /* Cybernetic Real Map dark matter & satellite night filters */
+  .og-real-map-dark .leaflet-tile-pane { filter: brightness(0.9) contrast(1.12) saturate(1.1); }
+  .og-real-map-sat .leaflet-tile-pane { filter: brightness(0.68) contrast(1.25) saturate(0.85) hue-rotate(190deg); }
+  .og-real-tip { background: transparent !important; border: none !important; box-shadow: none !important; }
+  .og-real-tip::before { display: none !important; }
 }
