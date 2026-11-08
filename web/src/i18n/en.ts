@@ -326,6 +326,7 @@ const en = {
         urlPlaceholder: "Enter endpoint path, e.g. /api/admin/provinces",
         tabMap: "Map Preview",
         tabTable: "Table View",
+        tabDrillDown: "Drill Down",
         tabUi: "UI Preview",
         tabRaw: "Raw JSON",
         tabHeaders: "Headers",

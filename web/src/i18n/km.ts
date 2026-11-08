@@ -324,6 +324,7 @@ const km: Messages = {
         urlPlaceholder: "បញ្ចូលផ្លូវ endpoint ឧ. /api/admin/provinces",
         tabMap: "ទិដ្ឋភាពផែនទី",
         tabTable: "ទិដ្ឋភាពតារាង",
+        tabDrillDown: "រុករកលម្អិត",
         tabUi: "ទិដ្ឋភាព UI",
         tabRaw: "Raw JSON",
         tabHeaders: "Headers",

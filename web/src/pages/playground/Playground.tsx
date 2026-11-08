@@ -13,9 +13,10 @@ import { PlaygroundHeroPreview } from "./PlaygroundHeroPreview";
 import { PlaygroundMap } from "./PlaygroundMap";
 import { PlaygroundRawPreview } from "./PlaygroundRawPreview";
 import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
+import { Explorer } from "../home/Explorer";
 
-type PreviewTab = "map" | "raw" | "table" | "headers";
-const VALID_TABS: PreviewTab[] = ["map", "table", "raw", "headers"];
+type PreviewTab = "map" | "table" | "drilldown" | "raw" | "headers";
+const VALID_TABS: PreviewTab[] = ["map", "table", "drilldown", "raw", "headers"];
 
 export default function Playground() {
     const { t, lang } = useI18n();
@@ -192,6 +193,18 @@ export default function Playground() {
                             </button>
                             <button
                                 type="button"
+                                onClick={() => setActiveTab("drilldown")}
+                                className={cx(
+                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    activeTab === "drilldown" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                )}
+                                title={t("explore.title")}
+                            >
+                                <Icon name="chevrons" className="size-3.5" />
+                                <span>{t("playground.tabDrillDown")}</span>
+                            </button>
+                            <button
+                                type="button"
                                 onClick={() => setActiveTab("raw")}
                                 className={cx(
                                     "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
@@ -310,6 +323,24 @@ export default function Playground() {
                                     onSwitchTab={(tab) => setActiveTab(tab)}
                                 />
                             )}
+                        </div>
+                    ) : activeTab === "drilldown" ? (
+                        <div className="space-y-4">
+                            <div className="rounded-2xl border border-line bg-surface/80 p-5 sm:p-6 shadow-sm backdrop-blur">
+                                <div className="mb-6">
+                                    <div className="inline-flex items-center gap-2 rounded-lg border border-line/70 bg-surface-2 px-2.5 py-1 font-mono text-[11px] text-accent font-semibold mb-2 shadow-xs">
+                                        <span className="size-1.5 rounded-full bg-accent animate-pulse" />
+                                        <span>{t("explore.kicker")}</span>
+                                    </div>
+                                    <h2 className="m-0 font-display text-xl sm:text-2xl font-bold text-ink">
+                                        {t("explore.title")}
+                                    </h2>
+                                    <p className="m-0 mt-2 max-w-2xl text-xs sm:text-sm text-ink-3">
+                                        {t("explore.intro")}
+                                    </p>
+                                </div>
+                                <Explorer />
+                            </div>
                         </div>
                     ) : !log ? (
                         <div className="flex min-h-105 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-surface/50 p-8 text-center">
