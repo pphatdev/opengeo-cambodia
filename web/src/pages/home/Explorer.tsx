@@ -189,11 +189,11 @@ export function Explorer() {
     const deepest = [...LEVELS].reverse().find((l) => sel[l]) ?? null;
 
     return (
-        <div className="grid min-h-170 grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[14px] border border-line bg-surface shadow-card lg:grid-cols-[380px_minmax(0,1fr)]" ref={rootRef}>
-            <aside className="flex min-w-0 flex-col border-b border-line lg:border-b-0 lg:border-r">
+        <div className="grid min-h-170 grid-cols-[minmax(0,1fr)] overflow-hidden rounded-2xl glass-panel shadow-glass-lg lg:grid-cols-[380px_minmax(0,1fr)]" ref={rootRef}>
+            <aside className="flex min-w-0 flex-col border-b border-line/60 lg:border-b-0 lg:border-r lg:border-line/60">
                 <SearchBox onPick={(item) => void jumpTo(item.id)} onLog={log} />
 
-                <div className="border-b border-line px-4 pb-4 pt-2">
+                <div className="border-b border-line/60 px-4 pb-4 pt-2">
                     {LEVELS.map((level, i) => {
                         const parent = i > 0 ? LEVELS[i - 1] : null;
                         const items = lists[level];

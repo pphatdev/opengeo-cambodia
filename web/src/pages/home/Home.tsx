@@ -21,7 +21,7 @@ export function Home() {
             <Nav />
             <main>
                 <Hero />
-                <section className="border-y border-line bg-surface-2/70 py-20 sm:py-24" id="explore">
+                <section className="relative overflow-hidden border-y border-line/60 bg-liquid-mesh py-20 sm:py-24" id="explore">
                     <div className={wrap}>
                         <SectionHead kicker={t("explore.kicker")} title={t("explore.title")} intro={t("explore.intro")} />
                         <Explorer />

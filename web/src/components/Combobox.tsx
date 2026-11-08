@@ -178,11 +178,11 @@ export function Combobox({
                 onClick={() => setOpen((o) => !o)}
                 onKeyDown={onTriggerKey}
                 className={cx(
-                    "flex w-full cursor-pointer items-center justify-between gap-2 border border-line bg-surface text-left text-ink transition-[border-color,box-shadow]",
-                    "hover:border-line-2 focus-visible:border-accent focus-visible:shadow-[0_0_0_3px_var(--og-accent-soft)] focus-visible:outline-none",
+                    "flex w-full cursor-pointer items-center justify-between gap-2 border border-line/70 bg-surface/80 text-left text-ink backdrop-blur-sm transition-all",
+                    "hover:border-accent/40 focus-visible:border-accent focus-visible:shadow-[0_0_0_3px_var(--og-accent-soft)] focus-visible:outline-none",
                     "aria-expanded:border-accent aria-expanded:shadow-[0_0_0_3px_var(--og-accent-soft)]",
                     "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:opacity-50",
-                    sm ? "h-8.5 rounded-lg px-2.5 text-[13px]" : "h-10 rounded-[9px] pl-2.75 pr-2.5 text-sm",
+                    sm ? "h-8.5 rounded-lg px-2.5 text-[13px]" : "h-10 rounded-xl pl-2.75 pr-2.5 text-sm",
                     triggerClassName,
                 )}
             >
@@ -204,11 +204,11 @@ export function Combobox({
                     <div
                         ref={popRef}
                         style={pos ? { left: pos.left, top: pos.top, width: pos.width, transform: pos.up ? "translateY(-100%)" : undefined } : { visibility: "hidden" }}
-                        className="fixed z-1100 overflow-hidden rounded-[10px] border border-line bg-surface text-ink shadow-card animate-pop"
+                        className="fixed z-1100 overflow-hidden rounded-xl glass-panel text-ink shadow-glass-lg animate-pop"
                         onKeyDown={onListKey}
                     >
                         {searchable && (
-                            <div className="flex items-center gap-2 border-b border-line px-3">
+                            <div className="flex items-center gap-2 border-b border-line/60 bg-surface-2/30 px-3">
                                 <Icon name="search" className="size-4 flex-none text-ink-3" />
                                 <input
                                     ref={inputRef}

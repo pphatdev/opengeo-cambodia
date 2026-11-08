@@ -9,8 +9,8 @@ import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, type Endpoint } from "./endpoints";
 import { CodeBox, Table } from "./parts";
 
-const tag = "whitespace-nowrap rounded-full border border-line px-[9px] py-0.5 font-mono text-[11px] font-medium text-ink-3 km:font-khmer";
-const field = cx("h-[34px] w-full rounded-lg border border-line bg-surface px-2.5 font-mono text-[13px] text-ink", focusRing);
+const tag = "whitespace-nowrap rounded-full glass-pill px-2.5 py-0.5 font-mono text-[11px] font-medium text-ink-3 km:font-khmer";
+const field = cx("h-[34px] w-full rounded-xl border border-line/70 bg-surface/80 backdrop-blur-sm px-2.5 font-mono text-[13px] text-ink transition-colors", focusRing);
 
 function PathLabel({ path }: { path: string }) {
     const parts = path.split(/(\{\w+\})/);
@@ -55,7 +55,7 @@ export function EndpointCard({ ep }: { ep: Endpoint }) {
     const set = (name: string, value: string) => setValues((v) => ({ ...v, [name]: value }));
 
     return (
-        <article className="mb-6.5 mt-4.5 scroll-mt-21 overflow-hidden rounded-[14px] border border-line bg-surface" id={`ep-${ep.id}`}>
+        <article className="mb-8 mt-5 scroll-mt-21 overflow-hidden rounded-2xl glass-card border border-line/70" id={`ep-${ep.id}`}>
             <div className="px-5 pb-3.5 pt-4.5">
                 <div className="flex flex-wrap items-center gap-2.5">
                     <span className="rounded-md bg-ok/15 px-2 py-0.75 font-mono text-[11px] font-semibold text-ok">GET</span>
@@ -85,7 +85,7 @@ export function EndpointCard({ ep }: { ep: Endpoint }) {
                         ])}
                     />
                 ) : null}
-                <form className="bg-surface-2 pb-px" onSubmit={send}>
+                <form className="bg-surface-2/40 backdrop-blur-xs pb-px border-t border-line/60" onSubmit={send}>
                     {(ep.params?.length || !ep.noTry) && (
                         <div className="flex flex-wrap items-end gap-2.5 px-5 py-3.5 max-sm:px-3.5">
                             {ep.params?.map((p) => (
@@ -120,7 +120,7 @@ export function EndpointCard({ ep }: { ep: Endpoint }) {
                             ))}
                             {!ep.noTry && (
                                 <button
-                                    className="inline-flex h-8.5 cursor-pointer items-center gap-1.75 rounded-lg border-0 bg-ink px-4 text-[13px] font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] disabled:cursor-wait disabled:opacity-60 km:font-khmer [&_svg]:size-3.25"
+                                    className="inline-flex h-8.5 cursor-pointer items-center gap-1.75 rounded-xl border-0 bg-ink px-4 text-[13px] font-semibold text-bg shadow-sm hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] hover:shadow-[0_4px_16px_-4px_var(--og-accent)] transition-all disabled:cursor-wait disabled:opacity-60 km:font-khmer [&_svg]:size-3.25"
                                     type="submit"
                                     disabled={pending}
                                 >

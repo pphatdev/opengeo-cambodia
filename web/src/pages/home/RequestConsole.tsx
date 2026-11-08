@@ -32,7 +32,7 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
     const view = useMemo(() => (active ? summarise(active.body) : null), [active]);
 
     return (
-        <div className="min-w-0 border-t border-line bg-code text-code-ink" aria-label={t("explore.consoleLabel")}>
+        <div className="min-w-0 border-t border-line/60 bg-code/95 backdrop-blur-md text-code-ink" aria-label={t("explore.consoleLabel")}>
             <div className="flex items-center gap-2.5 border-b border-code-line py-2 pl-4 pr-3 font-mono text-xs text-code-dim">
                 <span>{t("explore.console")}</span>
                 <strong className="truncate font-medium text-code-hi">
@@ -51,7 +51,7 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
                         type="button"
                         aria-pressed={r.id === activeId}
                         onClick={() => onSelect(r.id)}
-                        className="inline-flex max-w-90 flex-none cursor-pointer items-center gap-2 rounded-[7px] border border-code-line bg-code-pill px-2.25 py-1.25 font-mono text-xs text-code-dim hover:text-code-hi aria-pressed:border-accent/50 aria-pressed:text-code-hi transition-colors"
+                        className="inline-flex max-w-90 flex-none cursor-pointer items-center gap-2 rounded-lg border border-code-line bg-code-pill/90 px-2.5 py-1.25 font-mono text-xs text-code-dim hover:text-code-hi aria-pressed:border-accent/60 aria-pressed:text-code-hi aria-pressed:bg-code-tab transition-all"
                     >
                         <span className="font-medium text-j-str">GET</span>
                         <span className="truncate">{r.path}</span>

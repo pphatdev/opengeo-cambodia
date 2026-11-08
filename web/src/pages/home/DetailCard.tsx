@@ -65,10 +65,10 @@ export function DetailCard({ level, item, selection, childCount, onCrumb }: Prop
             {/* The official Khmer name is the heading in both languages; the romanised name sits below */}
             <h3 className="m-0 font-khmer text-[26px] font-semibold leading-[1.35]">{item.name_km}</h3>
             <p className="mb-3.5 mt-0.5 text-[15px] text-ink-2">{item.name_en}</p>
-            <dl className="m-0 grid grid-cols-[auto_1fr] overflow-hidden rounded-[10px] border border-line text-[13px] [&>*:nth-last-child(-n+2)]:border-b-0">
+            <dl className="m-0 grid grid-cols-[auto_1fr] overflow-hidden rounded-xl border border-line/70 text-[13px] backdrop-blur-xs [&>*:nth-last-child(-n+2)]:border-b-0">
                 {rows.map((r) => [
-                    <dt key={`${r.label}-t`} className="m-0 border-b border-line bg-surface-2 px-3 py-2 text-ink-3">{r.label}</dt>,
-                    <dd key={`${r.label}-d`} className={cx("m-0 flex min-w-0 items-center justify-end gap-1.5 border-b border-line px-3 py-2", r.km ? "font-khmer text-[13px]" : "font-mono text-[12.5px]")}>
+                    <dt key={`${r.label}-t`} className="m-0 border-b border-line/60 bg-surface-2/40 px-3 py-2 text-ink-3">{r.label}</dt>,
+                    <dd key={`${r.label}-d`} className={cx("m-0 flex min-w-0 items-center justify-end gap-1.5 border-b border-line/60 px-3 py-2 bg-surface/50", r.km ? "font-khmer text-[13px]" : "font-mono text-[12.5px]")}>
                         {r.value}
                         {r.copyable && (
                             <button

@@ -29,17 +29,17 @@ const EASE = "ease-[cubic-bezier(.22,1,.36,1)]";
 function Callout({ province, info, className, style }: { province: HeroProvince; info?: Live; className?: string; style?: CSSProperties }) {
     const { t } = useI18n();
     return (
-        <div className={cx("pointer-events-none rounded-xl border border-line bg-surface/95 p-3.5 shadow-card backdrop-blur", className)} style={style}>
+        <div className={cx("pointer-events-none rounded-2xl glass-panel p-4 shadow-glass-lg transition-all", className)} style={style}>
             <div key={province.code} className="animate-fade-up">
             <div className="mb-1.5 flex items-center justify-between gap-2">
-                <span className="rounded-md bg-accent-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-accent km:font-khmer km:normal-case km:tracking-normal km:text-[11px]">
+                <span className="rounded-full bg-accent-soft/90 border border-accent/25 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-accent km:font-khmer km:normal-case km:tracking-normal km:text-[11px]">
                     {t("hero.provinceTag")}
                 </span>
                 <span className="font-mono text-[11px] text-ink-3">#{province.code}</span>
             </div>
             <div className="font-khmer text-[19px] font-semibold leading-snug text-ink">{province.km}</div>
             <div className="text-[13px] text-ink-2">{province.en}</div>
-            <div className="mt-2.5 flex items-center justify-between gap-2 rounded-md bg-code px-2 py-1.5 font-mono text-[10.5px] text-code-dim">
+            <div className="mt-2.5 flex items-center justify-between gap-2 rounded-lg bg-code/95 border border-code-line/60 px-2.5 py-1.5 font-mono text-[10.5px] text-code-dim backdrop-blur-sm">
                 <span className="truncate"><span className="text-j-str">GET</span> {info?.path ?? `/api/admin/item/${province.id}`}</span>
                 <span className="flex-none">
                     {info ? (<><span className={info.status < 400 ? "text-j-str" : "text-j-err"}>{info.status}</span> · {info.server}</>) : "…"}
@@ -47,7 +47,7 @@ function Callout({ province, info, className, style }: { province: HeroProvince;
             </div>
             <Link
                 to={`/playground?ep=admin-districts&id=${province.id}`}
-                className="pointer-events-auto mt-2 flex items-center justify-between rounded-md bg-surface px-2.5 py-1 font-mono text-[10.5px] font-semibold text-accent border border-line hover:border-accent transition-colors no-underline"
+                className="pointer-events-auto mt-2.5 flex items-center justify-between rounded-lg glass-pill px-3 py-1.5 font-mono text-[10.5px] font-semibold text-accent hover:border-accent hover:text-accent transition-all no-underline"
             >
                 <span>{t("playground.testInPlayground")}</span>
                 <span>→</span>
@@ -165,10 +165,10 @@ export function HeroMap() {
                     style={{ transform: `translate(${leftPct}%, ${topPct}%)` }}
                     aria-hidden="true"
                 >
-                    {/* Pin at the layer's origin */}
+                    {/* Pin at the layer's origin with refractive liquid aura */}
                     <span className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2">
-                        <span className="absolute inset-0 animate-ping rounded-full bg-accent/40 motion-reduce:hidden" />
-                        <span className="relative block size-3 rounded-full border-2 border-bg bg-accent shadow" />
+                        <span className="absolute -inset-1 animate-ping rounded-full bg-accent/40 motion-reduce:hidden" />
+                        <span className="relative block size-3.5 rounded-full border-2 border-surface bg-accent shadow-[0_0_12px_var(--og-accent)]" />
                     </span>
 
                     {/* Callout beside the pin (sm and up); side switch animates too */}

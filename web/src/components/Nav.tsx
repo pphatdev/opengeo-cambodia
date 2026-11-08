@@ -16,7 +16,7 @@ interface NavProps {
 export function LangSwitch() {
     const { lang, setLang, t } = useI18n();
     return (
-        <div className="mx-0.5 inline-flex h-9 items-center rounded-[9px] border border-line bg-surface p-0.5 max-sm:mx-0" role="group" aria-label={t("nav.language")}>
+        <div className="mx-0.5 inline-flex h-9 items-center rounded-[10px] glass-pill p-0.5 max-sm:mx-0" role="group" aria-label={t("nav.language")}>
             {LANGS.map((l) => (
                 <button
                     key={l.id}
@@ -26,7 +26,7 @@ export function LangSwitch() {
                     title={l.name}
                     onClick={() => setLang(l.id)}
                     className={cx(
-                        "h-7.5 cursor-pointer rounded-[7px] border-0 bg-transparent px-2.25 max-sm:px-1.5 text-ink-3 hover:text-ink aria-pressed:bg-ink aria-pressed:text-bg",
+                        "h-7.5 cursor-pointer rounded-[7px] border-0 bg-transparent px-2.25 max-sm:px-1.5 text-ink-3 transition-all hover:text-ink aria-pressed:bg-ink aria-pressed:text-bg aria-pressed:shadow-xs",
                         l.id === "km" ? "font-khmer text-[12.5px] font-medium" : "font-sans text-xs font-semibold",
                     )}
                 >
@@ -38,7 +38,7 @@ export function LangSwitch() {
 }
 
 const navItem =
-    "cursor-pointer no-underline text-ink-2 hover:text-ink transition-colors max-sm:inline-grid max-sm:size-9 max-sm:place-items-center max-sm:rounded-[9px] max-sm:border max-sm:border-line max-sm:bg-surface max-sm:p-0 max-sm:hover:border-line-2 max-sm:[&_svg]:size-[17px] sm:inline-flex sm:items-center sm:rounded-lg sm:px-3 sm:py-2 sm:text-sm sm:font-medium sm:hover:bg-surface-2 sm:km:font-khmer";
+    "cursor-pointer no-underline text-ink-2 hover:text-ink transition-all max-sm:inline-grid max-sm:size-9 max-sm:place-items-center max-sm:rounded-[10px] max-sm:glass-pill max-sm:p-0 max-sm:hover:border-accent/40 max-sm:[&_svg]:size-[17px] sm:inline-flex sm:items-center sm:rounded-lg sm:px-3 sm:py-2 sm:text-sm sm:font-medium sm:hover:bg-surface-2/70 sm:hover:text-ink sm:km:font-khmer";
 
 export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
     const { toggle } = useTheme();
@@ -57,8 +57,10 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
     return (
         <header
             className={cx(
-                "sticky top-0 z-1000 border-b bg-bg/85 backdrop-blur-md backdrop-saturate-150 transition-colors",
-                scrolled || isDocs || isPlayground ? "border-line" : "border-transparent",
+                "sticky top-0 z-1000 border-b transition-all duration-300",
+                scrolled || isDocs || isPlayground
+                    ? "glass-panel-subtle !border-b-line/60 !border-t-0 !border-x-0 !shadow-[0_8px_30px_-6px_rgba(0,0,0,0.04)]"
+                    : "border-transparent bg-transparent backdrop-blur-xs",
             )}
         >
             <div className={cx("flex h-16 items-center gap-5 max-sm:gap-2", isDocs ? "mx-auto max-w-340 px-6 max-sm:px-4" : wrap)}>
@@ -68,7 +70,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                     </button>
                 )}
                 <Link className="flex items-center gap-2.5 max-sm:gap-1.5 font-semibold tracking-[-.01em] text-ink no-underline" to="/" aria-label={t("nav.home")}>
-                    <img src="/logo.jpg" alt="" width={30} height={30} className="size-7.5 rounded-lg object-cover" />
+                    <img src="/logo.jpg" alt="" width={30} height={30} className="size-7.5 rounded-lg object-cover shadow-xs" />
                     <span className="font-sans max-md:hidden">OpenGeo Cambodia</span>
                     {isDocs ? (
                         <>
@@ -81,7 +83,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                             <span className="font-display text-[13px] font-bold uppercase text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal max-md:hidden">{t("nav.playground")}</span>
                         </>
                     ) : (
-                        <small className="rounded-full border border-line px-2 py-px text-xs font-medium text-ink-3 max-xs:hidden">v1.3</small>
+                        <small className="rounded-full glass-pill px-2.5 py-0.5 text-xs font-medium text-accent max-xs:hidden">v1.3</small>
                     )}
                 </Link>
                 <nav className="ml-auto flex items-center gap-1.5" aria-label="Primary">

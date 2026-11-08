@@ -8,11 +8,11 @@ export const cx = (...parts: (string | false | null | undefined)[]) => parts.fil
 
 export const wrap = "mx-auto w-full max-w-[1360px] px-6 max-sm:px-4";
 
-export const btn = "inline-flex h-11 items-center gap-2 rounded-[10px] border border-transparent px-[18px] text-[14.5px] font-medium no-underline transition-[transform,background-color,border-color] active:translate-y-px km:font-khmer [&_svg]:size-4";
-export const btnPrimary = cx(btn, "bg-ink text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))]");
-export const btnGhost = cx(btn, "border-line bg-surface text-ink hover:border-line-2");
+export const btn = "inline-flex h-11 items-center gap-2 rounded-[10px] border border-transparent px-[18px] text-[14.5px] font-medium no-underline transition-all active:translate-y-px km:font-khmer [&_svg]:size-4";
+export const btnPrimary = cx(btn, "bg-ink text-bg shadow-sm hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] hover:shadow-[0_4px_20px_-4px_var(--og-accent)]");
+export const btnGhost = cx(btn, "glass-pill text-ink hover:text-accent hover:border-accent/40");
 
-export const iconBtn = "inline-grid size-9 cursor-pointer place-items-center rounded-[9px] border border-line bg-surface p-0 text-ink-2 hover:border-line-2 hover:text-ink [&_svg]:size-[17px]";
+export const iconBtn = "glass-pill inline-grid size-9 cursor-pointer place-items-center rounded-[10px] p-0 text-ink-2 hover:text-ink [&_svg]:size-[17px]";
 
 export const kicker = "mb-3 font-display text-xs font-bold uppercase tracking-[.16em] text-accent km:font-khmer km:text-[13.5px] km:font-semibold km:normal-case km:tracking-normal";
 
@@ -44,6 +44,6 @@ export const codeCopy =
 export const codePre = "m-0 overflow-x-auto whitespace-pre font-mono text-[13px] leading-[1.65]";
 
 export const chip =
-    "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-line bg-surface px-3 text-[12.5px] font-medium text-ink-2 no-underline hover:border-line-2 hover:text-ink km:font-khmer [&_svg]:size-3.5";
+    "glass-pill inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-[12.5px] font-medium text-ink-2 no-underline hover:text-ink km:font-khmer [&_svg]:size-3.5";
 
 export const focusRing = "focus:border-accent focus:shadow-[0_0_0_3px_var(--og-accent-soft)] focus:outline-none";

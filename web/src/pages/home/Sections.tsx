@@ -65,7 +65,7 @@ export function DataModel() {
                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
                     {HIER.map((h) => (
                         // The connector line between cards only makes sense on the 4-column row
-                        <div key={h.level} className="relative rounded-[14px] border border-line bg-surface p-5 lg:not-last:after:absolute lg:not-last:after:-right-3.75 lg:not-last:after:top-1/2 lg:not-last:after:h-px lg:not-last:after:w-3.75 lg:not-last:after:bg-line-2 lg:not-last:after:content-['']">
+                        <div key={h.level} className="relative rounded-2xl glass-card p-5 lg:not-last:after:absolute lg:not-last:after:-right-3.75 lg:not-last:after:top-1/2 lg:not-last:after:h-px lg:not-last:after:w-3.75 lg:not-last:after:bg-line-2 lg:not-last:after:content-['']">
                             <span className={cx(lvl(h.level), "mb-3.5")}>{t(`level.${h.level}`)}</span>
                             <span className="block font-khmer text-[17px] font-semibold">{h.km}</span>
                             <span className="text-[13.5px] text-ink-2">{h.en}</span>
@@ -73,10 +73,10 @@ export function DataModel() {
                         </div>
                     ))}
                 </div>
-                <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-[14px] border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl glass-panel bg-line/30 sm:grid-cols-2 lg:grid-cols-3">
                     {FEATURES.map((f) => (
-                        <div className="bg-surface p-7" key={f.n}>
-                            <div className="mb-4.5 grid size-9.5 place-items-center rounded-[10px] bg-surface-2 text-accent [&_svg]:size-4.75"><Icon name={f.icon} /></div>
+                        <div className="glass-panel p-7" key={f.n}>
+                            <div className="mb-4.5 grid size-9.5 place-items-center rounded-xl glass-pill text-accent [&_svg]:size-4.75"><Icon name={f.icon} /></div>
                             <h3 className="mb-1.5 mt-0 text-base font-semibold tracking-[-.01em]">{t(`data.f${f.n}Title` as MessageKey)}</h3>
                             <p className="rich m-0 text-sm text-ink-2">{rt(`data.f${f.n}Body` as MessageKey)}</p>
                         </div>
@@ -132,7 +132,7 @@ export function Quickstart() {
                     </ol>
                     <div className="mt-7"><Link className={btnGhost} to="/docs#quickstart">{t("quick.full")} <Icon name="arrow" /></Link></div>
                 </div>
-                <div className="min-w-0 overflow-hidden rounded-[14px] border border-code-line bg-code text-code-ink shadow-[0_30px_60px_-20px_rgba(0,0,0,.35)]">
+                <div className="min-w-0 overflow-hidden rounded-2xl border border-code-line/80 bg-code/95 text-code-ink shadow-[0_24px_50px_-16px_rgba(0,0,0,.5),inset_0_1px_1px_0_rgba(255,255,255,.08)] backdrop-blur-md">
                     <div className="flex items-center gap-1 border-b border-code-line px-3 py-2.5">
                         <span className={codeTab} aria-selected="true">address-form.js</span>
                         <button className={codeCopy} type="button" onClick={() => copy(QUICKSTART)}><Icon name="copy" />{t("common.copy")}</button>
@@ -167,12 +167,12 @@ export function Downloads() {
                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
                     {items.map((d) => (
                         <a
-                            className="flex items-center gap-3.5 rounded-xl border border-line bg-surface px-4.5 py-4 text-ink no-underline transition hover:-translate-y-px hover:border-line-2"
+                            className="flex items-center gap-3.5 rounded-2xl glass-card px-4.5 py-4 text-ink no-underline"
                             href={d.href}
                             download
                             key={d.href}
                         >
-                            <span className={cx("grid size-11.5 flex-none place-items-center rounded-[10px] text-center font-mono text-[10.5px] font-semibold uppercase leading-[1.1]", EXT_STYLES[d.kind])}>{d.ext}</span>
+                            <span className={cx("grid size-11.5 flex-none place-items-center rounded-xl text-center font-mono text-[10.5px] font-semibold uppercase leading-[1.1] shadow-xs", EXT_STYLES[d.kind])}>{d.ext}</span>
                             <div>
                                 <b className="block text-sm font-semibold">{d.name}</b>
                                 <span className="text-[12.5px] text-ink-3">{d.sub}</span>
