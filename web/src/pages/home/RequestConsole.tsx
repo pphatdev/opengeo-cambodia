@@ -118,7 +118,7 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
     return (
         <div
             className={cx(
-                "relative min-w-0 border-t border-line/60 bg-code/95 backdrop-blur-md text-code-ink transition-shadow",
+                "relative min-w-0 flex-none border-t border-line/60 bg-code/95 backdrop-blur-md text-code-ink transition-shadow",
                 isDragging && "select-none",
             )}
             aria-label={t("explore.consoleLabel")}

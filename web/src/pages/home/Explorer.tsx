@@ -252,10 +252,12 @@ export function Explorer() {
                 />
             </aside>
 
-            <div className="grid min-w-0 grid-rows-[1fr_auto]">
-                <Suspense fallback={<div className="min-h-110" />}>
-                    {showMap ? <ExplorerMap target={target} resetKey={resetKey} onSelect={selectByCode} onLog={log} onReset={reset} /> : <div className="min-h-110" />}
-                </Suspense>
+            <div className="flex min-w-0 flex-col h-full min-h-0">
+                <div className="relative min-w-0 flex-1 min-h-95 sm:min-h-110">
+                    <Suspense fallback={<div className="h-full w-full min-h-95 sm:min-h-110" />}>
+                        {showMap ? <ExplorerMap target={target} resetKey={resetKey} onSelect={selectByCode} onLog={log} onReset={reset} /> : <div className="h-full w-full min-h-95 sm:min-h-110" />}
+                    </Suspense>
+                </div>
                 <RequestConsole logs={logs} activeId={activeLog} onSelect={setActiveLog} />
             </div>
         </div>
