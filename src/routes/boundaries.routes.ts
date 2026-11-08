@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { BoundariesService } from "../services/boundaries.service.js";
 import { createEdgeCache } from "../middleware/edge-cache.js";
 import type { ApiResponse } from "../types/api.js";
@@ -28,6 +28,43 @@ function resolveCurrentDir(): string {
 const currentDir = resolveCurrentDir();
 
 const ALLOWED_LEVELS = new Set<string>(["province", "district", "commune"]);
+
+function parseCoordinates(c: Context): { lat: number; lon: number } | { error: string } {
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+
+    if (!latStr || !lonStr) {
+        return { error: "Missing required query parameters 'lat' and 'lng' (or 'lon')" };
+    }
+
+    const cleanLat = latStr.trim();
+    const cleanLon = lonStr.trim();
+
+    if (
+        cleanLat.length > 25 ||
+        cleanLon.length > 25 ||
+        !/^-?\d+(\.\d+)?$/.test(cleanLat) ||
+        !/^-?\d+(\.\d+)?$/.test(cleanLon)
+    ) {
+        return { error: "Invalid coordinates format: must be valid decimal numbers within 25 characters" };
+    }
+
+    const lat = parseFloat(cleanLat);
+    const lon = parseFloat(cleanLon);
+
+    if (
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lon) ||
+        lat < -90 ||
+        lat > 90 ||
+        lon < -180 ||
+        lon > 180
+    ) {
+        return { error: "Invalid coordinates: 'lat' must be [-90, 90] and 'lng'/'lon' [-180, 180]" };
+    }
+
+    return { lat, lon };
+}
 
 // 1. Cloudflare Workers Global Edge Cache (300+ Edge PoPs, 1-year cache TTL)
 boundariesRoutes.use("*", createEdgeCache({ cacheTtlSeconds: 31536000 }));
@@ -74,8 +111,13 @@ boundariesRoutes.get("/", (c) => {
     const rawOffset = c.req.query("offset");
     const offset = rawOffset ? parseInt(rawOffset, 10) : undefined;
 
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+    const lat = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : undefined;
+    const lon = lonStr && !isNaN(parseFloat(lonStr)) ? parseFloat(lonStr) : undefined;
+
     // Fast cache lookup for default provinces query
-    const isDefaultProvinces = !level || (level === "province" && !provinceCode && !districtCode && !code && !search && !limit && !offset);
+    const isDefaultProvinces = (!level || level === "province") && !provinceCode && !districtCode && !code && !search && !limit && !offset && lat === undefined && lon === undefined;
     if (isDefaultProvinces) {
         const cacheKey = `default_provinces_${format}`;
         const cached = boundariesService.getPreSerialized(cacheKey);
@@ -92,6 +134,8 @@ boundariesRoutes.get("/", (c) => {
         districtCode,
         code,
         search,
+        lat,
+        lon,
         format,
         limit,
         offset,
@@ -133,8 +177,12 @@ boundariesRoutes.get("/provinces", (c) => {
     const format = rawFormat === "summary" || rawFormat === "list" ? "summary" : "geojson";
     const search = c.req.query("q") || c.req.query("search");
     const code = c.req.query("code");
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+    const lat = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : undefined;
+    const lon = lonStr && !isNaN(parseFloat(lonStr)) ? parseFloat(lonStr) : undefined;
 
-    if (!search && !code) {
+    if (!search && !code && lat === undefined && lon === undefined) {
         const cacheKey = `provinces_all_${format}`;
         const cached = boundariesService.getPreSerialized(cacheKey);
         if (cached) {
@@ -148,12 +196,14 @@ boundariesRoutes.get("/provinces", (c) => {
         level: "province",
         code,
         search,
+        lat,
+        lon,
         format,
     });
 
     if (result.isGeoJson) {
         const jsonStr = JSON.stringify(result.data);
-        if (!search && !code) {
+        if (!search && !code && lat === undefined && lon === undefined) {
             boundariesService.setPreSerialized(`provinces_all_${format}`, jsonStr);
         }
         return c.newResponse(jsonStr, 200, {
@@ -170,7 +220,7 @@ boundariesRoutes.get("/provinces", (c) => {
         },
     };
     const jsonStr = JSON.stringify(response);
-    if (!search && !code) {
+    if (!search && !code && lat === undefined && lon === undefined) {
         boundariesService.setPreSerialized(`provinces_all_${format}`, jsonStr);
     }
     return c.newResponse(jsonStr, 200, {
@@ -221,6 +271,10 @@ boundariesRoutes.get("/districts", (c) => {
     const provinceCode = c.req.query("province_code") || c.req.query("provinceCode");
     const search = c.req.query("q") || c.req.query("search");
     const code = c.req.query("code");
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+    const lat = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : undefined;
+    const lon = lonStr && !isNaN(parseFloat(lonStr)) ? parseFloat(lonStr) : undefined;
 
     const rawLimit = c.req.query("limit");
     const limit = rawLimit ? parseInt(rawLimit, 10) : undefined;
@@ -232,6 +286,8 @@ boundariesRoutes.get("/districts", (c) => {
         provinceCode,
         code,
         search,
+        lat,
+        lon,
         format,
         limit,
         offset,
@@ -297,6 +353,10 @@ boundariesRoutes.get("/communes", (c) => {
     const provinceCode = c.req.query("province_code") || c.req.query("provinceCode");
     const search = c.req.query("q") || c.req.query("search");
     const code = c.req.query("code");
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+    const lat = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : undefined;
+    const lon = lonStr && !isNaN(parseFloat(lonStr)) ? parseFloat(lonStr) : undefined;
 
     const rawLimit = c.req.query("limit");
     const limit = rawLimit ? parseInt(rawLimit, 10) : undefined;
@@ -309,6 +369,8 @@ boundariesRoutes.get("/communes", (c) => {
         provinceCode,
         code,
         search,
+        lat,
+        lon,
         format,
         limit,
         offset,
@@ -487,12 +549,126 @@ boundariesRoutes.get("/raw/:filename", (c) => {
 });
 
 /**
+ * GET /api/boundaries/zone
+ * GET /api/boundaries/point
+ * GET /api/boundaries/by-point
+ *
+ * Sub-millisecond Point-in-Polygon spatial query:
+ * Resolves the official Cambodian administrative boundary zone (Province, District, Commune)
+ * containing the given GPS coordinates.
+ *
+ * Query Parameters:
+ * - lat / latitude: coordinate latitude (-90 to 90) [required]
+ * - lng / lon / longitude: coordinate longitude (-180 to 180) [required]
+ * - level: 'all' (default, 3-tier hierarchy) | 'province' | 'district' | 'commune'
+ * - format: 'summary' / 'json' (default for JSON API) | 'geojson' (Feature or FeatureCollection)
+ */
+const handleZoneLookup = (c: Context) => {
+    const coords = parseCoordinates(c);
+    if ("error" in coords) {
+        return c.json<ApiResponse<null>>(
+            {
+                success: false,
+                data: null,
+                error: coords.error,
+            },
+            400,
+        );
+    }
+
+    const { lat, lon } = coords;
+    const rawLevel = (c.req.query("level") || "all").toLowerCase();
+    const level: BoundaryLevel | "all" =
+        rawLevel === "province" || rawLevel === "district" || rawLevel === "commune"
+            ? rawLevel
+            : "all";
+
+    const accept = c.req.header("Accept") || "";
+    const rawFormat = (c.req.query("format") || (accept.includes("application/geo+json") ? "geojson" : "geojson")).toLowerCase();
+    const format: "geojson" | "summary" | "json" =
+        rawFormat === "summary" || rawFormat === "list"
+            ? "summary"
+            : rawFormat === "json"
+            ? "json"
+            : "geojson";
+
+    const start = performance.now();
+    const result = boundariesService.getZoneByPoint({
+        lat,
+        lon,
+        level,
+        format,
+    });
+    const tookMs = Number((performance.now() - start).toFixed(2));
+
+    if (!result.matched) {
+        return c.json<ApiResponse<null>>(
+            {
+                success: false,
+                data: null,
+                error: `No boundary zone found containing coordinates (${lat}, ${lon}). Point may be outside Cambodia's administrative boundaries.`,
+                meta: {
+                    point: { lat, lng: lon },
+                    tookMs,
+                },
+            },
+            404,
+        );
+    }
+
+    if (format === "geojson" && result.geoJson) {
+        return c.newResponse(JSON.stringify(result.geoJson), 200, {
+            "Content-Type": "application/geo+json; charset=utf-8",
+        });
+    }
+
+    // Summary / JSON format
+    const responseData =
+        level !== "all"
+            ? (result as any)[level]
+            : {
+                point: result.point,
+                matched: result.matched,
+                province: result.province,
+                district: result.district,
+                commune: result.commune,
+                boundaries: result.boundaries,
+            };
+
+    return c.json<ApiResponse<any>>({
+        success: true,
+        data: responseData,
+        meta: {
+            point: { lat, lng: lon },
+            level,
+            tookMs,
+            source: "spatial_index",
+        },
+    });
+};
+
+boundariesRoutes.get("/zone", handleZoneLookup);
+boundariesRoutes.get("/point", handleZoneLookup);
+boundariesRoutes.get("/by-point", handleZoneLookup);
+
+/**
  * GET /api/boundaries/:code
  * Shortcut for single boundary lookup by code (e.g. '12', 'KH12', '1201', '120101')
  */
 boundariesRoutes.get("/:code", (c) => {
     const rawCode = c.req.param("code");
-    const reserved = new Set(["provinces", "districts", "communes", "stats", "hierarchy", "item", "raw"]);
+    const reserved = new Set([
+        "provinces",
+        "districts",
+        "communes",
+        "stats",
+        "hierarchy",
+        "item",
+        "raw",
+        "zone",
+        "point",
+        "by-point",
+    ]);
     if (reserved.has(rawCode.toLowerCase())) {
         return c.notFound();
     }
