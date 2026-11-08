@@ -51,7 +51,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                 </div>
 
                 {/* Leaflet Map */}
-                <PlaygroundMap geojson={body} className="h-[460px] w-full" />
+                <PlaygroundMap geojson={body} className="h-115 w-full" />
 
                 {/* Features List Table (collapsible or preview) */}
                 {count > 0 && (
@@ -134,7 +134,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
 
                     {markers.length > 0 && (
                         <div className="mb-4">
-                            <PlaygroundMap markers={markers} className="h-[360px] w-full" />
+                            <PlaygroundMap markers={markers} className="h-90 w-full" />
                         </div>
                     )}
 
@@ -233,7 +233,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                                     type: "FeatureCollection",
                                     features: tiers.map((t) => t.data).filter((d) => d?.type === "Feature"),
                                 }}
-                                className="h-[360px] w-full"
+                                className="h-90 w-full"
                             />
                         </div>
                     )}
@@ -249,7 +249,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
 
                             return (
                                 <div key={tier.level} className="relative rounded-lg border border-line bg-surface-2 p-3.5 shadow-sm">
-                                    <div className="absolute -left-[27px] top-4 size-3 rounded-full border-2 border-surface bg-accent" />
+                                    <div className="absolute -left-6.75 top-4 size-3 rounded-full border-2 border-surface bg-accent" />
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <div className="flex items-center gap-2">
                                             <span className={lvl(tier.level)}>{tier.level}</span>
