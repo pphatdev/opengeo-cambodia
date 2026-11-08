@@ -8,7 +8,7 @@ import { cx, iconBtn, wrap } from "./ui";
 export const REPO_URL = "https://github.com/pphatdev/opengeo-cambodia";
 
 interface NavProps {
-    variant?: "home" | "docs";
+    variant?: "home" | "docs" | "playground";
     menuOpen?: boolean;
     onMenu?: () => void;
 }
@@ -52,11 +52,12 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
     }, []);
 
     const isDocs = variant === "docs";
+    const isPlayground = variant === "playground";
     return (
         <header
             className={cx(
                 "sticky top-0 z-1000 border-b bg-bg/85 backdrop-blur-md backdrop-saturate-150 transition-colors",
-                scrolled || isDocs ? "border-line" : "border-transparent",
+                scrolled || isDocs || isPlayground ? "border-line" : "border-transparent",
             )}
         >
             <div className={cx("flex h-16 items-center gap-5", isDocs ? "mx-auto max-w-340 px-6 max-sm:px-4" : wrap)}>
@@ -73,6 +74,11 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                             <span className="font-normal text-line-2">/</span>
                             <span className="font-display text-[13px] font-bold uppercase tracking-[.14em] text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal">{t("nav.docs")}</span>
                         </>
+                    ) : isPlayground ? (
+                        <>
+                            <span className="font-normal text-line-2">/</span>
+                            <span className="font-display text-[13px] font-bold uppercase tracking-[.14em] text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal">{t("nav.playground")}</span>
+                        </>
                     ) : (
                         <small className="rounded-full border border-line px-2 py-px text-xs font-medium text-ink-3 max-xs:hidden">v1</small>
                     )}
@@ -83,6 +89,12 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                         className={cx(navLink, isDocs ? "bg-surface-2 font-semibold text-ink" : "")}
                     >
                         {t("nav.docs")}
+                    </Link>
+                    <Link
+                        to="/playground"
+                        className={cx(navLink, isPlayground ? "bg-surface-2 font-semibold text-ink" : "")}
+                    >
+                        {t("nav.playground")}
                     </Link>
                     <LangSwitch />
                     <a

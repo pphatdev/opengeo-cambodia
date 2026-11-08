@@ -103,6 +103,25 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
             .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${title}">`)
             .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${desc}">`);
     }
+    if (reqPath.startsWith("/playground")) {
+        const title = isKm
+            ? "ផ្ទាំងសាកល្បង API — OpenGeo Cambodia"
+            : "API Playground — OpenGeo Cambodia";
+        const desc = isKm
+            ? "ផ្ទាំងសាកល្បង API អន្តរកម្មសម្រាប់ធ្វើតេស្ត endpoint នៃ OpenGeo Cambodia ជាមួយនឹងការបង្ហាញលទ្ធផលជាទម្រង់ UI និង Raw JSON។"
+            : "Interactive API playground for testing OpenGeo Cambodia endpoints with live UI visualization and raw JSON inspection.";
+        const canonical = "https://opengeo-cambodia.pphat.me/playground";
+
+        return rawHtml
+            .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
+            .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
+            .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
+            .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`)
+            .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${desc}">`)
+            .replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${canonical}">`)
+            .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${title}">`)
+            .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${desc}">`);
+    }
     return rawHtml;
 }
 
@@ -466,9 +485,11 @@ app.get("/assets/*", (c) => {
     return c.body(fs.readFileSync(filePath));
 });
 
-// 8. Web app pages (React SPA: landing/explorer, API docs, and engineering blog)
+// 8. Web app pages (React SPA: landing/explorer, API docs, playground, and engineering blog)
 app.get("/docs", serveSpa);
 app.get("/docs/*", serveSpa);
+app.get("/playground", serveSpa);
+app.get("/playground/*", serveSpa);
 app.get("/demo", serveSpa);
 app.get("/blog", serveSpa);
 app.get("/blog/*", serveSpa);
@@ -497,6 +518,7 @@ app.get("/", async (c) => {
         dataSource: "https://data.mef.gov.kh/",
         version: "1.3.0",
         documentation: "/api/info",
+        playground: "/playground",
         llms: "/llms.txt",
         llmsFull: "/llms-full.txt",
         postman: "/opengeo-cambodia.postman_collection.json",

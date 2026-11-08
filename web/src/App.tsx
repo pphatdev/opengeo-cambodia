@@ -7,8 +7,9 @@ import { ToastProvider } from "./lib/toast";
 import { Home } from "./pages/home/Home";
 import { NotFound } from "./pages/NotFound";
 
-// Docs is a separate chunk so the landing page doesn't download it
+// Docs and Playground are separate chunks so the landing page doesn't download them
 const Docs = lazy(() => import("./pages/docs/Docs"));
+const Playground = lazy(() => import("./pages/playground/Playground"));
 
 export function App() {
     return (
@@ -22,6 +23,7 @@ export function App() {
                             <Route path="/demo" element={<Home />} />
                             <Route path="/docs" element={<Suspense fallback={<div className="min-h-screen" />}><Docs /></Suspense>} />
                             <Route path="/docs/*" element={<Suspense fallback={<div className="min-h-screen" />}><Docs /></Suspense>} />
+                            <Route path="/playground" element={<Suspense fallback={<div className="min-h-screen" />}><Playground /></Suspense>} />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
                     </BrowserRouter>
