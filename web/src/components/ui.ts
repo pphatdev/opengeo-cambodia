@@ -8,16 +8,13 @@ export const cx = (...parts: (string | false | null | undefined)[]) => parts.fil
 
 export const wrap = "mx-auto w-full max-w-[1360px] px-6 max-sm:px-4";
 
-export const btn =
-    "inline-flex h-11 items-center gap-2 rounded-[10px] border border-transparent px-[18px] text-[14.5px] font-medium no-underline transition-[transform,background-color,border-color] active:translate-y-px km:font-khmer [&_svg]:size-4";
+export const btn = "inline-flex h-11 items-center gap-2 rounded-[10px] border border-transparent px-[18px] text-[14.5px] font-medium no-underline transition-[transform,background-color,border-color] active:translate-y-px km:font-khmer [&_svg]:size-4";
 export const btnPrimary = cx(btn, "bg-ink text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))]");
 export const btnGhost = cx(btn, "border-line bg-surface text-ink hover:border-line-2");
 
-export const iconBtn =
-    "inline-grid size-9 cursor-pointer place-items-center rounded-[9px] border border-line bg-surface p-0 text-ink-2 hover:border-line-2 hover:text-ink [&_svg]:size-[17px]";
+export const iconBtn = "inline-grid size-9 cursor-pointer place-items-center rounded-[9px] border border-line bg-surface p-0 text-ink-2 hover:border-line-2 hover:text-ink [&_svg]:size-[17px]";
 
-export const kicker =
-    "mb-3 font-display text-xs font-bold uppercase tracking-[.16em] text-accent km:font-khmer km:text-[13.5px] km:font-semibold km:normal-case km:tracking-normal";
+export const kicker = "mb-3 font-display text-xs font-bold uppercase tracking-[.16em] text-accent km:font-khmer km:text-[13.5px] km:font-semibold km:normal-case km:tracking-normal";
 
 /** Bold geometric display type (Montserrat, like the logo); Khmer swaps to Kantumruy with taller lines. */
 const khmerHeading = "km:font-khmer km:font-semibold km:tracking-normal km:leading-[1.4] km:[&_em]:not-italic";

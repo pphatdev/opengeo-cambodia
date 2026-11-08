@@ -59,7 +59,7 @@ export function Hero() {
                             {t("hero.eyebrow")}
                         </span>
                         <h1 className={displayH1}>{t("hero.titleA")} <em>{t("hero.titleB")}</em></h1>
-                        <p className="rich mb-7 mt-0 max-w-[34em] text-lg text-ink-2">{rt("hero.lede", { total: fmt(stats?.total ?? 16472) })}</p>
+                        <p className="rich mb-7 mt-0 max-w-[34em] text-sm sm:text-lg text-ink-2">{rt("hero.lede", { total: fmt(stats?.total ?? 16472) })}</p>
                         <div className="flex flex-wrap gap-3">
                             <a className={btnPrimary} href="#explore">{t("hero.explore")} <Icon name="arrow" /></a>
                             <Link className={btnGhost} to="/playground"><Icon name="play" /> {t("nav.playground")}</Link>
