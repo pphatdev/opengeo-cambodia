@@ -449,25 +449,57 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                                                 {unit}
                                             </span>
                                         </td>
-                                        <td className="px-3.5 py-2.5 text-right">
+                                        <td className="px-3.5 py-2.5 text-right whitespace-nowrap">
                                             {onDrillDown && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        if (level === "province" || !level) {
-                                                            onDrillDown(`/api/admin/provinces/${id}/districts`, { id: String(id) });
-                                                        } else if (level === "district") {
-                                                            onDrillDown(`/api/admin/districts/${id}/communes`, { id: String(id) });
-                                                        } else if (level === "commune") {
-                                                            onDrillDown(`/api/admin/communes/${id}/villages`, { id: String(id) });
-                                                        } else {
-                                                            onDrillDown(`/api/admin/hierarchy/${id}`, { id: String(id) });
-                                                        }
-                                                    }}
-                                                    className="cursor-pointer rounded border border-line px-2 py-0.5 text-[11px] font-medium text-accent hover:border-accent"
-                                                >
-                                                    Drill down
-                                                </button>
+                                                <div className="inline-flex items-center gap-1.5 justify-end">
+                                                    {(level === "province" || !level) && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => onDrillDown(`/api/boundaries/districts?province_code=${code || id}`, { province_code: String(code || id) })}
+                                                            className="cursor-pointer rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[11px] font-medium text-accent hover:border-accent"
+                                                            title="View district boundary polygons on map"
+                                                        >
+                                                            Map →
+                                                        </button>
+                                                    )}
+                                                    {level === "district" && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => onDrillDown(`/api/boundaries/communes?district_code=${code || id}`, { district_code: String(code || id) })}
+                                                            className="cursor-pointer rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[11px] font-medium text-accent hover:border-accent"
+                                                            title="View commune boundary polygons on map"
+                                                        >
+                                                            Map →
+                                                        </button>
+                                                    )}
+                                                    {level === "commune" && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => onDrillDown(`/api/boundaries/item/${code || id}`, { code: String(code || id) })}
+                                                            className="cursor-pointer rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[11px] font-medium text-accent hover:border-accent"
+                                                            title="View commune boundary polygon on map"
+                                                        >
+                                                            Polygon →
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (level === "province" || !level) {
+                                                                onDrillDown(`/api/admin/provinces/${id}/districts`, { id: String(id) });
+                                                            } else if (level === "district") {
+                                                                onDrillDown(`/api/admin/districts/${id}/communes`, { id: String(id) });
+                                                            } else if (level === "commune") {
+                                                                onDrillDown(`/api/admin/communes/${id}/villages`, { id: String(id) });
+                                                            } else {
+                                                                onDrillDown(`/api/admin/hierarchy/${id}`, { id: String(id) });
+                                                            }
+                                                        }}
+                                                        className="cursor-pointer rounded border border-line px-2 py-0.5 text-[11px] font-medium text-ink-2 hover:border-accent hover:text-accent"
+                                                    >
+                                                        Drill down
+                                                    </button>
+                                                </div>
                                             )}
                                         </td>
                                     </tr>

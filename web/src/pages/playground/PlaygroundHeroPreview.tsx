@@ -273,6 +273,21 @@ export function PlaygroundHeroPreview({
         return null;
     };
 
+    const getBoundaryPath = (chip: any) => {
+        const lvlLower = (chip.level || "").toLowerCase();
+        const code = String(chip.code || chip.id || "");
+        if (lvlLower === "province" || code.length === 2) {
+            return `/api/boundaries/districts?province_code=${code}`;
+        }
+        if (lvlLower === "district" || lvlLower === "srok" || lvlLower === "khan" || lvlLower === "krong" || code.length === 4) {
+            return `/api/boundaries/communes?district_code=${code}`;
+        }
+        if (lvlLower === "commune" || lvlLower === "khum" || lvlLower === "sangkat" || code.length === 6) {
+            return `/api/boundaries/item/${code}`;
+        }
+        return null;
+    };
+
     return (
         <div>
             {/* The Hero Map Canvas Container */}
@@ -384,14 +399,25 @@ export function PlaygroundHeroPreview({
 
                                     {/* Drill Down Action */}
                                     {onDrillDown && (
-                                        <button
-                                            type="button"
-                                            onClick={() => onDrillDown(`/api/admin/provinces/${active.id}/districts`, { id: String(active.id) })}
-                                            className="mt-2.5 w-full flex items-center justify-center gap-1.5 rounded-lg bg-ink px-2.5 py-1.5 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] cursor-pointer transition-colors"
-                                        >
-                                            <Icon name="play" className="size-3" />
-                                            <span>{log ? "Explore Districts →" : "Send Test Request →"}</span>
-                                        </button>
+                                        <div className="mt-2.5 flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => onDrillDown(`/api/admin/provinces/${active.id}/districts`, { id: String(active.id) })}
+                                                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-ink px-2.5 py-1.5 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] cursor-pointer transition-colors"
+                                            >
+                                                <Icon name="play" className="size-3" />
+                                                <span>Districts</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => onDrillDown(`/api/boundaries/districts?province_code=${active.code}`, { province_code: active.code })}
+                                                className="flex items-center justify-center gap-1 rounded-lg border border-line bg-surface-2 px-2.5 py-1.5 text-xs font-semibold text-accent hover:border-accent cursor-pointer transition-colors"
+                                                title="View district boundary polygons on map"
+                                            >
+                                                <Icon name="polygon" className="size-3" />
+                                                <span>Boundaries →</span>
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -406,6 +432,24 @@ export function PlaygroundHeroPreview({
                         </div>
                         <div className="font-khmer text-base font-bold text-ink">{active.km} ({active.en})</div>
                         <div className="mt-1 text-xs text-ink-3 font-mono">{calloutSummary}</div>
+                        {onDrillDown && (
+                            <div className="mt-2.5 flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => onDrillDown(`/api/admin/provinces/${active.id}/districts`, { id: String(active.id) })}
+                                    className="flex-1 rounded-lg bg-ink py-1 text-xs font-semibold text-bg text-center"
+                                >
+                                    Districts
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => onDrillDown(`/api/boundaries/districts?province_code=${active.code}`, { province_code: active.code })}
+                                    className="rounded-lg border border-line bg-surface-2 px-2.5 py-1 text-xs font-semibold text-accent text-center"
+                                >
+                                    Boundaries →
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </figure>
             </div>
@@ -499,6 +543,7 @@ export function PlaygroundHeroPreview({
                                 const pCode = extractProvinceCode(chip.code || chip.id);
                                 const isSelected = pCode === activeCode;
                                 const drillPath = getDrillDownPath(chip);
+                                const boundaryPath = getBoundaryPath(chip);
 
                                 return (
                                     <div
@@ -526,6 +571,19 @@ export function PlaygroundHeroPreview({
                                                     <span className={lvl(chip.level)}>
                                                         {chip.level}
                                                     </span>
+                                                )}
+                                                {onDrillDown && boundaryPath && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onDrillDown(boundaryPath);
+                                                        }}
+                                                        className="size-5 rounded flex items-center justify-center text-accent hover:text-bg hover:bg-accent text-[11px] transition-colors cursor-pointer"
+                                                        title={`View boundary polygons for ${chip.name_en}`}
+                                                    >
+                                                        <Icon name="polygon" className="size-3" />
+                                                    </button>
                                                 )}
                                                 {onDrillDown && drillPath && (
                                                     <button
@@ -564,6 +622,7 @@ export function PlaygroundHeroPreview({
                                 const pCode = extractProvinceCode(chip.code || chip.id);
                                 const isSelected = pCode === activeCode;
                                 const drillPath = getDrillDownPath(chip);
+                                const boundaryPath = getBoundaryPath(chip);
 
                                 return (
                                     <div
@@ -589,6 +648,19 @@ export function PlaygroundHeroPreview({
                                                 ({chip.name_km})
                                             </span>
                                         )}
+                                        {onDrillDown && boundaryPath && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onDrillDown(boundaryPath);
+                                                }}
+                                                className="ml-1 text-accent hover:opacity-80 cursor-pointer"
+                                                title={`View boundary polygons for ${chip.name_en}`}
+                                            >
+                                                <Icon name="polygon" className="size-3" />
+                                            </button>
+                                        )}
                                         {onDrillDown && drillPath && (
                                             <button
                                                 type="button"
@@ -596,7 +668,7 @@ export function PlaygroundHeroPreview({
                                                     e.stopPropagation();
                                                     onDrillDown(drillPath, { id: chip.id, code: chip.code });
                                                 }}
-                                                className="ml-1 text-ink-3 hover:text-accent font-bold cursor-pointer"
+                                                className="ml-0.5 text-ink-3 hover:text-accent font-bold cursor-pointer"
                                                 title={`Explore ${chip.name_en}`}
                                             >
                                                 →

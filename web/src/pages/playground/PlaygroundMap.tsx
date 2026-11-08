@@ -382,15 +382,35 @@ export function PlaygroundMap({
 
                     {/* Drill down action if code is present */}
                     {onDrillDown && inspected.code && (
-                        <div className="mt-2.5 pt-2 border-t border-line/60 flex items-center justify-between text-xs">
+                        <div className="mt-2.5 pt-2 border-t border-line/60 flex flex-wrap items-center justify-between gap-2 text-xs">
                             <span className="text-ink-3 text-[11px]">Explore deeper:</span>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                                {(inspected.level === "province" || String(inspected.code).length === 2) && (
+                                    <button
+                                        type="button"
+                                        onClick={() => onDrillDown(`/api/boundaries/districts?province_code=${inspected.code}`, { province_code: String(inspected.code) })}
+                                        className="cursor-pointer font-semibold text-accent hover:underline text-[11.5px] flex items-center gap-1"
+                                    >
+                                        <Icon name="polygon" className="size-3" />
+                                        <span>Districts Boundary →</span>
+                                    </button>
+                                )}
+                                {(inspected.level === "district" || String(inspected.code).length === 4) && (
+                                    <button
+                                        type="button"
+                                        onClick={() => onDrillDown(`/api/boundaries/communes?district_code=${inspected.code}`, { district_code: String(inspected.code) })}
+                                        className="cursor-pointer font-semibold text-accent hover:underline text-[11.5px] flex items-center gap-1"
+                                    >
+                                        <Icon name="polygon" className="size-3" />
+                                        <span>Communes Boundary →</span>
+                                    </button>
+                                )}
                                 <button
                                     type="button"
                                     onClick={() => onDrillDown(`/api/boundaries/item/${inspected.code}`, { code: String(inspected.code) })}
-                                    className="cursor-pointer font-semibold text-accent hover:underline text-[11.5px]"
+                                    className="cursor-pointer font-semibold text-ink-2 hover:text-ink hover:underline text-[11.5px]"
                                 >
-                                    Boundary →
+                                    Polygon →
                                 </button>
                                 <button
                                     type="button"

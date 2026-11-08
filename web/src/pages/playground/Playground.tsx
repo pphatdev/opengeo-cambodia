@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Icon } from "../../components/Icon";
 import { Nav } from "../../components/Nav";
-import { cx, wrap } from "../../components/ui";
+import { cx, lvl, wrap } from "../../components/ui";
 import { useI18n } from "../../i18n";
 import { apiGet, fmtBytes, PROD_ORIGIN, type RequestLog } from "../../lib/api";
 import { useToast } from "../../lib/toast";
@@ -10,6 +10,7 @@ import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoi
 import { PlaygroundFloatingRequest } from "./PlaygroundFloatingRequest";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
 import { PlaygroundHeroPreview } from "./PlaygroundHeroPreview";
+import { PlaygroundMap } from "./PlaygroundMap";
 import { PlaygroundRawPreview } from "./PlaygroundRawPreview";
 import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
 
@@ -143,6 +144,18 @@ export default function Playground() {
     };
 
     const log = result?.log;
+    const body = log?.body as any;
+    const isGeoJson = body && typeof body === "object" && (
+        (body.type === "FeatureCollection" && Array.isArray(body.features)) ||
+        (body.type === "Feature" && body.geometry)
+    );
+    const featuresCount = isGeoJson
+        ? (body.type === "FeatureCollection" ? body.features.length : 1)
+        : 0;
+    const firstFeatureProps = isGeoJson
+        ? (body.type === "FeatureCollection" ? body.features[0]?.properties : body.properties)
+        : null;
+    const boundaryLevel = firstFeatureProps?.level;
     const fullProdUrl = PROD_ORIGIN + (customUrl.startsWith("/") ? customUrl : `/${customUrl}`);
 
     return (
@@ -249,12 +262,54 @@ export default function Playground() {
                         </div>
                     ) : activeTab === "map" ? (
                         <div className="space-y-4">
-                            <PlaygroundHeroPreview
-                                log={log}
-                                endpointPath={customUrl}
-                                onDrillDown={handleDrillDown}
-                                onSwitchTab={(tab) => setActiveTab(tab)}
-                            />
+                            {isGeoJson ? (
+                                <div className="space-y-4">
+                                    {/* GeoJSON Boundary Summary Header */}
+                                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface px-4 py-3">
+                                        <div className="flex flex-wrap items-center gap-2.5">
+                                            <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-xs font-semibold text-accent">
+                                                {body.type}
+                                            </span>
+                                            <span className="text-sm font-semibold text-ink">
+                                                {featuresCount} {featuresCount === 1 ? "Boundary Polygon" : "Boundary Polygons"}
+                                            </span>
+                                            {boundaryLevel && (
+                                                <span className={lvl(boundaryLevel)}>
+                                                    {boundaryLevel} boundaries
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            {body.bbox && (
+                                                <span className="font-mono text-xs text-ink-3 max-sm:hidden">
+                                                    bbox: [{body.bbox.map((n: number) => n.toFixed(2)).join(", ")}]
+                                                </span>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDrillDown("/api/boundaries/provinces")}
+                                                className="cursor-pointer rounded-lg border border-line bg-surface-2 px-2.5 py-1 text-xs font-medium text-ink hover:border-line-2"
+                                            >
+                                                All Provinces
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Interactive Leaflet Boundary Map */}
+                                    <PlaygroundMap
+                                        geojson={body}
+                                        onDrillDown={handleDrillDown}
+                                        className="h-[520px] w-full"
+                                    />
+                                </div>
+                            ) : (
+                                <PlaygroundHeroPreview
+                                    log={log}
+                                    endpointPath={customUrl}
+                                    onDrillDown={handleDrillDown}
+                                    onSwitchTab={(tab) => setActiveTab(tab)}
+                                />
+                            )}
                         </div>
                     ) : !log ? (
                         <div className="flex min-h-105 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-surface/50 p-8 text-center">
