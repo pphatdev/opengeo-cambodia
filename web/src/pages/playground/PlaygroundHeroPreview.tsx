@@ -235,7 +235,7 @@ export function PlaygroundHeroPreview({
     return (
         <div className="space-y-4">
             {/* The Hero Map Canvas Container */}
-            <div className="relative overflow-hidden rounded-2xl border border-line bg-surface/90 p-4 shadow-card">
+            <div className="relative overflow-hidden rounded-2xl">
                 {/* Top Overlay Bar */}
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
                     <div className="flex items-center gap-2">
