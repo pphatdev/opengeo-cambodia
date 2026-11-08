@@ -13,10 +13,12 @@ import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "../home/cam
 import { AtlasCanvas } from "./AtlasCanvas";
 import { AtlasChart } from "./AtlasChart";
 import { type AtlasActivePanel, AtlasDrawers } from "./AtlasDrawers";
-import { AtlasConsoleHUD, AtlasHubsHUD } from "./AtlasHUD";
+import { AtlasHierarchyCard } from "./AtlasHierarchyCard";
+import { AtlasConsoleHUD } from "./AtlasHUD";
 import { AtlasInspector } from "./AtlasInspector";
 import { AtlasPlaceChips, type PlaceChipItem } from "./AtlasPlaceChips";
-import { AtlasCategory, AtlasTopBar } from "./AtlasTopBar";
+import { AtlasTelemetryCard } from "./AtlasTelemetryCard";
+import { AtlasCategory, type AtlasTier, AtlasTopBar } from "./AtlasTopBar";
 import { EndpointSelector } from "./EndpointSelector";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
 import { PlaygroundHeroPreview } from "./PlaygroundHeroPreview";
@@ -56,9 +58,10 @@ export default function Playground() {
     const { toast, copy } = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // Mode: Atlas Command Center (default) vs Classic Console
+    // Mode: Atlas Cockpit (default) vs Classic Console
     const [viewMode, setViewMode] = useState<"atlas" | "classic">("atlas");
     const [atlasCategory, setAtlasCategory] = useState<AtlasCategory>("ALL");
+    const [activeTier, setActiveTier] = useState<AtlasTier>("all");
     const [activePanel, setActivePanel] = useState<AtlasActivePanel>("none");
     const [networkEnabled, setNetworkEnabled] = useState(true);
     const [autoTour, setAutoTour] = useState(false);
@@ -371,16 +374,41 @@ export default function Playground() {
         }
     };
 
+    // Tier selection navigation
+    const handleSelectTier = (tier: AtlasTier) => {
+        setActiveTier(tier);
+        let path = "/api/admin/provinces";
+        let targetEp = ENDPOINTS[0];
+        if (tier === "province") {
+            path = "/api/admin/provinces";
+            targetEp = ENDPOINTS.find((e) => e.id === "admin-provinces") ?? targetEp;
+        } else if (tier === "district") {
+            path = `/api/admin/provinces/${activeProvince.id}/districts`;
+            targetEp = ENDPOINTS.find((e) => e.id === "admin-districts") ?? targetEp;
+        } else if (tier === "commune") {
+            path = "/api/admin/districts/1201/communes";
+            targetEp = ENDPOINTS.find((e) => e.id === "admin-communes") ?? targetEp;
+        } else if (tier === "village") {
+            path = "/api/admin/communes/120101/villages";
+            targetEp = ENDPOINTS.find((e) => e.id === "admin-villages") ?? targetEp;
+        }
+        handleSelectEndpoint(targetEp);
+        setCustomUrl(path);
+        handleSend(path);
+    };
+
     // ==========================================
-    // 1. ATLAS COMMAND CENTER (Default Mode)
+    // 1. ATLAS COCKPIT FRAMEWORK (Default Mode)
     // ==========================================
     if (viewMode === "atlas") {
         return (
             <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#07090e] text-slate-100 font-sans select-none scheme-dark">
-                {/* Top Command Bar */}
+                {/* Top Command Bar & Tier Filter Strip */}
                 <AtlasTopBar
                     category={atlasCategory}
                     onSelectCategory={handleSelectCategory}
+                    tier={activeTier}
+                    onSelectTier={handleSelectTier}
                     log={log}
                     customUrl={customUrl}
                     viewMode={viewMode}
@@ -396,20 +424,11 @@ export default function Playground() {
                     itemCount={placeChips.length}
                 />
 
-                {/* Central Command Stage */}
-                <div className="relative flex-1 overflow-hidden">
-                    {/* Background SVG Spatial Canvas with Arcs, Centroids, and Stars */}
-                    <AtlasCanvas
-                        activeProvince={activeProvince}
-                        highlightedCodes={highlightedProvinceCodes}
-                        geocodeMarker={geocodeMarker}
-                        networkEnabled={networkEnabled}
-                        onSelectProvince={handleSelectProvince}
-                        onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
-                    />
-
-                    {/* Top-Left Spatial Console HUD Card */}
-                    <div className="absolute left-5 top-5 z-20 max-w-sm sm:max-w-md hidden md:block">
+                {/* Symmetrical 3-Zone Cockpit Stage */}
+                <div className="relative flex-1 flex overflow-hidden p-3 gap-3">
+                    {/* Zone 1: Left Spatial Console & Hierarchy Stack */}
+                    <div className="w-84 lg:w-88 flex-none flex flex-col gap-3 overflow-y-auto scrollbar-thin hidden lg:flex z-20">
+                        {/* Spatial Query Console */}
                         <AtlasConsoleHUD
                             endpoints={filteredEndpoints}
                             selectedEndpoint={selectedEndpoint}
@@ -425,76 +444,72 @@ export default function Playground() {
                                 handleSend(path);
                             }}
                         />
+
+                        {/* 4-Tier Administrative Hierarchy Card */}
+                        <AtlasHierarchyCard />
                     </div>
 
-                    {/* Top-Right Key Hubs HUD Card */}
-                    <div className="absolute right-5 top-5 z-20 hidden lg:block">
-                        <AtlasHubsHUD
+                    {/* Zone 2: Center Holographic Cambodia Map Canvas */}
+                    <div className="flex-1 relative rounded-2xl overflow-hidden border border-white/10 bg-[#06080d] shadow-2xl flex flex-col">
+                        <AtlasCanvas
+                            activeProvince={activeProvince}
+                            highlightedCodes={highlightedProvinceCodes}
+                            geocodeMarker={geocodeMarker}
+                            networkEnabled={networkEnabled}
                             onSelectProvince={handleSelectProvince}
-                            activeProvinceCode={activeProvinceCode}
+                            onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
                         />
-                    </div>
 
-                    {/* Center Floating Inspector Card (Avionics Equipment Style) */}
-                    <div className="absolute left-5 bottom-12 z-20 hidden sm:block">
-                        <AtlasInspector
-                            province={activeProvince}
-                            log={log}
-                            endpointPath={customUrl}
-                            onDrillDown={handleDrillDown}
-                            onOpenRaw={() => setActivePanel("raw")}
-                            onOpenTable={() => setActivePanel("table")}
-                        />
-                    </div>
-
-                    {/* Floating Response Place Chips Strip (Centered Bottom) */}
-                    {placeChips.length > 0 && (
-                        <div className="absolute bottom-13 left-1/2 -translate-x-1/2 z-20 w-[min(90%,740px)] hidden sm:block">
-                            <AtlasPlaceChips
-                                items={placeChips}
-                                activeCode={activeProvinceCode}
-                                onSelectPlace={handleSelectPlaceChip}
+                        {/* Center Floating Inspector Card */}
+                        <div className="absolute left-4 bottom-14 z-20 hidden sm:block">
+                            <AtlasInspector
+                                province={activeProvince}
+                                log={log}
+                                endpointPath={customUrl}
                                 onDrillDown={handleDrillDown}
+                                onOpenRaw={() => setActivePanel("raw")}
+                                onOpenTable={() => setActivePanel("table")}
                             />
                         </div>
-                    )}
 
-                    {/* Bottom-Right 2D Scatter Matrix Chart */}
-                    <div className="absolute right-5 bottom-14 z-20 hidden md:block w-76">
+                        {/* Floating Response Place Chips Strip (Centered Bottom) */}
+                        {placeChips.length > 0 && (
+                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 w-[min(90%,700px)] hidden sm:block">
+                                <AtlasPlaceChips
+                                    items={placeChips}
+                                    activeCode={activeProvinceCode}
+                                    onSelectPlace={handleSelectPlaceChip}
+                                    onDrillDown={handleDrillDown}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Zone 3: Right Response Telemetry, In-Place Viewer & Density Matrix */}
+                    <div className="w-88 xl:w-92 flex-none flex flex-col gap-3 overflow-y-auto scrollbar-thin hidden xl:flex z-20">
+                        {/* Response Telemetry & In-Place Viewer Tabs */}
+                        <AtlasTelemetryCard
+                            log={log}
+                            pending={pending}
+                            customUrl={customUrl}
+                            onApplyPreset={handleApplyPreset}
+                            onDrillDown={handleDrillDown}
+                            onExpandDrawer={(panel) => setActivePanel(panel)}
+                        />
+
+                        {/* 2D Administrative Density Matrix Scatter Chart */}
                         <AtlasChart
                             activeProvinceCode={activeProvinceCode}
                             onSelectProvince={handleSelectProvince}
                         />
                     </div>
-
-                    {/* Bottom-Left Micro Status Legend */}
-                    <div className="absolute left-5 bottom-3 z-20 flex flex-wrap items-center gap-4 rounded-xl border border-white/5 bg-[#080b13]/80 px-3 py-1 font-mono text-[10px] text-slate-400 backdrop-blur-md">
-                        <span className="flex items-center gap-1.5">
-                            <span className="size-2 rounded-full bg-rose-500 shadow-[0_0_6px_#f43f5e]" />
-                            <strong className="text-slate-200">PROVINCES</strong> (25)
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                            <span className="size-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#06b6d4]" />
-                            <strong className="text-slate-200">DISTRICTS</strong> (210)
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                            <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
-                            <strong className="text-slate-200">COMMUNES</strong> (1,661)
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                            <span className="size-2 rounded-full bg-amber-400 shadow-[0_0_6px_#f59e0b]" />
-                            <strong className="text-slate-200">VILLAGES</strong> (14,576)
-                        </span>
-                    </div>
                 </div>
 
-                {/* Slide-over Drawers (Endpoints, Params, Raw JSON, Data Table, Presets) */}
+                {/* Slide-over Drawers (Params, Raw JSON, Data Table, Presets) */}
                 <AtlasDrawers
                     activePanel={activePanel}
                     onClose={() => setActivePanel("none")}
-                    endpoints={filteredEndpoints}
                     selectedEndpoint={selectedEndpoint}
-                    onSelectEndpoint={(ep) => handleSelectEndpoint(ep)}
                     paramValues={paramValues}
                     onParamChange={handleParamChange}
                     onResetParams={handleResetParams}
@@ -540,7 +555,7 @@ export default function Playground() {
                                 className="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-rose-500 px-3.5 py-1.5 font-mono text-xs font-bold text-white shadow-lg hover:opacity-95 transition-all"
                             >
                                 <Icon name="sparkles" className="size-3.5" />
-                                <span>Switch to Atlas Control Map →</span>
+                                <span>Switch to Cockpit Map →</span>
                             </button>
                         </div>
                     </div>
