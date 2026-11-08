@@ -104,6 +104,8 @@ const en = {
         copyUrl: "Copy URL",
         urlCopied: "URL copied",
         consoleEmpty: "// Responses appear here as you explore.",
+        collapseConsole: "Collapse console",
+        expandConsole: "Expand console",
     },
     data: {
         kicker: "The data model",

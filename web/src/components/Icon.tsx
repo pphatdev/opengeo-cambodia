@@ -22,6 +22,7 @@ const paths = {
     info: (<><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>),
     alert: (<><path d="M12 3 2 20h20L12 3Z" /><path d="M12 10v4M12 17h.01" /></>),
     menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+    chevronDown: <path d="m6 9 6 6 6-6" />,
     chevrons: <path d="m7 15 5 5 5-5M7 9l5-5 5 5" />,
     code: <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />,
     eye: (<><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></>),

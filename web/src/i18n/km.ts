@@ -102,6 +102,8 @@ const km: Messages = {
         copyUrl: "ចម្លង URL",
         urlCopied: "បានចម្លង URL",
         consoleEmpty: "// ចម្លើយតបនឹងបង្ហាញនៅទីនេះ ពេលអ្នករុករក។",
+        collapseConsole: "បង្រួមផ្ទាំង Console",
+        expandConsole: "ពង្រីកផ្ទាំង Console",
     },
     data: {
         kicker: "គំរូទិន្នន័យ",
