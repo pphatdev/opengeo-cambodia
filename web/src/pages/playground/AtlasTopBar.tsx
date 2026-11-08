@@ -109,7 +109,9 @@ export function AtlasTopBar({
                 {/* Command Palette Trigger (Cmd+K) */}
                 <button
                     type="button"
-                    onClick={() => onTogglePanel("endpoints")}
+                    onClick={() => {
+                        window.dispatchEvent(new CustomEvent("open-endpoint-selector"));
+                    }}
                     title="Search endpoints & places (Cmd + K)"
                     className="hidden md:flex items-center gap-2 rounded-xl border border-white/10 bg-[#0d121d] px-3 py-1.5 text-xs text-slate-400 hover:border-cyan-400/50 hover:text-white transition-all cursor-pointer shadow-inner group"
                 >

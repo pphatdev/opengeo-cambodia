@@ -9,6 +9,7 @@ interface EndpointSelectorProps {
     endpoints: Endpoint[];
     selected: Endpoint;
     onSelect: (endpoint: Endpoint) => void;
+    variant?: "default" | "compact";
 }
 
 const GROUP_ICONS: Record<EndpointGroup, "layers" | "polygon" | "pin" | "zap"> = {
@@ -35,7 +36,7 @@ function PathHighlight({ path }: { path: string }) {
     );
 }
 
-export function EndpointSelector({ endpoints, selected, onSelect }: EndpointSelectorProps) {
+export function EndpointSelector({ endpoints, selected, onSelect, variant = "default" }: EndpointSelectorProps) {
     const { t, tx } = useI18n();
     const autoId = useId();
     const [open, setOpen] = useState(false);
@@ -57,9 +58,18 @@ export function EndpointSelector({ endpoints, selected, onSelect }: EndpointSele
         setPos({
             left: rect.left,
             top: rect.bottom + 6,
-            width: Math.max(rect.width, 360),
+            width: Math.max(rect.width, variant === "compact" ? 420 : 360),
         });
     };
+
+    useEffect(() => {
+        const onOpenReq = () => {
+            setOpen(true);
+            setTimeout(updatePosition, 10);
+        };
+        window.addEventListener("open-endpoint-selector", onOpenReq);
+        return () => window.removeEventListener("open-endpoint-selector", onOpenReq);
+    }, [variant]);
 
     useEffect(() => {
         if (!open) return;
@@ -160,26 +170,28 @@ export function EndpointSelector({ endpoints, selected, onSelect }: EndpointSele
 
     return (
         <div className="relative">
-            <div className="mb-2 flex items-center justify-between">
-                <label
-                    htmlFor={autoId}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-ink-3 uppercase tracking-wider"
-                >
-                    <Icon name={GROUP_ICONS[selected.group]} className="size-3.5 text-accent" />
-                    <span>{t("playground.selectEndpoint")}</span>
-                </label>
-                <div className="flex items-center gap-2">
-                    <a
-                        href={`/docs#ep-${selected.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[11px] font-medium text-water hover:underline flex items-center gap-1"
+            {variant !== "compact" && (
+                <div className="mb-2 flex items-center justify-between">
+                    <label
+                        htmlFor={autoId}
+                        className="flex items-center gap-1.5 text-xs font-semibold text-ink-3 uppercase tracking-wider"
                     >
-                        <span>{t("nav.docs")}</span>
-                        <Icon name="ext" className="size-2.5" />
-                    </a>
+                        <Icon name={GROUP_ICONS[selected.group]} className="size-3.5 text-accent" />
+                        <span>{t("playground.selectEndpoint")}</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                        <a
+                            href={`/docs#ep-${selected.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] font-medium text-water hover:underline flex items-center gap-1"
+                        >
+                            <span>{t("nav.docs")}</span>
+                            <Icon name="ext" className="size-2.5" />
+                        </a>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Custom Interactive Trigger Card */}
             <button
@@ -190,46 +202,67 @@ export function EndpointSelector({ endpoints, selected, onSelect }: EndpointSele
                 aria-haspopup="listbox"
                 aria-expanded={open}
                 className={cx(
-                    "w-full text-left rounded-xl border border-line bg-surface p-3.5 shadow-sm transition-all cursor-pointer hover:border-line-2 hover:bg-surface-2/60",
-                    open && "border-accent shadow-[0_0_0_3px_var(--og-accent-soft)]",
+                    variant === "compact"
+                        ? "w-full text-left rounded-xl border border-white/10 bg-[#080b13] p-2 hover:border-cyan-500/40 transition-colors cursor-pointer group"
+                        : "w-full text-left rounded-xl border border-line bg-surface p-3.5 shadow-sm transition-all cursor-pointer hover:border-line-2 hover:bg-surface-2/60",
+                    open && (variant === "compact" ? "border-cyan-400 shadow-[0_0_0_2px_rgba(6,182,212,0.3)]" : "border-accent shadow-[0_0_0_3px_var(--og-accent-soft)]"),
                     focusRing,
                 )}
             >
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <div className="flex items-center gap-2">
-                        <span className="rounded bg-ok/15 px-1.5 py-0.5 font-mono text-[10.5px] font-bold text-ok">
-                            GET
-                        </span>
-                        <PathHighlight path={selected.path} />
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        {selected.geo && (
-                            <span className="rounded-full border border-line bg-surface-2 px-2 py-0.2 font-mono text-[10px] text-ink-3">
-                                GeoJSON
+                {variant === "compact" ? (
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 truncate">
+                            <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-400 shrink-0">
+                                GET
                             </span>
-                        )}
-                        {selected.tag && (
-                            <span className="rounded-full border border-line bg-surface-2 px-2 py-0.2 font-mono text-[10px] text-ink-3">
-                                {tx(selected.tag)}
+                            <span className="font-mono text-xs text-white truncate group-hover:text-cyan-300 transition-colors">
+                                {selected.path}
                             </span>
-                        )}
+                        </div>
                         <Icon
                             name="chevrons"
-                            className={cx("size-4 text-ink-3 transition-transform duration-200", open && "rotate-180")}
+                            className={cx("size-3.5 text-slate-400 shrink-0 transition-transform duration-200", open && "rotate-180")}
                         />
                     </div>
-                </div>
+                ) : (
+                    <>
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <div className="flex items-center gap-2">
+                                <span className="rounded bg-ok/15 px-1.5 py-0.5 font-mono text-[10.5px] font-bold text-ok">
+                                    GET
+                                </span>
+                                <PathHighlight path={selected.path} />
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                {selected.geo && (
+                                    <span className="rounded-full border border-line bg-surface-2 px-2 py-0.2 font-mono text-[10px] text-ink-3">
+                                        GeoJSON
+                                    </span>
+                                )}
+                                {selected.tag && (
+                                    <span className="rounded-full border border-line bg-surface-2 px-2 py-0.2 font-mono text-[10px] text-ink-3">
+                                        {tx(selected.tag)}
+                                    </span>
+                                )}
+                                <Icon
+                                    name="chevrons"
+                                    className={cx("size-4 text-ink-3 transition-transform duration-200", open && "rotate-180")}
+                                />
+                            </div>
+                        </div>
 
-                <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-xs font-semibold text-ink">
-                        {tx(selected.title)}
-                    </span>
-                    {currentGroup && (
-                        <span className="text-[11px] font-medium text-ink-3">
-                            {tx(currentGroup.title)}
-                        </span>
-                    )}
-                </div>
+                        <div className="flex items-baseline justify-between gap-2">
+                            <span className="text-xs font-semibold text-ink">
+                                {tx(selected.title)}
+                            </span>
+                            {currentGroup && (
+                                <span className="text-[11px] font-medium text-ink-3">
+                                    {tx(currentGroup.title)}
+                                </span>
+                            )}
+                        </div>
+                    </>
+                )}
             </button>
 
             {/* Dropdown Popover */}

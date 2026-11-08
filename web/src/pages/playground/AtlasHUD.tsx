@@ -1,15 +1,17 @@
 import { Icon } from "../../components/Icon";
 import { type Endpoint } from "../docs/endpoints";
 import { PROVINCES, type HeroProvince } from "../home/cambodiaMap";
+import { EndpointSelector } from "./EndpointSelector";
 import { PROVINCE_STATS } from "./provinceStats";
 
 interface AtlasHUDProps {
+    endpoints: Endpoint[];
     selectedEndpoint: Endpoint;
+    onSelectEndpoint: (ep: Endpoint) => void;
     customUrl: string;
     onUrlChange: (url: string) => void;
     onSend: () => void;
     pending?: boolean;
-    onOpenEndpoints: () => void;
     onOpenParams?: () => void;
     onSelectProvince: (p: HeroProvince) => void;
     activeProvinceCode: string;
@@ -25,23 +27,25 @@ const TOP_HUBS = [
 ];
 
 export function AtlasConsoleHUD({
+    endpoints,
     selectedEndpoint,
+    onSelectEndpoint,
     customUrl,
     onUrlChange,
     onSend,
     pending,
-    onOpenEndpoints,
     onOpenParams,
     recentQueries = [],
     onSelectRecentQuery,
 }: Pick<
     AtlasHUDProps,
+    | "endpoints"
     | "selectedEndpoint"
+    | "onSelectEndpoint"
     | "customUrl"
     | "onUrlChange"
     | "onSend"
     | "pending"
-    | "onOpenEndpoints"
     | "onOpenParams"
     | "recentQueries"
     | "onSelectRecentQuery"
@@ -65,22 +69,15 @@ export function AtlasConsoleHUD({
                 </div>
             </div>
 
-            {/* Endpoint Selector Trigger Button */}
-            <button
-                type="button"
-                onClick={onOpenEndpoints}
-                className="mb-2 flex w-full items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#080b13] p-2 text-left hover:border-cyan-500/40 transition-colors cursor-pointer group"
-            >
-                <div className="flex items-center gap-2 truncate">
-                    <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
-                        GET
-                    </span>
-                    <span className="font-mono text-xs text-white truncate group-hover:text-cyan-300 transition-colors">
-                        {selectedEndpoint.path}
-                    </span>
-                </div>
-                <Icon name="chevrons" className="size-3 text-slate-400 shrink-0" />
-            </button>
+            {/* In-Place Dropdown Endpoint Selector (No Sidebar Modal!) */}
+            <div className="mb-2">
+                <EndpointSelector
+                    endpoints={endpoints}
+                    selected={selectedEndpoint}
+                    onSelect={onSelectEndpoint}
+                    variant="compact"
+                />
+            </div>
 
             {/* Quick URL Input Bar + Run Button */}
             <form

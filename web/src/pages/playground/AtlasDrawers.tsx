@@ -2,19 +2,18 @@ import { Combobox } from "../../components/Combobox";
 import { useI18n } from "../../i18n";
 import { type RequestLog } from "../../lib/api";
 import { type Endpoint } from "../docs/endpoints";
-import { EndpointSelector } from "./EndpointSelector";
 import { PlaygroundRawPreview } from "./PlaygroundRawPreview";
 import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
 import { PRESETS, type PlaygroundPreset } from "./presets";
 
-export type AtlasActivePanel = "none" | "endpoints" | "params" | "raw" | "table" | "presets";
+export type AtlasActivePanel = "none" | "params" | "raw" | "table" | "presets";
 
 interface AtlasDrawersProps {
     activePanel: AtlasActivePanel;
     onClose: () => void;
-    endpoints: Endpoint[];
+    endpoints?: Endpoint[];
     selectedEndpoint: Endpoint;
-    onSelectEndpoint: (ep: Endpoint) => void;
+    onSelectEndpoint?: (ep: Endpoint) => void;
     paramValues: Record<string, string>;
     onParamChange: (name: string, value: string) => void;
     onResetParams: () => void;
@@ -27,9 +26,7 @@ interface AtlasDrawersProps {
 export function AtlasDrawers({
     activePanel,
     onClose,
-    endpoints,
     selectedEndpoint,
-    onSelectEndpoint,
     paramValues,
     onParamChange,
     onResetParams,
@@ -54,7 +51,6 @@ export function AtlasDrawers({
                     <div className="flex items-center gap-2.5">
                         <span className="size-2 rounded-full bg-cyan-400 animate-pulse" />
                         <h2 className="m-0 font-display text-sm font-bold uppercase tracking-wider text-white">
-                            {activePanel === "endpoints" && "API Endpoints Catalog"}
                             {activePanel === "params" && "Request Parameters"}
                             {activePanel === "raw" && "Raw JSON Response"}
                             {activePanel === "table" && "Structured Data Table"}
@@ -74,21 +70,7 @@ export function AtlasDrawers({
 
                 {/* Drawer Content */}
                 <div className="flex-1 overflow-y-auto p-6 scrollbar-thin">
-                    {/* 1. Endpoints Catalog */}
-                    {activePanel === "endpoints" && (
-                        <div className="space-y-4">
-                            <EndpointSelector
-                                endpoints={endpoints}
-                                selected={selectedEndpoint}
-                                onSelect={(ep) => {
-                                    onSelectEndpoint(ep);
-                                    onClose();
-                                }}
-                            />
-                        </div>
-                    )}
-
-                    {/* 2. Request Parameters Form */}
+                    {/* 1. Request Parameters Form */}
                     {activePanel === "params" && (
                         <div className="space-y-5">
                             <div className="flex items-center justify-between">
@@ -172,7 +154,7 @@ export function AtlasDrawers({
                         </div>
                     )}
 
-                    {/* 3. Raw JSON Inspector */}
+                    {/* 2. Raw JSON Inspector */}
                     {activePanel === "raw" && (
                         <div className="space-y-4">
                             {log ? (
@@ -188,7 +170,7 @@ export function AtlasDrawers({
                         </div>
                     )}
 
-                    {/* 4. Structured Data Table Inspector */}
+                    {/* 3. Structured Data Table Inspector */}
                     {activePanel === "table" && (
                         <div className="space-y-4">
                             {log ? (
@@ -204,7 +186,7 @@ export function AtlasDrawers({
                         </div>
                     )}
 
-                    {/* 5. Quick Query Presets */}
+                    {/* 4. Quick Query Presets */}
                     {activePanel === "presets" && (
                         <div className="grid grid-cols-1 gap-3">
                             {PRESETS.map((p) => (

@@ -169,7 +169,7 @@ export default function Playground() {
             }
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
                 e.preventDefault();
-                setActivePanel((prev) => (prev === "endpoints" ? "none" : "endpoints"));
+                window.dispatchEvent(new CustomEvent("open-endpoint-selector"));
             }
             if (e.key === "Escape") {
                 setActivePanel("none");
@@ -411,12 +411,13 @@ export default function Playground() {
                     {/* Top-Left Spatial Console HUD Card */}
                     <div className="absolute left-5 top-5 z-20 max-w-sm sm:max-w-md hidden md:block">
                         <AtlasConsoleHUD
+                            endpoints={filteredEndpoints}
                             selectedEndpoint={selectedEndpoint}
+                            onSelectEndpoint={(ep) => handleSelectEndpoint(ep)}
                             customUrl={customUrl}
                             onUrlChange={(u) => setCustomUrl(u)}
                             onSend={() => handleSend()}
                             pending={pending}
-                            onOpenEndpoints={() => setActivePanel("endpoints")}
                             onOpenParams={() => setActivePanel("params")}
                             recentQueries={recentQueries}
                             onSelectRecentQuery={(path) => {

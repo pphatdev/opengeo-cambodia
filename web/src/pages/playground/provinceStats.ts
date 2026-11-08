@@ -37,3 +37,4 @@ export const PROVINCE_STATS: Record<string, ProvinceMeta> = {
     "24": { code: "24", id: 24, districts: 7, communes: 65, villages: 438, color: "#8b5cf6", region: "highland", descriptionEn: "Historical ruby mining town surrounded by misty mountain peaks", descriptionKm: "ក្រុងរ៉ែត្បូងទទឹមប្រវត្តិសាស្ត្រ ព័ទ្ធជុំវិញដោយកំពូលភ្នំអ័ព្ទ" },
     "25": { code: "25", id: 25, districts: 8, communes: 84, villages: 757, color: "#ec4899", region: "central", descriptionEn: "Mekong river province created in 2013 with fertile rubber plantations", descriptionKm: "ខេត្តតាមដងទន្លេមេគង្គបង្កើតក្នុងឆ្នាំ ២០១៣ សម្បូរចំការកៅស៊ូមានជីជាតិ" },
 };
+
