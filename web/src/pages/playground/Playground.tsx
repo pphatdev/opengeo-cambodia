@@ -11,13 +11,10 @@ import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoints";
 import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "../home/cambodiaMap";
 import { AtlasCanvas } from "./AtlasCanvas";
-import { AtlasChart } from "./AtlasChart";
+import { AtlasCockpitSidebar, type CockpitTab } from "./AtlasCockpitSidebar";
 import { type AtlasActivePanel, AtlasDrawers } from "./AtlasDrawers";
-import { AtlasHierarchyCard } from "./AtlasHierarchyCard";
-import { AtlasConsoleHUD } from "./AtlasHUD";
 import { AtlasInspector } from "./AtlasInspector";
 import { AtlasPlaceChips, type PlaceChipItem } from "./AtlasPlaceChips";
-import { AtlasTelemetryCard } from "./AtlasTelemetryCard";
 import { AtlasCategory, type AtlasTier, AtlasTopBar } from "./AtlasTopBar";
 import { EndpointSelector } from "./EndpointSelector";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
@@ -60,6 +57,7 @@ export default function Playground() {
 
     // Mode: Atlas Cockpit (default) vs Classic Console
     const [viewMode, setViewMode] = useState<"atlas" | "classic">("atlas");
+    const [cockpitTab, setCockpitTab] = useState<CockpitTab>("overview");
     const [atlasCategory, setAtlasCategory] = useState<AtlasCategory>("ALL");
     const [activeTier, setActiveTier] = useState<AtlasTier>("all");
     const [activePanel, setActivePanel] = useState<AtlasActivePanel>("none");
@@ -402,122 +400,117 @@ export default function Playground() {
     // ==========================================
     if (viewMode === "atlas") {
         return (
-            <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#07090e] text-slate-100 font-sans select-none scheme-dark">
-                {/* Top Command Bar & Tier Filter Strip */}
-                <AtlasTopBar
-                    category={atlasCategory}
-                    onSelectCategory={handleSelectCategory}
-                    tier={activeTier}
-                    onSelectTier={handleSelectTier}
-                    log={log}
-                    customUrl={customUrl}
-                    viewMode={viewMode}
-                    onToggleViewMode={() => setViewMode("classic")}
-                    activePanel={activePanel}
-                    onTogglePanel={(p) => setActivePanel(p)}
-                    lang={lang}
-                    onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
-                    theme={dark ? "dark" : "light"}
-                    onToggleTheme={toggleTheme}
-                    autoTour={autoTour}
-                    onToggleAutoTour={() => setAutoTour((a) => !a)}
-                    itemCount={placeChips.length}
-                />
+            <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-[#04060b] p-2 sm:p-3 text-slate-100 font-sans select-none scheme-dark">
+                {/* Dual Ambient Backlight Aura (Golden Top-Right, Cyan Bottom-Left) */}
+                <div className="absolute -top-24 -right-24 size-[650px] rounded-full bg-amber-500/18 blur-[130px] pointer-events-none" />
+                <div className="absolute -bottom-24 -left-24 size-[650px] rounded-full bg-cyan-500/22 blur-[130px] pointer-events-none" />
 
-                {/* Symmetrical 3-Zone Cockpit Stage */}
-                <div className="relative flex-1 flex overflow-hidden p-3 gap-3">
-                    {/* Zone 1: Left Spatial Console & Hierarchy Stack */}
-                    <div className="w-84 lg:w-88 flex-none flex flex-col gap-3 overflow-y-auto scrollbar-thin hidden lg:flex z-20">
-                        {/* Spatial Query Console */}
-                        <AtlasConsoleHUD
-                            endpoints={filteredEndpoints}
-                            selectedEndpoint={selectedEndpoint}
-                            onSelectEndpoint={(ep) => handleSelectEndpoint(ep)}
-                            customUrl={customUrl}
-                            onUrlChange={(u) => setCustomUrl(u)}
-                            onSend={() => handleSend()}
-                            pending={pending}
-                            onOpenParams={() => setActivePanel("params")}
-                            recentQueries={recentQueries}
-                            onSelectRecentQuery={(path) => {
-                                setCustomUrl(path);
-                                handleSend(path);
-                            }}
-                        />
+                {/* The Cockpit Frame Shell (Rounded Dark Matte Canvas) */}
+                <div className="relative flex h-full w-full max-w-[1840px] flex-col rounded-3xl border border-white/10 bg-[#070a13] shadow-[0_0_80px_rgba(0,0,0,0.95),-15px_15px_80px_rgba(6,182,212,0.18),15px_-15px_80px_rgba(245,158,11,0.14)] overflow-hidden ring-1 ring-white/5">
+                    {/* Top Slim Utility & Tier Bar */}
+                    <AtlasTopBar
+                        category={atlasCategory}
+                        onSelectCategory={handleSelectCategory}
+                        tier={activeTier}
+                        onSelectTier={handleSelectTier}
+                        log={log}
+                        customUrl={customUrl}
+                        viewMode={viewMode}
+                        onToggleViewMode={() => setViewMode("classic")}
+                        activePanel={activePanel}
+                        onTogglePanel={(p) => setActivePanel(p)}
+                        lang={lang}
+                        onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
+                        theme={dark ? "dark" : "light"}
+                        onToggleTheme={toggleTheme}
+                        autoTour={autoTour}
+                        onToggleAutoTour={() => setAutoTour((a) => !a)}
+                        itemCount={placeChips.length}
+                    />
 
-                        {/* 4-Tier Administrative Hierarchy Card */}
-                        <AtlasHierarchyCard />
-                    </div>
-
-                    {/* Zone 2: Center Holographic Cambodia Map Canvas */}
-                    <div className="flex-1 relative rounded-2xl overflow-hidden border border-white/10 bg-[#06080d] shadow-2xl flex flex-col">
-                        <AtlasCanvas
-                            activeProvince={activeProvince}
-                            highlightedCodes={highlightedProvinceCodes}
-                            geocodeMarker={geocodeMarker}
-                            networkEnabled={networkEnabled}
-                            onSelectProvince={handleSelectProvince}
-                            onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
-                        />
-
-                        {/* Center Floating Inspector Card */}
-                        <div className="absolute left-4 bottom-14 z-20 hidden sm:block">
-                            <AtlasInspector
-                                province={activeProvince}
+                    {/* Main Cockpit Body: Left Dashboard Column + Center 3D Map */}
+                    <div className="relative flex-1 flex overflow-hidden min-h-0">
+                        {/* Left Dashboard Column (Icon Rail + KPI Metrics + Donut Rings + Arc Gauges + Query Console) */}
+                        <div className="h-full flex-none w-88 lg:w-96 flex">
+                            <AtlasCockpitSidebar
+                                activeTab={cockpitTab}
+                                onSelectTab={setCockpitTab}
+                                activeProvince={activeProvince}
+                                onSelectProvince={handleSelectProvince}
+                                selectedEndpoint={selectedEndpoint}
+                                endpoints={filteredEndpoints}
+                                onSelectEndpoint={(ep) => handleSelectEndpoint(ep)}
+                                customUrl={customUrl}
+                                onUrlChange={(u) => setCustomUrl(u)}
+                                onSend={() => handleSend()}
+                                pending={pending}
                                 log={log}
-                                endpointPath={customUrl}
-                                onDrillDown={handleDrillDown}
+                                onOpenParams={() => setActivePanel("params")}
                                 onOpenRaw={() => setActivePanel("raw")}
                                 onOpenTable={() => setActivePanel("table")}
+                                recentQueries={recentQueries}
+                                onSelectRecentQuery={(path) => {
+                                    setCustomUrl(path);
+                                    handleSend(path);
+                                }}
+                                theme={dark ? "dark" : "light"}
+                                onToggleTheme={toggleTheme}
+                                lang={lang}
+                                onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
                             />
                         </div>
 
-                        {/* Floating Response Place Chips Strip (Centered Bottom) */}
-                        {placeChips.length > 0 && (
-                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 w-[min(90%,700px)] hidden sm:block">
-                                <AtlasPlaceChips
-                                    items={placeChips}
-                                    activeCode={activeProvinceCode}
-                                    onSelectPlace={handleSelectPlaceChip}
+                        {/* Center Stage: 3D Holographic Map Canvas */}
+                        <div className="flex-1 relative h-full overflow-hidden flex flex-col bg-[#060911]">
+                            <AtlasCanvas
+                                activeProvince={activeProvince}
+                                highlightedCodes={highlightedProvinceCodes}
+                                geocodeMarker={geocodeMarker}
+                                networkEnabled={networkEnabled}
+                                onSelectProvince={handleSelectProvince}
+                                onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
+                            />
+
+                            {/* Center Floating Inspector Card (Bottom-Left) */}
+                            <div className="absolute left-4 bottom-5 z-20 hidden md:block">
+                                <AtlasInspector
+                                    province={activeProvince}
+                                    log={log}
+                                    endpointPath={customUrl}
                                     onDrillDown={handleDrillDown}
+                                    onOpenRaw={() => setActivePanel("raw")}
+                                    onOpenTable={() => setActivePanel("table")}
                                 />
                             </div>
-                        )}
+
+                            {/* Floating Response Place Chips Strip (Centered Bottom) */}
+                            {placeChips.length > 0 && (
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 w-[min(90%,680px)] hidden sm:block">
+                                    <AtlasPlaceChips
+                                        items={placeChips}
+                                        activeCode={activeProvinceCode}
+                                        onSelectPlace={handleSelectPlaceChip}
+                                        onDrillDown={handleDrillDown}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Zone 3: Right Response Telemetry, In-Place Viewer & Density Matrix */}
-                    <div className="w-88 xl:w-92 flex-none flex flex-col gap-3 overflow-y-auto scrollbar-thin hidden xl:flex z-20">
-                        {/* Response Telemetry & In-Place Viewer Tabs */}
-                        <AtlasTelemetryCard
-                            log={log}
-                            pending={pending}
-                            customUrl={customUrl}
-                            onApplyPreset={handleApplyPreset}
-                            onDrillDown={handleDrillDown}
-                            onExpandDrawer={(panel) => setActivePanel(panel)}
-                        />
-
-                        {/* 2D Administrative Density Matrix Scatter Chart */}
-                        <AtlasChart
-                            activeProvinceCode={activeProvinceCode}
-                            onSelectProvince={handleSelectProvince}
-                        />
-                    </div>
+                    {/* Slide-over Drawers (Params, Raw JSON, Data Table, Presets) */}
+                    <AtlasDrawers
+                        activePanel={activePanel}
+                        onClose={() => setActivePanel("none")}
+                        selectedEndpoint={selectedEndpoint}
+                        paramValues={paramValues}
+                        onParamChange={handleParamChange}
+                        onResetParams={handleResetParams}
+                        log={log}
+                        customUrl={customUrl}
+                        onApplyPreset={handleApplyPreset}
+                        onDrillDown={handleDrillDown}
+                    />
                 </div>
-
-                {/* Slide-over Drawers (Params, Raw JSON, Data Table, Presets) */}
-                <AtlasDrawers
-                    activePanel={activePanel}
-                    onClose={() => setActivePanel("none")}
-                    selectedEndpoint={selectedEndpoint}
-                    paramValues={paramValues}
-                    onParamChange={handleParamChange}
-                    onResetParams={handleResetParams}
-                    log={log}
-                    customUrl={customUrl}
-                    onApplyPreset={handleApplyPreset}
-                    onDrillDown={handleDrillDown}
-                />
             </div>
         );
     }
