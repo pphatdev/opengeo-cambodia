@@ -15,6 +15,7 @@ import { AtlasChart } from "./AtlasChart";
 import { type AtlasActivePanel, AtlasDrawers } from "./AtlasDrawers";
 import { AtlasConsoleHUD, AtlasHubsHUD } from "./AtlasHUD";
 import { AtlasInspector } from "./AtlasInspector";
+import { AtlasPlaceChips, type PlaceChipItem } from "./AtlasPlaceChips";
 import { AtlasCategory, AtlasTopBar } from "./AtlasTopBar";
 import { EndpointSelector } from "./EndpointSelector";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
@@ -24,6 +25,8 @@ import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
 import { type PlaygroundPreset } from "./presets";
 
 type PreviewTab = "map" | "raw" | "table" | "headers";
+
+const TOUR = ["12", "17", "02", "07", "18", "03", "11", "16", "09", "13", "08", "21"];
 
 /** Convert GPS coordinates (lat, lon) to SVG canvas (x, y) */
 function latLonToSvg(lat: number, lon: number): [number, number] {
@@ -58,6 +61,14 @@ export default function Playground() {
     const [atlasCategory, setAtlasCategory] = useState<AtlasCategory>("ALL");
     const [activePanel, setActivePanel] = useState<AtlasActivePanel>("none");
     const [networkEnabled, setNetworkEnabled] = useState(true);
+    const [autoTour, setAutoTour] = useState(false);
+
+    // Recent queries history
+    const [recentQueries, setRecentQueries] = useState<string[]>(() => [
+        "/api/admin/provinces/12/districts",
+        "/api/boundaries/provinces",
+        "/api/admin/hierarchy/12010101",
+    ]);
 
     // Set page title
     useEffect(() => {
@@ -137,6 +148,11 @@ export default function Playground() {
                 entry = l;
             });
             setResult({ log: entry });
+            // Save to recent queries
+            setRecentQueries((prev) => {
+                const updated = [path, ...prev.filter((p) => p !== path)].slice(0, 6);
+                return updated;
+            });
         } catch (err) {
             setResult(entry ? { log: entry } : { log: null, error: (err as Error).message });
         } finally {
@@ -144,12 +160,16 @@ export default function Playground() {
         }
     }, [customUrl, selectedEndpoint, paramValues, toast, t]);
 
-    // Keyboard shortcut: Cmd/Ctrl + Enter sends request
+    // Keyboard shortcuts: Cmd+Enter (Send), Cmd+K (Search), Esc (Close drawers)
     useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
                 e.preventDefault();
                 handleSend();
+            }
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+                e.preventDefault();
+                setActivePanel((prev) => (prev === "endpoints" ? "none" : "endpoints"));
             }
             if (e.key === "Escape") {
                 setActivePanel("none");
@@ -158,6 +178,25 @@ export default function Playground() {
         window.addEventListener("keydown", onKeyDown);
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [handleSend]);
+
+    // Auto-Tour effect: automatically cycles provinces when enabled
+    useEffect(() => {
+        if (!autoTour) return;
+        const interval = window.setInterval(() => {
+            setActiveProvinceCode((current) => {
+                const nextIdx = (TOUR.indexOf(current) + 1) % TOUR.length;
+                const nextCode = TOUR[nextIdx];
+                const p = PROVINCES.find((prov) => prov.code === nextCode);
+                if (p) {
+                    const path = `/api/admin/provinces/${p.id}/districts`;
+                    setCustomUrl(path);
+                    apiGet(path, (l) => setResult({ log: l })).catch(() => {});
+                }
+                return nextCode;
+            });
+        }, 4500);
+        return () => window.clearInterval(interval);
+    }, [autoTour]);
 
     // Apply preset
     const handleApplyPreset = (preset: PlaygroundPreset) => {
@@ -169,7 +208,7 @@ export default function Playground() {
         }
     };
 
-    // Drill down from UI Preview into another query
+    // Drill down from UI Preview or place chips into another query
     const handleDrillDown = (path: string, params?: Record<string, string>) => {
         const matched = ENDPOINTS.find((e) => {
             const pattern = e.path.replace(/\{(\w+)\}/g, "[^/?]+");
@@ -235,6 +274,35 @@ export default function Playground() {
         return set;
     }, [body]);
 
+    // Place chips extracted from response
+    const placeChips = useMemo<PlaceChipItem[]>(() => {
+        if (Array.isArray(body?.data)) {
+            return body.data.slice(0, 30).map((it: any) => ({
+                id: it.id ?? it.code,
+                code: String(it.code ?? it.id ?? ""),
+                name_en: it.name_en || it.name || "Item",
+                name_km: it.name_km,
+                level: it.level || it.administrative_unit,
+                province_code: it.province_code,
+                district_code: it.district_code,
+                commune_code: it.commune_code,
+            }));
+        }
+        if (Array.isArray(body?.features)) {
+            return body.features.slice(0, 30).map((f: any) => ({
+                id: f.properties?.code ?? f.properties?.id,
+                code: String(f.properties?.code ?? f.properties?.id ?? ""),
+                name_en: f.properties?.name_en || f.properties?.name || "Feature",
+                name_km: f.properties?.name_km,
+                level: f.properties?.level || "boundary",
+                province_code: f.properties?.province_code,
+                district_code: f.properties?.district_code,
+                commune_code: f.properties?.commune_code,
+            }));
+        }
+        return [];
+    }, [body]);
+
     // Detect geocode coordinate marker
     const geocodeMarker = useMemo<{ x: number; y: number; lat: number; lon: number; label: string } | null>(() => {
         let lat: number | undefined;
@@ -266,15 +334,41 @@ export default function Playground() {
         return PROVINCES.find((p) => p.code === activeProvinceCode) ?? PROVINCES[0];
     }, [activeProvinceCode]);
 
-    // Handle province selection on Atlas Canvas or Chart
+    // Intelligent context-aware province selection
     const handleSelectProvince = (p: HeroProvince) => {
         setActiveProvinceCode(p.code);
-        // Automatically query that province
-        const ep = ENDPOINTS.find((e) => e.id === "admin-province-districts") ?? selectedEndpoint;
-        handleSelectEndpoint(ep, { id: String(p.id) });
-        const path = `/api/admin/provinces/${p.id}/districts`;
+        if (autoTour) setAutoTour(false);
+
+        let path = `/api/admin/provinces/${p.id}/districts`;
+        let targetEp = selectedEndpoint;
+
+        if (selectedEndpoint.group === "boundaries") {
+            path = `/api/boundaries/provinces/${p.code}`;
+            targetEp = ENDPOINTS.find((e) => e.id === "b-province") ?? selectedEndpoint;
+        } else if (selectedEndpoint.group === "geocode") {
+            const lat = (p.cy / 80).toFixed(4);
+            const lon = (p.cx / 80).toFixed(4);
+            path = `/api/geocode/reverse?lat=${lat}&lon=${lon}`;
+            targetEp = ENDPOINTS.find((e) => e.id === "geo-reverse") ?? selectedEndpoint;
+        } else if (selectedEndpoint.id === "admin-province") {
+            path = `/api/admin/provinces/${p.id}`;
+            targetEp = selectedEndpoint;
+        } else {
+            path = `/api/admin/provinces/${p.id}/districts`;
+            targetEp = ENDPOINTS.find((e) => e.id === "admin-districts") ?? selectedEndpoint;
+        }
+
+        handleSelectEndpoint(targetEp, { id: String(p.id), code: p.code });
         setCustomUrl(path);
         handleSend(path);
+    };
+
+    // Selecting a place chip highlights the corresponding province
+    const handleSelectPlaceChip = (chip: PlaceChipItem) => {
+        const pCode = extractProvinceCode(chip.code || chip.province_code);
+        if (pCode && PROVINCES.some((p) => p.code === pCode)) {
+            setActiveProvinceCode(pCode);
+        }
     };
 
     // ==========================================
@@ -288,6 +382,7 @@ export default function Playground() {
                     category={atlasCategory}
                     onSelectCategory={handleSelectCategory}
                     log={log}
+                    customUrl={customUrl}
                     viewMode={viewMode}
                     onToggleViewMode={() => setViewMode("classic")}
                     activePanel={activePanel}
@@ -296,6 +391,9 @@ export default function Playground() {
                     onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
                     theme={dark ? "dark" : "light"}
                     onToggleTheme={toggleTheme}
+                    autoTour={autoTour}
+                    onToggleAutoTour={() => setAutoTour((a) => !a)}
+                    itemCount={placeChips.length}
                 />
 
                 {/* Central Command Stage */}
@@ -320,6 +418,11 @@ export default function Playground() {
                             pending={pending}
                             onOpenEndpoints={() => setActivePanel("endpoints")}
                             onOpenParams={() => setActivePanel("params")}
+                            recentQueries={recentQueries}
+                            onSelectRecentQuery={(path) => {
+                                setCustomUrl(path);
+                                handleSend(path);
+                            }}
                         />
                     </div>
 
@@ -343,8 +446,20 @@ export default function Playground() {
                         />
                     </div>
 
+                    {/* Floating Response Place Chips Strip (Centered Bottom) */}
+                    {placeChips.length > 0 && (
+                        <div className="absolute bottom-13 left-1/2 -translate-x-1/2 z-20 w-[min(90%,740px)] hidden sm:block">
+                            <AtlasPlaceChips
+                                items={placeChips}
+                                activeCode={activeProvinceCode}
+                                onSelectPlace={handleSelectPlaceChip}
+                                onDrillDown={handleDrillDown}
+                            />
+                        </div>
+                    )}
+
                     {/* Bottom-Right 2D Scatter Matrix Chart */}
-                    <div className="absolute right-5 bottom-16 z-20 hidden md:block w-76">
+                    <div className="absolute right-5 bottom-14 z-20 hidden md:block w-76">
                         <AtlasChart
                             activeProvinceCode={activeProvinceCode}
                             onSelectProvince={handleSelectProvince}

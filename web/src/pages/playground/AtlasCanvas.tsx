@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState, type MouseEvent } from "react";
 import { cx } from "../../components/ui";
 import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "../home/cambodiaMap";
+import { PROVINCE_STATS } from "./provinceStats";
 
 interface AtlasCanvasProps {
     activeProvince: HeroProvince;
@@ -303,6 +304,44 @@ export function AtlasCanvas({
                             </g>
                         );
                     })}
+
+                    {/* Interactive Hover Micro-Tooltip */}
+                    {hoveredCode && hoveredCode !== activeProvince.code && (() => {
+                        const hp = PROVINCES.find((p) => p.code === hoveredCode);
+                        const hs = PROVINCE_STATS[hoveredCode];
+                        if (!hp || !hs) return null;
+                        return (
+                            <g key="hover-tooltip" className="pointer-events-none" aria-hidden="true">
+                                <rect
+                                    x={hp.cx - 65}
+                                    y={hp.cy - 40}
+                                    width="130"
+                                    height="28"
+                                    rx="8"
+                                    fill="#0d121d"
+                                    fillOpacity="0.95"
+                                    stroke="#06b6d4"
+                                    strokeWidth="1"
+                                />
+                                <text
+                                    x={hp.cx}
+                                    y={hp.cy - 26}
+                                    textAnchor="middle"
+                                    className="fill-white font-sans text-[10px] font-bold"
+                                >
+                                    {hp.en} ({hp.km})
+                                </text>
+                                <text
+                                    x={hp.cx}
+                                    y={hp.cy - 16}
+                                    textAnchor="middle"
+                                    className="fill-cyan-300 font-mono text-[8px]"
+                                >
+                                    {hs.districts}D · {hs.communes}C · Click to query
+                                </text>
+                            </g>
+                        );
+                    })()}
 
                     {/* Geocode Target Reticle (when geocode marker is present) */}
                     {geocodeMarker && (
