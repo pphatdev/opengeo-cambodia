@@ -189,11 +189,11 @@ export function Explorer() {
     const deepest = [...LEVELS].reverse().find((l) => sel[l]) ?? null;
 
     return (
-        <div className="grid min-h-170 grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[14px] border border-line bg-surface shadow-card lg:grid-cols-[380px_minmax(0,1fr)]" ref={rootRef}>
-            <aside className="flex min-w-0 flex-col border-b border-line lg:border-b-0 lg:border-r">
+        <div className="grid min-h-170 grid-cols-[minmax(0,1fr)] overflow-hidden rounded-2xl glass-panel shadow-glass-lg lg:grid-cols-[380px_minmax(0,1fr)]" ref={rootRef}>
+            <aside className="flex min-w-0 flex-col border-b border-line/60 lg:border-b-0 lg:border-r lg:border-line/60">
                 <SearchBox onPick={(item) => void jumpTo(item.id)} onLog={log} />
 
-                <div className="border-b border-line px-4 pb-4 pt-2">
+                <div className="border-b border-line/60 px-4 pb-4 pt-2">
                     {LEVELS.map((level, i) => {
                         const parent = i > 0 ? LEVELS[i - 1] : null;
                         const items = lists[level];
@@ -205,12 +205,18 @@ export function Explorer() {
                         // Secondary label shows the other language
                         const secondary = lang === "km" ? LEVEL_EN[level] : LEVEL_KM[level];
                         return (
-                            <div className="relative grid grid-cols-[22px_1fr] gap-2.5 pt-3 before:absolute before:-bottom-3.5 before:left-[10.5px] before:top-9.5 before:w-px before:bg-line-2 last:before:hidden" key={level}>
-                                <span className={cx("relative z-1 mt-5.5 grid size-5.5 place-items-center rounded-full border font-mono text-[10px] font-semibold transition-colors", sel[level] ? "border-accent bg-accent text-white shadow-xs" : "border-line-2 bg-surface text-ink-3")}>{i + 1}</span>
+                            <div className={cx("relative grid grid-cols-[22px_1fr] gap-2.5 pt-3 before:absolute before:-bottom-3.5 before:left-[10.5px] before:top-9.5 before:w-px last:before:hidden transition-colors", sel[level] ? "before:bg-accent/50" : "before:bg-line-2")} key={level}>
+                                <span className={cx(
+                                    "relative z-1 mt-5.5 grid size-5.5 place-items-center rounded-full border font-mono text-[10px] font-semibold transition-all duration-300",
+                                    sel[level] ? "border-accent bg-accent text-white shadow-[0_0_12px_var(--og-accent)] ring-2 ring-accent/25" : "border-line-2 bg-surface text-ink-3",
+                                )}>
+                                    {i + 1}
+                                </span>
                                 <div>
-                                    <label htmlFor={`sel-${level}`} className="mb-1.25 flex gap-1.5 text-xs font-semibold text-ink-2">
-                                        {t(`level.${level}`)} <span className={cx("font-normal text-ink-3", lang !== "km" && "font-khmer")}>{secondary}</span>
-                                        <span className="ml-auto font-mono text-[11px] font-medium text-ink-3">{items.length || ""}</span>
+                                    <label htmlFor={`sel-${level}`} className="mb-1.25 flex items-center gap-1.5 text-xs font-semibold text-ink-2">
+                                        <span>{t(`level.${level}`)}</span>
+                                        <span className={cx("font-normal text-ink-3", lang !== "km" && "font-khmer")}>{secondary}</span>
+                                        <span className="ml-auto font-mono text-[11px] font-medium text-ink-3 rounded-full bg-surface-2/70 px-2 py-0.5 border border-line/40">{items.length || "0"}</span>
                                     </label>
                                     <Combobox
                                         id={`sel-${level}`}
@@ -246,10 +252,12 @@ export function Explorer() {
                 />
             </aside>
 
-            <div className="grid min-w-0 grid-rows-[1fr_auto]">
-                <Suspense fallback={<div className="min-h-110" />}>
-                    {showMap ? <ExplorerMap target={target} resetKey={resetKey} onSelect={selectByCode} onLog={log} onReset={reset} /> : <div className="min-h-110" />}
-                </Suspense>
+            <div className="flex min-w-0 flex-col h-full min-h-0">
+                <div className="relative min-w-0 flex-1 min-h-95 sm:min-h-110">
+                    <Suspense fallback={<div className="h-full w-full min-h-95 sm:min-h-110" />}>
+                        {showMap ? <ExplorerMap target={target} resetKey={resetKey} onSelect={selectByCode} onLog={log} onReset={reset} /> : <div className="h-full w-full min-h-95 sm:min-h-110" />}
+                    </Suspense>
+                </div>
                 <RequestConsole logs={logs} activeId={activeLog} onSelect={setActiveLog} />
             </div>
         </div>

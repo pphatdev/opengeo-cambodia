@@ -245,7 +245,7 @@ function MapControls() {
             <button
                 type="button"
                 onClick={handleCenterCambodia}
-                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-line bg-surface/90 text-ink shadow-card backdrop-blur-md hover:border-line-2 hover:bg-surface transition-colors"
+                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-xl glass-pill text-ink shadow-xs hover:text-accent transition-all"
                 title="Fit Cambodia Bounds"
             >
                 <Icon name="map" className="size-4" />
@@ -253,7 +253,7 @@ function MapControls() {
             <button
                 type="button"
                 onClick={() => map.zoomIn()}
-                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-line bg-surface/90 text-ink shadow-card backdrop-blur-md hover:border-line-2 hover:bg-surface transition-colors font-mono font-bold text-sm"
+                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-xl glass-pill text-ink shadow-xs hover:text-accent transition-all font-mono font-bold text-sm"
                 title="Zoom In"
             >
                 +
@@ -261,7 +261,7 @@ function MapControls() {
             <button
                 type="button"
                 onClick={() => map.zoomOut()}
-                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-line bg-surface/90 text-ink shadow-card backdrop-blur-md hover:border-line-2 hover:bg-surface transition-colors font-mono font-bold text-sm"
+                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-xl glass-pill text-ink shadow-xs hover:text-accent transition-all font-mono font-bold text-sm"
                 title="Zoom Out"
             >
                 −
@@ -344,7 +344,7 @@ export function PlaygroundMap({
 
             {/* Floating Inspection HUD / Card */}
             {inspected && (
-                <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-md z-500 rounded-xl border border-line bg-surface/95 p-3.5 shadow-xl backdrop-blur-md transition-all">
+                <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-md z-500 rounded-2xl glass-panel p-4 shadow-glass-lg transition-all">
                     <div className="flex items-start justify-between gap-3">
                         <div>
                             <div className="flex items-center gap-2 mb-1">
@@ -353,7 +353,7 @@ export function PlaygroundMap({
                                     <span className="font-mono text-xs font-semibold text-ink-3">#{inspected.code}</span>
                                 )}
                                 {inspected.administrative_unit && (
-                                    <span className="rounded bg-surface-2 px-1.5 py-0.5 text-[10.5px] text-ink-2 border border-line">
+                                    <span className="rounded-md glass-pill px-1.75 py-0.5 text-[10.5px] text-ink-2 border border-line/60">
                                         {inspected.administrative_unit}
                                     </span>
                                 )}
@@ -374,9 +374,10 @@ export function PlaygroundMap({
                         <button
                             type="button"
                             onClick={() => setInspected(null)}
-                            className="size-5 rounded text-ink-3 hover:text-ink text-xs font-mono"
+                            className="grid size-6 place-items-center rounded-lg glass-pill text-ink-3 hover:text-ink cursor-pointer transition-all"
+                            title="Close"
                         >
-                            ✕
+                            <Icon name="x" className="size-3" />
                         </button>
                     </div>
 
@@ -389,7 +390,7 @@ export function PlaygroundMap({
                                     <button
                                         type="button"
                                         onClick={() => onDrillDown(`/api/boundaries/districts?province_code=${inspected.code}`, { province_code: String(inspected.code) })}
-                                        className="cursor-pointer font-semibold text-accent hover:underline text-[11.5px] flex items-center gap-1"
+                                        className="cursor-pointer font-semibold rounded-lg glass-pill px-2.5 py-1 text-accent text-[11px] flex items-center gap-1 transition-all"
                                     >
                                         <Icon name="polygon" className="size-3" />
                                         <span>Districts Boundary →</span>
@@ -399,7 +400,7 @@ export function PlaygroundMap({
                                     <button
                                         type="button"
                                         onClick={() => onDrillDown(`/api/boundaries/communes?district_code=${inspected.code}`, { district_code: String(inspected.code) })}
-                                        className="cursor-pointer font-semibold text-accent hover:underline text-[11.5px] flex items-center gap-1"
+                                        className="cursor-pointer font-semibold rounded-lg glass-pill px-2.5 py-1 text-accent text-[11px] flex items-center gap-1 transition-all"
                                     >
                                         <Icon name="polygon" className="size-3" />
                                         <span>Communes Boundary →</span>
@@ -408,14 +409,14 @@ export function PlaygroundMap({
                                 <button
                                     type="button"
                                     onClick={() => onDrillDown(`/api/boundaries/item/${inspected.code}`, { code: String(inspected.code) })}
-                                    className="cursor-pointer font-semibold text-ink-2 hover:text-ink hover:underline text-[11.5px]"
+                                    className="cursor-pointer font-semibold rounded-lg glass-pill px-2.5 py-1 text-ink-2 hover:text-ink text-[11px] transition-all"
                                 >
                                     Polygon →
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => onDrillDown(`/api/admin/hierarchy/${inspected.code}`, { id: String(inspected.code) })}
-                                    className="cursor-pointer font-semibold text-water hover:underline text-[11.5px]"
+                                    className="cursor-pointer font-semibold rounded-lg glass-pill px-2.5 py-1 text-water hover:text-accent text-[11px] transition-all"
                                 >
                                     Hierarchy →
                                 </button>

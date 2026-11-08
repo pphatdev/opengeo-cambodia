@@ -160,21 +160,23 @@ export default function Playground() {
     const fullProdUrl = PROD_ORIGIN + (customUrl.startsWith("/") ? customUrl : `/${customUrl}`);
 
     return (
-        <div className="min-h-screen bg-bg text-ink flex flex-col font-sans">
+        <div className="min-h-screen bg-bg text-ink flex flex-col font-sans relative overflow-x-hidden">
+            <div className="bg-liquid-glow pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
+            <div className="pointer-events-none absolute -right-30 top-20 size-140 rounded-full bg-accent/10 blur-[100px]" aria-hidden="true" />
             <Nav variant="playground" />
 
 
             {/* Main Playground Content */}
-            <main id="request-console" className={cx(wrap, "flex-1 py-8")}>
+            <main id="request-console" className={cx(wrap, "relative flex-1 py-8")}>
                 <div className="space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl">
-                        <div className="inline-flex max-w-full items-center overflow-x-auto rounded-lg border border-line bg-surface-2 p-1">
+                        <div className="inline-flex max-w-full items-center overflow-x-auto rounded-xl glass-panel-subtle p-1 shadow-xs">
                             <button
                                 type="button"
                                 onClick={() => setActiveTab("map")}
                                 className={cx(
-                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                    activeTab === "map" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-all",
+                                    activeTab === "map" ? "glass-pill text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink",
                                 )}
                             >
                                 <Icon name="map" className="size-3.5" />
@@ -184,8 +186,8 @@ export default function Playground() {
                                 type="button"
                                 onClick={() => setActiveTab("table")}
                                 className={cx(
-                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                    activeTab === "table" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-all",
+                                    activeTab === "table" ? "glass-pill text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink",
                                 )}
                             >
                                 <Icon name="table" className="size-3.5" />
@@ -195,8 +197,8 @@ export default function Playground() {
                                 type="button"
                                 onClick={() => setActiveTab("drilldown")}
                                 className={cx(
-                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                    activeTab === "drilldown" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-all",
+                                    activeTab === "drilldown" ? "glass-pill text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink",
                                 )}
                                 title={t("explore.title")}
                             >
@@ -207,8 +209,8 @@ export default function Playground() {
                                 type="button"
                                 onClick={() => setActiveTab("raw")}
                                 className={cx(
-                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                    activeTab === "raw" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-all",
+                                    activeTab === "raw" ? "glass-pill text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink",
                                 )}
                             >
                                 <Icon name="code" className="size-3.5" />
@@ -218,8 +220,8 @@ export default function Playground() {
                                 type="button"
                                 onClick={() => setActiveTab("headers")}
                                 className={cx(
-                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
-                                    activeTab === "headers" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-all",
+                                    activeTab === "headers" ? "glass-pill text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink",
                                 )}
                             >
                                 <Icon name="layers" className="size-3.5" />
@@ -232,10 +234,10 @@ export default function Playground() {
                             <div className="flex items-center gap-2 font-mono text-xs">
                                 <span
                                     className={cx(
-                                        "inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-bold",
+                                        "inline-flex items-center gap-1.5 rounded-full glass-pill px-2.5 py-1 text-[11px] font-bold shadow-xs",
                                         log.status >= 200 && log.status < 300
-                                            ? "bg-accent/15 text-accent border border-accent/20"
-                                            : "bg-warn/15 text-warn border border-warn/20",
+                                            ? "text-accent border-accent/30"
+                                            : "text-warn border-warn/30",
                                     )}
                                 >
                                     <span className="size-1.5 rounded-full bg-current" />
@@ -278,9 +280,9 @@ export default function Playground() {
                             {isGeoJson ? (
                                 <div className="space-y-4">
                                     {/* GeoJSON Boundary Summary Header */}
-                                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface px-4 py-3">
+                                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl glass-panel px-4 py-3 shadow-glass">
                                         <div className="flex flex-wrap items-center gap-2.5">
-                                            <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-xs font-semibold text-accent">
+                                            <span className="rounded-full bg-accent-soft px-2.5 py-0.5 font-mono text-xs font-semibold text-accent">
                                                 {body.type}
                                             </span>
                                             <span className="text-sm font-semibold text-ink">
@@ -301,7 +303,7 @@ export default function Playground() {
                                             <button
                                                 type="button"
                                                 onClick={() => handleDrillDown("/api/boundaries/provinces")}
-                                                className="cursor-pointer rounded-lg border border-line bg-surface-2 px-2.5 py-1 text-xs font-medium text-ink hover:border-line-2"
+                                                className="cursor-pointer rounded-lg glass-pill px-3 py-1 text-xs font-medium text-ink hover:text-accent"
                                             >
                                                 All Provinces
                                             </button>
@@ -328,7 +330,7 @@ export default function Playground() {
                         <div className="space-y-4">
                             <div className="rounded-2xl">
                                 <div className="mb-6">
-                                    <div className="inline-flex items-center gap-2 rounded-lg border border-line/70 bg-surface-2 px-2.5 py-1 font-mono text-[11px] text-accent font-semibold mb-2 shadow-xs">
+                                    <div className="inline-flex items-center gap-2 rounded-full glass-pill px-3 py-1 font-mono text-[11px] text-accent font-semibold mb-2 shadow-xs">
                                         <span className="size-1.5 rounded-full bg-accent animate-pulse" />
                                         <span>{t("explore.kicker")}</span>
                                     </div>
@@ -343,8 +345,8 @@ export default function Playground() {
                             </div>
                         </div>
                     ) : !log ? (
-                        <div className="flex min-h-105 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-surface/50 p-8 text-center">
-                            <div className="size-12 rounded-2xl bg-surface-2 border border-line flex items-center justify-center text-accent mb-4">
+                        <div className="flex min-h-105 flex-col items-center justify-center rounded-2xl glass-panel p-8 text-center shadow-glass">
+                            <div className="size-12 rounded-2xl glass-pill flex items-center justify-center text-accent mb-4">
                                 <Icon name="play" className="size-6" />
                             </div>
                             <h3 className="m-0 text-base font-bold text-ink">
@@ -356,7 +358,7 @@ export default function Playground() {
                             <button
                                 type="button"
                                 onClick={() => handleSend()}
-                                className="mt-5 inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] cursor-pointer transition-colors"
+                                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-ink px-4.5 py-2.5 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] shadow-sm hover:shadow-[0_4px_16px_-4px_var(--og-accent)] cursor-pointer transition-all"
                             >
                                 <Icon name="play" className="size-3" />
                                 {t("playground.sendRequest")}

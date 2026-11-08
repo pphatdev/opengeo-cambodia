@@ -22,12 +22,14 @@ const paths = {
     info: (<><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>),
     alert: (<><path d="M12 3 2 20h20L12 3Z" /><path d="M12 10v4M12 17h.01" /></>),
     menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+    chevronDown: <path d="m6 9 6 6 6-6" />,
     chevrons: <path d="m7 15 5 5 5-5M7 9l5-5 5 5" />,
     code: <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />,
     eye: (<><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></>),
     download: (<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></>),
     table: (<><path d="M12 3v18M3 9h18M3 15h18" /><rect width="18" height="18" x="3" y="3" rx="2" /></>),
     sparkles: (<><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" /></>),
+    x: (<><path d="M18 6 6 18M6 6l12 12" /></>),
 } as const;
 
 export type IconName = keyof typeof paths | "play" | "pause" | "github";

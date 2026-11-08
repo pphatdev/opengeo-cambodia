@@ -178,25 +178,47 @@ export function Combobox({
                 onClick={() => setOpen((o) => !o)}
                 onKeyDown={onTriggerKey}
                 className={cx(
-                    "flex w-full cursor-pointer items-center justify-between gap-2 border border-line bg-surface text-left text-ink transition-[border-color,box-shadow]",
-                    "hover:border-line-2 focus-visible:border-accent focus-visible:shadow-[0_0_0_3px_var(--og-accent-soft)] focus-visible:outline-none",
+                    "flex w-full cursor-pointer items-center justify-between gap-2 border border-line/70 bg-surface/80 text-left text-ink backdrop-blur-sm transition-all",
+                    "hover:border-accent/40 focus-visible:border-accent focus-visible:shadow-[0_0_0_3px_var(--og-accent-soft)] focus-visible:outline-none",
                     "aria-expanded:border-accent aria-expanded:shadow-[0_0_0_3px_var(--og-accent-soft)]",
                     "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:opacity-50",
-                    sm ? "h-8.5 rounded-lg px-2.5 text-[13px]" : "h-10 rounded-[9px] pl-2.75 pr-2.5 text-sm",
+                    sm ? "h-8.5 rounded-lg px-2.5 text-[13px]" : "h-10 rounded-xl pl-2.75 pr-2.5 text-sm",
                     triggerClassName,
                 )}
             >
                 <span className="flex min-w-0 items-baseline gap-1.5">
                     {selected ? (
                         <>
-                            <span className={cx("truncate", selected.labelClassName)}>{selected.label}</span>
+                            <span className={cx("truncate font-medium", selected.labelClassName)}>{selected.label}</span>
                             {selected.hint && <span className={cx("truncate text-xs text-ink-3", selected.hintClassName)}>{selected.hint}</span>}
                         </>
                     ) : (
                         <span className="truncate text-ink-3">{placeholder}</span>
                     )}
                 </span>
-                <Icon name="chevrons" className="size-4 flex-none text-ink-3" />
+                <div className="flex items-center gap-1.5 flex-none">
+                    {clearable && selected && !disabled && (
+                        <span
+                            role="button"
+                            tabIndex={0}
+                            title="Clear"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onChange(null);
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    e.stopPropagation();
+                                    onChange(null);
+                                }
+                            }}
+                            className="grid size-4.5 place-items-center rounded-full text-ink-3 hover:bg-surface-2 hover:text-ink transition-colors cursor-pointer"
+                        >
+                            <Icon name="x" className="size-3" />
+                        </span>
+                    )}
+                    <Icon name="chevrons" className={cx("size-4 flex-none text-ink-3 transition-transform duration-200", open && "rotate-180 text-accent")} />
+                </div>
             </button>
 
             {open &&
@@ -204,11 +226,11 @@ export function Combobox({
                     <div
                         ref={popRef}
                         style={pos ? { left: pos.left, top: pos.top, width: pos.width, transform: pos.up ? "translateY(-100%)" : undefined } : { visibility: "hidden" }}
-                        className="fixed z-1100 overflow-hidden rounded-[10px] border border-line bg-surface text-ink shadow-card animate-pop"
+                        className="fixed z-1100 overflow-hidden rounded-xl glass-panel text-ink shadow-glass-lg animate-pop"
                         onKeyDown={onListKey}
                     >
                         {searchable && (
-                            <div className="flex items-center gap-2 border-b border-line px-3">
+                            <div className="flex items-center gap-2 border-b border-line/60 bg-surface-2/30 px-3">
                                 <Icon name="search" className="size-4 flex-none text-ink-3" />
                                 <input
                                     ref={inputRef}
@@ -254,15 +276,16 @@ export function Combobox({
                                             onPointerDown={(e) => e.preventDefault() /* keep focus in the popover */}
                                             onClick={() => choose(o)}
                                             className={cx(
-                                                "flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm data-active:bg-surface-2",
+                                                "group/opt flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-all",
+                                                isSelected ? "bg-accent/12 font-medium text-accent" : "text-ink hover:bg-surface-2/70 data-active:bg-surface-2/80",
                                                 itemClassName,
                                             )}
                                         >
                                             <span className="flex min-w-0 flex-1 items-baseline gap-1.5">
                                                 <span className={cx("truncate", o.labelClassName)}>{o.label}</span>
-                                                {o.hint && <span className={cx("truncate text-xs text-ink-3", o.hintClassName)}>{o.hint}</span>}
+                                                {o.hint && <span className={cx("truncate text-xs text-ink-3 group-hover/opt:text-ink-2", o.hintClassName)}>{o.hint}</span>}
                                             </span>
-                                            <Icon name="check" className={cx("size-4 flex-none text-accent", isSelected ? "opacity-100" : "opacity-0")} />
+                                            <Icon name="check" className={cx("size-4 flex-none text-accent transition-all duration-150", isSelected ? "opacity-100 scale-100" : "opacity-0 scale-75")} />
                                         </div>
                                     );
                                 })

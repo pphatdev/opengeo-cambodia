@@ -530,7 +530,7 @@ export function PlaygroundHeroPreview({
                             {/* Gliding Callout Card (desktop & tablet) */}
                             <div
                                 className={cx(
-                                    "pointer-events-auto absolute left-0 top-0 w-[min(300px,75%)] -translate-y-1/2 rounded-2xl border border-line/80 bg-surface/95 p-4 shadow-2xl backdrop-blur-md transition-transform duration-700 max-sm:hidden",
+                                    "pointer-events-auto absolute left-0 top-0 w-[min(300px,75%)] -translate-y-1/2 rounded-2xl glass-panel p-4 shadow-glass-lg transition-transform duration-700 max-sm:hidden",
                                     EASE,
                                     flip ? "-translate-x-[calc(100%+20px)]" : "translate-x-5",
                                 )}
@@ -620,11 +620,11 @@ export function PlaygroundHeroPreview({
 
             {/* Redesigned Response Places Section */}
             {placeChips.length > 0 && (
-                <div className="rounded-2xl border border-line bg-surface p-4 shadow-card space-y-3.5 transition-all">
+                <div className="rounded-2xl glass-panel p-4.5 shadow-glass space-y-3.5 transition-all">
                     {/* Header */}
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3">
                         <div className="flex items-center gap-2.5">
-                            <div className="flex size-7 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                            <div className="flex size-7 items-center justify-center rounded-xl glass-pill text-accent">
                                 <Icon name="layers" className="size-4" />
                             </div>
                             <div className="flex flex-col">
@@ -632,7 +632,7 @@ export function PlaygroundHeroPreview({
                                     <h4 className="m-0 font-display text-xs font-bold uppercase tracking-wider text-ink">
                                         Response Places
                                     </h4>
-                                    <span className="rounded-md bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-semibold text-ink-2 border border-line/60">
+                                    <span className="rounded-md glass-pill px-2 py-0.5 font-mono text-[11px] font-semibold text-accent border border-accent/20">
                                         {filteredPlaces.length}
                                         {filteredPlaces.length !== placeChips.length && ` of ${placeChips.length}`}
                                     </span>
@@ -652,7 +652,7 @@ export function PlaygroundHeroPreview({
                                     value={placeSearch}
                                     onChange={(e) => setPlaceSearch(e.target.value)}
                                     placeholder="Filter places or code..."
-                                    className="h-8 w-44 rounded-lg border border-line bg-surface-2 pl-7 pr-6 font-mono text-xs text-ink placeholder-ink-3 outline-none focus:border-accent transition-colors"
+                                    className="h-8.5 w-48 rounded-xl border border-line/70 bg-surface/75 pl-7 pr-6 font-mono text-xs text-ink placeholder-ink-3 backdrop-blur-sm outline-none focus:border-accent transition-all"
                                 />
                                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-3 text-xs pointer-events-none">
                                     🔍

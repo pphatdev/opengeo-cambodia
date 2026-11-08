@@ -35,6 +35,21 @@ interface Props {
     onReset: () => void;
 }
 
+function MapResizer() {
+    const map = useMap();
+    useEffect(() => {
+        const container = map.getContainer();
+        if (!container) return;
+        const ro = new ResizeObserver(() => {
+            map.invalidateSize({ debounceMoveend: true });
+        });
+        ro.observe(container);
+        map.invalidateSize();
+        return () => ro.disconnect();
+    }, [map]);
+    return null;
+}
+
 export function ExplorerMap({ target, resetKey, onSelect, onLog, onReset }: Props) {
     const { dark } = useTheme();
     const { t } = useI18n();
@@ -44,13 +59,26 @@ export function ExplorerMap({ target, resetKey, onSelect, onLog, onReset }: Prop
     pickingRef.current = picking;
 
     return (
-        <div className={cx("og-map relative min-h-110 max-sm:min-h-95 [&_.leaflet-container]:absolute [&_.leaflet-container]:inset-0", picking && "og-picking", dark && "og-map-dark")}>
-            <MapContainer bounds={KH_BOUNDS} minZoom={6} maxBounds={MAX_BOUNDS} aria-label={t("explore.mapLabel")}>
+        <div
+            className={cx(
+                "og-map relative h-full w-full min-h-95 sm:min-h-110 [&_.leaflet-container]:absolute [&_.leaflet-container]:inset-0 [&_.leaflet-container]:h-full [&_.leaflet-container]:w-full",
+                picking && "og-picking",
+                dark && "og-map-dark",
+            )}
+        >
+            <MapContainer
+                className="h-full w-full"
+                bounds={KH_BOUNDS}
+                minZoom={6}
+                maxBounds={MAX_BOUNDS}
+                aria-label={t("explore.mapLabel")}
+            >
                 <TileLayer
                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                     maxZoom={19}
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
+                <MapResizer />
                 <BoundaryLayers target={target} resetKey={resetKey} dark={dark} onSelect={onSelect} onLog={onLog} setLoading={setLoading} pickingRef={pickingRef} />
                 <PointPicker picking={picking} resetKey={resetKey} onSelect={onSelect} onLog={onLog} />
             </MapContainer>

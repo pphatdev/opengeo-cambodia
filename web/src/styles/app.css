@@ -36,6 +36,15 @@
   --og-code-bg: #080b14; --og-code-ink: #e2e8f0; --og-code-line: #171f33;
   --og-brand: linear-gradient(120deg, #0284c7 0%, #0d9488 50%, #10b981 100%);
   --og-shadow: 0 1px 3px rgba(9,13,22,.05), 0 10px 25px -5px rgba(9,13,22,.08);
+
+  /* Liquid Glass tokens - Light */
+  --og-glass-bg: rgba(255, 255, 255, 0.76);
+  --og-glass-bg-subtle: rgba(255, 255, 255, 0.48);
+  --og-glass-border: rgba(255, 255, 255, 0.72);
+  --og-glass-border-subtle: rgba(226, 232, 240, 0.65);
+  --og-glass-specular: inset 0 1px 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.02);
+  --og-glass-shadow: 0 10px 30px -6px rgba(15, 23, 42, 0.06), 0 20px 45px -12px rgba(2, 132, 199, 0.07);
+  --og-glass-shadow-lg: 0 18px 45px -8px rgba(15, 23, 42, 0.1), 0 28px 60px -14px rgba(13, 148, 136, 0.1);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -48,6 +57,15 @@
     --og-code-bg: #040711; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
     --og-brand: linear-gradient(120deg, #38bdf8 0%, #2dd4bf 50%, #34d399 100%);
     --og-shadow: 0 10px 30px -5px rgba(0,0,0,.5);
+
+    /* Liquid Glass tokens - Dark */
+    --og-glass-bg: rgba(13, 19, 34, 0.72);
+    --og-glass-bg-subtle: rgba(13, 19, 34, 0.45);
+    --og-glass-border: rgba(255, 255, 255, 0.13);
+    --og-glass-border-subtle: rgba(255, 255, 255, 0.07);
+    --og-glass-specular: inset 0 1px 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
+    --og-glass-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.55), 0 0 32px -8px rgba(45, 212, 191, 0.08);
+    --og-glass-shadow-lg: 0 24px 60px -8px rgba(0, 0, 0, 0.75), 0 0 48px -12px rgba(56, 189, 248, 0.12);
     color-scheme: dark;
   }
 }
@@ -62,6 +80,15 @@
   --og-code-bg: #040711; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
   --og-brand: linear-gradient(120deg, #38bdf8 0%, #2dd4bf 50%, #34d399 100%);
   --og-shadow: 0 10px 30px -5px rgba(0,0,0,.5);
+
+  /* Liquid Glass tokens - Dark */
+  --og-glass-bg: rgba(13, 19, 34, 0.72);
+  --og-glass-bg-subtle: rgba(13, 19, 34, 0.45);
+  --og-glass-border: rgba(255, 255, 255, 0.13);
+  --og-glass-border-subtle: rgba(255, 255, 255, 0.07);
+  --og-glass-specular: inset 0 1px 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
+  --og-glass-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.55), 0 0 32px -8px rgba(45, 212, 191, 0.08);
+  --og-glass-shadow-lg: 0 24px 60px -8px rgba(0, 0, 0, 0.75), 0 0 48px -12px rgba(56, 189, 248, 0.12);
   color-scheme: dark;
 }
 
@@ -90,6 +117,8 @@
   --color-code-ink: var(--og-code-ink);
   --color-code-line: var(--og-code-line);
   --shadow-card: var(--og-shadow);
+  --shadow-glass: var(--og-glass-shadow);
+  --shadow-glass-lg: var(--og-glass-shadow-lg);
 }
 
 @theme {
@@ -105,9 +134,11 @@
   --color-j-bool: #c084fc;
   --color-j-err: #f87171;
 
-  /* Ubuntu for reading and UI text, as on the live site; Montserrat for display (echoes the logo wordmark) */
+  /* Ubuntu for reading and UI text; JetBrains Mono for display titles and code; Montserrat for classic docs */
   --font-sans: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Montserrat", "Ubuntu", system-ui, sans-serif;
+  --font-display: "Ubuntu", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-docs-display: "Montserrat", "Ubuntu", system-ui, sans-serif;
+  --font-docs-display: "Montserrat", "Ubuntu", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --font-khmer: "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS", sans-serif;
 
@@ -151,6 +182,70 @@
   background-image: radial-gradient(circle at 1px 1px, var(--og-line) 1px, transparent 0);
   background-size: 22px 22px;
   mask-image: radial-gradient(ellipse 70% 60% at 70% 30%, #000 20%, transparent 75%);
+}
+
+/* ==========================================================================
+   Liquid Glass System (visionOS / fluid glassmorphism)
+   ========================================================================== */
+
+/* Frosted glass surface with specular rim highlight and subtle organic dispersion */
+@utility glass-panel {
+  background-color: var(--og-glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--og-glass-border);
+  box-shadow: var(--og-glass-specular), var(--og-glass-shadow);
+}
+
+@utility glass-panel-subtle {
+  background-color: var(--og-glass-bg-subtle);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid var(--og-glass-border-subtle);
+  box-shadow: var(--og-glass-specular), var(--og-glass-shadow);
+}
+
+/* Frosted glass card with reactive hover sheen and lift */
+@utility glass-card {
+  background-color: var(--og-glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--og-glass-border);
+  box-shadow: var(--og-glass-specular), var(--og-glass-shadow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  &:hover {
+    border-color: color-mix(in srgb, var(--og-accent) 40%, var(--og-glass-border));
+    box-shadow: var(--og-glass-specular), var(--og-glass-shadow-lg), 0 0 24px -4px var(--og-accent-soft);
+    transform: translateY(-2px);
+  }
+}
+
+/* Floating pill or badge with micro-border and specular edge */
+@utility glass-pill {
+  background-color: var(--og-glass-bg);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--og-glass-border);
+  box-shadow: var(--og-glass-specular), 0 4px 16px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  &:hover {
+    border-color: color-mix(in srgb, var(--og-accent) 50%, var(--og-glass-border));
+    box-shadow: var(--og-glass-specular), 0 6px 20px -2px rgba(13, 148, 136, 0.15);
+  }
+}
+
+/* Fluid ambient lighting meshes to illuminate frosted glass from beneath */
+@utility bg-liquid-mesh {
+  background-image:
+    radial-gradient(at 0% 0%, color-mix(in srgb, var(--og-water) 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, color-mix(in srgb, var(--og-accent) 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, color-mix(in srgb, var(--og-water) 10%, transparent) 0px, transparent 50%);
+}
+
+@utility bg-liquid-glow {
+  background-image:
+    radial-gradient(circle 800px at 50% -20%, color-mix(in srgb, var(--og-accent) 15%, transparent), transparent 70%),
+    radial-gradient(circle 600px at 85% 30%, color-mix(in srgb, var(--og-water) 12%, transparent), transparent 60%);
 }
 
 /* Popover open animation (uses the standalone scale property so it never fights transforms) */

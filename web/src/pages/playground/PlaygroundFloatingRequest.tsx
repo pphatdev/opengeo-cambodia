@@ -59,7 +59,7 @@ export function PlaygroundFloatingRequest({
                 <button
                     type="button"
                     onClick={() => setIsOpen(true)}
-                    className="group flex cursor-pointer items-center gap-2.5 rounded-full border border-line bg-surface/95 px-4 py-2.5 font-mono text-xs font-semibold text-ink shadow-2xl backdrop-blur-md transition-all hover:border-accent hover:shadow-accent/20 active:scale-95"
+                    className="group flex cursor-pointer items-center gap-2.5 rounded-full glass-pill px-4.5 py-2.5 font-mono text-xs font-semibold text-ink shadow-glass hover:border-accent hover:shadow-accent/20 active:scale-95"
                     title="Open API Request Console"
                 >
                     <span className="flex size-2 rounded-full bg-accent animate-pulse" />
@@ -75,7 +75,7 @@ export function PlaygroundFloatingRequest({
 
             {/* Expanded Floating Request Console Card */}
             {isOpen && (
-                <div className="w-95 max-w-[calc(100vw-32px)] rounded-2xl border border-line bg-surface/95 p-4 shadow-2xl backdrop-blur-xl space-y-3.5 transition-all">
+                <div className="w-95 max-w-[calc(100vw-32px)] rounded-2xl glass-panel p-4.5 shadow-glass-lg space-y-3.5 transition-all">
                     {/* Header */}
                     <div className="flex items-center justify-between border-b border-line/60 pb-2.5">
                         <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export function PlaygroundFloatingRequest({
                                 </button>
                             </div>
 
-                            <div className="flex items-center gap-1.5 rounded-xl border border-line bg-surface-2 px-2.5 py-1 text-xs">
+                            <div className="flex items-center gap-1.5 rounded-xl border border-line/70 bg-surface/70 px-2.5 py-1 text-xs backdrop-blur-sm">
                                 <span className="shrink-0 font-mono text-[11px] font-bold text-accent">GET</span>
                                 <input
                                     type="text"

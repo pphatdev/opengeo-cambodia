@@ -42,9 +42,9 @@ export function PlaygroundRawPreview({ log, endpointPath }: PlaygroundRawPreview
     };
 
     return (
-        <div className="overflow-hidden rounded-xl border border-line bg-code-bg">
+        <div className="overflow-hidden rounded-2xl border border-code-line/80 bg-code/95 shadow-glass backdrop-blur-md">
             {/* Top Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/10 bg-code-bg px-4 py-1 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-code-line bg-code-tab/50 px-4 py-2 text-xs">
                 <div className="flex items-center gap-3 font-mono text-code-dim">
                     <span>{fmtBytes(log.size)}</span>
                     <span>·</span>

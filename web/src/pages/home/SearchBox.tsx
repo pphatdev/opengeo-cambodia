@@ -90,13 +90,13 @@ export function SearchBox({ onPick, onLog }: Props) {
     };
 
     return (
-        <div className="relative border-b border-line p-4">
+        <div className="relative border-b border-line/60 p-4">
             <label htmlFor="search" className="sr-only">{t("explore.searchLabel")}</label>
             <Icon name="search" className="pointer-events-none absolute left-7 top-7 size-4.25 text-ink-3" />
             <input
                 ref={inputRef}
                 id="search"
-                className={cx("h-10.5 w-full rounded-[10px] border border-line bg-surface-2 pl-9.5 pr-10 text-sm text-ink focus:bg-surface km:font-khmer", focusRing)}
+                className={cx("h-10.5 w-full rounded-xl border border-line/70 bg-surface/75 pl-9.5 pr-10 text-sm text-ink backdrop-blur-sm transition-all focus:bg-surface focus:border-accent km:font-khmer", focusRing)}
                 type="search"
                 placeholder={t("explore.searchPlaceholder")}
                 autoComplete="off"
@@ -111,9 +111,9 @@ export function SearchBox({ onPick, onLog }: Props) {
                 onFocus={() => items.length && query.trim().length >= 2 && setOpen(true)}
                 onBlur={() => window.setTimeout(() => setOpen(false), 120)}
             />
-            <kbd aria-hidden="true" className="absolute right-6.5 top-6.75 rounded-[5px] border border-line-2 bg-surface px-1.5 py-px font-mono text-[11px] font-medium text-ink-3">/</kbd>
+            <kbd aria-hidden="true" className="absolute right-6.5 top-6.75 rounded-[6px] glass-pill px-1.75 py-px font-mono text-[11px] font-medium text-ink-3">/</kbd>
             {open && (
-                <div className="absolute inset-x-4 top-15.5 z-600 max-h-90 overflow-y-auto rounded-xl border border-line bg-surface p-1.5 shadow-card" id="search-results" role="listbox" ref={listRef}>
+                <div className="absolute inset-x-4 top-15.5 z-600 max-h-90 overflow-y-auto rounded-xl glass-panel p-1.5 shadow-glass-lg animate-pop" id="search-results" role="listbox" ref={listRef}>
                     {message && <div className="p-3.5 text-[13.5px] text-ink-3">{message}</div>}
                     {items.map((it, i) => (
                         <button

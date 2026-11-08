@@ -29,7 +29,7 @@ export default function Docs() {
     });
 
     return (
-        <div className="leading-[1.7]">
+        <div className="leading-[1.7] [--font-display:var(--font-docs-display)]">
             <Nav variant="docs" menuOpen={menuOpen} onMenu={() => setMenuOpen((o) => !o)} />
             <div className="mx-auto grid max-w-340 grid-cols-[minmax(0,1fr)] gap-0 px-6 max-sm:px-4 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-14">
                 <Sidebar open={menuOpen} onNavigate={() => setMenuOpen(false)} />

@@ -38,10 +38,12 @@ export function Hero() {
     }, []);
 
     return (
-        <section className="relative overflow-hidden pb-12 pt-10">
-            <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
-            {/* Warm glow behind the map */}
-            <div className="pointer-events-none absolute -right-40 top-10 size-160 rounded-full bg-accent/10 blur-3xl max-lg:hidden" aria-hidden="true" />
+        <section className="relative overflow-hidden pb-14 pt-10">
+            <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
+            <div className="bg-liquid-glow pointer-events-none absolute inset-0 opacity-80" aria-hidden="true" />
+            {/* Luminous fluid ambient lighting orbs */}
+            <div className="pointer-events-none absolute -right-36 top-10 size-160 rounded-full bg-accent/15 blur-[100px] max-lg:hidden" aria-hidden="true" />
+            <div className="pointer-events-none absolute -left-20 top-36 size-120 rounded-full bg-water/15 blur-[90px] max-lg:hidden" aria-hidden="true" />
 
             <div className={cx(wrap, "relative")}>
                 <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-14">
@@ -52,9 +54,10 @@ export function Hero() {
 
                     {/* Text content below map for small screens, left column for desktop */}
                     <div className="min-w-0 lg:col-start-1 lg:row-start-1">
-                        <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1.25 pl-1.5 pr-3 text-[13px] font-medium text-ink-2">
-                            <span className="grid size-5 place-items-center rounded-full bg-accent-soft text-accent">
-                                <span className="size-1.75 rounded-full bg-current shadow-[0_0_0_3px_color-mix(in_srgb,currentColor_25%,transparent)]" />
+                        <span className="inline-flex items-center gap-2 rounded-full glass-pill py-1.25 pl-2 pr-3.5 text-[12.5px] font-medium text-ink-2 shadow-xs">
+                            <span className="relative flex size-2 items-center justify-center">
+                                <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
+                                <span className="relative inline-flex size-2 rounded-full bg-accent" />
                             </span>
                             {t("hero.eyebrow")}
                         </span>
@@ -66,15 +69,15 @@ export function Hero() {
                             <Link className={btnGhost} to="/docs"><Icon name="book" /> {t("hero.docs")}</Link>
                         </div>
 
-                        {/* One-line quickstart */}
-                        <div className="mt-6 flex max-w-136 items-center gap-2 rounded-[10px] border border-code-line bg-code py-1.5 pl-3.5 pr-1.5 text-code-ink shadow-[0_12px_30px_-18px_rgba(0,0,0,.5)]">
+                        {/* One-line quickstart with liquid glass terminal */}
+                        <div className="mt-6 flex max-w-136 items-center gap-2 rounded-xl border border-code-line/80 bg-code/95 py-2 pl-3.5 pr-2 text-code-ink shadow-[0_14px_35px_-16px_rgba(0,0,0,.6),inset_0_1px_1px_0_rgba(255,255,255,.08)] backdrop-blur-md">
                             <code className="scrollbar-thin min-w-0 flex-1 overflow-x-hidden whitespace-nowrap font-mono text-[12.5px]">
                                 <span className="select-none text-code-faint">$ </span>curl <span className="text-j-key">{PROD_ORIGIN}/api/admin/provinces</span>
                             </code>
                             <button
                                 type="button"
                                 onClick={() => copy(COMMAND)}
-                                className="inline-flex h-8 flex-none cursor-pointer items-center gap-1.5 rounded-md border-0 bg-code-tab px-2.5 text-xs font-medium text-code-hi hover:bg-code-line/80 hover:text-white transition-colors km:font-khmer [&_svg]:size-3.25"
+                                className="inline-flex h-8 flex-none cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-code-tab px-3 text-xs font-medium text-code-hi shadow-xs hover:border-white/20 hover:bg-code-line/80 hover:text-white transition-all km:font-khmer [&_svg]:size-3.25"
                             >
                                 <Icon name="copy" />{t("common.copy")}
                             </button>
@@ -89,7 +92,7 @@ export function Hero() {
                 </div>
 
                 {/* The hierarchy as a cascade: each tier nests inside the previous one */}
-                <div className="mt-12 overflow-hidden rounded-[14px] border border-line bg-surface/80 backdrop-blur-sm" aria-label={t("hero.datasetSize")}>
+                <div className="mt-12 overflow-hidden rounded-2xl glass-panel shadow-glass-lg" aria-label={t("hero.datasetSize")}>
                     <ol className="m-0 grid list-none grid-cols-2 p-0 lg:grid-cols-4">
                         {TIERS.map((tier, i) => {
                             const value = Number(stats?.[tier.stat] ?? tier.fallback);
@@ -100,14 +103,14 @@ export function Hero() {
                                     key={tier.stat}
                                     className={cx(
                                         "relative flex flex-col min-w-0 gap-3 px-4 py-4 sm:px-6 sm:py-5",
-                                        i % 2 === 1 && "border-l border-line",
-                                        i === 2 && "lg:border-l lg:border-line",
-                                        i >= 2 && "border-t border-line lg:border-t-0",
+                                        i % 2 === 1 && "border-l border-line/60",
+                                        i === 2 && "lg:border-l lg:border-line/60",
+                                        i >= 2 && "border-t border-line/60 lg:border-t-0",
                                     )}
                                 >
                                     {/* Arrow sitting on the shared border: this tier nests inside the one to its left */}
                                     {i > 0 && (
-                                        <span aria-hidden="true" className="absolute -left-2.75 top-1/2 z-1 hidden size-5.5 -translate-y-1/2 place-items-center rounded-full border border-line bg-surface text-ink-3 lg:grid [&_svg]:size-3">
+                                        <span aria-hidden="true" className="absolute -left-2.75 top-1/2 z-1 hidden size-5.5 -translate-y-1/2 place-items-center rounded-full glass-pill text-ink-3 lg:grid [&_svg]:size-3">
                                             <Icon name="arrow" />
                                         </span>
                                     )}
@@ -129,7 +132,7 @@ export function Hero() {
                                     <RollingNumber
                                         value={value}
                                         stagger={90 + i * 15}
-                                        className="font-display text-[30px] font-bold leading-none tracking-[-.03em] sm:text-[38px] xl:text-[44px]"
+                                        className="font-display text-[28px] font-bold leading-none tracking-tight sm:text-[36px] xl:text-[42px]"
                                     />
 
                                     <div className="min-w-0">
@@ -138,8 +141,8 @@ export function Hero() {
                                     </div>
 
                                     {/* Log-scale bar so 25 → 14,576 still reads as a steady progression */}
-                                    <div aria-hidden="true" className="mt-auto h-0.75 overflow-hidden rounded-full bg-line">
-                                        <div className="h-full rounded-full bg-ink" style={{ width: `${(Math.log10(value) / Math.log10(MAX_SCALE)) * 100}%` }} />
+                                    <div aria-hidden="true" className="mt-auto h-1.5 overflow-hidden rounded-full bg-surface-2/80 p-px shadow-inner">
+                                        <div className="h-full rounded-full bg-linear-to-r from-accent via-water to-emerald-400 shadow-[0_0_8px_var(--og-accent)] transition-all duration-1000" style={{ width: `${(Math.log10(value) / Math.log10(MAX_SCALE)) * 100}%` }} />
                                     </div>
                                 </li>
                             );
