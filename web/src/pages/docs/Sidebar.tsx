@@ -152,7 +152,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
                                             <span className="w-6.5 flex-none font-mono text-[9.5px] font-semibold text-ok">GET</span>
                                             <span className="truncate font-mono text-[12.5px]">{l.label}</span>
                                             {l.tag && (
-                                                <span className="ml-auto rounded bg-surface-2 px-1.5 py-0.25 font-mono text-[10px] text-ink-3">
+                                                <span className="ml-auto rounded bg-surface-2 px-1.5 py-px font-mono text-[10px] text-ink-3">
                                                     {l.tag}
                                                 </span>
                                             )}
