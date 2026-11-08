@@ -1,3 +1,5 @@
+/// <reference path="./types/geojson.d.ts" />
+
 /**
  * Bundles the canonical seed JSON (public/data/seed) into the Cloudflare Worker
  * and registers it with AdminStore. The Worker has no filesystem, so the data
