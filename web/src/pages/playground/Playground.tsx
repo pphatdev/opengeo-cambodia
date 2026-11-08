@@ -12,8 +12,7 @@ import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoi
 import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "../home/cambodiaMap";
 import { AtlasCanvas } from "./AtlasCanvas";
 import { AtlasChart } from "./AtlasChart";
-import { AtlasActivePanel, AtlasDock } from "./AtlasDock";
-import { AtlasDrawers } from "./AtlasDrawers";
+import { type AtlasActivePanel, AtlasDrawers } from "./AtlasDrawers";
 import { AtlasConsoleHUD, AtlasHubsHUD } from "./AtlasHUD";
 import { AtlasInspector } from "./AtlasInspector";
 import { AtlasCategory, AtlasTopBar } from "./AtlasTopBar";
@@ -291,6 +290,12 @@ export default function Playground() {
                     log={log}
                     viewMode={viewMode}
                     onToggleViewMode={() => setViewMode("classic")}
+                    activePanel={activePanel}
+                    onTogglePanel={(p) => setActivePanel(p)}
+                    lang={lang}
+                    onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
+                    theme={dark ? "dark" : "light"}
+                    onToggleTheme={toggleTheme}
                 />
 
                 {/* Central Command Stage */}
@@ -305,24 +310,8 @@ export default function Playground() {
                         onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
                     />
 
-                    {/* Left Floating Command Dock */}
-                    <div className="absolute left-4 top-4 z-30">
-                        <AtlasDock
-                            activePanel={activePanel}
-                            onTogglePanel={(p) => setActivePanel(p)}
-                            onExecute={() => handleSend()}
-                            pending={pending}
-                            networkEnabled={networkEnabled}
-                            onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
-                            lang={lang}
-                            onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
-                            theme={dark ? "dark" : "light"}
-                            onToggleTheme={toggleTheme}
-                        />
-                    </div>
-
                     {/* Top-Left Spatial Console HUD Card */}
-                    <div className="absolute left-18 top-4 z-20 max-w-sm sm:max-w-md hidden md:block">
+                    <div className="absolute left-5 top-5 z-20 max-w-sm sm:max-w-md hidden md:block">
                         <AtlasConsoleHUD
                             selectedEndpoint={selectedEndpoint}
                             customUrl={customUrl}
@@ -330,11 +319,12 @@ export default function Playground() {
                             onSend={() => handleSend()}
                             pending={pending}
                             onOpenEndpoints={() => setActivePanel("endpoints")}
+                            onOpenParams={() => setActivePanel("params")}
                         />
                     </div>
 
                     {/* Top-Right Key Hubs HUD Card */}
-                    <div className="absolute right-5 top-4 z-20 hidden lg:block">
+                    <div className="absolute right-5 top-5 z-20 hidden lg:block">
                         <AtlasHubsHUD
                             onSelectProvince={handleSelectProvince}
                             activeProvinceCode={activeProvinceCode}
@@ -342,7 +332,7 @@ export default function Playground() {
                     </div>
 
                     {/* Center Floating Inspector Card (Avionics Equipment Style) */}
-                    <div className="absolute left-18 bottom-12 z-20 hidden sm:block md:left-22">
+                    <div className="absolute left-5 bottom-12 z-20 hidden sm:block">
                         <AtlasInspector
                             province={activeProvince}
                             log={log}
@@ -362,7 +352,7 @@ export default function Playground() {
                     </div>
 
                     {/* Bottom-Left Micro Status Legend */}
-                    <div className="absolute left-18 bottom-3 z-20 flex flex-wrap items-center gap-4 rounded-xl border border-white/5 bg-[#080b13]/80 px-3 py-1 font-mono text-[10px] text-slate-400 backdrop-blur-md">
+                    <div className="absolute left-5 bottom-3 z-20 flex flex-wrap items-center gap-4 rounded-xl border border-white/5 bg-[#080b13]/80 px-3 py-1 font-mono text-[10px] text-slate-400 backdrop-blur-md">
                         <span className="flex items-center gap-1.5">
                             <span className="size-2 rounded-full bg-rose-500 shadow-[0_0_6px_#f43f5e]" />
                             <strong className="text-slate-200">PROVINCES</strong> (25)

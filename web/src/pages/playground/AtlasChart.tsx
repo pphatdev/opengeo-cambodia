@@ -134,3 +134,4 @@ export function AtlasChart({ activeProvinceCode, onSelectProvince }: AtlasChartP
         </div>
     );
 }
+

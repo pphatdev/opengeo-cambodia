@@ -9,6 +9,7 @@ interface AtlasHUDProps {
     onSend: () => void;
     pending?: boolean;
     onOpenEndpoints: () => void;
+    onOpenParams?: () => void;
     onSelectProvince: (p: HeroProvince) => void;
     activeProvinceCode: string;
 }
@@ -27,7 +28,8 @@ export function AtlasConsoleHUD({
     onSend,
     pending,
     onOpenEndpoints,
-}: Pick<AtlasHUDProps, "selectedEndpoint" | "customUrl" | "onUrlChange" | "onSend" | "pending" | "onOpenEndpoints">) {
+    onOpenParams,
+}: Pick<AtlasHUDProps, "selectedEndpoint" | "customUrl" | "onUrlChange" | "onSend" | "pending" | "onOpenEndpoints" | "onOpenParams">) {
     return (
         <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0d121d]/90 p-4 shadow-2xl backdrop-blur-xl">
             {/* Header: Title & Timestamp (matches SUPPLY CHAIN MAP in image) */}
@@ -81,6 +83,17 @@ export function AtlasConsoleHUD({
                         className="h-8.5 w-full rounded-xl border border-white/10 bg-[#080b13] px-3 font-mono text-xs text-cyan-300 placeholder:text-slate-600 focus:border-cyan-500/50 focus:outline-none"
                     />
                 </div>
+                {onOpenParams && selectedEndpoint.params && selectedEndpoint.params.length > 0 && (
+                    <button
+                        type="button"
+                        onClick={onOpenParams}
+                        title={`Configure ${selectedEndpoint.params.length} parameters`}
+                        className="flex h-8.5 items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2.5 font-mono text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                    >
+                        <Icon name="key" className="size-3 text-purple-400" />
+                        <span>({selectedEndpoint.params.length})</span>
+                    </button>
+                )}
                 <button
                     type="submit"
                     disabled={pending}

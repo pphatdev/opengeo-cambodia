@@ -6,7 +6,8 @@ import { EndpointSelector } from "./EndpointSelector";
 import { PlaygroundRawPreview } from "./PlaygroundRawPreview";
 import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
 import { PRESETS, type PlaygroundPreset } from "./presets";
-import { type AtlasActivePanel } from "./AtlasDock";
+
+export type AtlasActivePanel = "none" | "endpoints" | "params" | "raw" | "table" | "presets";
 
 interface AtlasDrawersProps {
     activePanel: AtlasActivePanel;
