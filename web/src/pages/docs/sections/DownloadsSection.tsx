@@ -1,6 +1,7 @@
+import downloadsMd from "../content/09-downloads.md?raw";
 import { cx } from "../../../components/ui";
 import { useI18n } from "../../../i18n";
-import { H2, P } from "../parts";
+import { Markdown } from "../Markdown";
 
 export function DownloadsSection() {
     const { t } = useI18n();
@@ -18,8 +19,7 @@ export function DownloadsSection() {
 
     return (
         <section id="downloads">
-            <H2 id="downloads-h">{t("docs.downloadsTitle")}</H2>
-            <P>{t("docs.downloadsIntro")}</P>
+            <Markdown content={downloadsMd} />
             <div className="my-3.5 grid grid-cols-1 gap-2.5 lg:grid-cols-2">
                 {downloads.map((d) => (
                     <a className="flex items-center gap-3 rounded-[10px] border border-line bg-surface px-3.5 py-3 text-ink no-underline hover:border-line-2" href={d.href} download key={d.href}>

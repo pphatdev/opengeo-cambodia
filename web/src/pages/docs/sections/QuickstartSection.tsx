@@ -1,11 +1,13 @@
 import { useState, type ReactNode } from "react";
+import quickstartMd from "../content/02-quickstart.md?raw";
+import { Markdown } from "../Markdown";
 import { Icon } from "../../../components/Icon";
 import { codeCopy, codeTab } from "../../../components/ui";
 import { useI18n } from "../../../i18n";
 import { PROD_ORIGIN } from "../../../lib/api";
 import { COMMENT, highlightCode } from "../../../lib/highlight";
 import { useToast } from "../../../lib/toast";
-import { CodeBox, H2, P } from "../parts";
+import { CodeBox, P } from "../parts";
 
 // Code samples stay in English: they're meant to be copied into real projects.
 const QUICKSTART = {
@@ -76,12 +78,11 @@ export function QuickstartTabs() {
 }
 
 export function QuickstartSection() {
-    const { t, rt } = useI18n();
+    const { rt } = useI18n();
 
     return (
         <section id="quickstart">
-            <H2 id="quickstart-h">{t("docs.quickTitle")}</H2>
-            <P>{rt("docs.quickIntro")}</P>
+            <Markdown content={quickstartMd} />
             <QuickstartTabs />
             <P>{rt("docs.quickOutro")}</P>
         </section>

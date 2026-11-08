@@ -1,5 +1,7 @@
+import introMd from "../content/01-introduction.md?raw";
+import { Markdown } from "../Markdown";
 import { Icon } from "../../../components/Icon";
-import { cx, docsH1, kicker } from "../../../components/ui";
+import { cx, kicker } from "../../../components/ui";
 import { useI18n } from "../../../i18n";
 import { PROD_ORIGIN } from "../../../lib/api";
 import { useToast } from "../../../lib/toast";
@@ -16,8 +18,7 @@ export function IntroductionSection() {
     return (
         <section id="introduction">
             <div className={kicker}>{t("docs.kicker")}</div>
-            <h1 className={docsH1}>{t("docs.titleA")} <em>{t("docs.titleB")}</em></h1>
-            <p className="mb-7 mt-0 max-w-[40em] text-lg text-ink-2">{t("docs.lede")}</p>
+            <Markdown content={introMd} />
             <div className="mb-4.5 flex flex-wrap items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3.5">
                 <span className="font-mono text-[11px] font-semibold uppercase tracking-[.08em] text-ink-3 km:font-khmer km:normal-case km:tracking-normal">{t("docs.baseUrl")}</span>
                 <code className="font-mono text-sm">{PROD_ORIGIN}</code>
