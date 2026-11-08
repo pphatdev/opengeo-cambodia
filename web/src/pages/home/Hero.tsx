@@ -73,7 +73,7 @@ export function Hero() {
                             <button
                                 type="button"
                                 onClick={() => copy(COMMAND)}
-                                className="inline-flex h-8 flex-none cursor-pointer items-center gap-1.5 rounded-md border-0 bg-code-tab px-2.5 text-xs font-medium text-code-hi hover:bg-[#30343b] km:font-khmer [&_svg]:size-3.25"
+                                className="inline-flex h-8 flex-none cursor-pointer items-center gap-1.5 rounded-md border-0 bg-code-tab px-2.5 text-xs font-medium text-code-hi hover:bg-code-line/80 hover:text-white transition-colors km:font-khmer [&_svg]:size-3.25"
                             >
                                 <Icon name="copy" />{t("common.copy")}
                             </button>

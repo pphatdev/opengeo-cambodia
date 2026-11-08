@@ -26,12 +26,12 @@ export const sectionH2 = cx("m-0 font-display text-[clamp(28px,3.4vw,42px)] font
 export const docsH1 = cx("mb-4 font-display text-[clamp(36px,4.4vw,54px)] font-bold leading-[1.06] tracking-[-.035em] [&_em]:not-italic [&_em]:text-brand km:text-[clamp(32px,4vw,46px)]", khmerHeading);
 export const docsH2 = cx("mb-3.5 mt-16 pt-2 font-display text-[30px] font-bold leading-[1.15] tracking-[-.025em] max-sm:text-[26px] km:text-[clamp(26px,3.2vw,38px)]", khmerHeading);
 
-/* Monochrome: levels differ by treatment (solid → filled → outlined → dashed) rather than hue */
+/* Administrative division hierarchy badges: province (accent), district (water), commune (amber), village (emerald) */
 const LEVEL_COLORS: Record<Level, string> = {
-    province: "bg-ink text-bg",
-    district: "bg-surface-3 text-ink",
-    commune: "border border-line-2 text-ink-2",
-    village: "border border-dashed border-line-2 text-ink-3",
+    province: "bg-accent-soft text-accent border border-accent/25",
+    district: "bg-water-soft text-water border border-water/25",
+    commune: "bg-warn/15 text-warn border border-warn/25",
+    village: "bg-ok/15 text-ok border border-ok/25",
 };
 export const lvl = (level: Level | string | undefined) =>
     cx(
@@ -43,7 +43,7 @@ export const lvl = (level: Level | string | undefined) =>
 export const codeTab =
     "cursor-pointer rounded-[7px] border-0 bg-transparent px-2.5 py-1.5 font-mono text-[12.5px] font-medium text-code-dim aria-selected:bg-code-tab aria-selected:text-code-hi";
 export const codeCopy =
-    "ml-auto inline-flex cursor-pointer items-center gap-1.5 rounded-[7px] border border-[#2f3239] bg-transparent px-2.5 py-[5px] text-xs font-medium text-code-dim hover:text-code-hi disabled:opacity-50 km:font-khmer [&_svg]:size-[13px]";
+    "ml-auto inline-flex cursor-pointer items-center gap-1.5 rounded-[7px] border border-code-line bg-transparent px-2.5 py-[5px] text-xs font-medium text-code-dim hover:border-code-dim/40 hover:text-code-hi disabled:opacity-50 km:font-khmer [&_svg]:size-[13px]";
 export const codePre = "m-0 overflow-x-auto whitespace-pre font-mono text-[13px] leading-[1.65]";
 
 export const chip =

@@ -22,41 +22,45 @@
 /* ==========================================================================
    Design tokens — raw values switch with the theme; Tailwind maps onto them
    ========================================================================== */
-/* Colour concept from the live site (opengeo-cambodia.pphat.me): near-black #050507 ground, white type,
-   slate greys (#94a3b8 / #64748b) for secondary text, hairline white/8% borders, white as the accent and
-   emerald (#10b981) only for "live/ok". Dark mode is the concept itself; light mode is its mirror image. */
+/* OpenGeo Cambodia palette:
+   - Water / Azure (#0284c7 / #38bdf8) reflects Cambodia's Tonle Sap & Mekong waterways
+   - Accent / Emerald-Teal (#0d9488 / #2dd4bf) reflects the lush landscape and brand logo mark
+   - Ground: clean slate in light mode, deep midnight in dark mode
+   - Hierarchy: province (accent), district (water), commune (amber), village (emerald) */
 :root {
-  --og-bg: #fafafa; --og-surface: #ffffff; --og-surface-2: #f4f5f7; --og-surface-3: #eceef2;
-  --og-ink: #050507; --og-ink-2: #475569; --og-ink-3: #64748b; --og-line: #e2e8f0; --og-line-2: #cbd5e1;
-  --og-accent: #050507; --og-accent-soft: #eef0f3;
-  --og-water: #334155; --og-water-soft: #f1f3f6;
-  --og-ok: #059669; --og-warn: #b45309; --og-err: #dc2626;
-  --og-code-bg: #030407; --og-code-ink: #e2e8f0; --og-code-line: #1c1f2a;
-  --og-brand: linear-gradient(120deg, #050507 0%, #64748b 100%);
-  --og-shadow: 0 1px 2px rgba(5,5,7,.05), 0 10px 30px -5px rgba(5,5,7,.12);
+  --og-bg: #f8fafc; --og-surface: #ffffff; --og-surface-2: #f1f5f9; --og-surface-3: #e2e8f0;
+  --og-ink: #090d16; --og-ink-2: #475569; --og-ink-3: #64748b; --og-line: #e2e8f0; --og-line-2: #cbd5e1;
+  --og-accent: #0d9488; --og-accent-soft: #e6f7f5;
+  --og-water: #0284c7; --og-water-soft: #e0f2fe;
+  --og-ok: #10b981; --og-warn: #f59e0b; --og-err: #ef4444;
+  --og-code-bg: #080b14; --og-code-ink: #e2e8f0; --og-code-line: #171f33;
+  --og-brand: linear-gradient(120deg, #0284c7 0%, #0d9488 50%, #10b981 100%);
+  --og-shadow: 0 1px 3px rgba(9,13,22,.05), 0 10px 25px -5px rgba(9,13,22,.08);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --og-bg: #050507; --og-surface: #0f1117; --og-surface-2: #111420; --og-surface-3: #1a1d2b;
-    --og-ink: #f8fafc; --og-ink-2: #94a3b8; --og-ink-3: #64748b; --og-line: rgba(255,255,255,.08); --og-line-2: rgba(255,255,255,.15);
-    --og-accent: #ffffff; --og-accent-soft: rgba(255,255,255,.08); --og-water: #cbd5e1; --og-water-soft: rgba(255,255,255,.06);
-    --og-ok: #10b981; --og-warn: #fbbf24; --og-err: #f87171;
-    --og-code-bg: #030407; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
-    --og-brand: linear-gradient(120deg, #ffffff 0%, #94a3b8 100%);
+    --og-bg: #070b16; --og-surface: #0d1322; --og-surface-2: #131b2e; --og-surface-3: #1a243c;
+    --og-ink: #f8fafc; --og-ink-2: #94a3b8; --og-ink-3: #64748b; --og-line: rgba(255,255,255,.08); --og-line-2: rgba(255,255,255,.16);
+    --og-accent: #2dd4bf; --og-accent-soft: rgba(45,212,191,.12);
+    --og-water: #38bdf8; --og-water-soft: rgba(56,189,248,.12);
+    --og-ok: #34d399; --og-warn: #fbbf24; --og-err: #f87171;
+    --og-code-bg: #040711; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
+    --og-brand: linear-gradient(120deg, #38bdf8 0%, #2dd4bf 50%, #34d399 100%);
     --og-shadow: 0 10px 30px -5px rgba(0,0,0,.5);
     color-scheme: dark;
   }
 }
-/* `.scheme-dark` gives any section the dark (concept) palette regardless of the page theme */
+/* `.scheme-dark` gives any section the dark palette regardless of the page theme */
 :root[data-theme="dark"],
 .scheme-dark {
-  --og-bg: #050507; --og-surface: #0f1117; --og-surface-2: #111420; --og-surface-3: #1a1d2b;
-  --og-ink: #f8fafc; --og-ink-2: #94a3b8; --og-ink-3: #64748b; --og-line: rgba(255,255,255,.08); --og-line-2: rgba(255,255,255,.15);
-  --og-accent: #ffffff; --og-accent-soft: rgba(255,255,255,.08); --og-water: #cbd5e1; --og-water-soft: rgba(255,255,255,.06);
-  --og-ok: #10b981; --og-warn: #fbbf24; --og-err: #f87171;
-  --og-code-bg: #030407; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
-  --og-brand: linear-gradient(120deg, #ffffff 0%, #94a3b8 100%);
+  --og-bg: #070b16; --og-surface: #0d1322; --og-surface-2: #131b2e; --og-surface-3: #1a243c;
+  --og-ink: #f8fafc; --og-ink-2: #94a3b8; --og-ink-3: #64748b; --og-line: rgba(255,255,255,.08); --og-line-2: rgba(255,255,255,.16);
+  --og-accent: #2dd4bf; --og-accent-soft: rgba(45,212,191,.12);
+  --og-water: #38bdf8; --og-water-soft: rgba(56,189,248,.12);
+  --og-ok: #34d399; --og-warn: #fbbf24; --og-err: #f87171;
+  --og-code-bg: #040711; --og-code-ink: #e2e8f0; --og-code-line: rgba(255,255,255,.08);
+  --og-brand: linear-gradient(120deg, #38bdf8 0%, #2dd4bf 50%, #34d399 100%);
   --og-shadow: 0 10px 30px -5px rgba(0,0,0,.5);
   color-scheme: dark;
 }
@@ -93,13 +97,13 @@
   --color-code-dim: #94a3b8;
   --color-code-faint: #64748b;
   --color-code-hi: #f8fafc;
-  --color-code-tab: #161924;
-  --color-code-pill: #0d0f16;
-  --color-j-key: #f8fafc;
-  --color-j-str: #94a3b8;
-  --color-j-num: #cbd5e1;
-  --color-j-bool: #cbd5e1;
-  --color-j-err: #f07167;
+  --color-code-tab: #131b2e;
+  --color-code-pill: #0b101c;
+  --color-j-key: #38bdf8;
+  --color-j-str: #34d399;
+  --color-j-num: #fbbf24;
+  --color-j-bool: #c084fc;
+  --color-j-err: #f87171;
 
   /* Ubuntu for reading and UI text, as on the live site; Montserrat for display (echoes the logo wordmark) */
   --font-sans: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -125,6 +129,7 @@
   p, li, figcaption { text-wrap: pretty; }
   body { text-rendering: optimizeLegibility; font-optical-sizing: auto; }
   img { max-width: 100%; }
+  .leaflet-zoom-animated > g {@apply outline-none;}
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   }
@@ -199,8 +204,8 @@
   .leaflet-popup-content { margin: 12px 14px; line-height: 1.5; }
   .leaflet-tooltip.og-tip { @apply bg-ink text-bg border-0 rounded-[7px] px-2.25 py-1.25 shadow-none font-medium; }
   .leaflet-tooltip.og-tip::before { display: none; }
-  /* Quiet the OSM basemap so boundaries read first; invert it for dark mode */
-  .og-map .leaflet-tile-pane { filter: grayscale(1) contrast(.92) brightness(1.04); }
-  .og-map.og-map-dark .leaflet-tile-pane { filter: grayscale(1) invert(1) brightness(.8) contrast(.9); }
+  /* Quiet the OSM basemap so boundaries read first; soft natural tone in light mode, dark carto in dark mode */
+  .og-map .leaflet-tile-pane { filter: grayscale(0.4) contrast(0.96) brightness(1.02); }
+  .og-map.og-map-dark .leaflet-tile-pane { filter: invert(1) hue-rotate(190deg) brightness(0.82) contrast(0.92) grayscale(0.4); }
   .og-map.og-picking .leaflet-container { cursor: crosshair; }
 }

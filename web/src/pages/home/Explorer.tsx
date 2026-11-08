@@ -206,7 +206,7 @@ export function Explorer() {
                         const secondary = lang === "km" ? LEVEL_EN[level] : LEVEL_KM[level];
                         return (
                             <div className="relative grid grid-cols-[22px_1fr] gap-2.5 pt-3 before:absolute before:-bottom-3.5 before:left-[10.5px] before:top-9.5 before:w-px before:bg-line-2 last:before:hidden" key={level}>
-                                <span className={cx("relative z-1 mt-5.5 grid size-5.5 place-items-center rounded-full border font-mono text-[10px] font-semibold", sel[level] ? "border-ink bg-ink text-bg" : "border-line-2 bg-surface text-ink-3")}>{i + 1}</span>
+                                <span className={cx("relative z-1 mt-5.5 grid size-5.5 place-items-center rounded-full border font-mono text-[10px] font-semibold transition-colors", sel[level] ? "border-accent bg-accent text-white shadow-xs" : "border-line-2 bg-surface text-ink-3")}>{i + 1}</span>
                                 <div>
                                     <label htmlFor={`sel-${level}`} className="mb-1.25 flex gap-1.5 text-xs font-semibold text-ink-2">
                                         {t(`level.${level}`)} <span className={cx("font-normal text-ink-3", lang !== "km" && "font-khmer")}>{secondary}</span>
