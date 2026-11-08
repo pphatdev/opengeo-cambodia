@@ -7,6 +7,14 @@
 - Admin endpoints take numeric ids (`12`, `1201`, `120101`, `12010101`); boundary endpoints take zero-padded codes (`070203`).
 - Rate limits per IP: `/api/admin/*`, `/api/boundaries/*` 10,000 / min; `/api/admin/search` 120 / min; `/api/geocode/*` 30 / min (OpenStreetMap Nominatim fair use); other `/api/*` 5,000 / min.
 
+## Instructions for AI Agents
+
+- Cambodia uses an authoritative 4-tier administrative hierarchy: Province (2-digit code) -> District/Khan/Krong (4 digits) -> Commune/Sangkat (6 digits) -> Village/Phum (8 digits).
+- Never invent or hallucinate codes. Leading digits always match the parent prefix (e.g. Chamkar Mon `1201` is strictly inside Phnom Penh `12`).
+- When writing application code or resolving addresses, use `GET /api/admin/search?q={query}` to match Khmer or English place names.
+- For reverse geocoding or spatial containment, use `GET /api/boundaries/zone?lat={lat}&lng={lng}` for instant sub-millisecond in-memory Point-in-Polygon lookup.
+- Always include a descriptive `User-Agent` header in HTTP requests.
+
 ## Docs
 
 - [Full reference for LLMs](https://opengeo-cambodia.pphat.me/llms-full.txt): every endpoint with parameters and real example responses, the data model, errors, recipes and gotchas

@@ -156,11 +156,13 @@ const RATE_LIMITS = [
 
 interface Stats { provinces: number; districts: number; communes: number; villages: number; total: number; lastSyncAt: string | null }
 interface BoundaryStats { provinces: number; districts: number; communes: number }
+interface ProvinceItem { id: number; code: string; name_en: string; name_km: string; typeKm: string; lat?: number; lon?: number }
 
 async function facts() {
     const stats = ((await call("/api/admin/stats")).body as { data: Stats }).data;
     const bstats = ((await call("/api/boundaries/stats")).body as { data: BoundaryStats }).data;
     const chain = ((await call("/api/admin/hierarchy/12010101")).body as { data: Record<string, { code: string; name_en: string; name_km: string; typeKm: string }> }).data;
+    const provinces = (((await call("/api/admin/provinces")).body as { data: ProvinceItem[] }).data ?? []).sort((a, b) => a.code.localeCompare(b.code));
     const errors = {
         badId: await call("/api/admin/item/abc"),
         notFound: await call("/api/admin/item/999999"),
@@ -177,7 +179,7 @@ async function facts() {
         }
     })();
     const headers = (await call("/api/admin/provinces")).headers;
-    return { stats, bstats, chain, errors, noUa, headers };
+    return { stats, bstats, chain, provinces, errors, noUa, headers };
 }
 
 // ---------------------------------------------------------------------------
@@ -197,6 +199,15 @@ function buildLlmsTxt(eps: Endpoint[], f: Awaited<ReturnType<typeof facts>>): st
         "- No API key. Requests must send a `User-Agent` header, otherwise the API answers 403.",
         "- Admin endpoints take numeric ids (`12`, `1201`, `120101`, `12010101`); boundary endpoints take zero-padded codes (`070203`).",
         `- Rate limits per IP: ${RATE_LIMITS.map(([a, b]) => `${a} ${b}`).join("; ")}.`,
+        "",
+    );
+    lines.push("## Instructions for AI Agents", "");
+    lines.push(
+        "- Cambodia uses an authoritative 4-tier administrative hierarchy: Province (2-digit code) -> District/Khan/Krong (4 digits) -> Commune/Sangkat (6 digits) -> Village/Phum (8 digits).",
+        "- Never invent or hallucinate codes. Leading digits always match the parent prefix (e.g. Chamkar Mon `1201` is strictly inside Phnom Penh `12`).",
+        "- When writing application code or resolving addresses, use `GET /api/admin/search?q={query}` to match Khmer or English place names.",
+        "- For reverse geocoding or spatial containment, use `GET /api/boundaries/zone?lat={lat}&lng={lng}` for instant sub-millisecond in-memory Point-in-Polygon lookup.",
+        "- Always include a descriptive `User-Agent` header in HTTP requests.",
         "",
     );
     lines.push("## Docs", "");
@@ -311,6 +322,15 @@ async function buildLlmsFull(eps: Endpoint[], f: Awaited<ReturnType<typeof facts
         "| `lat`, `lon` | number? | Approximate centroid, where available (provinces always). |",
         "",
         "Records also contain internal search fields starting with `_` (`_normEn`, `_normKm`, `_normName`). Ignore them; they are not part of the contract. They are omitted from the examples below.",
+        "",
+        "### Authoritative 25 Provinces (Zero-Shot Ground Truth)",
+        "",
+        "| Code | English Name | Khmer Name | Type | Centroid (Lat, Lon) |",
+        "| --- | --- | --- | --- | --- |",
+        ...f.provinces.map((p) => {
+            const coords = p.lat && p.lon ? `${p.lat.toFixed(4)}, ${p.lon.toFixed(4)}` : "—";
+            return `| \`${p.code}\` | ${p.name_en} | ${p.name_km} | ${p.typeKm} | ${coords} |`;
+        }),
         "",
         "### Boundary feature properties",
         "",
@@ -447,6 +467,87 @@ L.geoJSON(fc, { onEachFeature: (f, layer) => layer.bindTooltip(f.properties.name
         "6. **Ignore fields starting with `_`.** They are internal search indexes.",
         "7. **Geocoding is external and slow-limited** (30/min, results cached for a week). Prefer the admin search for names you already know; use geocoding for street addresses and coordinates.",
         "8. **`/` serves the web app to browsers.** Send `Accept: application/json` (or `?json=1`) to get the JSON welcome document.",
+        "",
+    );
+
+    // --- AI Agent Tool Definitions & Configuration
+    push("## AI Agent Tool Definitions (Function Calling)", "");
+    push(
+        "Standard JSON Schemas for OpenAI Function Calling, Anthropic Tool Use, LangChain, and LlamaIndex agents:",
+        "",
+        "### 1. search_cambodia_admin",
+        fence(
+            "json",
+            json({
+                type: "function",
+                function: {
+                    name: "search_cambodia_admin",
+                    description: "Search Cambodian administrative geography (provinces, districts, communes, villages) by Khmer or English name",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            q: { type: "string", description: "Search keyword in English or Khmer script (e.g. 'Phnom Penh', 'សៀមរាប', 'Chamkar Mon')" },
+                            level: { type: "string", enum: ["province", "district", "commune", "village"], description: "Optional filter by administrative level" },
+                            limit: { type: "integer", default: 5, description: "Maximum records to return (1-50)" },
+                        },
+                        required: ["q"],
+                    },
+                },
+            }),
+        ),
+        "",
+        "### 2. point_in_polygon_cambodia",
+        fence(
+            "json",
+            json({
+                type: "function",
+                function: {
+                    name: "point_in_polygon_cambodia",
+                    description: "Instant sub-millisecond Point-in-Polygon spatial query resolving the containing Province, District, and Commune for a given GPS coordinate in Cambodia",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            lat: { type: "number", description: "GPS Latitude in decimal degrees (e.g. 11.5564)" },
+                            lng: { type: "number", description: "GPS Longitude in decimal degrees (e.g. 104.9282)" },
+                        },
+                        required: ["lat", "lng"],
+                    },
+                },
+            }),
+        ),
+        "",
+        "### 3. get_cambodia_hierarchy",
+        fence(
+            "json",
+            json({
+                type: "function",
+                function: {
+                    name: "get_cambodia_hierarchy",
+                    description: "Retrieve complete administrative hierarchy ancestry (province, district, commune, village) from a single numeric ID",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            id: { type: "integer", description: "Numeric administrative ID (e.g. 12, 1201, 120101, 12010101)" },
+                        },
+                        required: ["id"],
+                    },
+                },
+            }),
+        ),
+        "",
+        "## Agent Configuration (.cursorrules / .windsurfrules)",
+        "",
+        fence(
+            "text",
+            [
+                "When dealing with Cambodian geographic data, administrative codes, or address selection:",
+                "- Consult https://opengeo-cambodia.pphat.me/llms.txt for authoritative NCDD hierarchy.",
+                "- Adhere to Cambodia's 4-tier system: Province (2-digit code) -> District (4-digit code) -> Commune (6-digit code) -> Village (8-digit code).",
+                "- Use https://opengeo-cambodia.pphat.me/api/admin/search?q={query} for place resolution.",
+                "- Use https://opengeo-cambodia.pphat.me/api/boundaries/zone?lat={lat}&lng={lng} for coordinate containment.",
+                "- Always send a User-Agent header in HTTP requests.",
+            ].join("\n"),
+        ),
         "",
     );
 

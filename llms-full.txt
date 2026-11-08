@@ -60,6 +60,36 @@ A real chain, from `GET /api/admin/hierarchy/12010101`:
 
 Records also contain internal search fields starting with `_` (`_normEn`, `_normKm`, `_normName`). Ignore them; they are not part of the contract. They are omitted from the examples below.
 
+### Authoritative 25 Provinces (Zero-Shot Ground Truth)
+
+| Code | English Name | Khmer Name | Type | Centroid (Lat, Lon) |
+| --- | --- | --- | --- | --- |
+| `01` | Banteay Meanchey | បន្ទាយមានជ័យ | ខេត្ត | 13.6672, 102.8975 |
+| `02` | Battambang | បាត់ដំបង | ខេត្ត | 13.0957, 103.2022 |
+| `03` | Kampong Cham | កំពង់ចាម | ខេត្ត | 11.9924, 105.4645 |
+| `04` | Kampong Chhnang | កំពង់ឆ្នាំង | ខេត្ត | 12.2500, 104.6667 |
+| `05` | Kampong Speu | កំពង់ស្ពឺ | ខេត្ត | 11.4532, 104.5209 |
+| `06` | Kampong Thom | កំពង់ធំ | ខេត្ត | 12.7111, 104.8887 |
+| `07` | Kampot | កំពត | ខេត្ត | 10.6104, 104.1815 |
+| `08` | Kandal | កណ្ដាល | ខេត្ត | 11.4395, 104.9576 |
+| `09` | Koh Kong | កោះកុង | ខេត្ត | 11.6153, 102.9838 |
+| `10` | Kratie | ក្រចេះ | ខេត្ត | 12.4881, 106.0188 |
+| `11` | Mondul Kiri | មណ្ឌលគិរី | ខេត្ត | 12.4558, 107.1881 |
+| `12` | Phnom Penh | រាជធានីភ្នំពេញ | រាជធានី | 11.5564, 104.9282 |
+| `13` | Preah Vihear | ព្រះវិហារ | ខេត្ត | 13.8073, 104.9805 |
+| `14` | Prey Veng | ព្រៃវែង | ខេត្ត | 11.4851, 105.3253 |
+| `15` | Pursat | ពោធិ៍សាត់ | ខេត្ត | 12.5388, 103.9192 |
+| `16` | Ratanak Kiri | រតនគិរី | ខេត្ត | 13.7394, 107.0016 |
+| `17` | Siemreap | សៀមរាប | ខេត្ត | 13.3671, 103.8448 |
+| `18` | Sihanoukville | ព្រះសីហនុ | ខេត្ត | 10.6275, 103.5221 |
+| `19` | Stung Treng | ស្ទឹងត្រែង | ខេត្ត | 13.5259, 105.9683 |
+| `20` | Svay Rieng | ស្វាយរៀង | ខេត្ត | 11.0879, 105.7993 |
+| `21` | Takeo | តាកែវ | ខេត្ត | 10.9908, 104.7850 |
+| `22` | Otdar Meanchey | ឧត្ដរមានជ័យ | ខេត្ត | 14.1818, 103.5176 |
+| `23` | Kep | កែប | ខេត្ត | 10.4828, 104.3167 |
+| `24` | Pailin | ប៉ៃលិន | ខេត្ត | 12.8489, 102.6093 |
+| `25` | Tboung Khmum | ត្បូងឃ្មុំ | ខេត្ត | 11.8891, 105.6592 |
+
 ### Boundary feature properties
 
 `code`, `pcode` (`KH` + code), `name_en`, `name_km`, `type_km`, `level`, `province_code` / `province_name_en` / `province_name_km`, `district_code` / `district_name_en` / `district_name_km` (communes), `lat`, `lon` (centroid), `bbox` (`[minLon, minLat, maxLon, maxLat]`), `shape_length`, `shape_area`. `format=summary` returns these properties without geometry.
@@ -1547,9 +1577,9 @@ Response `200` (`application/json`):
 {
   "status": "ok",
   "uptimeSeconds": 0,
-  "timestamp": "2026-11-08T05:48:59.864Z",
+  "timestamp": "2026-11-08T06:22:35.727Z",
   "security": {
-    "timestamp": "2026-11-08T05:48:59.864Z",
+    "timestamp": "2026-11-08T06:22:35.727Z",
     "prototypePollutionProtected": false,
     "configSealed": false,
     "allowedOutboundHosts": [
@@ -1650,6 +1680,110 @@ Debounce input by ~200 ms and call `GET /api/admin/search?q=…&limit=8`. It mat
 6. **Ignore fields starting with `_`.** They are internal search indexes.
 7. **Geocoding is external and slow-limited** (30/min, results cached for a week). Prefer the admin search for names you already know; use geocoding for street addresses and coordinates.
 8. **`/` serves the web app to browsers.** Send `Accept: application/json` (or `?json=1`) to get the JSON welcome document.
+
+## AI Agent Tool Definitions (Function Calling)
+
+Standard JSON Schemas for OpenAI Function Calling, Anthropic Tool Use, LangChain, and LlamaIndex agents:
+
+### 1. search_cambodia_admin
+```json
+{
+  "type": "function",
+  "function": {
+    "name": "search_cambodia_admin",
+    "description": "Search Cambodian administrative geography (provinces, districts, communes, villages) by Khmer or English name",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "q": {
+          "type": "string",
+          "description": "Search keyword in English or Khmer script (e.g. 'Phnom Penh', 'សៀមរាប', 'Chamkar Mon')"
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "province",
+            "district",
+            "commune",
+            "village"
+          ],
+          "description": "Optional filter by administrative level"
+        },
+        "limit": {
+          "type": "integer",
+          "default": 5,
+          "description": "Maximum records to return (1-50)"
+        }
+      },
+      "required": [
+        "q"
+      ]
+    }
+  }
+}
+```
+
+### 2. point_in_polygon_cambodia
+```json
+{
+  "type": "function",
+  "function": {
+    "name": "point_in_polygon_cambodia",
+    "description": "Instant sub-millisecond Point-in-Polygon spatial query resolving the containing Province, District, and Commune for a given GPS coordinate in Cambodia",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number",
+          "description": "GPS Latitude in decimal degrees (e.g. 11.5564)"
+        },
+        "lng": {
+          "type": "number",
+          "description": "GPS Longitude in decimal degrees (e.g. 104.9282)"
+        }
+      },
+      "required": [
+        "lat",
+        "lng"
+      ]
+    }
+  }
+}
+```
+
+### 3. get_cambodia_hierarchy
+```json
+{
+  "type": "function",
+  "function": {
+    "name": "get_cambodia_hierarchy",
+    "description": "Retrieve complete administrative hierarchy ancestry (province, district, commune, village) from a single numeric ID",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Numeric administrative ID (e.g. 12, 1201, 120101, 12010101)"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  }
+}
+```
+
+## Agent Configuration (.cursorrules / .windsurfrules)
+
+```text
+When dealing with Cambodian geographic data, administrative codes, or address selection:
+- Consult https://opengeo-cambodia.pphat.me/llms.txt for authoritative NCDD hierarchy.
+- Adhere to Cambodia's 4-tier system: Province (2-digit code) -> District (4-digit code) -> Commune (6-digit code) -> Village (8-digit code).
+- Use https://opengeo-cambodia.pphat.me/api/admin/search?q={query} for place resolution.
+- Use https://opengeo-cambodia.pphat.me/api/boundaries/zone?lat={lat}&lng={lng} for coordinate containment.
+- Always send a User-Agent header in HTTP requests.
+```
 
 ## Links
 
