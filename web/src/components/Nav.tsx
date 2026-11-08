@@ -77,12 +77,23 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                         <small className="rounded-full border border-line px-2 py-px text-xs font-medium text-ink-3 max-xs:hidden">v1</small>
                     )}
                 </Link>
-                <nav className="ml-auto flex items-center gap-1" aria-label="Primary">
-                    <Link to="/#explore" className={cx(navLink, "max-sm:hidden")}>{t("nav.explorer")}</Link>
-                    <Link to="/#data" className={cx(navLink, "max-sm:hidden")}>{t("nav.data")}</Link>
-                    {!isDocs && <Link to="/docs" className={navLink}>{t("nav.docs")}</Link>}
+                <nav className="ml-auto flex items-center gap-1.5" aria-label="Primary">
+                    <Link
+                        to="/docs"
+                        className={cx(navLink, isDocs ? "bg-surface-2 font-semibold text-ink" : "")}
+                    >
+                        {t("nav.docs")}
+                    </Link>
                     <LangSwitch />
-                    <a href={REPO_URL} className={cx(iconBtn, "max-xs:hidden")} aria-label={t("nav.github")} target="_blank" rel="noopener noreferrer"><Icon name="github" /></a>
+                    <a
+                        href={REPO_URL}
+                        className={iconBtn}
+                        aria-label={t("nav.github")}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <Icon name="github" />
+                    </a>
                     <button className={iconBtn} type="button" aria-label={t("nav.theme")} onClick={toggle}>
                         <Icon name="moon" className="dark:hidden" />
                         <Icon name="sun" className="hidden dark:block" />

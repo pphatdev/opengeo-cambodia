@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router";
 import { Icon } from "../../components/Icon";
-import { cx, focusRing } from "../../components/ui";
+import { LangSwitch, REPO_URL } from "../../components/Nav";
+import { cx, focusRing, iconBtn } from "../../components/ui";
 import { useI18n, type MessageKey } from "../../i18n";
+import { useTheme } from "../../lib/theme";
 import { ENDPOINTS, GROUPS } from "./endpoints";
 
 interface NavLink {
@@ -45,6 +48,7 @@ const REFERENCE: [string, MessageKey][] = [
 ];
 
 export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
+    const { toggle } = useTheme();
     const { t, tx } = useI18n();
     const [query, setQuery] = useState("");
     const [active, setActive] = useState("introduction");
@@ -166,6 +170,22 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
                     </div>
                 );
             })}
+            {/* Quick utilities on mobile drawer */}
+            <div className="mt-6 flex items-center justify-between border-t border-line pt-4 lg:hidden">
+                <Link to="/docs" onClick={onNavigate} className="text-xs font-semibold text-accent no-underline">
+                    Docs
+                </Link>
+                <div className="flex items-center gap-1.5">
+                    <LangSwitch />
+                    <a href={REPO_URL} className={iconBtn} aria-label={t("nav.github")} target="_blank" rel="noopener noreferrer">
+                        <Icon name="github" />
+                    </a>
+                    <button className={iconBtn} type="button" aria-label={t("nav.theme")} onClick={toggle}>
+                        <Icon name="moon" className="dark:hidden" />
+                        <Icon name="sun" className="hidden dark:block" />
+                    </button>
+                </div>
+            </div>
         </aside>
     );
 }
