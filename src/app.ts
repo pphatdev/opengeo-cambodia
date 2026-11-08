@@ -409,8 +409,8 @@ app.get("/favicon.ico", (c) => {
     const target = fs.existsSync(darkFavicon)
         ? darkFavicon
         : fs.existsSync(lightFavicon)
-        ? lightFavicon
-        : null;
+            ? lightFavicon
+            : null;
     if (target) {
         c.header("Content-Type", "image/x-icon");
         c.header("Cache-Control", "public, max-age=86400");
@@ -518,7 +518,7 @@ app.get("/", async (c) => {
         description:
             "An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times",
         dataSource: "https://data.mef.gov.kh/",
-        version: "1.3.0",
+        version: "1.3.1",
         documentation: "/api/info",
         playground: "/playground",
         llms: "/llms.txt",

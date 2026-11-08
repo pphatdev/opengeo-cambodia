@@ -41,10 +41,14 @@ adminRoutes.use("*", async (c, next) => {
     await next();
     const tookMs = Number((performance.now() - start).toFixed(2));
     c.header("X-Response-Time", `${tookMs}ms`);
-    c.header(
-        "Cache-Control",
-        "public, max-age=31536000, s-maxage=31536000, immutable, stale-while-revalidate=86400",
-    );
+    if (c.res.status >= 200 && c.res.status < 300) {
+        c.header(
+            "Cache-Control",
+            "public, max-age=31536000, s-maxage=31536000, immutable, stale-while-revalidate=86400",
+        );
+    } else {
+        c.header("Cache-Control", "no-cache, no-store, must-revalidate");
+    }
 });
 
 // =========================================================================
