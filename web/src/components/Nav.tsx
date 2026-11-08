@@ -59,7 +59,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
             className={cx(
                 "sticky top-0 z-1000 border-b transition-all duration-300",
                 scrolled || isDocs || isPlayground
-                    ? "glass-panel-subtle !border-b-line/60 !border-t-0 !border-x-0 !shadow-[0_8px_30px_-6px_rgba(0,0,0,0.04)]"
+                    ? "glass-panel-subtle border-b-line/60! border-t-0! border-x-0! shadow-[0_8px_30px_-6px_rgba(0,0,0,0.04)]!"
                     : "border-transparent bg-transparent backdrop-blur-xs",
             )}
         >
@@ -83,7 +83,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                             <span className="font-display text-[13px] font-bold uppercase text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal max-md:hidden">{t("nav.playground")}</span>
                         </>
                     ) : (
-                        <small className="rounded-full glass-pill px-2.5 py-0.5 text-xs font-medium text-accent max-xs:hidden">v1.3</small>
+                        <small className="rounded-full glass-pill px-2.5 py-0.5 text-xs font-medium text-accent max-xs:hidden">v1.4</small>
                     )}
                 </Link>
                 <nav className="ml-auto flex items-center gap-1.5" aria-label="Primary">
