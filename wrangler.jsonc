@@ -26,6 +26,17 @@
     "OVERPASS_API_URL": "https://overpass-api.de/api/interpreter",
     "CACHE_TTL_SECONDS": "31536000"
   },
+  "previews": {
+    "vars": {
+      "NODE_ENV": "production",
+      "APP_DOMAIN": "develop-opengeo-cambodia-api.pphatdev.workers.dev",
+      "APP_URL": "hdevelop-opengeo-cambodia-api.pphatdev.workers.dev",
+      "NOMINATIM_BASE_URL": "https://nominatim.openstreetmap.org",
+      "NOMINATIM_USER_AGENT": "OpenGeoCambodia/1.0 (contact@opengeo-cambodia.pphat.me)",
+      "OVERPASS_API_URL": "https://overpass-api.de/api/interpreter",
+      "CACHE_TTL_SECONDS": "31536000"
+    }
+  },
   "observability": {
     "enabled": true
   }
