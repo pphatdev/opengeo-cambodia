@@ -300,8 +300,8 @@ export function PlaygroundHeroPreview({
                     ) : (
                         <div className="flex text-xs items-center gap-2 py-1! px-2 border leading-none border-teal-500 bg-teal-100 rounded-full">
                             <span className="relative flex size-2">
-                                <span className="absolute inset-0 animate-ping rounded-full bg-ok opacity-75 motion-reduce:hidden" />
-                                <span className="relative block size-2 rounded-full bg-ok" />
+                                <span className="absolute inset-0 animate-ping rounded-full bg-ok opacity-75" />
+                                <span className="relative size-2 rounded-full bg-ok" />
                             </span>
                             <span>Live</span>
                         </div>
