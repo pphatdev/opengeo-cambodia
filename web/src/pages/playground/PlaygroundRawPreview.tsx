@@ -70,15 +70,14 @@ export function PlaygroundRawPreview({ log, endpointPath }: PlaygroundRawPreview
                         onClick={handleCopy}
                         className={iconBtn} aria-label={t("nav.github")}
                         rel="noopener noreferrer">
-                        <Icon name="copy" />
-                        {t("playground.copyJson")}
+                        <Icon className="size-4" name="copy" />
                     </button>
 
                     <button
                         type="button"
+                        className={iconBtn}
                         onClick={handleDownload}>
-                        <Icon name="download" />
-                        {t("playground.downloadJson")}
+                        <Icon className="size-4" name="download" />
                     </button>
                 </div>
             </div>

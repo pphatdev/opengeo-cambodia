@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "../../components/Icon";
 import { cx, lvl } from "../../components/ui";
 import { useI18n } from "../../i18n";
-import { fmtBytes, type RequestLog } from "../../lib/api";
+import { type RequestLog } from "../../lib/api";
 import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "../home/cambodiaMap";
 
 const EASE = "ease-[cubic-bezier(.22,1,.36,1)]";
@@ -277,29 +277,6 @@ export function PlaygroundHeroPreview({
         <div>
             {/* The Hero Map Canvas Container */}
             <div className="relative overflow-hidden rounded">
-                {/* Top Overlay Bar */}
-                <div className="mb-2 flex flex-wrap items-center justify-end gap-2 pb-3">
-                    {log ? (
-                        <div className="flex items-center gap-2 font-mono text-xs text-ink-3">
-                            <span className={log.status < 400 ? "text-ok font-bold" : "text-warn font-bold"}>
-                                {log.status}
-                            </span>
-                            <span>·</span>
-                            <span>{log.ms.toFixed(2)}ms</span>
-                            <span>·</span>
-                            <span>{fmtBytes(log.size)}</span>
-                        </div>
-                    ) : (
-                        <div className="flex text-xs items-center gap-2 py-1! px-2 border leading-none border-teal-500 bg-teal-100 rounded-full">
-                            <span className="relative flex size-2">
-                                <span className="absolute inset-0 animate-ping rounded-full bg-ok opacity-75" />
-                                <span className="relative size-2 rounded-full bg-ok" />
-                            </span>
-                            <span>Live</span>
-                        </div>
-                    )}
-                </div>
-
                 {/* SVG Cambodia Hero Map (Constrained compact size) */}
                 <figure className="relative m-0 w-full max-w-190 mx-auto select-none" onMouseLeave={leave}>
                     <div className="relative pt-2 pb-2" style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT + 20}` }}>
