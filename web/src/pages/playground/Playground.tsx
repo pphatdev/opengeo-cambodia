@@ -14,6 +14,7 @@ import { PlaygroundRawPreview } from "./PlaygroundRawPreview";
 import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
 
 type PreviewTab = "map" | "raw" | "table" | "headers";
+const VALID_TABS: PreviewTab[] = ["map", "table", "raw", "headers"];
 
 export default function Playground() {
     const { t, lang } = useI18n();
@@ -35,9 +36,28 @@ export default function Playground() {
     );
     const [customUrl, setCustomUrl] = useState<string>(() => displayPath(initialEp, Object.fromEntries((initialEp.params ?? []).map((p) => [p.name, p.example ?? ""]))));
 
-    const [activeTab, setActiveTab] = useState<PreviewTab>("map");
+    const tabParam = searchParams.get("tab") as PreviewTab | null;
+    const initialTab: PreviewTab = tabParam && VALID_TABS.includes(tabParam) ? tabParam : "map";
+    const [activeTab, setActiveTabState] = useState<PreviewTab>(initialTab);
     const [pending, setPending] = useState(false);
     const [result, setResult] = useState<{ log: RequestLog | null; error?: string } | null>(null);
+
+    // Sync tab when URL changes
+    useEffect(() => {
+        const t = searchParams.get("tab") as PreviewTab | null;
+        if (t && VALID_TABS.includes(t)) {
+            setActiveTabState(t);
+        }
+    }, [searchParams]);
+
+    const setActiveTab = useCallback((tab: PreviewTab) => {
+        setActiveTabState(tab);
+        setSearchParams((prev) => {
+            const next = new URLSearchParams(prev);
+            next.set("tab", tab);
+            return next;
+        }, { replace: true });
+    }, [setSearchParams]);
 
     // Update endpoint
     const handleSelectEndpoint = useCallback((ep: Endpoint, newParams?: Record<string, string>) => {
@@ -46,7 +66,11 @@ export default function Playground() {
         setParamValues(nextParams);
         const built = displayPath(ep, nextParams);
         setCustomUrl(built);
-        setSearchParams({ ep: ep.id }, { replace: true });
+        setSearchParams((prev) => {
+            const next = new URLSearchParams(prev);
+            next.set("ep", ep.id);
+            return next;
+        }, { replace: true });
     }, [setSearchParams]);
 
     // Update individual param
