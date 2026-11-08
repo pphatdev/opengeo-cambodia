@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Icon } from "../../components/Icon";
-import { lvl } from "../../components/ui";
+import { cx, lvl } from "../../components/ui";
 import type { RequestLog } from "../../lib/api";
 import { PlaygroundMap, type MapMarker } from "./PlaygroundMap";
 
@@ -11,6 +11,7 @@ interface PlaygroundUiPreviewProps {
 
 export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewProps) {
     const [filterText, setFilterText] = useState("");
+    const [subTab, setSubTab] = useState<"table" | "query">("table");
 
     const body = log.body as any;
 
@@ -310,28 +311,109 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                 {/* Search / Filter toolbar */}
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface p-3">
                     <div className="flex items-center gap-2">
-                        <span className="rounded-md bg-ok/15 px-2 py-0.5 font-mono text-xs font-semibold text-ok">
-                            Array [{totalCount}]
-                        </span>
-                        <span className="text-xs text-ink-3">
-                            {filtered.length} of {totalCount} shown
-                        </span>
+                        {/* Tab switcher: Table vs Query */}
+                        <div className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 p-0.5">
+                            <button
+                                type="button"
+                                onClick={() => setSubTab("table")}
+                                className={cx(
+                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    subTab === "table" ? "bg-surface text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink"
+                                )}
+                            >
+                                <span>Table</span>
+                                <span className="rounded bg-ok/15 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-ok">
+                                    {totalCount}
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setSubTab("query")}
+                                className={cx(
+                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    subTab === "query" ? "bg-surface text-ink font-semibold shadow-xs" : "text-ink-3 hover:text-ink"
+                                )}
+                            >
+                                <Icon name="code" className="size-3.5" />
+                                <span>Query</span>
+                            </button>
+                        </div>
+
+                        {subTab === "table" && (
+                            <span className="text-xs text-ink-3">
+                                {filtered.length} of {totalCount} shown
+                            </span>
+                        )}
                     </div>
 
-                    <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
-                        <Icon name="search" className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-ink-3" />
-                        <input
-                            type="text"
-                            value={filterText}
-                            onChange={(e) => setFilterText(e.target.value)}
-                            placeholder="Filter records…"
-                            className="h-8 w-full rounded-lg border border-line bg-surface-2 pl-8 pr-3 text-xs text-ink placeholder:text-ink-3 focus:border-accent focus:outline-none"
-                        />
-                    </div>
+                    {subTab === "table" && (
+                        <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
+                            <Icon name="search" className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-ink-3" />
+                            <input
+                                type="text"
+                                value={filterText}
+                                onChange={(e) => setFilterText(e.target.value)}
+                                placeholder="Filter records…"
+                                className="h-8 w-full rounded-lg border border-line bg-surface-2 pl-8 pr-3 text-xs text-ink placeholder:text-ink-3 focus:border-accent focus:outline-none"
+                            />
+                        </div>
+                    )}
                 </div>
 
-                {/* Data Table */}
-                <div className="overflow-x-auto rounded-xl border border-line bg-surface">
+                {/* Sub-tab Content: Query vs Data Table */}
+                {subTab === "query" ? (
+                    <div className="rounded-xl border border-line bg-surface p-4 space-y-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3">
+                            <div className="flex items-center gap-2">
+                                <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-xs font-bold text-accent">
+                                    GET
+                                </span>
+                                <span className="font-mono text-xs font-semibold text-ink">
+                                    {log.path}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2 font-mono text-xs text-ink-3">
+                                <span className="text-ok font-semibold">{log.status} {log.statusText}</span>
+                                <span>·</span>
+                                <span>{log.ms.toFixed(2)}ms</span>
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs font-semibold text-ink-3">
+                                <span>cURL</span>
+                                <button
+                                    type="button"
+                                    onClick={() => navigator.clipboard.writeText(`curl "https://api.opengeo-cambodia.org${log.path}"`)}
+                                    className="cursor-pointer text-[11px] font-mono text-accent hover:underline flex items-center gap-1"
+                                >
+                                    <Icon name="copy" className="size-3" />
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                            <pre className="m-0 rounded-lg border border-line bg-surface-2 p-3 font-mono text-xs text-ink overflow-x-auto">
+                                curl &quot;https://api.opengeo-cambodia.org{log.path}&quot;
+                            </pre>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <div className="rounded-lg border border-line bg-surface-2 p-2.5">
+                                <div className="font-mono text-[11px] text-ink-3">Request URL</div>
+                                <div className="mt-1 font-mono text-xs text-ink truncate select-all">
+                                    https://api.opengeo-cambodia.org{log.path}
+                                </div>
+                            </div>
+                            <div className="rounded-lg border border-line bg-surface-2 p-2.5">
+                                <div className="font-mono text-[11px] text-ink-3">Accept Header</div>
+                                <div className="mt-1 font-mono text-xs text-ink">
+                                    application/json
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    /* Data Table */
+                    <div className="overflow-x-auto rounded-xl border border-line bg-surface">
                     <table className="w-full text-left text-xs">
                         <thead>
                             <tr className="border-b border-line bg-surface-2 text-ink-3">
@@ -394,6 +476,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                         </tbody>
                     </table>
                 </div>
+                )}
             </div>
         );
     }
