@@ -130,7 +130,7 @@ export default function Playground() {
             <main id="request-console" className={cx(wrap, "flex-1 py-8")}>
                 <div className="space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl">
-                            <div className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 p-0.5">
+                            <div className="inline-flex items-center rounded-lg border border-line bg-surface-2 p-1">
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab("map")}
@@ -192,7 +192,7 @@ export default function Playground() {
                                         {log.status} {log.statusText || (log.status === 200 ? "OK" : "")}
                                     </span>
                                     <span className="text-ink-3 font-semibold">
-                                        {log.ms}ms
+                                        {log.ms.toFixed(2)}ms
                                     </span>
                                     <span className="text-line">·</span>
                                     <span className="text-ink-3">

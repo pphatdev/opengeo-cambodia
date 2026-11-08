@@ -47,7 +47,7 @@ export function PlaygroundHeaders({ log, customUrl }: PlaygroundHeadersProps) {
                     {log.status} {log.statusText || ""}
                 </span>
                 <span className="ml-auto text-ink-3">
-                    {log.ms.toFixed(1)} ms
+                    {log.ms.toFixed(2)}ms
                 </span>
             </div>
 

@@ -256,7 +256,7 @@ export function PlaygroundHeroPreview({
                                 {log.status}
                             </span>
                             <span>·</span>
-                            <span>{log.ms.toFixed(1)} ms</span>
+                            <span>{log.ms.toFixed(2)}ms</span>
                             <span>·</span>
                             <span>{fmtBytes(log.size)}</span>
                         </div>
@@ -268,7 +268,7 @@ export function PlaygroundHeroPreview({
                 </div>
 
                 {/* SVG Cambodia Hero Map (Constrained compact size) */}
-                <figure className="relative m-0 w-full max-w-[620px] mx-auto select-none" onMouseLeave={leave}>
+                <figure className="relative m-0 w-full max-w-160 mx-auto select-none" onMouseLeave={leave}>
                     <div className="relative pt-2 pb-2" style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT + 20}` }}>
                         {/* Coordinates frame markers */}
                         <span className="absolute left-0 top-0 font-mono text-[10px] tracking-wide text-ink-3">14.7°N · 102.3°E</span>
@@ -368,7 +368,7 @@ export function PlaygroundHeroPreview({
                                     <div className="mt-2 flex items-center justify-between gap-2 rounded-md bg-code px-2 py-1.5 font-mono text-[10.5px] text-code-dim">
                                         <span className="truncate text-code-text">{log ? endpointPath : `/api/admin/provinces/${active.id}/districts`}</span>
                                         <span className={!log || log.status < 400 ? "text-j-str font-bold" : "text-j-err font-bold"}>
-                                            {log ? `${log.ms.toFixed(0)}ms` : "Live"}
+                                            {log ? `${log.ms.toFixed(2)}ms` : "Live"}
                                         </span>
                                     </div>
 
@@ -392,7 +392,7 @@ export function PlaygroundHeroPreview({
                     <div className="mt-2 rounded-xl border border-line bg-surface p-3.5 sm:hidden">
                         <div className="flex items-center justify-between mb-1">
                             <span className={lvl("province")}>#{active.code}</span>
-                            <span className="font-mono text-xs text-ok font-semibold">{log ? `${log.status} · ${log.ms.toFixed(0)}ms` : "Live Hero Map"}</span>
+                            <span className="font-mono text-xs text-ok font-semibold">{log ? `${log.status} · ${log.ms.toFixed(2)}ms` : "Live Hero Map"}</span>
                         </div>
                         <div className="font-khmer text-base font-bold text-ink">{active.km} ({active.en})</div>
                         <div className="mt-1 text-xs text-ink-3 font-mono">{calloutSummary}</div>

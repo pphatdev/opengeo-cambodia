@@ -75,3 +75,4 @@ export function forDisplay(body: unknown, opts: { abbreviateCoords?: boolean } =
 
 export const fmt = (n: number) => n.toLocaleString("en-US");
 export const fmtBytes = (n: number) => (n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : n > 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`);
+export const fmtMs = (ms: number) => `${ms.toFixed(2)}ms`;

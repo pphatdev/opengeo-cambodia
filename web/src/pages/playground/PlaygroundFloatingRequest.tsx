@@ -90,7 +90,7 @@ export function PlaygroundFloatingRequest({
                                     "rounded-md px-1.5 py-0.5 font-mono text-[10px] font-bold",
                                     log.status < 400 ? "bg-accent/10 text-accent" : "bg-warn/15 text-warn"
                                 )}>
-                                    {log.status} · {log.ms.toFixed(0)}ms
+                                    {log.status} · {log.ms.toFixed(2)}ms
                                 </span>
                             )}
                         </div>
