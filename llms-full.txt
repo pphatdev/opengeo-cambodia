@@ -1547,9 +1547,9 @@ Response `200` (`application/json`):
 {
   "status": "ok",
   "uptimeSeconds": 0,
-  "timestamp": "2026-11-08T05:35:27.306Z",
+  "timestamp": "2026-11-08T05:41:55.145Z",
   "security": {
-    "timestamp": "2026-11-08T05:35:27.306Z",
+    "timestamp": "2026-11-08T05:41:55.146Z",
     "prototypePollutionProtected": false,
     "configSealed": false,
     "allowedOutboundHosts": [

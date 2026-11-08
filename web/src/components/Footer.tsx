@@ -67,7 +67,7 @@ export function Footer() {
                         <li><a href="/llms.txt">llms.txt</a></li>
                         <li><a href="/llms-full.txt">llms-full.txt</a></li>
                         <li><a href="/opengeo-cambodia.postman_collection.json">Postman</a></li>
-                        <li><Link to="/docs/reference/downloads">{t("footer.downloads")}</Link></li>
+                        <li><Link to="/docs#downloads">{t("footer.downloads")}</Link></li>
                     </Column>
                     <Column title={t("footer.project")}>
                         <li><a href={REPO_URL} target="_blank" rel="noopener noreferrer">{t("footer.github")}</a></li>

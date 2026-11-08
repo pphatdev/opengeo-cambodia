@@ -74,10 +74,12 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                             <span className="font-display text-[13px] font-bold uppercase tracking-[.14em] text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal">{t("nav.docs")}</span>
                         </>
                     ) : (
-                        <small className="rounded-full border border-line px-2 py-px text-xs font-medium text-ink-3 max-xs:hidden">v1.2</small>
+                        <small className="rounded-full border border-line px-2 py-px text-xs font-medium text-ink-3 max-xs:hidden">v1</small>
                     )}
                 </Link>
                 <nav className="ml-auto flex items-center gap-1" aria-label="Primary">
+                    <Link to="/#explore" className={cx(navLink, "max-sm:hidden")}>{t("nav.explorer")}</Link>
+                    <Link to="/#data" className={cx(navLink, "max-sm:hidden")}>{t("nav.data")}</Link>
                     {!isDocs && <Link to="/docs" className={navLink}>{t("nav.docs")}</Link>}
                     <LangSwitch />
                     <a href={REPO_URL} className={cx(iconBtn, "max-xs:hidden")} aria-label={t("nav.github")} target="_blank" rel="noopener noreferrer"><Icon name="github" /></a>
