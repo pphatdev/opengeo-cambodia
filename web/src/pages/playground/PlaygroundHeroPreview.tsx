@@ -377,7 +377,7 @@ export function PlaygroundHeroPreview({
                         {/* Lat / Lng Coordinate Input Form */}
                         <form
                             onSubmit={handleShowZone}
-                            className="flex items-center gap-1.5"
+                            className="flex flex-wrap sm:flex-nowrap items-center gap-1.5"
                         >
                             <div className="inline-flex items-center rounded-lg border border-line/70 bg-surface/90 px-2 py-1 font-mono text-[11px] text-ink shadow-xs backdrop-blur focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/30 transition-all">
                                 <Icon name="pin" className="size-3 text-accent mr-1.5 shrink-0" />
@@ -420,7 +420,7 @@ export function PlaygroundHeroPreview({
                                 title="Show current zone boundaries (Point-in-Polygon)"
                             >
                                 <Icon name="polygon" className="size-3" />
-                                <span>Zone Boundaries</span>
+                                <span>Zone<span className="max-xs:hidden"> Boundaries</span></span>
                             </button>
                         </form>
 

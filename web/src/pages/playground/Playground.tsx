@@ -168,12 +168,12 @@ export default function Playground() {
             <main id="request-console" className={cx(wrap, "flex-1 py-8")}>
                 <div className="space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl">
-                        <div className="inline-flex items-center rounded-lg border border-line bg-surface-2 p-1">
+                        <div className="inline-flex max-w-full items-center overflow-x-auto rounded-lg border border-line bg-surface-2 p-1">
                             <button
                                 type="button"
                                 onClick={() => setActiveTab("map")}
                                 className={cx(
-                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
                                     activeTab === "map" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
                                 )}
                             >
@@ -184,7 +184,7 @@ export default function Playground() {
                                 type="button"
                                 onClick={() => setActiveTab("table")}
                                 className={cx(
-                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
                                     activeTab === "table" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
                                 )}
                             >
@@ -195,7 +195,7 @@ export default function Playground() {
                                 type="button"
                                 onClick={() => setActiveTab("drilldown")}
                                 className={cx(
-                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
                                     activeTab === "drilldown" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
                                 )}
                                 title={t("explore.title")}
@@ -207,7 +207,7 @@ export default function Playground() {
                                 type="button"
                                 onClick={() => setActiveTab("raw")}
                                 className={cx(
-                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
                                     activeTab === "raw" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
                                 )}
                             >
@@ -218,7 +218,7 @@ export default function Playground() {
                                 type="button"
                                 onClick={() => setActiveTab("headers")}
                                 className={cx(
-                                    "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
+                                    "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors",
                                     activeTab === "headers" ? "bg-surface text-ink font-semibold shadow-sm" : "text-ink-3 hover:text-ink",
                                 )}
                             >
