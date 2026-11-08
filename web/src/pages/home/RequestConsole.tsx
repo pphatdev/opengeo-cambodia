@@ -57,6 +57,7 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
     const { t } = useI18n();
     const [height, setHeight] = useState(getInitialHeight);
     const [collapsed, setCollapsed] = useState(getInitialCollapsed);
+    const [closedIds, setClosedIds] = useState<Set<number>>(() => new Set());
     const [isDragging, setIsDragging] = useState(false);
 
     const heightRef = useRef(height);
@@ -64,6 +65,25 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
 
     const dragStartY = useRef(0);
     const dragStartHeight = useRef(0);
+
+    const visibleLogs = useMemo(
+        () => logs.filter((l) => !closedIds.has(l.id)),
+        [logs, closedIds],
+    );
+
+    const closeTab = useCallback((idToClose: number) => {
+        setClosedIds((prev) => {
+            const next = new Set(prev);
+            next.add(idToClose);
+            return next;
+        });
+        if (activeId === idToClose) {
+            const remaining = visibleLogs.filter((l) => l.id !== idToClose);
+            if (remaining.length > 0) {
+                onSelect(remaining[remaining.length - 1].id);
+            }
+        }
+    }, [activeId, visibleLogs, onSelect]);
 
     const toggleCollapse = useCallback(() => {
         setCollapsed((prev) => {
@@ -112,7 +132,7 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
         };
     }, []);
 
-    const active = logs.find((l) => l.id === activeId) ?? null;
+    const active = visibleLogs.find((l) => l.id === activeId) ?? visibleLogs[visibleLogs.length - 1] ?? null;
     const view = useMemo(() => (active ? summarise(active.body) : null), [active]);
 
     return (
@@ -171,9 +191,9 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
                         )}
                     />
                     <span>{t("explore.console")}</span>
-                    {logs.length > 0 && (
+                    {visibleLogs.length > 0 && (
                         <span className="rounded-full bg-code-pill px-1.75 py-0.25 text-[10px] font-mono text-code-dim border border-code-line">
-                            {logs.length}
+                            {visibleLogs.length}
                         </span>
                     )}
                 </button>
@@ -212,28 +232,73 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
             {/* Collapsible Content */}
             {!collapsed && (
                 <>
-                    {/* Request pill tabs */}
-                    <div className="scrollbar-thin flex gap-1.5 overflow-x-auto border-b border-code-line px-3 py-2">
-                        {logs.map((r) => (
-                            <button
-                                key={r.id}
-                                type="button"
-                                aria-pressed={r.id === activeId}
-                                onClick={() => onSelect(r.id)}
-                                className="inline-flex max-w-90 flex-none cursor-pointer items-center gap-2 rounded-lg border border-code-line bg-code-pill/90 px-2.5 py-1.25 font-mono text-xs text-code-dim hover:text-code-hi aria-pressed:border-accent/60 aria-pressed:text-code-hi aria-pressed:bg-code-tab transition-all"
-                            >
-                                <span className="font-medium text-j-str">GET</span>
-                                <span className="truncate">{r.path}</span>
-                                <span className={r.status < 400 ? "text-j-str" : "text-j-err"}>{r.status}</span>
-                                <span className="text-code-faint">{r.server ?? `${r.ms.toFixed(0)}ms`}</span>
-                            </button>
-                        ))}
+                    {/* VS Code styled tab bar */}
+                    <div
+                        role="tablist"
+                        className="scrollbar-thin flex items-stretch overflow-x-auto border-b border-code-line bg-code-pill/80"
+                    >
+                        {visibleLogs.length === 0 ? (
+                            <div className="flex h-8.5 items-center px-4 font-mono text-xs text-code-faint italic">
+                                {t("explore.noRequests")}
+                            </div>
+                        ) : (
+                            visibleLogs.map((r) => {
+                                const isActive = r.id === (active?.id ?? activeId);
+                                return (
+                                    <div
+                                        key={r.id}
+                                        role="tab"
+                                        aria-selected={isActive}
+                                        onClick={() => onSelect(r.id)}
+                                        className={cx(
+                                            "group relative flex h-8.5 max-w-76 flex-none cursor-pointer items-center gap-2 border-r border-code-line/80 px-3 text-xs font-mono transition-colors select-none",
+                                            isActive
+                                                ? "bg-code text-code-hi border-t-2 border-t-accent -mb-px z-10 font-medium"
+                                                : "bg-code-pill/35 text-code-dim border-t-2 border-t-transparent hover:bg-code-pill/70 hover:text-code-hi",
+                                        )}
+                                    >
+                                        <span className="font-mono text-[10.5px] font-bold text-amber-400/90 flex-none">
+                                            &#123; &#125;
+                                        </span>
+                                        <span className="font-mono text-[9.5px] font-semibold text-ok/90 flex-none">
+                                            GET
+                                        </span>
+                                        <span className="truncate text-xs font-mono" title={r.path}>
+                                            {r.path}
+                                        </span>
+                                        <span
+                                            className={cx(
+                                                "font-mono text-[10.5px] flex-none",
+                                                r.status < 400 ? "text-ok" : "text-err",
+                                            )}
+                                        >
+                                            {r.status}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            title="Close tab"
+                                            aria-label="Close tab"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                closeTab(r.id);
+                                            }}
+                                            className={cx(
+                                                "ml-1 grid size-4 place-items-center rounded hover:bg-white/10 text-code-dim hover:text-code-hi transition-opacity",
+                                                isActive ? "opacity-60 hover:opacity-100" : "opacity-0 group-hover:opacity-100",
+                                            )}
+                                        >
+                                            <Icon name="x" className="size-2.5" />
+                                        </button>
+                                    </div>
+                                );
+                            })
+                        )}
                     </div>
 
                     {/* Resizable JSON Body */}
                     <pre
                         style={{ height: `${height}px` }}
-                        className="m-0 overflow-auto whitespace-pre px-4 py-3 font-mono text-[12.5px] leading-[1.6]"
+                        className="m-0 overflow-auto whitespace-pre px-4 py-3 font-mono text-[12.5px] leading-[1.6] bg-code"
                     >
                         {view ? <JsonView value={view} max={14000} /> : <span className={cx(COMMENT)}>{t("explore.consoleEmpty")}</span>}
                     </pre>
