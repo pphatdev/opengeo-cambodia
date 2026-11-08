@@ -10,7 +10,7 @@ import { useTheme } from "../../lib/theme";
 import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoints";
 import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "../home/cambodiaMap";
-import { AtlasNetworkMap } from "./AtlasNetworkMap";
+import { AtlasSciFiDashboard } from "./AtlasSciFiDashboard";
 import { type AtlasActivePanel, AtlasDrawers } from "./AtlasDrawers";
 import { type PlaceChipItem } from "./AtlasPlaceChips";
 import { type AtlasCategory, type AtlasTier } from "./AtlasTopBar";
@@ -392,13 +392,13 @@ export default function Playground() {
     };
 
     // ==========================================
-    // 1. ATLAS NETWORK GRAPH COCKPIT (Default Mode)
+    // 1. ATLAS TACTICAL SCI-FI COCKPIT (Default Mode - Inspired by Reference UI)
     // ==========================================
     if (viewMode === "atlas") {
         return (
-            <div className="relative h-screen w-screen overflow-hidden bg-[#090710]">
-                {/* Hairball & Radiant Epicenter Network Map (Inspired by Reference UI) */}
-                <AtlasNetworkMap
+            <div className="relative h-screen w-screen overflow-hidden bg-[#050c18]">
+                {/* Tactical Command Blueprint Cockpit (Matches Reference UI) */}
+                <AtlasSciFiDashboard
                     activeProvince={activeProvince}
                     onSelectProvince={handleSelectProvince}
                     selectedEndpoint={selectedEndpoint}
