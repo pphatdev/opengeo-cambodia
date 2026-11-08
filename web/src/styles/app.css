@@ -178,21 +178,6 @@
   animation: og-fade-up 380ms cubic-bezier(.22, 1, .36, 1) both;
 }
 
-/* Atlas Control sci-fi geospatial animations */
-@keyframes atlas-dash {
-  to { stroke-dashoffset: -32; }
-}
-@utility animate-atlas-dash {
-  animation: atlas-dash 2s linear infinite;
-}
-
-@keyframes atlas-radar {
-  0% { transform: scale(0.8); opacity: 0.8; }
-  100% { transform: scale(2.4); opacity: 0; }
-}
-@utility animate-atlas-radar {
-  animation: atlas-radar 2.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-}
 
 /* Logo gradient as text fill (the small right padding stops the last glyph's edge being clipped) */
 @utility text-brand {
