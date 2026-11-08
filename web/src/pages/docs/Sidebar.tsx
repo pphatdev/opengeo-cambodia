@@ -48,6 +48,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
     const { t, tx } = useI18n();
     const [query, setQuery] = useState("");
     const [active, setActive] = useState("introduction");
+    const q = query.trim().toLowerCase();
 
     const groups = useMemo(() => {
         const plain = (items: [string, MessageKey][]): NavLink[] =>
@@ -77,7 +78,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
             })),
             { title: t("docs.groupReference"), links: plain(REFERENCE) },
         ];
-    }, [t, tx]);
+    }, [t, tx, q]);
 
     // Scrollspy: highlight the first visible section (ids don't change with language)
     useEffect(() => {
@@ -96,7 +97,6 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
         return () => io.disconnect();
     }, []);
 
-    const q = query.trim().toLowerCase();
     return (
         <aside
             id="sidebar"
