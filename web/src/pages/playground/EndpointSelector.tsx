@@ -326,7 +326,7 @@ export function EndpointSelector({ endpoints, selected, onSelect }: EndpointSele
                         <div
                             ref={listRef}
                             role="listbox"
-                            className="max-h-[360px] overflow-y-auto p-2 space-y-3 divide-y divide-line/40 scrollbar-thin"
+                            className="max-h-90 overflow-y-auto p-2 space-y-3 divide-y divide-line/40 scrollbar-thin"
                         >
                             {groupedResults.length === 0 ? (
                                 <div className="py-8 text-center text-xs text-ink-3">

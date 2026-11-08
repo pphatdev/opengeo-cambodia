@@ -324,7 +324,7 @@ export function PlaygroundHeroPreview({
                                 key={active.code}
                                 d={active.d}
                                 vectorEffect="non-scaling-stroke"
-                                className="animate-lift pointer-events-none fill-accent/15 stroke-accent stroke-[2] transform-fill origin-center drop-shadow-[0_10px_20px_color-mix(in_srgb,var(--og-accent)_35%,transparent)]"
+                                className="animate-lift pointer-events-none fill-accent/15 stroke-accent stroke-2 transform-fill origin-center drop-shadow-[0_10px_20px_color-mix(in_srgb,var(--og-accent)_35%,transparent)]"
                             />
                         </svg>
 

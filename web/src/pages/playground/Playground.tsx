@@ -6,21 +6,59 @@ import { Nav } from "../../components/Nav";
 import { cx, focusRing, wrap } from "../../components/ui";
 import { useI18n } from "../../i18n";
 import { apiGet, fmtBytes, PROD_ORIGIN, type RequestLog } from "../../lib/api";
+import { useTheme } from "../../lib/theme";
 import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoints";
+import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "../home/cambodiaMap";
+import { AtlasCanvas } from "./AtlasCanvas";
+import { AtlasChart } from "./AtlasChart";
+import { AtlasActivePanel, AtlasDock } from "./AtlasDock";
+import { AtlasDrawers } from "./AtlasDrawers";
+import { AtlasConsoleHUD, AtlasHubsHUD } from "./AtlasHUD";
+import { AtlasInspector } from "./AtlasInspector";
+import { AtlasCategory, AtlasTopBar } from "./AtlasTopBar";
 import { EndpointSelector } from "./EndpointSelector";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
 import { PlaygroundHeroPreview } from "./PlaygroundHeroPreview";
 import { PlaygroundRawPreview } from "./PlaygroundRawPreview";
 import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
-import { PRESETS, type PlaygroundPreset } from "./presets";
+import { type PlaygroundPreset } from "./presets";
 
 type PreviewTab = "map" | "raw" | "table" | "headers";
 
+/** Convert GPS coordinates (lat, lon) to SVG canvas (x, y) */
+function latLonToSvg(lat: number, lon: number): [number, number] {
+    const minLat = 10.35, maxLat = 14.75;
+    const minLon = 102.3, maxLon = 107.65;
+    const x = ((lon - minLon) / (maxLon - minLon)) * MAP_WIDTH;
+    const y = ((maxLat - lat) / (maxLat - minLat)) * MAP_HEIGHT;
+    return [Math.max(20, Math.min(MAP_WIDTH - 20, x)), Math.max(20, Math.min(MAP_HEIGHT - 20, y))];
+}
+
+/** Extract parent province code (01-25) from any code or id */
+function extractProvinceCode(raw: unknown): string | null {
+    if (!raw) return null;
+    const s = String(raw).trim();
+    if (/^\d+$/.test(s)) {
+        if (s.length <= 2) {
+            return s.padStart(2, "0");
+        }
+        return s.slice(0, 2);
+    }
+    return null;
+}
+
 export default function Playground() {
-    const { t, tx, lang } = useI18n();
+    const { t, tx, lang, setLang } = useI18n();
+    const { dark, toggle: toggleTheme } = useTheme();
     const { toast, copy } = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
+
+    // Mode: Atlas Command Center (default) vs Classic Console
+    const [viewMode, setViewMode] = useState<"atlas" | "classic">("atlas");
+    const [atlasCategory, setAtlasCategory] = useState<AtlasCategory>("ALL");
+    const [activePanel, setActivePanel] = useState<AtlasActivePanel>("none");
+    const [networkEnabled, setNetworkEnabled] = useState(true);
 
     // Set page title
     useEffect(() => {
@@ -41,6 +79,9 @@ export default function Playground() {
     const [pending, setPending] = useState(false);
     const [result, setResult] = useState<{ log: RequestLog | null; error?: string } | null>(null);
 
+    // Active province on the canvas / inspector
+    const [activeProvinceCode, setActiveProvinceCode] = useState<string>("12"); // Phnom Penh default
+
     // Update endpoint
     const handleSelectEndpoint = useCallback((ep: Endpoint, newParams?: Record<string, string>) => {
         setSelectedEndpoint(ep);
@@ -51,6 +92,20 @@ export default function Playground() {
         setSearchParams({ ep: ep.id }, { replace: true });
     }, [setSearchParams]);
 
+    // Filter endpoints by Atlas Category
+    const filteredEndpoints = useMemo(() => {
+        if (atlasCategory === "ALL") return ENDPOINTS;
+        return ENDPOINTS.filter((e) => e.group.toUpperCase() === atlasCategory);
+    }, [atlasCategory]);
+
+    const handleSelectCategory = (cat: AtlasCategory) => {
+        setAtlasCategory(cat);
+        const matched = ENDPOINTS.find((e) => (cat === "ALL" ? true : e.group.toUpperCase() === cat));
+        if (matched) {
+            handleSelectEndpoint(matched);
+        }
+    };
+
     // Handle parameter input changes
     const handleParamChange = (name: string, value: string) => {
         const nextParams = { ...paramValues, [name]: value };
@@ -59,6 +114,13 @@ export default function Playground() {
         if (path) {
             setCustomUrl(path);
         }
+    };
+
+    const handleResetParams = () => {
+        const reset = Object.fromEntries((selectedEndpoint.params ?? []).map((p) => [p.name, p.example ?? ""]));
+        setParamValues(reset);
+        const path = displayPath(selectedEndpoint, reset);
+        setCustomUrl(path);
     };
 
     // Execute API request
@@ -89,6 +151,9 @@ export default function Playground() {
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
                 e.preventDefault();
                 handleSend();
+            }
+            if (e.key === "Escape") {
+                setActivePanel("none");
             }
         };
         window.addEventListener("keydown", onKeyDown);
@@ -122,8 +187,223 @@ export default function Playground() {
     };
 
     const log = result?.log;
+    const body = log?.body as any;
     const fullProdUrl = PROD_ORIGIN + (customUrl.startsWith("/") ? customUrl : `/${customUrl}`);
 
+    // Detect province code from endpoint path or response data
+    useEffect(() => {
+        const pMatch = customUrl.match(/\/(?:provinces|districts|communes|item|hierarchy)\/(\d+)/);
+        if (pMatch) {
+            const code = extractProvinceCode(pMatch[1]);
+            if (code && PROVINCES.some((p) => p.code === code)) {
+                setActiveProvinceCode(code);
+                return;
+            }
+        }
+
+        const qMatch = customUrl.match(/province_code=(\d+)/);
+        if (qMatch) {
+            const code = extractProvinceCode(qMatch[1]);
+            if (code && PROVINCES.some((p) => p.code === code)) {
+                setActiveProvinceCode(code);
+                return;
+            }
+        }
+
+        if (body?.data?.province?.code) {
+            const code = extractProvinceCode(body.data.province.code);
+            if (code && PROVINCES.some((p) => p.code === code)) {
+                setActiveProvinceCode(code);
+                return;
+            }
+        }
+    }, [customUrl, body]);
+
+    // Set of highlighted province codes from response
+    const highlightedProvinceCodes = useMemo<Set<string>>(() => {
+        const set = new Set<string>();
+        if (Array.isArray(body?.data)) {
+            body.data.forEach((item: any) => {
+                const code = extractProvinceCode(item.code || item.id || item.province_code);
+                if (code) set.add(code);
+            });
+        } else if (Array.isArray(body?.features)) {
+            body.features.forEach((feat: any) => {
+                const code = extractProvinceCode(feat.properties?.code || feat.properties?.id);
+                if (code) set.add(code);
+            });
+        }
+        return set;
+    }, [body]);
+
+    // Detect geocode coordinate marker
+    const geocodeMarker = useMemo<{ x: number; y: number; lat: number; lon: number; label: string } | null>(() => {
+        let lat: number | undefined;
+        let lon: number | undefined;
+        let label = "Geocoded Location";
+
+        if (body?.data?.lat && body?.data?.lon) {
+            lat = Number(body.data.lat);
+            lon = Number(body.data.lon);
+            label = body.data.display_name || body.data.formatted_address || label;
+        } else if (body?.data?.coordinates?.lat && body?.data?.coordinates?.lon) {
+            lat = Number(body.data.coordinates.lat);
+            lon = Number(body.data.coordinates.lon);
+            label = body.data.display_name || body.data.formatted_address || label;
+        } else if (Array.isArray(body?.data) && body.data[0]?.lat && body.data[0]?.lon) {
+            lat = Number(body.data[0].lat);
+            lon = Number(body.data[0].lon);
+            label = body.data[0].display_name || label;
+        }
+
+        if (lat != null && lon != null && !isNaN(lat) && !isNaN(lon)) {
+            const [x, y] = latLonToSvg(lat, lon);
+            return { x, y, lat, lon, label };
+        }
+        return null;
+    }, [body]);
+
+    const activeProvince = useMemo(() => {
+        return PROVINCES.find((p) => p.code === activeProvinceCode) ?? PROVINCES[0];
+    }, [activeProvinceCode]);
+
+    // Handle province selection on Atlas Canvas or Chart
+    const handleSelectProvince = (p: HeroProvince) => {
+        setActiveProvinceCode(p.code);
+        // Automatically query that province
+        const ep = ENDPOINTS.find((e) => e.id === "admin-province-districts") ?? selectedEndpoint;
+        handleSelectEndpoint(ep, { id: String(p.id) });
+        const path = `/api/admin/provinces/${p.id}/districts`;
+        setCustomUrl(path);
+        handleSend(path);
+    };
+
+    // ==========================================
+    // 1. ATLAS COMMAND CENTER (Default Mode)
+    // ==========================================
+    if (viewMode === "atlas") {
+        return (
+            <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#07090e] text-slate-100 font-sans select-none scheme-dark">
+                {/* Top Command Bar */}
+                <AtlasTopBar
+                    category={atlasCategory}
+                    onSelectCategory={handleSelectCategory}
+                    log={log}
+                    viewMode={viewMode}
+                    onToggleViewMode={() => setViewMode("classic")}
+                />
+
+                {/* Central Command Stage */}
+                <div className="relative flex-1 overflow-hidden">
+                    {/* Background SVG Spatial Canvas with Arcs, Centroids, and Stars */}
+                    <AtlasCanvas
+                        activeProvince={activeProvince}
+                        highlightedCodes={highlightedProvinceCodes}
+                        geocodeMarker={geocodeMarker}
+                        networkEnabled={networkEnabled}
+                        onSelectProvince={handleSelectProvince}
+                        onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
+                    />
+
+                    {/* Left Floating Command Dock */}
+                    <div className="absolute left-4 top-4 z-30">
+                        <AtlasDock
+                            activePanel={activePanel}
+                            onTogglePanel={(p) => setActivePanel(p)}
+                            onExecute={() => handleSend()}
+                            pending={pending}
+                            networkEnabled={networkEnabled}
+                            onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
+                            lang={lang}
+                            onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
+                            theme={dark ? "dark" : "light"}
+                            onToggleTheme={toggleTheme}
+                        />
+                    </div>
+
+                    {/* Top-Left Spatial Console HUD Card */}
+                    <div className="absolute left-18 top-4 z-20 max-w-sm sm:max-w-md hidden md:block">
+                        <AtlasConsoleHUD
+                            selectedEndpoint={selectedEndpoint}
+                            customUrl={customUrl}
+                            onUrlChange={(u) => setCustomUrl(u)}
+                            onSend={() => handleSend()}
+                            pending={pending}
+                            onOpenEndpoints={() => setActivePanel("endpoints")}
+                        />
+                    </div>
+
+                    {/* Top-Right Key Hubs HUD Card */}
+                    <div className="absolute right-5 top-4 z-20 hidden lg:block">
+                        <AtlasHubsHUD
+                            onSelectProvince={handleSelectProvince}
+                            activeProvinceCode={activeProvinceCode}
+                        />
+                    </div>
+
+                    {/* Center Floating Inspector Card (Avionics Equipment Style) */}
+                    <div className="absolute left-18 bottom-12 z-20 hidden sm:block md:left-22">
+                        <AtlasInspector
+                            province={activeProvince}
+                            log={log}
+                            endpointPath={customUrl}
+                            onDrillDown={handleDrillDown}
+                            onOpenRaw={() => setActivePanel("raw")}
+                            onOpenTable={() => setActivePanel("table")}
+                        />
+                    </div>
+
+                    {/* Bottom-Right 2D Scatter Matrix Chart */}
+                    <div className="absolute right-5 bottom-16 z-20 hidden md:block w-76">
+                        <AtlasChart
+                            activeProvinceCode={activeProvinceCode}
+                            onSelectProvince={handleSelectProvince}
+                        />
+                    </div>
+
+                    {/* Bottom-Left Micro Status Legend */}
+                    <div className="absolute left-18 bottom-3 z-20 flex flex-wrap items-center gap-4 rounded-xl border border-white/5 bg-[#080b13]/80 px-3 py-1 font-mono text-[10px] text-slate-400 backdrop-blur-md">
+                        <span className="flex items-center gap-1.5">
+                            <span className="size-2 rounded-full bg-rose-500 shadow-[0_0_6px_#f43f5e]" />
+                            <strong className="text-slate-200">PROVINCES</strong> (25)
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <span className="size-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#06b6d4]" />
+                            <strong className="text-slate-200">DISTRICTS</strong> (210)
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]" />
+                            <strong className="text-slate-200">COMMUNES</strong> (1,661)
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <span className="size-2 rounded-full bg-amber-400 shadow-[0_0_6px_#f59e0b]" />
+                            <strong className="text-slate-200">VILLAGES</strong> (14,576)
+                        </span>
+                    </div>
+                </div>
+
+                {/* Slide-over Drawers (Endpoints, Params, Raw JSON, Data Table, Presets) */}
+                <AtlasDrawers
+                    activePanel={activePanel}
+                    onClose={() => setActivePanel("none")}
+                    endpoints={filteredEndpoints}
+                    selectedEndpoint={selectedEndpoint}
+                    onSelectEndpoint={(ep) => handleSelectEndpoint(ep)}
+                    paramValues={paramValues}
+                    onParamChange={handleParamChange}
+                    onResetParams={handleResetParams}
+                    log={log}
+                    customUrl={customUrl}
+                    onApplyPreset={handleApplyPreset}
+                    onDrillDown={handleDrillDown}
+                />
+            </div>
+        );
+    }
+
+    // ==========================================
+    // 2. CLASSIC SPLIT CONSOLE (Secondary Mode)
+    // ==========================================
     return (
         <div className="min-h-screen bg-bg text-ink flex flex-col font-sans">
             <Nav variant="playground" />
@@ -146,22 +426,16 @@ export default function Playground() {
                             </p>
                         </div>
 
-                        {/* Quick Presets Pills */}
-                        <div className="flex flex-wrap items-center gap-1.5">
-                            <span className="font-mono text-xs font-medium text-ink-3 mr-1 flex items-center gap-1">
-                                <Icon name="sparkles" className="size-3 text-accent" />
-                                {t("playground.presets")}:
-                            </span>
-                            {PRESETS.slice(0, 5).map((p) => (
-                                <button
-                                    key={p.id}
-                                    type="button"
-                                    onClick={() => handleApplyPreset(p)}
-                                    className="cursor-pointer rounded-lg border border-line bg-surface px-2.5 py-1 text-xs font-medium text-ink-2 hover:border-line-2 hover:text-ink transition-colors"
-                                >
-                                    {tx(p.label)}
-                                </button>
-                            ))}
+                        {/* Switch to Atlas Command Center Button */}
+                        <div className="flex items-center gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setViewMode("atlas")}
+                                className="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-rose-500 px-3.5 py-1.5 font-mono text-xs font-bold text-white shadow-lg hover:opacity-95 transition-all"
+                            >
+                                <Icon name="sparkles" className="size-3.5" />
+                                <span>Switch to Atlas Control Map →</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -170,10 +444,9 @@ export default function Playground() {
             {/* Main Playground Content */}
             <main id="request-console" className={cx(wrap, "flex-1 py-8")}>
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                    {/* Left Column: Request Builder (5 cols on lg) */}
+                    {/* Left Column: Request Builder */}
                     <div className="lg:col-span-5 space-y-4">
                         <div className="rounded-2xl border border-line bg-surface p-4.5 shadow-card space-y-5">
-                            {/* Rich Endpoint Selector */}
                             <EndpointSelector
                                 endpoints={ENDPOINTS}
                                 selected={selectedEndpoint}
@@ -240,12 +513,7 @@ export default function Playground() {
                                     {selectedEndpoint.params?.length ? (
                                         <button
                                             type="button"
-                                            onClick={() => {
-                                                const reset = Object.fromEntries((selectedEndpoint.params ?? []).map((p) => [p.name, p.example ?? ""]));
-                                                setParamValues(reset);
-                                                const path = displayPath(selectedEndpoint, reset);
-                                                setCustomUrl(path);
-                                            }}
+                                            onClick={handleResetParams}
                                             className="text-[11px] font-mono text-ink-3 hover:text-ink cursor-pointer"
                                         >
                                             Reset defaults
@@ -313,20 +581,12 @@ export default function Playground() {
                                     </div>
                                 )}
                             </div>
-
-                            {/* Selected Endpoint Description */}
-                            <div className="border-t border-line/60 pt-3 text-xs text-ink-2">
-                                <span className="font-semibold text-ink">{tx(selectedEndpoint.title)}: </span>
-                                <span>{tx(selectedEndpoint.description)}</span>
-                            </div>
                         </div>
                     </div>
 
-                    {/* Right Column: Response Inspection (7 cols on lg) */}
+                    {/* Right Column: Response Inspection */}
                     <div className="lg:col-span-7 space-y-4">
-                        {/* Response Header Bar */}
                         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl">
-                            {/* Mode Switch Tabs */}
                             <div className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 p-0.5">
                                 <button
                                     type="button"
@@ -374,7 +634,6 @@ export default function Playground() {
                                 </button>
                             </div>
 
-                            {/* Response Metadata Badges */}
                             {log && (
                                 <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
                                     <span
@@ -400,7 +659,7 @@ export default function Playground() {
                             )}
                         </div>
 
-                        {/* Result Body / Panels */}
+                        {/* Result Body */}
                         {pending ? (
                             <div className="flex min-h-95 flex-col items-center justify-center rounded-xl border border-line bg-surface p-8 text-center">
                                 <span className="size-8 animate-spin rounded-full border-3 border-line-2 border-t-accent mb-3" />
@@ -413,7 +672,6 @@ export default function Playground() {
                                 <div className="font-mono text-xs">{result.error}</div>
                             </div>
                         ) : activeTab === "map" ? (
-                            /* Hero Map Preview as primary preview (always available) */
                             <div className="space-y-4">
                                 <PlaygroundHeroPreview
                                     log={log}
@@ -423,8 +681,7 @@ export default function Playground() {
                                 />
                             </div>
                         ) : !log ? (
-                            /* Empty State Before Sending for other tabs */
-                            <div className="flex min-h-[420px] flex-col items-center justify-center rounded-xl border border-dashed border-line bg-surface/50 p-8 text-center">
+                            <div className="flex min-h-105 flex-col items-center justify-center rounded-xl border border-dashed border-line bg-surface/50 p-8 text-center">
                                 <div className="size-12 rounded-2xl bg-surface-2 border border-line flex items-center justify-center text-accent mb-4">
                                     <Icon name="play" className="size-6" />
                                 </div>
@@ -444,7 +701,6 @@ export default function Playground() {
                                 </button>
                             </div>
                         ) : (
-                            /* Other Active Tab Views */
                             <div className="space-y-4">
                                 {activeTab === "raw" && (
                                     <PlaygroundRawPreview
@@ -472,4 +728,3 @@ export default function Playground() {
         </div>
     );
 }
-

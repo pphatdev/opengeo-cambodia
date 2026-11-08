@@ -306,7 +306,7 @@ export function PlaygroundMap({
     }
 
     return (
-        <div className={cx("relative overflow-hidden rounded-2xl border border-line bg-surface shadow-card", className || "h-[540px] w-full")}>
+        <div className={cx("relative overflow-hidden rounded-2xl border border-line bg-surface shadow-card", className || "h-135 w-full")}>
             {/* Top Floating Badge Bar */}
             <div className="absolute top-3 left-3 z-500 flex flex-wrap items-center gap-2">
                 <div className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface/90 px-3 py-1.5 text-xs font-semibold text-ink shadow-card backdrop-blur-md">
