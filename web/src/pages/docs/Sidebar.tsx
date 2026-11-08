@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router";
 import { Icon } from "../../components/Icon";
-import { cx, focusRing } from "../../components/ui";
+import { LangSwitch, REPO_URL } from "../../components/Nav";
+import { cx, focusRing, iconBtn } from "../../components/ui";
 import { useI18n, type MessageKey } from "../../i18n";
+import { useTheme } from "../../lib/theme";
 import { ENDPOINTS, GROUPS } from "./endpoints";
 
 interface NavLink {
@@ -9,7 +12,23 @@ interface NavLink {
     label: string;
     verb?: boolean;
     filter: string;
+    depth?: number;
+    tag?: string;
 }
+
+const ENDPOINT_NESTING: Record<string, { depth: number; shortLabel?: string; tag?: string }> = {
+    // Admin hierarchy: Provinces -> Districts -> Communes -> Villages
+    "admin-districts": { depth: 1, shortLabel: "/{id}/districts" },
+    "admin-communes": { depth: 2, shortLabel: "/{id}/communes" },
+    "admin-villages": { depth: 3, shortLabel: "/{id}/villages" },
+    "admin-nested-communes": { depth: 1, shortLabel: "/{pId}/districts/{dId}/communes", tag: "nested" },
+
+    // Boundaries hierarchy
+    "b-zone": { depth: 0, tag: "PIP" },
+    "b-province": { depth: 1, shortLabel: "/{code}" },
+    "b-district": { depth: 1, shortLabel: "/{code}" },
+    "b-commune": { depth: 1, shortLabel: "/{code}" },
+};
 
 const GUIDE: [string, MessageKey][] = [
     ["introduction", "docs.navIntro"],
@@ -29,9 +48,11 @@ const REFERENCE: [string, MessageKey][] = [
 ];
 
 export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
+    const { toggle } = useTheme();
     const { t, tx } = useI18n();
     const [query, setQuery] = useState("");
     const [active, setActive] = useState("introduction");
+    const q = query.trim().toLowerCase();
 
     const groups = useMemo(() => {
         const plain = (items: [string, MessageKey][]): NavLink[] =>
@@ -43,17 +64,25 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
             { title: t("docs.groupGuide"), links: plain(GUIDE) },
             ...GROUPS.map((g) => ({
                 title: tx(g.title),
-                links: ENDPOINTS.filter((e) => e.group === g.id).map((e) => ({
-                    href: `ep-${e.id}`,
-                    label: e.path.replace(/^\/api/, ""),
-                    verb: true,
-                    // Filter matches the path and the title in both languages
-                    filter: `${e.path} ${e.title.en} ${e.title.km}`.toLowerCase(),
-                })),
+                links: ENDPOINTS.filter((e) => e.group === g.id).map((e) => {
+                    const nesting = ENDPOINT_NESTING[e.id];
+                    const depth = nesting?.depth ?? 0;
+                    const defaultLabel = e.path.replace(/^\/api/, "");
+                    const label = !q && nesting?.shortLabel ? nesting.shortLabel : defaultLabel;
+                    return {
+                        href: `ep-${e.id}`,
+                        label,
+                        verb: true,
+                        depth,
+                        tag: nesting?.tag,
+                        // Filter matches the path and the title in both languages
+                        filter: `${e.path} ${e.title.en} ${e.title.km}`.toLowerCase(),
+                    };
+                }),
             })),
             { title: t("docs.groupReference"), links: plain(REFERENCE) },
         ];
-    }, [t, tx]);
+    }, [t, tx, q]);
 
     // Scrollspy: highlight the first visible section (ids don't change with language)
     useEffect(() => {
@@ -72,7 +101,6 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
         return () => io.disconnect();
     }, []);
 
-    const q = query.trim().toLowerCase();
     return (
         <aside
             id="sidebar"
@@ -101,29 +129,63 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
                 return (
                     <div className="mb-5" key={g.title}>
                         <h6 className="mb-1.5 mt-0 pl-2.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-ink-3 km:font-khmer km:text-xs km:normal-case km:tracking-normal">{g.title}</h6>
-                        {links.map((l) => (
-                            <a
-                                key={l.href}
-                                href={`#${l.href}`}
-                                onClick={onNavigate}
-                                className={cx(
-                                    "flex items-center gap-2 rounded-[7px] px-2.5 py-1.25 text-[13.5px] leading-[1.4] no-underline",
-                                    active === l.href ? "bg-surface font-medium text-ink shadow-[inset_2px_0_0_var(--og-accent)]" : "text-ink-2 hover:bg-surface-2 hover:text-ink",
-                                )}
-                            >
-                                {l.verb ? (
-                                    <>
-                                        <span className="w-6.5 flex-none font-mono text-[9.5px] font-semibold text-ok">GET</span>
-                                        <span className="truncate font-mono text-[12.5px]">{l.label}</span>
-                                    </>
-                                ) : (
-                                    l.label
-                                )}
-                            </a>
-                        ))}
+                        {links.map((l) => {
+                            const depth = l.depth ?? 0;
+                            const isChild = depth > 0 && !q;
+                            return (
+                                <a
+                                    key={l.href}
+                                    href={`#${l.href}`}
+                                    onClick={onNavigate}
+                                    className={cx(
+                                        "flex items-center gap-2 rounded-[7px] py-1.25 text-[13.5px] leading-[1.4] no-underline transition-colors",
+                                        isChild
+                                            ? depth === 1
+                                                ? "ml-3.5 border-l border-line/80 pl-2.5 pr-2"
+                                                : depth === 2
+                                                ? "ml-6 border-l border-line/60 pl-2.5 pr-2"
+                                                : "ml-8.5 border-l border-line/40 pl-2.5 pr-2"
+                                            : "px-2.5",
+                                        active === l.href
+                                            ? "bg-surface font-medium text-ink shadow-[inset_2px_0_0_var(--og-accent)]"
+                                            : "text-ink-2 hover:bg-surface-2 hover:text-ink",
+                                    )}
+                                >
+                                    {l.verb ? (
+                                        <>
+                                            <span className="w-6.5 flex-none font-mono text-[9.5px] font-semibold text-ok">GET</span>
+                                            <span className="truncate font-mono text-[12.5px]">{l.label}</span>
+                                            {l.tag && (
+                                                <span className="ml-auto rounded bg-surface-2 px-1.5 py-px font-mono text-[10px] text-ink-3">
+                                                    {l.tag}
+                                                </span>
+                                            )}
+                                        </>
+                                    ) : (
+                                        l.label
+                                    )}
+                                </a>
+                            );
+                        })}
                     </div>
                 );
             })}
+            {/* Quick utilities on mobile drawer */}
+            <div className="mt-6 flex items-center justify-between border-t border-line pt-4 lg:hidden">
+                <Link to="/docs" onClick={onNavigate} className="text-xs font-semibold text-accent no-underline">
+                    Docs
+                </Link>
+                <div className="flex items-center gap-1.5">
+                    <LangSwitch />
+                    <a href={REPO_URL} className={iconBtn} aria-label={t("nav.github")} target="_blank" rel="noopener noreferrer">
+                        <Icon name="github" />
+                    </a>
+                    <button className={iconBtn} type="button" aria-label={t("nav.theme")} onClick={toggle}>
+                        <Icon name="moon" className="dark:hidden" />
+                        <Icon name="sun" className="hidden dark:block" />
+                    </button>
+                </div>
+            </div>
         </aside>
     );
 }

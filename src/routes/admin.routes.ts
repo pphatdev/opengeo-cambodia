@@ -200,6 +200,209 @@ adminRoutes.get("/communes/:id/villages", (c) => {
     });
 });
 
+// =========================================================================
+// RESTful Nested Resource Routes
+// =========================================================================
+
+/**
+ * GET /api/admin/provinces/:provinceId/districts/:districtId
+ * Lookup single district under a specific province
+ */
+adminRoutes.get("/provinces/:provinceId/districts/:districtId", (c) => {
+    const provinceId = parseValidId(c.req.param("provinceId"));
+    const districtId = parseValidId(c.req.param("districtId"));
+
+    if (provinceId === null || districtId === null) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: "Invalid province or district ID format" }, 400);
+    }
+
+    const district = adminService.getItemById(districtId);
+    if (!district || district.level !== "district" || district.parentId !== provinceId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `District ${districtId} not found in province ${provinceId}` }, 404);
+    }
+
+    return c.json<ApiResponse<AdminItem>>({ success: true, data: district });
+});
+
+/**
+ * GET /api/admin/provinces/:provinceId/districts/:districtId/communes
+ * List all communes in a district under a specific province
+ */
+adminRoutes.get("/provinces/:provinceId/districts/:districtId/communes", (c) => {
+    const provinceId = parseValidId(c.req.param("provinceId"));
+    const districtId = parseValidId(c.req.param("districtId"));
+
+    if (provinceId === null || districtId === null) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: "Invalid province or district ID format" }, 400);
+    }
+
+    const district = adminService.getItemById(districtId);
+    if (!district || district.level !== "district" || district.parentId !== provinceId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `District ${districtId} not found in province ${provinceId}` }, 404);
+    }
+
+    const communes = adminService.getCommunes(districtId);
+    return c.json<ApiResponse<AdminItem[]>>({
+        success: true,
+        data: communes,
+        meta: { total: communes.length, timestamp: adminService.getLastSyncAt(), source: "local_cache" },
+    });
+});
+
+/**
+ * GET /api/admin/provinces/:provinceId/districts/:districtId/communes/:communeId
+ * Lookup single commune in a district under a specific province
+ */
+adminRoutes.get("/provinces/:provinceId/districts/:districtId/communes/:communeId", (c) => {
+    const provinceId = parseValidId(c.req.param("provinceId"));
+    const districtId = parseValidId(c.req.param("districtId"));
+    const communeId = parseValidId(c.req.param("communeId"));
+
+    if (provinceId === null || districtId === null || communeId === null) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: "Invalid ID parameter format" }, 400);
+    }
+
+    const district = adminService.getItemById(districtId);
+    if (!district || district.level !== "district" || district.parentId !== provinceId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `District ${districtId} not found in province ${provinceId}` }, 404);
+    }
+
+    const commune = adminService.getItemById(communeId);
+    if (!commune || commune.level !== "commune" || commune.parentId !== districtId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `Commune ${communeId} not found in district ${districtId}` }, 404);
+    }
+
+    return c.json<ApiResponse<AdminItem>>({ success: true, data: commune });
+});
+
+/**
+ * GET /api/admin/provinces/:provinceId/districts/:districtId/communes/:communeId/villages
+ * List all villages in a commune in a district under a specific province
+ */
+adminRoutes.get("/provinces/:provinceId/districts/:districtId/communes/:communeId/villages", (c) => {
+    const provinceId = parseValidId(c.req.param("provinceId"));
+    const districtId = parseValidId(c.req.param("districtId"));
+    const communeId = parseValidId(c.req.param("communeId"));
+
+    if (provinceId === null || districtId === null || communeId === null) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: "Invalid ID parameter format" }, 400);
+    }
+
+    const district = adminService.getItemById(districtId);
+    if (!district || district.level !== "district" || district.parentId !== provinceId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `District ${districtId} not found in province ${provinceId}` }, 404);
+    }
+
+    const commune = adminService.getItemById(communeId);
+    if (!commune || commune.level !== "commune" || commune.parentId !== districtId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `Commune ${communeId} not found in district ${districtId}` }, 404);
+    }
+
+    const villages = adminService.getVillages(communeId);
+    return c.json<ApiResponse<AdminItem[]>>({
+        success: true,
+        data: villages,
+        meta: { total: villages.length, timestamp: adminService.getLastSyncAt(), source: "local_cache" },
+    });
+});
+
+/**
+ * GET /api/admin/provinces/:provinceId/districts/:districtId/communes/:communeId/villages/:villageId
+ * Lookup single village under full 4-tier nesting path
+ */
+adminRoutes.get("/provinces/:provinceId/districts/:districtId/communes/:communeId/villages/:villageId", (c) => {
+    const provinceId = parseValidId(c.req.param("provinceId"));
+    const districtId = parseValidId(c.req.param("districtId"));
+    const communeId = parseValidId(c.req.param("communeId"));
+    const villageId = parseValidId(c.req.param("villageId"));
+
+    if (provinceId === null || districtId === null || communeId === null || villageId === null) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: "Invalid ID parameter format" }, 400);
+    }
+
+    const district = adminService.getItemById(districtId);
+    if (!district || district.level !== "district" || district.parentId !== provinceId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `District ${districtId} not found in province ${provinceId}` }, 404);
+    }
+
+    const commune = adminService.getItemById(communeId);
+    if (!commune || commune.level !== "commune" || commune.parentId !== districtId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `Commune ${communeId} not found in district ${districtId}` }, 404);
+    }
+
+    const village = adminService.getItemById(villageId);
+    if (!village || village.level !== "village" || village.parentId !== communeId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `Village ${villageId} not found in commune ${communeId}` }, 404);
+    }
+
+    return c.json<ApiResponse<AdminItem>>({ success: true, data: village });
+});
+
+/**
+ * GET /api/admin/districts/:districtId/communes/:communeId
+ * Lookup single commune in a district
+ */
+adminRoutes.get("/districts/:districtId/communes/:communeId", (c) => {
+    const districtId = parseValidId(c.req.param("districtId"));
+    const communeId = parseValidId(c.req.param("communeId"));
+
+    if (districtId === null || communeId === null) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: "Invalid ID parameter format" }, 400);
+    }
+
+    const commune = adminService.getItemById(communeId);
+    if (!commune || commune.level !== "commune" || commune.parentId !== districtId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `Commune ${communeId} not found in district ${districtId}` }, 404);
+    }
+
+    return c.json<ApiResponse<AdminItem>>({ success: true, data: commune });
+});
+
+/**
+ * GET /api/admin/districts/:districtId/communes/:communeId/villages
+ * List all villages in a commune under a district
+ */
+adminRoutes.get("/districts/:districtId/communes/:communeId/villages", (c) => {
+    const districtId = parseValidId(c.req.param("districtId"));
+    const communeId = parseValidId(c.req.param("communeId"));
+
+    if (districtId === null || communeId === null) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: "Invalid ID parameter format" }, 400);
+    }
+
+    const commune = adminService.getItemById(communeId);
+    if (!commune || commune.level !== "commune" || commune.parentId !== districtId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `Commune ${communeId} not found in district ${districtId}` }, 404);
+    }
+
+    const villages = adminService.getVillages(communeId);
+    return c.json<ApiResponse<AdminItem[]>>({
+        success: true,
+        data: villages,
+        meta: { total: villages.length, timestamp: adminService.getLastSyncAt(), source: "local_cache" },
+    });
+});
+
+/**
+ * GET /api/admin/communes/:communeId/villages/:villageId
+ * Lookup single village in a commune
+ */
+adminRoutes.get("/communes/:communeId/villages/:villageId", (c) => {
+    const communeId = parseValidId(c.req.param("communeId"));
+    const villageId = parseValidId(c.req.param("villageId"));
+
+    if (communeId === null || villageId === null) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: "Invalid ID parameter format" }, 400);
+    }
+
+    const village = adminService.getItemById(villageId);
+    if (!village || village.level !== "village" || village.parentId !== communeId) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `Village ${villageId} not found in commune ${communeId}` }, 404);
+    }
+
+    return c.json<ApiResponse<AdminItem>>({ success: true, data: village });
+});
+
 /**
  * GET /api/admin/item/:id
  * Lookup single item by ID

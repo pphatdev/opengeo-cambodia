@@ -1,15 +1,16 @@
-import { useEffect } from "react";
 import { Link } from "react-router";
 import { Footer } from "../components/Footer";
 import { Nav } from "../components/Nav";
+import { useSeo } from "../components/Seo";
 import { btnGhost, btnPrimary, cx, displayH1, kicker, wrap } from "../components/ui";
 import { useI18n } from "../i18n";
 
 export function NotFound() {
     const { t } = useI18n();
-    useEffect(() => {
-        document.title = t("meta.notFoundTitle");
-    }, [t]);
+    useSeo({
+        title: t("meta.notFoundTitle"),
+        description: t("meta.notFoundDesc"),
+    });
     return (
         <div>
             <Nav />

@@ -23,17 +23,17 @@ export function SectionHead({ kicker: k, title, intro }: { kicker: string; title
 /* Section bands: alternating grounds give the page rhythm. */
 const pad = "py-20 sm:py-24";
 const section = pad;
-/** Inverted (black) band, whichever theme the page is in (scheme-dark swaps the tokens for everything inside). */
-const navyBand = cx("scheme-dark relative overflow-hidden border-y border-line bg-bg dark:bg-[#030407]", pad);
-/** Soft grey wash. */
+/** Dark navy band, whichever theme the page is in (scheme-dark swaps the tokens for everything inside). */
+const navyBand = cx("scheme-dark relative overflow-hidden border-y border-line bg-bg", pad);
+/** Soft wash band. */
 const washBand = cx("relative border-y border-line bg-[linear-gradient(135deg,var(--og-water-soft),var(--og-bg)_45%,var(--og-accent-soft))]", pad);
 
-/** Soft white light pools for the black band. */
+/** Soft cyan & mint light pools for the dark band. */
 function Glows() {
     return (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            <div className="absolute -left-40 -top-40 size-130 rounded-full bg-white/[0.07] blur-3xl" />
-            <div className="absolute -bottom-48 -right-32 size-140 rounded-full bg-white/[0.05] blur-3xl" />
+            <div className="absolute -left-40 -top-40 size-130 rounded-full bg-water/10 blur-3xl" />
+            <div className="absolute -bottom-48 -right-32 size-140 rounded-full bg-accent/10 blur-3xl" />
             <div className="bg-dot-grid absolute inset-0 opacity-40" />
         </div>
     );
@@ -145,9 +145,9 @@ export function Quickstart() {
 }
 
 const EXT_STYLES = {
-    geo: "bg-water-soft text-water",
-    csv: "bg-ok/15 text-ok",
-    json: "bg-accent-soft text-accent",
+    geo: "bg-water-soft text-water border border-water/20",
+    csv: "bg-ok/15 text-ok border border-ok/20",
+    json: "bg-accent-soft text-accent border border-accent/20",
 } as const;
 
 export function Downloads() {

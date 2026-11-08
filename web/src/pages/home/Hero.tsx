@@ -59,9 +59,10 @@ export function Hero() {
                             {t("hero.eyebrow")}
                         </span>
                         <h1 className={displayH1}>{t("hero.titleA")} <em>{t("hero.titleB")}</em></h1>
-                        <p className="rich mb-7 mt-0 max-w-[34em] text-lg text-ink-2">{rt("hero.lede", { total: fmt(stats?.total ?? 16472) })}</p>
+                        <p className="rich mb-7 mt-0 max-w-[34em] text-sm sm:text-lg text-ink-2">{rt("hero.lede", { total: fmt(stats?.total ?? 16472) })}</p>
                         <div className="flex flex-wrap gap-3">
                             <a className={btnPrimary} href="#explore">{t("hero.explore")} <Icon name="arrow" /></a>
+                            <Link className={btnGhost} to="/playground"><Icon name="play" /> {t("nav.playground")}</Link>
                             <Link className={btnGhost} to="/docs"><Icon name="book" /> {t("hero.docs")}</Link>
                         </div>
 
@@ -73,7 +74,7 @@ export function Hero() {
                             <button
                                 type="button"
                                 onClick={() => copy(COMMAND)}
-                                className="inline-flex h-8 flex-none cursor-pointer items-center gap-1.5 rounded-md border-0 bg-code-tab px-2.5 text-xs font-medium text-code-hi hover:bg-[#30343b] km:font-khmer [&_svg]:size-3.25"
+                                className="inline-flex h-8 flex-none cursor-pointer items-center gap-1.5 rounded-md border-0 bg-code-tab px-2.5 text-xs font-medium text-code-hi hover:bg-code-line/80 hover:text-white transition-colors km:font-khmer [&_svg]:size-3.25"
                             >
                                 <Icon name="copy" />{t("common.copy")}
                             </button>

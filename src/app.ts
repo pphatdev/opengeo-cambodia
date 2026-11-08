@@ -82,14 +82,61 @@ function getSpaHtml(): string {
         + "<p>The API is available at <a href=\"/api/info\">/api/info</a>.</p></body></html>";
 }
 
+function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
+    const isKm = lang === "km";
+    if (reqPath.startsWith("/docs")) {
+        const title = isKm
+            ? "ឯកសារ API — OpenGeo Cambodia"
+            : "API Documentation — OpenGeo Cambodia";
+        const desc = isKm
+            ? "ឯកសារបច្ចេកទេសសម្រាប់អ្នកអភិវឌ្ឍន៍ ផ្ទាំងសាកល្បង API គំរូទិន្នន័យ JSON កម្រិតកំណត់សំណើ និងកូអរដោនេព្រំប្រទល់ GeoJSON នៃឋានានុក្រមរដ្ឋបាល ៤ កម្រិតនៅកម្ពុជា។"
+            : "Developer documentation, interactive API playground, JSON schemas, rate limits, and GeoJSON boundary specifications for Cambodia's 4-tier administrative hierarchy.";
+        const canonical = "https://opengeo-cambodia.pphat.me/docs";
+
+        return rawHtml
+            .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
+            .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
+            .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
+            .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`)
+            .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${desc}">`)
+            .replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${canonical}">`)
+            .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${title}">`)
+            .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${desc}">`);
+    }
+    if (reqPath.startsWith("/playground")) {
+        const title = isKm
+            ? "ផ្ទាំងសាកល្បង API — OpenGeo Cambodia"
+            : "API Playground — OpenGeo Cambodia";
+        const desc = isKm
+            ? "ផ្ទាំងសាកល្បង API អន្តរកម្មសម្រាប់ធ្វើតេស្ត endpoint នៃ OpenGeo Cambodia ជាមួយនឹងការបង្ហាញលទ្ធផលជាទម្រង់ UI និង Raw JSON។"
+            : "Interactive API playground for testing OpenGeo Cambodia endpoints with live UI visualization and raw JSON inspection.";
+        const canonical = "https://opengeo-cambodia.pphat.me/playground";
+
+        return rawHtml
+            .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
+            .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
+            .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
+            .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`)
+            .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${desc}">`)
+            .replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${canonical}">`)
+            .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${title}">`)
+            .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${desc}">`);
+    }
+    return rawHtml;
+}
+
 /** Serve the React app shell from Workers Assets when deployed, or from dist/client in Node. */
 async function serveSpa(c: Context): Promise<Response> {
+    const lang = c.req.query("lang") || "en";
     const assets = (c.env as { ASSETS?: { fetch: (req: Request) => Promise<Response> } } | undefined)?.ASSETS;
     if (assets) {
         const res = await assets.fetch(new Request(new URL("/index.html", c.req.url)));
-        if (res.ok) return res;
+        if (res.ok) {
+            const html = await res.text();
+            return c.html(renderSeoHtml(html, c.req.path, lang));
+        }
     }
-    return c.html(getSpaHtml());
+    return c.html(renderSeoHtml(getSpaHtml(), c.req.path, lang));
 }
 
 let cachedLlmsTxt: string | null = null;
@@ -438,9 +485,14 @@ app.get("/assets/*", (c) => {
     return c.body(fs.readFileSync(filePath));
 });
 
-// 8. Web app pages (React SPA: landing/explorer and API docs)
+// 8. Web app pages (React SPA: landing/explorer, API docs, playground, and engineering blog)
 app.get("/docs", serveSpa);
+app.get("/docs/*", serveSpa);
+app.get("/playground", serveSpa);
+app.get("/playground/*", serveSpa);
 app.get("/demo", serveSpa);
+app.get("/blog", serveSpa);
+app.get("/blog/*", serveSpa);
 
 // 8. API Root Welcome Endpoint (Auto-detects Browser vs API client)
 app.get("/", async (c) => {
@@ -464,8 +516,9 @@ app.get("/", async (c) => {
         description:
             "An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times",
         dataSource: "https://data.mef.gov.kh/",
-        version: "1.0.0",
+        version: "1.3.0",
         documentation: "/api/info",
+        playground: "/playground",
         llms: "/llms.txt",
         llmsFull: "/llms-full.txt",
         postman: "/opengeo-cambodia.postman_collection.json",
@@ -493,6 +546,10 @@ app.route("/", healthRoutes);
 
 // 8. 404 Not Found Handler
 app.notFound((c) => {
+    const accept = c.req.header("Accept") || "";
+    if (accept.includes("text/html") && !c.req.path.startsWith("/api/")) {
+        return serveSpa(c);
+    }
     return c.json(
         {
             success: false,

@@ -5,10 +5,12 @@ export interface RequestLog {
     id: number;
     path: string;
     status: number;
+    statusText?: string;
     ms: number;
     server: string | null;
     remaining: string | null;
     size: number;
+    headers?: Record<string, string>;
     body: unknown;
 }
 
@@ -35,14 +37,20 @@ export async function apiGet<T>(path: string, onLog?: (entry: RequestLog) => voi
     } catch {
         body = text;
     }
+    const headers: Record<string, string> = {};
+    res.headers.forEach((v, k) => {
+        headers[k] = v;
+    });
     onLog?.({
         id: nextId++,
         path,
         status: res.status,
+        statusText: res.statusText || (res.status === 200 ? "OK" : ""),
         ms,
         server: res.headers.get("x-response-time"),
         remaining: res.headers.get("x-ratelimit-remaining"),
         size: new Blob([text]).size,
+        headers,
         body,
     });
     if (!res.ok) {
@@ -67,3 +75,4 @@ export function forDisplay(body: unknown, opts: { abbreviateCoords?: boolean } =
 
 export const fmt = (n: number) => n.toLocaleString("en-US");
 export const fmtBytes = (n: number) => (n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : n > 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`);
+export const fmtMs = (ms: number) => `${ms.toFixed(2)}ms`;

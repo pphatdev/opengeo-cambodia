@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { BoundariesService } from "../services/boundaries.service.js";
 import { createEdgeCache } from "../middleware/edge-cache.js";
 import type { ApiResponse } from "../types/api.js";
@@ -28,6 +28,43 @@ function resolveCurrentDir(): string {
 const currentDir = resolveCurrentDir();
 
 const ALLOWED_LEVELS = new Set<string>(["province", "district", "commune"]);
+
+function parseCoordinates(c: Context): { lat: number; lon: number } | { error: string } {
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+
+    if (!latStr || !lonStr) {
+        return { error: "Missing required query parameters 'lat' and 'lng' (or 'lon')" };
+    }
+
+    const cleanLat = latStr.trim();
+    const cleanLon = lonStr.trim();
+
+    if (
+        cleanLat.length > 25 ||
+        cleanLon.length > 25 ||
+        !/^-?\d+(\.\d+)?$/.test(cleanLat) ||
+        !/^-?\d+(\.\d+)?$/.test(cleanLon)
+    ) {
+        return { error: "Invalid coordinates format: must be valid decimal numbers within 25 characters" };
+    }
+
+    const lat = parseFloat(cleanLat);
+    const lon = parseFloat(cleanLon);
+
+    if (
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lon) ||
+        lat < -90 ||
+        lat > 90 ||
+        lon < -180 ||
+        lon > 180
+    ) {
+        return { error: "Invalid coordinates: 'lat' must be [-90, 90] and 'lng'/'lon' [-180, 180]" };
+    }
+
+    return { lat, lon };
+}
 
 // 1. Cloudflare Workers Global Edge Cache (300+ Edge PoPs, 1-year cache TTL)
 boundariesRoutes.use("*", createEdgeCache({ cacheTtlSeconds: 31536000 }));
@@ -74,8 +111,13 @@ boundariesRoutes.get("/", (c) => {
     const rawOffset = c.req.query("offset");
     const offset = rawOffset ? parseInt(rawOffset, 10) : undefined;
 
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+    const lat = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : undefined;
+    const lon = lonStr && !isNaN(parseFloat(lonStr)) ? parseFloat(lonStr) : undefined;
+
     // Fast cache lookup for default provinces query
-    const isDefaultProvinces = !level || (level === "province" && !provinceCode && !districtCode && !code && !search && !limit && !offset);
+    const isDefaultProvinces = (!level || level === "province") && !provinceCode && !districtCode && !code && !search && !limit && !offset && lat === undefined && lon === undefined;
     if (isDefaultProvinces) {
         const cacheKey = `default_provinces_${format}`;
         const cached = boundariesService.getPreSerialized(cacheKey);
@@ -92,6 +134,8 @@ boundariesRoutes.get("/", (c) => {
         districtCode,
         code,
         search,
+        lat,
+        lon,
         format,
         limit,
         offset,
@@ -133,8 +177,12 @@ boundariesRoutes.get("/provinces", (c) => {
     const format = rawFormat === "summary" || rawFormat === "list" ? "summary" : "geojson";
     const search = c.req.query("q") || c.req.query("search");
     const code = c.req.query("code");
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+    const lat = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : undefined;
+    const lon = lonStr && !isNaN(parseFloat(lonStr)) ? parseFloat(lonStr) : undefined;
 
-    if (!search && !code) {
+    if (!search && !code && lat === undefined && lon === undefined) {
         const cacheKey = `provinces_all_${format}`;
         const cached = boundariesService.getPreSerialized(cacheKey);
         if (cached) {
@@ -148,12 +196,14 @@ boundariesRoutes.get("/provinces", (c) => {
         level: "province",
         code,
         search,
+        lat,
+        lon,
         format,
     });
 
     if (result.isGeoJson) {
         const jsonStr = JSON.stringify(result.data);
-        if (!search && !code) {
+        if (!search && !code && lat === undefined && lon === undefined) {
             boundariesService.setPreSerialized(`provinces_all_${format}`, jsonStr);
         }
         return c.newResponse(jsonStr, 200, {
@@ -170,7 +220,7 @@ boundariesRoutes.get("/provinces", (c) => {
         },
     };
     const jsonStr = JSON.stringify(response);
-    if (!search && !code) {
+    if (!search && !code && lat === undefined && lon === undefined) {
         boundariesService.setPreSerialized(`provinces_all_${format}`, jsonStr);
     }
     return c.newResponse(jsonStr, 200, {
@@ -211,6 +261,173 @@ boundariesRoutes.get("/provinces/:code", (c) => {
     });
 });
 
+// =========================================================================
+// RESTful Nested Boundary Routes
+// =========================================================================
+
+/**
+ * GET /api/boundaries/provinces/:provinceCode/districts
+ * Get all district boundaries in a province
+ */
+boundariesRoutes.get("/provinces/:provinceCode/districts", (c) => {
+    const provinceCode = c.req.param("provinceCode");
+    const rawFormat = (c.req.query("format") || "geojson").toLowerCase();
+    const format = rawFormat === "summary" || rawFormat === "list" ? "summary" : "geojson";
+
+    const result = boundariesService.getBoundaries({
+        level: "district",
+        provinceCode,
+        format,
+    });
+
+    if (result.isGeoJson) {
+        return c.newResponse(JSON.stringify(result.data), 200, {
+            "Content-Type": "application/geo+json; charset=utf-8",
+        });
+    }
+
+    return c.json<ApiResponse<BoundarySummaryItem[]>>({
+        success: true,
+        data: result.data as BoundarySummaryItem[],
+        meta: { total: result.total, source: "local_cache" },
+    });
+});
+
+/**
+ * GET /api/boundaries/provinces/:provinceCode/districts/:districtCode
+ * Get single district boundary under a specific province
+ */
+boundariesRoutes.get("/provinces/:provinceCode/districts/:districtCode", (c) => {
+    const provinceCode = c.req.param("provinceCode");
+    const districtCode = c.req.param("districtCode");
+    const feature = boundariesService.getBoundaryByCode(districtCode, "district");
+
+    if (!feature) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `District boundary '${districtCode}' not found` }, 404);
+    }
+
+    const pCode = feature.properties?.province_code || feature.properties?.parent_code;
+    const cleanProv = provinceCode.replace(/^KH/i, "");
+    const cleanActual = String(pCode ?? "").replace(/^KH/i, "");
+    if (cleanActual && cleanProv && cleanActual !== cleanProv) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `District '${districtCode}' does not belong to province '${provinceCode}'` }, 404);
+    }
+
+    const format = (c.req.query("format") || "geojson").toLowerCase();
+    if (format === "summary" || format === "list") {
+        const summary = boundariesService.getSummaryByCode(districtCode);
+        return c.json<ApiResponse<BoundarySummaryItem>>({ success: true, data: summary || (feature.properties as any) });
+    }
+
+    return c.newResponse(JSON.stringify(feature), 200, {
+        "Content-Type": "application/geo+json; charset=utf-8",
+    });
+});
+
+/**
+ * GET /api/boundaries/provinces/:provinceCode/districts/:districtCode/communes
+ * Get all commune boundaries in a district under a specific province
+ */
+boundariesRoutes.get("/provinces/:provinceCode/districts/:districtCode/communes", (c) => {
+    const provinceCode = c.req.param("provinceCode");
+    const districtCode = c.req.param("districtCode");
+    const rawFormat = (c.req.query("format") || "geojson").toLowerCase();
+    const format = rawFormat === "summary" || rawFormat === "list" ? "summary" : "geojson";
+
+    const result = boundariesService.getBoundaries({
+        level: "commune",
+        districtCode,
+        provinceCode,
+        format,
+    });
+
+    if (result.isGeoJson) {
+        return c.newResponse(JSON.stringify(result.data), 200, {
+            "Content-Type": "application/geo+json; charset=utf-8",
+        });
+    }
+
+    return c.json<ApiResponse<BoundarySummaryItem[]>>({
+        success: true,
+        data: result.data as BoundarySummaryItem[],
+        meta: { total: result.total, source: "local_cache" },
+    });
+});
+
+/**
+ * GET /api/boundaries/provinces/:provinceCode/districts/:districtCode/communes/:communeCode
+ * Get single commune boundary under full 4-tier nesting path
+ */
+boundariesRoutes.get("/provinces/:provinceCode/districts/:districtCode/communes/:communeCode", (c) => {
+    const communeCode = c.req.param("communeCode");
+    const feature = boundariesService.getBoundaryByCode(communeCode, "commune");
+
+    if (!feature) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `Commune boundary '${communeCode}' not found` }, 404);
+    }
+
+    const format = (c.req.query("format") || "geojson").toLowerCase();
+    if (format === "summary" || format === "list") {
+        const summary = boundariesService.getSummaryByCode(communeCode);
+        return c.json<ApiResponse<BoundarySummaryItem>>({ success: true, data: summary || (feature.properties as any) });
+    }
+
+    return c.newResponse(JSON.stringify(feature), 200, {
+        "Content-Type": "application/geo+json; charset=utf-8",
+    });
+});
+
+/**
+ * GET /api/boundaries/districts/:districtCode/communes
+ * Shortcut for all commune boundaries in a district
+ */
+boundariesRoutes.get("/districts/:districtCode/communes", (c) => {
+    const districtCode = c.req.param("districtCode");
+    const rawFormat = (c.req.query("format") || "geojson").toLowerCase();
+    const format = rawFormat === "summary" || rawFormat === "list" ? "summary" : "geojson";
+
+    const result = boundariesService.getBoundaries({
+        level: "commune",
+        districtCode,
+        format,
+    });
+
+    if (result.isGeoJson) {
+        return c.newResponse(JSON.stringify(result.data), 200, {
+            "Content-Type": "application/geo+json; charset=utf-8",
+        });
+    }
+
+    return c.json<ApiResponse<BoundarySummaryItem[]>>({
+        success: true,
+        data: result.data as BoundarySummaryItem[],
+        meta: { total: result.total, source: "local_cache" },
+    });
+});
+
+/**
+ * GET /api/boundaries/districts/:districtCode/communes/:communeCode
+ * Shortcut for single commune boundary in a district
+ */
+boundariesRoutes.get("/districts/:districtCode/communes/:communeCode", (c) => {
+    const communeCode = c.req.param("communeCode");
+    const feature = boundariesService.getBoundaryByCode(communeCode, "commune");
+
+    if (!feature) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: `Commune boundary '${communeCode}' not found` }, 404);
+    }
+
+    const format = (c.req.query("format") || "geojson").toLowerCase();
+    if (format === "summary" || format === "list") {
+        const summary = boundariesService.getSummaryByCode(communeCode);
+        return c.json<ApiResponse<BoundarySummaryItem>>({ success: true, data: summary || (feature.properties as any) });
+    }
+
+    return c.newResponse(JSON.stringify(feature), 200, {
+        "Content-Type": "application/geo+json; charset=utf-8",
+    });
+});
+
 /**
  * GET /api/boundaries/districts
  * Shortcut for district boundaries (filterable by province_code)
@@ -221,6 +438,10 @@ boundariesRoutes.get("/districts", (c) => {
     const provinceCode = c.req.query("province_code") || c.req.query("provinceCode");
     const search = c.req.query("q") || c.req.query("search");
     const code = c.req.query("code");
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+    const lat = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : undefined;
+    const lon = lonStr && !isNaN(parseFloat(lonStr)) ? parseFloat(lonStr) : undefined;
 
     const rawLimit = c.req.query("limit");
     const limit = rawLimit ? parseInt(rawLimit, 10) : undefined;
@@ -232,6 +453,8 @@ boundariesRoutes.get("/districts", (c) => {
         provinceCode,
         code,
         search,
+        lat,
+        lon,
         format,
         limit,
         offset,
@@ -297,6 +520,10 @@ boundariesRoutes.get("/communes", (c) => {
     const provinceCode = c.req.query("province_code") || c.req.query("provinceCode");
     const search = c.req.query("q") || c.req.query("search");
     const code = c.req.query("code");
+    const latStr = c.req.query("lat") || c.req.query("latitude");
+    const lonStr = c.req.query("lng") || c.req.query("lon") || c.req.query("longitude");
+    const lat = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : undefined;
+    const lon = lonStr && !isNaN(parseFloat(lonStr)) ? parseFloat(lonStr) : undefined;
 
     const rawLimit = c.req.query("limit");
     const limit = rawLimit ? parseInt(rawLimit, 10) : undefined;
@@ -309,6 +536,8 @@ boundariesRoutes.get("/communes", (c) => {
         provinceCode,
         code,
         search,
+        lat,
+        lon,
         format,
         limit,
         offset,
@@ -487,12 +716,126 @@ boundariesRoutes.get("/raw/:filename", (c) => {
 });
 
 /**
+ * GET /api/boundaries/zone
+ * GET /api/boundaries/point
+ * GET /api/boundaries/by-point
+ *
+ * Sub-millisecond Point-in-Polygon spatial query:
+ * Resolves the official Cambodian administrative boundary zone (Province, District, Commune)
+ * containing the given GPS coordinates.
+ *
+ * Query Parameters:
+ * - lat / latitude: coordinate latitude (-90 to 90) [required]
+ * - lng / lon / longitude: coordinate longitude (-180 to 180) [required]
+ * - level: 'all' (default, 3-tier hierarchy) | 'province' | 'district' | 'commune'
+ * - format: 'summary' / 'json' (default for JSON API) | 'geojson' (Feature or FeatureCollection)
+ */
+const handleZoneLookup = (c: Context) => {
+    const coords = parseCoordinates(c);
+    if ("error" in coords) {
+        return c.json<ApiResponse<null>>(
+            {
+                success: false,
+                data: null,
+                error: coords.error,
+            },
+            400,
+        );
+    }
+
+    const { lat, lon } = coords;
+    const rawLevel = (c.req.query("level") || "all").toLowerCase();
+    const level: BoundaryLevel | "all" =
+        rawLevel === "province" || rawLevel === "district" || rawLevel === "commune"
+            ? rawLevel
+            : "all";
+
+    const accept = c.req.header("Accept") || "";
+    const rawFormat = (c.req.query("format") || (accept.includes("application/geo+json") ? "geojson" : "geojson")).toLowerCase();
+    const format: "geojson" | "summary" | "json" =
+        rawFormat === "summary" || rawFormat === "list"
+            ? "summary"
+            : rawFormat === "json"
+            ? "json"
+            : "geojson";
+
+    const start = performance.now();
+    const result = boundariesService.getZoneByPoint({
+        lat,
+        lon,
+        level,
+        format,
+    });
+    const tookMs = Number((performance.now() - start).toFixed(2));
+
+    if (!result.matched) {
+        return c.json<ApiResponse<null>>(
+            {
+                success: false,
+                data: null,
+                error: `No boundary zone found containing coordinates (${lat}, ${lon}). Point may be outside Cambodia's administrative boundaries.`,
+                meta: {
+                    point: { lat, lng: lon },
+                    tookMs,
+                },
+            },
+            404,
+        );
+    }
+
+    if (format === "geojson" && result.geoJson) {
+        return c.newResponse(JSON.stringify(result.geoJson), 200, {
+            "Content-Type": "application/geo+json; charset=utf-8",
+        });
+    }
+
+    // Summary / JSON format
+    const responseData =
+        level !== "all"
+            ? (result as any)[level]
+            : {
+                point: result.point,
+                matched: result.matched,
+                province: result.province,
+                district: result.district,
+                commune: result.commune,
+                boundaries: result.boundaries,
+            };
+
+    return c.json<ApiResponse<any>>({
+        success: true,
+        data: responseData,
+        meta: {
+            point: { lat, lng: lon },
+            level,
+            tookMs,
+            source: "spatial_index",
+        },
+    });
+};
+
+boundariesRoutes.get("/zone", handleZoneLookup);
+boundariesRoutes.get("/point", handleZoneLookup);
+boundariesRoutes.get("/by-point", handleZoneLookup);
+
+/**
  * GET /api/boundaries/:code
  * Shortcut for single boundary lookup by code (e.g. '12', 'KH12', '1201', '120101')
  */
 boundariesRoutes.get("/:code", (c) => {
     const rawCode = c.req.param("code");
-    const reserved = new Set(["provinces", "districts", "communes", "stats", "hierarchy", "item", "raw"]);
+    const reserved = new Set([
+        "provinces",
+        "districts",
+        "communes",
+        "stats",
+        "hierarchy",
+        "item",
+        "raw",
+        "zone",
+        "point",
+        "by-point",
+    ]);
     if (reserved.has(rawCode.toLowerCase())) {
         return c.notFound();
     }

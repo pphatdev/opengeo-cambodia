@@ -51,12 +51,12 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
                         type="button"
                         aria-pressed={r.id === activeId}
                         onClick={() => onSelect(r.id)}
-                        className="inline-flex max-w-90 flex-none cursor-pointer items-center gap-2 rounded-[7px] border border-transparent bg-code-pill px-2.25 py-1.25 font-mono text-xs text-[#b9b7b0] aria-pressed:border-[#4a4d55] aria-pressed:text-code-hi"
+                        className="inline-flex max-w-90 flex-none cursor-pointer items-center gap-2 rounded-[7px] border border-code-line bg-code-pill px-2.25 py-1.25 font-mono text-xs text-code-dim hover:text-code-hi aria-pressed:border-accent/50 aria-pressed:text-code-hi transition-colors"
                     >
                         <span className="font-medium text-j-str">GET</span>
                         <span className="truncate">{r.path}</span>
                         <span className={r.status < 400 ? "text-j-str" : "text-j-err"}>{r.status}</span>
-                        <span className="text-[#77756f]">{r.server ?? `${r.ms.toFixed(0)}ms`}</span>
+                        <span className="text-code-faint">{r.server ?? `${r.ms.toFixed(0)}ms`}</span>
                     </button>
                 ))}
             </div>

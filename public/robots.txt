@@ -1,6 +1,22 @@
-# robots.txt for OpenGeo Cambodia
+# robots.txt for OpenGeo Cambodia (https://opengeo-cambodia.pphat.me)
+
 User-agent: *
 Allow: /
 Disallow: /api/geocode/reverse?*
 
+# Explicit permissions for AI assistants & agents (llmstxt.org)
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Applebot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+# Sitemap & LLM index
 Sitemap: https://opengeo-cambodia.pphat.me/sitemap.xml
+# LLM Summary: https://opengeo-cambodia.pphat.me/llms.txt
+# LLM Full Reference: https://opengeo-cambodia.pphat.me/llms-full.txt

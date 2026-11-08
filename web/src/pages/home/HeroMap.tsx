@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { Link } from "react-router";
 import { cx } from "../../components/ui";
 import { useI18n } from "../../i18n";
 import { apiGet } from "../../lib/api";
@@ -44,6 +45,13 @@ function Callout({ province, info, className, style }: { province: HeroProvince;
                     {info ? (<><span className={info.status < 400 ? "text-j-str" : "text-j-err"}>{info.status}</span> · {info.server}</>) : "…"}
                 </span>
             </div>
+            <Link
+                to={`/playground?ep=admin-districts&id=${province.id}`}
+                className="pointer-events-auto mt-2 flex items-center justify-between rounded-md bg-surface px-2.5 py-1 font-mono text-[10.5px] font-semibold text-accent border border-line hover:border-accent transition-colors no-underline"
+            >
+                <span>{t("playground.testInPlayground")}</span>
+                <span>→</span>
+            </Link>
             </div>
         </div>
     );

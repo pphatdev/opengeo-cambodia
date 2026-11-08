@@ -7,9 +7,11 @@ import type {
     BoundaryFeatureCollection,
     BoundaryFilterOptions,
     BoundaryLevel,
+    BoundaryPointLookupOptions,
     BoundaryProperties,
     BoundaryStats,
     BoundarySummaryItem,
+    BoundaryZoneResult,
 } from "../types/boundaries.js";
 
 function resolveCurrentDir(): string {
@@ -81,6 +83,66 @@ function computeCentroid(bbox: [number, number, number, number]): { lat: number;
  */
 function normalizeCode(raw: string): string {
     return raw.trim().toUpperCase().replace(/^KH/, "");
+}
+
+/**
+ * Test if a point [lon, lat] is inside a 2D bounding box [minLon, minLat, maxLon, maxLat]
+ */
+function pointInBBox(lon: number, lat: number, bbox: [number, number, number, number]): boolean {
+    return lon >= bbox[0] && lon <= bbox[2] && lat >= bbox[1] && lat <= bbox[3];
+}
+
+/**
+ * Standard Ray Casting algorithm for a single polygon ring
+ */
+function pointInRing(x: number, y: number, ring: [number, number][]): boolean {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const xi = ring[i][0];
+        const yi = ring[i][1];
+        const xj = ring[j][0];
+        const yj = ring[j][1];
+        const intersect =
+            yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+        if (intersect) inside = !inside;
+    }
+    return inside;
+}
+
+/**
+ * Check if point [x, y] is inside a Polygon (with hole exclusion)
+ */
+function pointInPolygon(x: number, y: number, coords: [number, number][][]): boolean {
+    if (!coords || coords.length === 0) return false;
+    if (!pointInRing(x, y, coords[0])) return false;
+    for (let i = 1; i < coords.length; i++) {
+        if (pointInRing(x, y, coords[i])) return false;
+    }
+    return true;
+}
+
+/**
+ * Check if point [x, y] is inside a MultiPolygon
+ */
+function pointInMultiPolygon(x: number, y: number, coords: [number, number][][][]): boolean {
+    for (let i = 0; i < coords.length; i++) {
+        if (pointInPolygon(x, y, coords[i])) return true;
+    }
+    return false;
+}
+
+/**
+ * Check if point [lon, lat] is inside a GeoJSON geometry
+ */
+function pointInGeometry(lon: number, lat: number, geometry: any): boolean {
+    if (!geometry || !geometry.coordinates) return false;
+    if (geometry.type === "Polygon") {
+        return pointInPolygon(lon, lat, geometry.coordinates);
+    }
+    if (geometry.type === "MultiPolygon") {
+        return pointInMultiPolygon(lon, lat, geometry.coordinates);
+    }
+    return false;
 }
 
 export class BoundariesService {
@@ -530,6 +592,15 @@ export class BoundariesService {
                 });
             }
 
+            // Apply coordinates point-in-polygon filter if specified
+            if (options.lat !== undefined && options.lon !== undefined) {
+                const lat = options.lat;
+                const lon = options.lon;
+                features = features.filter((f) => {
+                    return f.bbox && pointInBBox(lon, lat, f.bbox) && pointInGeometry(lon, lat, f.geometry);
+                });
+            }
+
             const total = features.length;
             const offset = options.offset && options.offset > 0 ? options.offset : 0;
             const limit = options.limit && options.limit > 0 ? options.limit : features.length;
@@ -586,6 +657,18 @@ export class BoundariesService {
                     const km = AdminStore.normalize(s.name_km || "");
                     return en.includes(searchNormalized) || km.includes(searchNormalized);
                 });
+            }
+
+            // Apply coordinates point-in-polygon filter if specified
+            if (options.lat !== undefined && options.lon !== undefined) {
+                const lat = options.lat;
+                const lon = options.lon;
+                const matchingCodes = new Set(
+                    (this.featuresByLevel.get(targetLevel) || [])
+                        .filter((f) => f.bbox && pointInBBox(lon, lat, f.bbox) && pointInGeometry(lon, lat, f.geometry))
+                        .map((f) => f.properties.code),
+                );
+                summaries = summaries.filter((s) => matchingCodes.has(s.code));
             }
 
             const total = summaries.length;
@@ -694,6 +777,207 @@ export class BoundariesService {
         }
 
         return res;
+    }
+
+    /**
+     * Find boundary feature containing coordinate (lon, lat) at a specific administrative level
+     */
+    public findFeatureByPoint(
+        lon: number,
+        lat: number,
+        level: BoundaryLevel,
+        parentCode?: string,
+    ): BoundaryFeature | undefined {
+        this.ensureLoaded();
+
+        let pool: BoundaryFeature[] = [];
+        if (level === "province") {
+            pool = this.provinceFeatures;
+        } else if (level === "district") {
+            if (parentCode) {
+                const cleanProv = normalizeCode(parentCode).padStart(2, "0");
+                pool = this.districtsByProvinceCode.get(cleanProv) || [];
+            }
+            if (pool.length === 0) {
+                pool = this.districtFeatures;
+            }
+        } else if (level === "commune") {
+            if (parentCode) {
+                const cleanDist = normalizeCode(parentCode).padStart(4, "0");
+                pool = this.communesByDistrictCode.get(cleanDist) || [];
+            }
+            if (pool.length === 0) {
+                pool = this.communeFeatures;
+            }
+        }
+
+        // 1. Fast BBox check + Ray Casting on pool
+        for (const f of pool) {
+            if (f.bbox && pointInBBox(lon, lat, f.bbox)) {
+                if (pointInGeometry(lon, lat, f.geometry)) {
+                    return f;
+                }
+            }
+        }
+
+        // 2. If parentCode was specified but no match found in subset, fallback to full level pool
+        if (parentCode) {
+            const fallbackPool = this.featuresByLevel.get(level) || [];
+            if (fallbackPool !== pool) {
+                for (const f of fallbackPool) {
+                    if (f.bbox && pointInBBox(lon, lat, f.bbox)) {
+                        if (pointInGeometry(lon, lat, f.geometry)) {
+                            return f;
+                        }
+                    }
+                }
+            }
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Resolve boundary zone hierarchy (Province, District, Commune) for GPS coordinates (lat, lon)
+     */
+    public getZoneByPoint(options: BoundaryPointLookupOptions): BoundaryZoneResult {
+        this.ensureLoaded();
+
+        const { lat, lon } = options;
+        const requestedLevel = options.level || "all";
+        const isGeoJson = options.format === "geojson";
+        const isSummary = options.format === "summary" || options.format === "list";
+
+        // Check if point is inside or near Cambodia's bounding box (+0.1 deg margin for border waters/islands)
+        const margin = 0.1;
+        const inCambodiaBbox =
+            lon >= this.overallBbox[0] - margin &&
+            lon <= this.overallBbox[2] + margin &&
+            lat >= this.overallBbox[1] - margin &&
+            lat <= this.overallBbox[3] + margin;
+
+        if (!inCambodiaBbox) {
+            return {
+                matched: false,
+                point: { lat, lng: lon },
+            };
+        }
+
+        // If a specific level is requested, resolve directly
+        if (requestedLevel !== "all") {
+            const feature = this.findFeatureByPoint(lon, lat, requestedLevel);
+            if (!feature) {
+                return {
+                    matched: false,
+                    point: { lat, lng: lon },
+                };
+            }
+
+            if (isSummary) {
+                const summary = this.toSummary(feature);
+                return {
+                    matched: true,
+                    point: { lat, lng: lon },
+                    [requestedLevel]: summary,
+                };
+            }
+
+            const singleFc: BoundaryFeatureCollection = {
+                type: "FeatureCollection",
+                name: `cambodia_${requestedLevel}_boundary`,
+                crs: {
+                    type: "name",
+                    properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
+                },
+                bbox: feature.bbox ?? this.overallBbox,
+                features: [feature],
+            };
+
+            return {
+                matched: true,
+                point: { lat, lng: lon },
+                [requestedLevel]: feature,
+                boundaries: singleFc,
+                geoJson: isGeoJson ? feature : singleFc,
+            };
+        }
+
+        // Complete 3-tier hierarchy lookup: Province -> District -> Commune
+        const provinceFeature = this.findFeatureByPoint(lon, lat, "province");
+        const districtFeature = this.findFeatureByPoint(
+            lon,
+            lat,
+            "district",
+            provinceFeature?.properties?.code,
+        );
+        const communeFeature = this.findFeatureByPoint(
+            lon,
+            lat,
+            "commune",
+            districtFeature?.properties?.code,
+        );
+
+        const matched = !!(provinceFeature || districtFeature || communeFeature);
+        if (!matched) {
+            return {
+                matched: false,
+                point: { lat, lng: lon },
+            };
+        }
+
+        const matchedFeatures: BoundaryFeature[] = [];
+        if (provinceFeature) matchedFeatures.push(provinceFeature);
+        if (districtFeature) matchedFeatures.push(districtFeature);
+        if (communeFeature) matchedFeatures.push(communeFeature);
+
+        const featureCollection: BoundaryFeatureCollection = {
+            type: "FeatureCollection",
+            name: "cambodia_zone_boundaries",
+            crs: {
+                type: "name",
+                properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
+            },
+            bbox: [
+                Math.min(...matchedFeatures.map((f) => f.bbox?.[0] ?? lon)),
+                Math.min(...matchedFeatures.map((f) => f.bbox?.[1] ?? lat)),
+                Math.max(...matchedFeatures.map((f) => f.bbox?.[2] ?? lon)),
+                Math.max(...matchedFeatures.map((f) => f.bbox?.[3] ?? lat)),
+            ],
+            features: matchedFeatures,
+        };
+
+        if (isGeoJson) {
+            return {
+                matched: true,
+                point: { lat, lng: lon },
+                province: provinceFeature,
+                district: districtFeature,
+                commune: communeFeature,
+                boundaries: featureCollection,
+                geoJson: featureCollection,
+            };
+        }
+
+        if (isSummary) {
+            return {
+                matched: true,
+                point: { lat, lng: lon },
+                province: provinceFeature ? this.toSummary(provinceFeature) : undefined,
+                district: districtFeature ? this.toSummary(districtFeature) : undefined,
+                commune: communeFeature ? this.toSummary(communeFeature) : undefined,
+            };
+        }
+
+        // Full JSON format: includes full boundary features with geometry + FeatureCollection
+        return {
+            matched: true,
+            point: { lat, lng: lon },
+            province: provinceFeature,
+            district: districtFeature,
+            commune: communeFeature,
+            boundaries: featureCollection,
+            geoJson: featureCollection,
+        };
     }
 
     /**

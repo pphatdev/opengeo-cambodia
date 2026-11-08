@@ -22,10 +22,10 @@ const PANES = { base: 410, children: 420, focus: 430 } as const;
 const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const tipHtml = (p: BoundaryProps) => `${esc(p.name_en)}<span class="ml-1 font-khmer text-xs opacity-75">${esc(p.name_km)}</span>`;
 
-const baseStyle = (): L.PathOptions => ({ color: cssVar("--og-ink-3"), weight: 1, opacity: 0.55, fillColor: cssVar("--og-ink-3"), fillOpacity: 0.03 });
-const dimmedBaseStyle = (): L.PathOptions => ({ ...baseStyle(), opacity: 0.35, fillOpacity: 0 });
-const childStyle = (): L.PathOptions => ({ color: cssVar("--og-water"), weight: 1.2, opacity: 0.9, fillColor: cssVar("--og-water"), fillOpacity: 0.08 });
-const focusStyle = (): L.PathOptions => ({ color: cssVar("--og-accent"), weight: 2.5, opacity: 1, fillColor: cssVar("--og-accent"), fillOpacity: 0.1 });
+const baseStyle = (): L.PathOptions => ({ color: cssVar("--og-ink-3"), weight: 1, opacity: 0.45, fillColor: cssVar("--og-ink-3"), fillOpacity: 0.03 });
+const dimmedBaseStyle = (): L.PathOptions => ({ ...baseStyle(), opacity: 0.25, fillOpacity: 0 });
+const childStyle = (): L.PathOptions => ({ color: cssVar("--og-water"), weight: 1.5, opacity: 0.85, fillColor: cssVar("--og-water"), fillOpacity: 0.08 });
+const focusStyle = (): L.PathOptions => ({ color: cssVar("--og-accent"), weight: 2.5, opacity: 1, fillColor: cssVar("--og-accent"), fillOpacity: 0.15 });
 
 interface Props {
     target: MapTarget | null;
@@ -43,10 +43,8 @@ export function ExplorerMap({ target, resetKey, onSelect, onLog, onReset }: Prop
     const pickingRef = useRef(picking);
     pickingRef.current = picking;
 
-    // Standard OSM tiles need no API key. Dark mode is a CSS filter on the tile pane only (see home.css),
-    // so boundary polygons keep their true colours.
     return (
-        <div className={cx("og-map relative min-h-[440px] max-sm:min-h-[380px] [&_.leaflet-container]:absolute [&_.leaflet-container]:inset-0", picking && "og-picking", dark && "og-map-dark")}>
+        <div className={cx("og-map relative min-h-110 max-sm:min-h-95 [&_.leaflet-container]:absolute [&_.leaflet-container]:inset-0", picking && "og-picking", dark && "og-map-dark")}>
             <MapContainer bounds={KH_BOUNDS} minZoom={6} maxBounds={MAX_BOUNDS} aria-label={t("explore.mapLabel")}>
                 <TileLayer
                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -54,16 +52,16 @@ export function ExplorerMap({ target, resetKey, onSelect, onLog, onReset }: Prop
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
                 <BoundaryLayers target={target} resetKey={resetKey} dark={dark} onSelect={onSelect} onLog={onLog} setLoading={setLoading} pickingRef={pickingRef} />
-                <PointPicker picking={picking} resetKey={resetKey} onLog={onLog} />
+                <PointPicker picking={picking} resetKey={resetKey} onSelect={onSelect} onLog={onLog} />
             </MapContainer>
-            <div className="absolute right-3 top-3 z-[500] flex gap-1.5">
+            <div className="absolute right-3 top-3 z-500 flex gap-1.5">
                 <button className={mapTool} type="button" aria-pressed={picking} onClick={() => setPicking((p) => !p)} title={t("explore.identifyTitle")}>
                     <Icon name="pin" />{t("explore.identify")}
                 </button>
                 <button className={mapTool} type="button" onClick={onReset} title={t("explore.resetTitle")}><Icon name="layers" />{t("explore.reset")}</button>
             </div>
-            {loading && <div className="absolute left-14 top-3 z-[500] flex items-center gap-2 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs text-ink-2"><span className="size-3 animate-spin rounded-full border-2 border-line-2 border-t-accent" /><span>{t("explore.loadingBoundaries")}</span></div>}
-            {picking && <div className="pointer-events-none absolute bottom-3.5 left-1/2 z-[500] -translate-x-1/2 whitespace-nowrap rounded-full bg-ink px-3 py-[7px] text-[12.5px] text-bg">{t("explore.pickHint")}</div>}
+            {loading && <div className="absolute left-14 top-3 z-500 flex items-center gap-2 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs text-ink-2"><span className="size-3 animate-spin rounded-full border-2 border-line-2 border-t-accent" /><span>{t("explore.loadingBoundaries")}</span></div>}
+            {picking && <div className="pointer-events-none absolute bottom-3.5 left-1/2 z-500 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink px-3 py-1.75 text-[12.5px] text-bg">{t("explore.pickHint")}</div>}
         </div>
     );
 }
@@ -162,7 +160,7 @@ function BoundaryLayers({ target, resetKey, dark, onSelect, onLog, setLoading, p
                     },
                 }).addTo(map);
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => {
                 if (!ctrl.signal.aborted) setLoading(false);
             });
@@ -186,7 +184,7 @@ function BoundaryLayers({ target, resetKey, dark, onSelect, onLog, setLoading, p
         const fetchFocus = () =>
             get<BoundaryFeature>(`/api/boundaries/item/${encodeURIComponent(code)}`)
                 .then((f) => showFocus(f))
-                .catch(() => {}); // some newer units have no polygon (404)
+                .catch(() => { }); // some newer units have no polygon (404)
 
         if (level === "province") {
             const f = provinces.current?.features.find((x) => x.properties.code === code);
@@ -203,7 +201,7 @@ function BoundaryLayers({ target, resetKey, dark, onSelect, onLog, setLoading, p
             else {
                 // Arrived via search: also load the neighbouring communes so they're clickable
                 void fetchFocus();
-                get<BoundaryCollection>(`/api/boundaries/communes?district_code=${code.slice(0, 4)}`).then(showChildren, () => {});
+                get<BoundaryCollection>(`/api/boundaries/communes?district_code=${code.slice(0, 4)}`).then(showChildren, () => { });
             }
         }
         return () => ctrl.abort();
@@ -236,41 +234,148 @@ function BoundaryLayers({ target, resetKey, dark, onSelect, onLog, setLoading, p
     return null;
 }
 
-function PointPicker({ picking, resetKey, onLog }: { picking: boolean; resetKey: number; onLog: Props["onLog"] }) {
+function PointPicker({
+    picking,
+    resetKey,
+    onLog,
+    onSelect,
+}: {
+    picking: boolean;
+    resetKey: number;
+    onLog: Props["onLog"];
+    onSelect: Props["onSelect"];
+}) {
     const map = useMap();
     const marker = useRef<L.CircleMarker | null>(null);
+    const boundaryLayer = useRef<L.GeoJSON | null>(null);
     const { t } = useI18n();
 
     useEffect(() => {
         if (marker.current) map.removeLayer(marker.current);
         marker.current = null;
-    }, [resetKey, map]);
+        if (boundaryLayer.current) map.removeLayer(boundaryLayer.current);
+        boundaryLayer.current = null;
+    }, [resetKey, picking, map]);
 
     useMapEvents({
         click(e) {
             if (!picking) return;
             const lat = e.latlng.lat.toFixed(5);
             const lon = e.latlng.lng.toFixed(5);
+
             if (marker.current) map.removeLayer(marker.current);
-            const m = L.circleMarker(e.latlng, { pane: "focus", radius: 7, color: cssVar("--og-bg"), weight: 2, fillColor: cssVar("--og-accent"), fillOpacity: 1 }).addTo(map);
+            if (boundaryLayer.current) map.removeLayer(boundaryLayer.current);
+            boundaryLayer.current = null;
+
+            const m = L.circleMarker(e.latlng, {
+                pane: "focus",
+                radius: 7,
+                color: cssVar("--og-bg"),
+                weight: 2,
+                fillColor: cssVar("--og-accent"),
+                fillOpacity: 1,
+            }).addTo(map);
             marker.current = m;
-            m.bindPopup(`<div class="${POP_SUB}">${esc(t("explore.lookingUp", { coords: `${lat}, ${lon}` }))}</div>`).openPopup();
-            apiGet<ApiEnvelope<GeocodeResult>>(`/api/geocode/reverse?lat=${lat}&lon=${lon}`, onLog)
-                .then((j) => {
-                    const d = j.data;
-                    const h = d?.hierarchy ?? ({} as GeocodeResult["hierarchy"]);
-                    const rows = ([[t("level.province"), h.province], [t("level.district"), h.district], [t("level.commune"), h.commune], [t("level.village"), h.village]] as const)
+
+            m.bindPopup(
+                `<div class="${POP_SUB}">${esc(t("explore.lookingUp", { coords: `${lat}, ${lon}` }))}</div>`,
+            ).openPopup();
+
+            // 1. Fetch boundary zone polygons (instant, in-memory)
+            const zonePromise = apiGet<BoundaryCollection>(
+                `/api/boundaries/zone?lat=${lat}&lng=${lon}&format=geojson`,
+                onLog,
+            )
+                .then((zoneFc) => {
+                    if (zoneFc?.features?.length) {
+                        if (boundaryLayer.current) map.removeLayer(boundaryLayer.current);
+                        const bLayer = L.geoJSON(zoneFc, {
+                            pane: "focus",
+                            style: (feat) => {
+                                const lvl = feat?.properties?.level;
+                                return {
+                                    color: lvl === "commune" ? cssVar("--og-accent") : cssVar("--og-water"),
+                                    weight: lvl === "commune" ? 2.5 : 1.5,
+                                    opacity: lvl === "commune" ? 1 : 0.7,
+                                    fillColor: lvl === "commune" ? cssVar("--og-accent") : cssVar("--og-water"),
+                                    fillOpacity: lvl === "commune" ? 0.2 : 0.06,
+                                };
+                            },
+                            onEachFeature: (f, l) => {
+                                l.on("click", (evt) => {
+                                    L.DomEvent.stop(evt);
+                                    const p = f.properties as BoundaryProps;
+                                    if (p?.code && p?.level) onSelect(p.level, p.code);
+                                });
+                            },
+                        }).addTo(map);
+                        boundaryLayer.current = bLayer;
+                    }
+                    return zoneFc;
+                })
+                .catch(() => null);
+
+            // 2. Fetch reverse geocoding
+            const geocodePromise = apiGet<ApiEnvelope<GeocodeResult>>(
+                `/api/geocode/reverse?lat=${lat}&lon=${lon}`,
+                onLog,
+            ).catch(() => null);
+
+            Promise.all([zonePromise, geocodePromise])
+                .then(([zoneFc, geoRes]) => {
+                    const communeFeat = zoneFc?.features?.find((f) => f.properties?.level === "commune");
+                    const districtFeat = zoneFc?.features?.find((f) => f.properties?.level === "district");
+                    const provinceFeat = zoneFc?.features?.find((f) => f.properties?.level === "province");
+
+                    const geoData = geoRes?.data;
+                    const h = geoData?.hierarchy ?? ({} as GeocodeResult["hierarchy"]);
+
+                    const provName = provinceFeat?.properties?.name_km || provinceFeat?.properties?.name_en || h.province;
+                    const distName = districtFeat?.properties?.name_km || districtFeat?.properties?.name_en || h.district;
+                    const commName = communeFeat?.properties?.name_km || communeFeat?.properties?.name_en || h.commune;
+                    const villName = h.village;
+
+                    const rows = (
+                        [
+                            [t("level.province"), provName],
+                            [t("level.district"), distName],
+                            [t("level.commune"), commName],
+                            [t("level.village"), villName],
+                        ] as const
+                    )
                         .filter((r) => r[1])
-                        .map((r) => `<span class="text-ink-3">${esc(r[0])}</span><span class="font-khmer">${esc(r[1])}</span>`)
+                        .map(
+                            (r) =>
+                                `<span class="text-ink-3">${esc(r[0])}</span><span class="font-khmer font-medium">${esc(r[1])}</span>`,
+                        )
                         .join("");
-                    const title = (d?.displayName || t("explore.unknownPlace")).split(",")[0];
-                    m.setPopupContent(`<div class="${POP_TITLE} font-khmer">${esc(title)}</div><div class="${POP_SUB}">${lat}, ${lon}</div><div class="grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-0.5 text-[12.5px]">${rows}</div>`);
+
+                    const displayName =
+                        commName ||
+                        distName ||
+                        provName ||
+                        (geoData?.displayName || t("explore.unknownPlace")).split(",")[0];
+
+                    const code = communeFeat?.properties?.code || districtFeat?.properties?.code || provinceFeat?.properties?.code;
+                    const codeBadge = code ? `<span class="ml-1 text-xs text-ink-3 font-mono">(${esc(code)})</span>` : "";
+
+                    m.setPopupContent(
+                        `<div class="${POP_TITLE} font-khmer">${esc(displayName)}${codeBadge}</div>` +
+                        `<div class="${POP_SUB}">${lat}, ${lon}</div>` +
+                        `<div class="grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-0.5 text-[12.5px]">${rows}</div>`,
+                    );
                 })
                 .catch((err: unknown) => {
-                    const msg = err instanceof ApiError && err.status === 429 ? t("explore.geocodeLimit") : (err as Error).message;
-                    m.setPopupContent(`<div class="${POP_TITLE}">${esc(t("explore.noResult"))}</div><div class="${POP_SUB}">${esc(msg)}</div>`);
+                    const msg =
+                        err instanceof ApiError && err.status === 429
+                            ? t("explore.geocodeLimit")
+                            : (err as Error).message;
+                    m.setPopupContent(
+                        `<div class="${POP_TITLE}">${esc(t("explore.noResult"))}</div><div class="${POP_SUB}">${esc(msg)}</div>`,
+                    );
                 });
         },
     });
+
     return null;
 }
