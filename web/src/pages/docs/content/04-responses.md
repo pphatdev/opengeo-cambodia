@@ -32,3 +32,4 @@ Every API response returns a predictable JSON structure with standard HTTP statu
 | `405` | Method Not Allowed — Only GET requests are accepted across all endpoints. |
 | `429` | Rate Limit Exceeded — Check `Retry-After` header before retrying. |
 | `502` | Upstream Error — Nominatim geocoding gateway unavailable or timed out. |
+

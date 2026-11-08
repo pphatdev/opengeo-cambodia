@@ -22,3 +22,4 @@ To guarantee high availability and protect upstream resources, limits are enforc
 | `Cache-Control` / `ETag` | HTTP 304 Not Modified validation headers for efficient browser caching. |
 
 > **Pro Tip**: If your application performs bulk data ingestion or requires offline access, download the pre-packaged CSV and GeoJSON datasets directly from the Downloads section instead of scraping endpoints.
+

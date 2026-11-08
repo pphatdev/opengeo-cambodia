@@ -17,3 +17,4 @@ Cambodia's administrative structure follows an authoritative 4-tier tree. Every 
 | **Village** | ភូមិ | `12010101` | 14,576 | Centroid Points Only |
 
 > **Boundary Coverage Note**: Official GeoJSON polygon boundaries exist for all 25 provinces, 197 districts (13 newly created districts share parent geometry), and 1,633 communes (28 newly established communes share parent geometry). Villages are represented by geographic centroid coordinates.
+
