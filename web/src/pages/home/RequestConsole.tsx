@@ -52,6 +52,33 @@ function summarise(body: unknown): unknown {
     return forDisplay(body);
 }
 
+/** Format friendly administrative division titles like Province, District, Commune, Village */
+function getTabTitle(path: string, t: (key: any) => string): string {
+    const clean = path.toLowerCase();
+    const itemMatch = clean.match(/\/item\/(\d+)/) || clean.match(/\/hierarchy\/(\d+)/);
+    if (itemMatch) {
+        const len = itemMatch[1].length;
+        if (len <= 2) return t("level.province");
+        if (len <= 4) return t("level.district");
+        if (len <= 6) return t("level.commune");
+        return t("level.village");
+    }
+    if (clean.includes("village")) return t("level.village");
+    if (clean.includes("commune")) return t("level.commune");
+    if (clean.includes("district")) return t("level.district");
+    if (clean.includes("province")) return t("level.province");
+    if (clean.includes("zone")) return "Zone";
+    if (clean.includes("boundary") || clean.includes("boundaries")) return "Boundary";
+    if (clean.includes("geocode") || clean.includes("reverse")) return "Geocode";
+    if (clean.includes("search")) return "Search";
+
+    const segment = path.split("?")[0].replace(/\/$/, "").split("/").pop();
+    if (segment) {
+        return segment.charAt(0).toUpperCase() + segment.slice(1);
+    }
+    return "Request";
+}
+
 export function RequestConsole({ logs, activeId, onSelect }: Props) {
     const { copy } = useToast();
     const { t } = useI18n();
@@ -244,6 +271,7 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
                         ) : (
                             visibleLogs.map((r) => {
                                 const isActive = r.id === (active?.id ?? activeId);
+                                const tabTitle = getTabTitle(r.path, t);
                                 return (
                                     <div
                                         key={r.id}
@@ -263,8 +291,8 @@ export function RequestConsole({ logs, activeId, onSelect }: Props) {
                                         <span className="font-mono text-[9.5px] font-semibold text-ok/90 flex-none">
                                             GET
                                         </span>
-                                        <span className="truncate text-xs font-mono" title={r.path}>
-                                            {r.path}
+                                        <span className="truncate text-xs font-mono font-medium" title={r.path}>
+                                            {tabTitle}
                                         </span>
                                         <span
                                             className={cx(
