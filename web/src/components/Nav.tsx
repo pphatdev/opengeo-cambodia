@@ -80,7 +80,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                             <span className="font-display text-[13px] font-bold uppercase text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal">{t("nav.playground")}</span>
                         </>
                     ) : (
-                        <small className="rounded-full border border-line px-2 py-px text-xs font-medium text-ink-3 max-xs:hidden">v1</small>
+                        <small className="rounded-full border border-line px-2 py-px text-xs font-medium text-ink-3 max-xs:hidden">v1.3</small>
                     )}
                 </Link>
                 <nav className="ml-auto flex items-center gap-1.5" aria-label="Primary">

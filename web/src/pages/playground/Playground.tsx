@@ -312,7 +312,7 @@ export default function Playground() {
                                     <PlaygroundMap
                                         geojson={body}
                                         onDrillDown={handleDrillDown}
-                                        className="h-[520px] w-full"
+                                        className="h-130 w-full"
                                     />
                                 </div>
                             ) : (
