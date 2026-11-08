@@ -197,9 +197,9 @@ GET https://opengeo-cambodia.pphat.me/api/admin/search?q=Doun+Penh&level=distric
 
 ## Up Next
 
-In **[Part 4: High-Resolution Boundaries & Point-in-Polygon Spatial Engine](04-boundaries-and-point-in-polygon.md)**, we dive into GeoJSON boundary datasets and how to resolve boundary zones from raw GPS coordinates in sub-milliseconds.
+In **[Part 4: High-Resolution Boundaries & Point-in-Polygon Spatial Engine](../boundaries/04-boundaries-and-point-in-polygon.md)**, we dive into GeoJSON boundary datasets and how to resolve boundary zones from raw GPS coordinates in sub-milliseconds.
 
 ---
 
-[← Previous: Part 2 — Architecture & Performance](02-architecture-and-performance.md) | [Next: Part 4 — Boundaries & Point-in-Polygon →](04-boundaries-and-point-in-polygon.md)
+[← Previous: Part 2 — Architecture & Performance](../system/02-architecture-and-performance.md) | [Next: Part 4 — Boundaries & Point-in-Polygon →](../boundaries/04-boundaries-and-point-in-polygon.md)
 

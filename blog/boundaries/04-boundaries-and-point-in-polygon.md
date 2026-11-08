@@ -150,9 +150,9 @@ For offline GIS pipelines (QGIS, ArcGIS, GeoPandas, PostGIS imports), static raw
 
 ## Up Next
 
-In **[Part 5: Smart Reverse Geocoding & Address Autocomplete](05-geocoding-and-reverse-lookup.md)**, we examine how OpenGeo Cambodia translates raw GPS coordinates into human-readable Cambodian street addresses.
+In **[Part 5: Smart Reverse Geocoding & Address Autocomplete](../geocoding/05-geocoding-and-reverse-lookup.md)**, we examine how OpenGeo Cambodia translates raw GPS coordinates into human-readable Cambodian street addresses.
 
 ---
 
-[← Previous: Part 3 — Administrative Hierarchy API](03-administrative-hierarchy-api.md) | [Next: Part 5 — Reverse Geocoding & Search →](05-geocoding-and-reverse-lookup.md)
+[← Previous: Part 3 — Administrative Hierarchy API](../administrative/03-administrative-hierarchy-api.md) | [Next: Part 5 — Reverse Geocoding & Search →](../geocoding/05-geocoding-and-reverse-lookup.md)
 

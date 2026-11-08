@@ -5,11 +5,13 @@ import { useToast } from "../../lib/toast";
 import { BLOG_POSTS, getBlogPost } from "./blogData";
 
 export function BlogPost() {
-    const { slug } = useParams<{ slug: string }>();
+    const { category, slug } = useParams<{ category?: string; slug?: string }>();
     const { lang } = useI18n();
     const { copy } = useToast();
 
-    const post = slug ? getBlogPost(slug) : undefined;
+    // Resolve post either from /blog/:category/:slug or legacy /blog/:slug
+    const targetSlug = slug || category;
+    const post = targetSlug ? getBlogPost(targetSlug, slug ? category : undefined) : undefined;
 
     if (!post) {
         return (
@@ -42,13 +44,17 @@ export function BlogPost() {
         <div className="mx-auto max-w-3xl">
             {/* Top Navigation Bar */}
             <div className="mb-6 flex items-center justify-between border-b border-line pb-4 text-xs">
-                <Link
-                    to="/blog"
-                    className="inline-flex items-center gap-1 font-medium text-ink-2 no-underline hover:text-accent km:font-khmer"
-                >
-                    <Icon name="arrow" className="rotate-180 size-3.5" />
-                    {lang === "km" ? "ត្រឡប់ទៅមាតិកា" : "All Chapters"}
-                </Link>
+                <div className="flex items-center gap-1.5">
+                    <Link
+                        to="/blog"
+                        className="inline-flex items-center gap-1 font-medium text-ink-2 no-underline hover:text-accent km:font-khmer"
+                    >
+                        <Icon name="arrow" className="rotate-180 size-3.5" />
+                        {lang === "km" ? "ត្រឡប់ទៅមាតិកា" : "All Chapters"}
+                    </Link>
+                    <span className="text-line-2">/</span>
+                    <span className="font-mono text-ink-3">{post.category}</span>
+                </div>
                 <span className="font-mono text-ink-3">
                     Part {post.part} of {BLOG_POSTS.length}
                 </span>
@@ -58,7 +64,7 @@ export function BlogPost() {
             <header className="mb-8">
                 <div className="flex flex-wrap items-center gap-2.5 text-xs text-ink-3">
                     <span className="rounded-md bg-accent-soft px-2.5 py-0.75 font-mono font-bold text-accent">
-                        Part {post.part}
+                        {post.category} · Part {post.part}
                     </span>
                     <span>{post.readTime}</span>
                     <span>·</span>
@@ -127,7 +133,7 @@ export function BlogPost() {
             <div className="mt-12 grid grid-cols-1 gap-4 border-t border-line pt-6 sm:grid-cols-2">
                 {prevPost ? (
                     <Link
-                        to={`/blog/${prevPost.slug}`}
+                        to={`/blog/${prevPost.category}/${prevPost.slug}`}
                         className="group flex flex-col rounded-xl border border-line bg-surface p-4 text-left no-underline transition hover:border-line-2 hover:shadow-card"
                     >
                         <span className="flex items-center gap-1 text-xs text-ink-3">
@@ -144,7 +150,7 @@ export function BlogPost() {
 
                 {nextPost ? (
                     <Link
-                        to={`/blog/${nextPost.slug}`}
+                        to={`/blog/${nextPost.category}/${nextPost.slug}`}
                         className="group flex flex-col rounded-xl border border-line bg-surface p-4 text-right no-underline transition hover:border-line-2 hover:shadow-card sm:col-start-2"
                     >
                         <span className="flex items-center justify-end gap-1 text-xs text-ink-3">
@@ -163,3 +169,4 @@ export function BlogPost() {
     );
 }
 export default BlogPost;
+

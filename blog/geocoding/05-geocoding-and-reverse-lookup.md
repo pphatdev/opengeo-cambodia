@@ -110,8 +110,8 @@ Developers often ask when to use `/api/geocode/reverse` versus `/api/boundaries/
 
 ## Up Next
 
-In **[Part 6: Practical Integration Guide — TypeScript, Python & Leaflet](06-developer-integration-and-examples.md)**, we walk through production-ready code examples connecting OpenGeo Cambodia with frontend dropdowns, data science pipelines, and interactive maps.
+In **[Part 6: Practical Integration Guide — TypeScript, Python & Leaflet](../reference/06-developer-integration-and-examples.md)**, we walk through production-ready code examples connecting OpenGeo Cambodia with frontend dropdowns, data science pipelines, and interactive maps.
 
 ---
 
-[← Previous: Part 4 — Boundaries & Point-in-Polygon](04-boundaries-and-point-in-polygon.md) | [Next: Part 6 — Developer Integration Guide →](06-developer-integration-and-examples.md)
+[← Previous: Part 4 — Boundaries & Point-in-Polygon](../boundaries/04-boundaries-and-point-in-polygon.md) | [Next: Part 6 — Developer Integration Guide →](../reference/06-developer-integration-and-examples.md)

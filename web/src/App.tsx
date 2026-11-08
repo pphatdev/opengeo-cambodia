@@ -33,6 +33,7 @@ export function App() {
                                 }
                             >
                                 <Route index element={<BlogIndex />} />
+                                <Route path=":category/:slug" element={<BlogPost />} />
                                 <Route path=":slug" element={<BlogPost />} />
                             </Route>
                             <Route path="*" element={<NotFound />} />

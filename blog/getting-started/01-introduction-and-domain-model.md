@@ -104,8 +104,8 @@ interface AdminItem {
 
 ## Up Next
 
-In **[Part 2: Under the Hood — Architecture & Sub-Millisecond In-Memory Indexing](02-architecture-and-performance.md)**, we explore how OpenGeo Cambodia was engineered to deliver sub-millisecond response times without any external database bottlenecks.
+In **[Part 2: Under the Hood — Architecture & Sub-Millisecond In-Memory Indexing](../system/02-architecture-and-performance.md)**, we explore how OpenGeo Cambodia was engineered to deliver sub-millisecond response times without any external database bottlenecks.
 
 ---
 
-[Next: Part 2 — Architecture & In-Memory Indexing →](02-architecture-and-performance.md)
+[Next: Part 2 — Architecture & In-Memory Indexing →](../system/02-architecture-and-performance.md)

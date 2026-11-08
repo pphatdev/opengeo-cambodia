@@ -64,6 +64,7 @@ export function Footer() {
                         <li><a href="/health">{t("footer.status")}</a></li>
                     </Column>
                     <Column title={t("footer.resources")}>
+                        <li><Link to="/blog">{t("nav.blog")}</Link></li>
                         <li><a href="/llms.txt">llms.txt</a></li>
                         <li><a href="/llms-full.txt">llms-full.txt</a></li>
                         <li><a href="/opengeo-cambodia.postman_collection.json">Postman</a></li>

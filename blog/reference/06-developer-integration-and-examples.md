@@ -212,4 +212,4 @@ In **[Part 7: AI Agent Integration — Powering LLMs with llms.txt](07-ai-agents
 
 ---
 
-[← Previous: Part 5 — Reverse Geocoding & Search](05-geocoding-and-reverse-lookup.md) | [Next: Part 7 — AI Agents & LLMs →](07-ai-agents-and-llms.md)
+[← Previous: Part 5 — Reverse Geocoding & Search](../geocoding/05-geocoding-and-reverse-lookup.md) | [Next: Part 7 — AI Agents & LLMs →](07-ai-agents-and-llms.md)

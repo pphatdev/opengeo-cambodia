@@ -152,8 +152,8 @@ The entire backend is built with [Hono](https://hono.dev), allowing the identica
 
 ## Up Next
 
-In **[Part 3: Administrative Hierarchy & Search API](03-administrative-hierarchy-api.md)**, we examine each cascading endpoint, single-call full-tree resolution, and bilingual search implementation.
+In **[Part 3: Administrative Hierarchy & Search API](../administrative/03-administrative-hierarchy-api.md)**, we examine each cascading endpoint, single-call full-tree resolution, and bilingual search implementation.
 
 ---
 
-[← Previous: Part 1 — Introduction & Domain Model](01-introduction-and-domain-model.md) | [Next: Part 3 — Administrative Hierarchy API →](03-administrative-hierarchy-api.md)
+[← Previous: Part 1 — Introduction & Domain Model](../getting-started/01-introduction-and-domain-model.md) | [Next: Part 3 — Administrative Hierarchy API →](../administrative/03-administrative-hierarchy-api.md)

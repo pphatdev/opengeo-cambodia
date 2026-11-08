@@ -1,5 +1,67 @@
+export type BlogCategory =
+    | "getting-started"
+    | "system"
+    | "administrative"
+    | "boundaries"
+    | "geocoding"
+    | "reference";
+
+export interface BlogCategoryMeta {
+    id: BlogCategory;
+    title: string;
+    titleKm: string;
+    description: string;
+    descriptionKm: string;
+}
+
+export const BLOG_CATEGORIES: BlogCategoryMeta[] = [
+    {
+        id: "getting-started",
+        title: "Getting Started",
+        titleKm: "ការចាប់ផ្តើមដំបូង",
+        description: "Introduction to Cambodia's geography problem and the 4-tier administrative model.",
+        descriptionKm: "ការណែនាំអំពីបញ្ហាភូមិសាស្ត្រកម្ពុជា និងគំរូរដ្ឋបាល ៤ ថ្នាក់។",
+    },
+    {
+        id: "system",
+        title: "System & Architecture",
+        titleKm: "ស្ថាបត្យកម្មប្រព័ន្ធ",
+        description: "In-memory spatial indexing, dual edge runtime, and sub-millisecond architecture.",
+        descriptionKm: "ការបង្កើតលិបិក្រមក្នុង RAM និងស្ថាបត្យកម្ម Edge ក្រោម ១ មិល្លីវិនាទី។",
+    },
+    {
+        id: "administrative",
+        title: "Administrative Hierarchy",
+        titleKm: "ឋានានុក្រមរដ្ឋបាល",
+        description: "Cascading dropdowns, nested REST routes, full-tree resolution, and bilingual search.",
+        descriptionKm: "កូដបញ្ជីជ្រើសរើស ផ្លូវ Nesting REST ការទាញមែកធាង និងការស្វែងរកទ្វេភាសា។",
+    },
+    {
+        id: "boundaries",
+        title: "Boundaries & PIP Engine",
+        titleKm: "ព្រំប្រទល់ និងម៉ាស៊ីន PIP",
+        description: "GeoJSON polygons and sub-millisecond Point-in-Polygon boundary detection.",
+        descriptionKm: "ពហុកោណ GeoJSON និងការស្វែងរកតំបន់ព្រំប្រទល់តាមកូអរដោនេក្នុង <1ms។",
+    },
+    {
+        id: "geocoding",
+        title: "Geocoding & Normalization",
+        titleKm: "ការបំលែងកូអរដោនេ",
+        description: "Reverse geocoding and standardizing OpenStreetMap data to Cambodia's 4 tiers.",
+        descriptionKm: "ការបំលែងកូអរដោនេ GPS បញ្ច្រាស និងការកែសម្រួលទិន្នន័យ OpenStreetMap។",
+    },
+    {
+        id: "reference",
+        title: "Reference & AI Agents",
+        titleKm: "ឯកសារយោង និង AI Agent",
+        description: "Production client code in TypeScript, Python, Leaflet, and llms.txt integration.",
+        descriptionKm: "កូដអនុវត្ត TypeScript, Python, Leaflet និងការភ្ជាប់ AI តាម llms.txt។",
+    },
+];
+
 export interface BlogPostMeta {
     slug: string;
+    category: BlogCategory;
     part: number;
     title: string;
     titleKm: string;
@@ -15,6 +77,7 @@ export interface BlogPostMeta {
 export const BLOG_POSTS: BlogPostMeta[] = [
     {
         slug: "01-introduction-and-domain-model",
+        category: "getting-started",
         part: 1,
         title: "The Cambodia Address Problem & 4-Tier Administrative Model",
         titleKm: "បញ្ហាអាសយដ្ឋានកម្ពុជា និងគំរូឋានានុក្រម ៤ ថ្នាក់",
@@ -33,6 +96,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
     },
     {
         slug: "02-architecture-and-performance",
+        category: "system",
         part: 2,
         title: "Under the Hood: Architecture & Sub-Millisecond In-Memory Indexing",
         titleKm: "ស្ថាបត្យកម្មប្រព័ន្ធ និងការបង្កើតលិបិក្រមក្នុងអង្គចងចាំក្រោម ១ មិល្លីវិនាទី",
@@ -51,6 +115,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
     },
     {
         slug: "03-administrative-hierarchy-api",
+        category: "administrative",
         part: 3,
         title: "Administrative Hierarchy & Nested Search API",
         titleKm: "ឋានានុក្រមរដ្ឋបាល និង API ស្វែងរកតាមផ្លូវកាត់ និងផ្លូវ Nesting",
@@ -74,6 +139,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
     },
     {
         slug: "04-boundaries-and-point-in-polygon",
+        category: "boundaries",
         part: 4,
         title: "High-Resolution Boundaries & Point-in-Polygon Spatial Engine",
         titleKm: "ព្រំប្រទល់ភូមិសាស្ត្រ និងម៉ាស៊ីនស្វែងរកតំបន់តាមកូអរដោនេ Point-in-Polygon",
@@ -96,6 +162,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
     },
     {
         slug: "05-geocoding-and-reverse-lookup",
+        category: "geocoding",
         part: 5,
         title: "Smart Reverse Geocoding & Address Autocomplete",
         titleKm: "ការបំលែងកូអរដោនេបញ្ច្រាស និងការបំពេញអាសយដ្ឋានស្វ័យប្រវត្តិ",
@@ -116,6 +183,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
     },
     {
         slug: "06-developer-integration-and-examples",
+        category: "reference",
         part: 6,
         title: "Practical Integration Guide: TypeScript, Python & Leaflet",
         titleKm: "ការណែនាំអនុវត្តផ្ទាល់៖ TypeScript, Python និង Leaflet",
@@ -132,6 +200,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
     },
     {
         slug: "07-ai-agents-and-llms",
+        category: "reference",
         part: 7,
         title: "AI Agent Integration: Powering LLMs with llms.txt",
         titleKm: "ការរួមបញ្ចូលជាមួយ AI Agent៖ ជំនួយដល់ LLM តាមរយៈ llms.txt",
@@ -150,6 +219,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
     },
 ];
 
-export function getBlogPost(slug: string): BlogPostMeta | undefined {
-    return BLOG_POSTS.find((p) => p.slug === slug);
+export function getBlogPost(slug: string, category?: string): BlogPostMeta | undefined {
+    return BLOG_POSTS.find((p) => p.slug === slug && (!category || p.category === category));
 }
+

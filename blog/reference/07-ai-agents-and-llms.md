@@ -80,4 +80,4 @@ We invite the community to explore, contribute, and build!
 
 ---
 
-[← Previous: Part 6 — Practical Integration Guide](06-developer-integration-and-examples.md) | [Back to Series Index (README)](README.md)
+[← Previous: Part 6 — Practical Integration Guide](06-developer-integration-and-examples.md) | [Back to Series Index (README)](../README.md)
