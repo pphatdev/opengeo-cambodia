@@ -9,6 +9,14 @@ const EASE = "ease-[cubic-bezier(.22,1,.36,1)]";
 const TOUR = ["12", "17", "02", "07", "11", "13", "09", "16", "03", "18", "06", "21"];
 const TOUR_MS = 4000;
 
+interface PlaceChipItem {
+    id: string | number;
+    code: string;
+    name_en: string;
+    name_km?: string;
+    level?: string;
+}
+
 interface PlaygroundHeroPreviewProps {
     log?: RequestLog | null;
     endpointPath: string;
@@ -210,39 +218,68 @@ export function PlaygroundHeroPreview({
     }, [endpointPath, body, active, geocodeMarker]);
 
     // Place chips for fast navigation
-    const placeChips = useMemo(() => {
+    const [placeSearch, setPlaceSearch] = useState("");
+    const [placesView, setPlacesView] = useState<"grid" | "flow">("grid");
+    const [showAllPlaces, setShowAllPlaces] = useState(false);
+
+    const placeChips = useMemo<PlaceChipItem[]>(() => {
         if (Array.isArray(body?.data)) {
-            return body.data.slice(0, 25).map((item: any) => ({
+            return body.data.map((item: any) => ({
                 id: item.id ?? item.code,
                 code: String(item.code ?? item.id ?? ""),
                 name_en: item.name_en || item.name || "Place",
                 name_km: item.name_km,
-                level: item.level,
+                level: item.level || item.administrative_unit,
             }));
         }
         if (Array.isArray(body?.features)) {
-            return body.features.slice(0, 25).map((f: any) => ({
+            return body.features.map((f: any) => ({
                 id: f.properties?.code ?? f.properties?.id,
                 code: String(f.properties?.code ?? f.properties?.id ?? ""),
                 name_en: f.properties?.name_en || f.properties?.name || "Feature",
                 name_km: f.properties?.name_km,
-                level: f.properties?.level,
+                level: f.properties?.level || "boundary",
             }));
         }
         return [];
     }, [body]);
+
+    const filteredPlaces = useMemo(() => {
+        if (!placeSearch.trim()) return placeChips;
+        const q = placeSearch.toLowerCase().trim();
+        return placeChips.filter((p: PlaceChipItem) =>
+            p.name_en.toLowerCase().includes(q) ||
+            (p.name_km && p.name_km.includes(q)) ||
+            p.code.includes(q)
+        );
+    }, [placeChips, placeSearch]);
+
+    const displayedPlaces = useMemo(() => {
+        if (showAllPlaces || filteredPlaces.length <= 16) return filteredPlaces;
+        return filteredPlaces.slice(0, 16);
+    }, [filteredPlaces, showAllPlaces]);
+
+    const getDrillDownPath = (chip: any) => {
+        const lvlLower = (chip.level || "").toLowerCase();
+        if (lvlLower === "province") {
+            return `/api/admin/provinces/${chip.id}/districts`;
+        }
+        if (lvlLower === "district" || lvlLower === "srok" || lvlLower === "khan" || lvlLower === "krong") {
+            return `/api/admin/districts/${chip.code}/communes`;
+        }
+        if (lvlLower === "commune" || lvlLower === "khum" || lvlLower === "sangkat") {
+            return `/api/admin/communes/${chip.code}/villages`;
+        }
+        return null;
+    };
 
     return (
         <div className="space-y-4">
             {/* The Hero Map Canvas Container */}
             <div className="relative overflow-hidden rounded-2xl">
                 {/* Top Overlay Bar */}
-                <div className="mb-2 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2 pb-3">
                     <div className="flex items-center gap-2">
-                        <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-xs font-semibold text-accent flex items-center gap-1.5">
-                            <span className="size-2 rounded-full bg-accent animate-pulse" />
-                            Hero Map Preview
-                        </span>
                         <span className="text-xs font-medium text-ink-2">
                             {highlightedProvinceCodes.size > 0
                                 ? `${highlightedProvinceCodes.size} Provinces Highlighted`
@@ -268,7 +305,7 @@ export function PlaygroundHeroPreview({
                 </div>
 
                 {/* SVG Cambodia Hero Map (Constrained compact size) */}
-                <figure className="relative m-0 w-full max-w-160 mx-auto select-none" onMouseLeave={leave}>
+                <figure className="relative m-0 w-full max-w-190 mx-auto select-none" onMouseLeave={leave}>
                     <div className="relative pt-2 pb-2" style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT + 20}` }}>
                         {/* Coordinates frame markers */}
                         <span className="absolute left-0 top-0 font-mono text-[10px] tracking-wide text-ink-3">14.7°N · 102.3°E</span>
@@ -400,59 +437,244 @@ export function PlaygroundHeroPreview({
                 </figure>
             </div>
 
-            {/* Quick Place Chips Bar (when response contains places) */}
+            {/* Redesigned Response Places Section */}
             {placeChips.length > 0 && (
-                <div className="rounded-xl border border-line bg-surface p-3 shadow-card">
-                    <div className="mb-2 flex items-center justify-between text-xs text-ink-3">
-                        <span className="font-semibold uppercase tracking-wider text-[11px] text-ink flex items-center gap-1.5">
-                            <Icon name="layers" className="size-3.5 text-accent" />
-                            Response Places ({placeChips.length})
-                        </span>
-                        <span>Click a place to highlight on Hero Map</span>
+                <div className="rounded-2xl border border-line bg-surface p-4 shadow-card space-y-3.5 transition-all">
+                    {/* Header */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/60 pb-3">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex size-7 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                                <Icon name="layers" className="size-4" />
+                            </div>
+                            <div className="flex flex-col">
+                                <div className="flex items-center gap-2">
+                                    <h4 className="m-0 font-display text-xs font-bold uppercase tracking-wider text-ink">
+                                        Response Places
+                                    </h4>
+                                    <span className="rounded-md bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-semibold text-ink-2 border border-line/60">
+                                        {filteredPlaces.length}
+                                        {filteredPlaces.length !== placeChips.length && ` of ${placeChips.length}`}
+                                    </span>
+                                </div>
+                                <span className="text-[11px] text-ink-3">
+                                    Click any place to highlight on Hero Map, or drill down
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Search Filter & View Switcher */}
+                        <div className="flex items-center gap-2">
+                            {/* Fast Search Filter */}
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={placeSearch}
+                                    onChange={(e) => setPlaceSearch(e.target.value)}
+                                    placeholder="Filter places or code..."
+                                    className="h-8 w-44 rounded-lg border border-line bg-surface-2 pl-7 pr-6 font-mono text-xs text-ink placeholder-ink-3 outline-none focus:border-accent transition-colors"
+                                />
+                                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-3 text-xs pointer-events-none">
+                                    🔍
+                                </span>
+                                {placeSearch && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setPlaceSearch("")}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 size-4 rounded-full bg-line text-ink-2 hover:text-ink text-[10px] flex items-center justify-center cursor-pointer"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* View Mode Toggle: Grid vs Flow */}
+                            <div className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setPlacesView("grid")}
+                                    className={cx(
+                                        "flex size-7 cursor-pointer items-center justify-center rounded-md text-xs transition-colors",
+                                        placesView === "grid" ? "bg-surface text-ink font-bold shadow-xs" : "text-ink-3 hover:text-ink",
+                                    )}
+                                    title="Grid card view"
+                                >
+                                    ⊞
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPlacesView("flow")}
+                                    className={cx(
+                                        "flex size-7 cursor-pointer items-center justify-center rounded-md text-xs transition-colors",
+                                        placesView === "flow" ? "bg-surface text-ink font-bold shadow-xs" : "text-ink-3 hover:text-ink",
+                                    )}
+                                    title="Flow tags view"
+                                >
+                                    ≡
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
-                        {placeChips.map((chip: any, idx: number) => {
-                            const pCode = extractProvinceCode(chip.code || chip.id);
-                            const isSelected = pCode === activeCode;
+                    {/* Places Content (Grid vs Flow) */}
+                    {displayedPlaces.length === 0 ? (
+                        <div className="py-6 text-center text-xs text-ink-3">
+                            No places match &ldquo;{placeSearch}&rdquo;
+                        </div>
+                    ) : placesView === "grid" ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                            {displayedPlaces.map((chip: any, idx: number) => {
+                                const pCode = extractProvinceCode(chip.code || chip.id);
+                                const isSelected = pCode === activeCode;
+                                const drillPath = getDrillDownPath(chip);
 
-                            return (
+                                return (
+                                    <div
+                                        key={chip.code || idx}
+                                        onClick={() => {
+                                            if (pCode) {
+                                                setActiveCode(pCode);
+                                                setPaused(true);
+                                            }
+                                        }}
+                                        className={cx(
+                                            "group relative flex flex-col justify-between p-2.5 rounded-xl border transition-all cursor-pointer text-left select-none",
+                                            isSelected
+                                                ? "border-accent bg-accent/10 shadow-xs ring-1 ring-accent/30"
+                                                : "border-line bg-surface-2/40 hover:bg-surface-2 hover:border-line-2 hover:shadow-xs",
+                                        )}
+                                    >
+                                        {/* Top row: Code & Level */}
+                                        <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                                            <span className="font-mono text-[10px] text-ink-3 font-semibold group-hover:text-ink">
+                                                #{chip.code}
+                                            </span>
+                                            <div className="flex items-center gap-1">
+                                                {chip.level && (
+                                                    <span className={lvl(chip.level)}>
+                                                        {chip.level}
+                                                    </span>
+                                                )}
+                                                {onDrillDown && drillPath && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onDrillDown(drillPath, { id: chip.id, code: chip.code });
+                                                        }}
+                                                        className="size-5 rounded flex items-center justify-center text-ink-3 hover:text-bg hover:bg-ink text-[11px] transition-colors cursor-pointer"
+                                                        title={`Explore ${chip.name_en}`}
+                                                    >
+                                                        →
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Names */}
+                                        <div className="flex flex-col min-w-0">
+                                            <span className="text-xs font-semibold text-ink group-hover:text-accent transition-colors truncate">
+                                                {chip.name_en}
+                                            </span>
+                                            {chip.name_km && (
+                                                <span className="font-khmer text-[11px] text-ink-3 truncate">
+                                                    {chip.name_km}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                            {displayedPlaces.map((chip: any, idx: number) => {
+                                const pCode = extractProvinceCode(chip.code || chip.id);
+                                const isSelected = pCode === activeCode;
+                                const drillPath = getDrillDownPath(chip);
+
+                                return (
+                                    <div
+                                        key={chip.code || idx}
+                                        onClick={() => {
+                                            if (pCode) {
+                                                setActiveCode(pCode);
+                                                setPaused(true);
+                                            }
+                                        }}
+                                        className={cx(
+                                            "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium cursor-pointer transition-all",
+                                            isSelected
+                                                ? "border-accent bg-accent/15 text-accent font-semibold shadow-xs"
+                                                : "border-line bg-surface-2 text-ink-2 hover:border-line-2 hover:text-ink",
+                                        )}
+                                    >
+                                        <span className="font-mono text-[10px] text-ink-3 font-semibold">#{chip.code}</span>
+                                        {chip.level && <span className={lvl(chip.level)}>{chip.level}</span>}
+                                        <span className="font-semibold text-ink">{chip.name_en}</span>
+                                        {chip.name_km && (
+                                            <span className="font-khmer text-ink-3 font-normal">
+                                                ({chip.name_km})
+                                            </span>
+                                        )}
+                                        {onDrillDown && drillPath && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onDrillDown(drillPath, { id: chip.id, code: chip.code });
+                                                }}
+                                                className="ml-1 text-ink-3 hover:text-accent font-bold cursor-pointer"
+                                                title={`Explore ${chip.name_en}`}
+                                            >
+                                                →
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {/* Footer Controls: Pagination / Expand & Drill-down Tabs */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-line/40 text-xs text-ink-3">
+                        {filteredPlaces.length > 16 ? (
+                            <button
+                                type="button"
+                                onClick={() => setShowAllPlaces((s) => !s)}
+                                className="cursor-pointer font-semibold text-accent hover:underline flex items-center gap-1"
+                            >
+                                <span>{showAllPlaces ? "Show fewer places ▲" : `Show all ${filteredPlaces.length} places ▼`}</span>
+                            </button>
+                        ) : (
+                            <span>Showing {displayedPlaces.length} places</span>
+                        )}
+
+                        {onSwitchTab && (
+                            <div className="flex items-center gap-3">
                                 <button
-                                    key={chip.code || idx}
                                     type="button"
-                                    onClick={() => {
-                                        if (pCode) {
-                                            setActiveCode(pCode);
-                                            setPaused(true);
-                                        }
-                                    }}
-                                    className={cx(
-                                        "shrink-0 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium cursor-pointer transition-colors",
-                                        isSelected
-                                            ? "border-accent bg-accent-soft text-accent font-semibold shadow-sm"
-                                            : "border-line bg-surface-2 text-ink-2 hover:border-line-2 hover:text-ink",
-                                    )}
+                                    onClick={() => onSwitchTab("table")}
+                                    className="cursor-pointer font-medium text-water hover:underline flex items-center gap-1"
                                 >
-                                    {chip.level && <span className={lvl(chip.level)}>{chip.level}</span>}
-                                    <span>{chip.name_en}</span>
-                                    {chip.name_km && (
-                                        <span className="font-khmer text-ink-3 font-normal">
-                                            ({chip.name_km})
-                                        </span>
-                                    )}
+                                    <Icon name="table" className="size-3" />
+                                    <span>View Data Table →</span>
                                 </button>
-                            );
-                        })}
+                                <button
+                                    type="button"
+                                    onClick={() => onSwitchTab("raw")}
+                                    className="cursor-pointer font-medium text-accent hover:underline flex items-center gap-1"
+                                >
+                                    <Icon name="code" className="size-3" />
+                                    <span>View Raw JSON →</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
 
             {/* Footer quick navigation links */}
             <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-ink-3">
-                <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-ok" />
-                    <span>Live Hero Map synchronized with endpoint response</span>
-                </div>
                 {onSwitchTab && (
                     <div className="flex items-center gap-3">
                         <button
