@@ -37,8 +37,6 @@ export function LangSwitch() {
     );
 }
 
-const navLink = "rounded-lg px-3 py-2 text-sm font-medium text-ink-2 no-underline hover:bg-surface-2 hover:text-ink km:font-khmer";
-
 export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
     const { toggle } = useTheme();
     const { t } = useI18n();
@@ -86,15 +84,25 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                 <nav className="ml-auto flex items-center gap-1.5" aria-label="Primary">
                     <Link
                         to="/docs"
-                        className={cx(navLink, isDocs ? "bg-surface-2 font-semibold text-ink" : "")}
+                        className={cx(
+                            iconBtn,
+                            isDocs && "border-accent/40 bg-surface-2 text-accent shadow-xs",
+                        )}
+                        title={t("nav.docs")}
+                        aria-label={t("nav.docs")}
                     >
-                        {t("nav.docs")}
+                        <Icon name="book" />
                     </Link>
                     <Link
                         to="/playground"
-                        className={cx(navLink, isPlayground ? "bg-surface-2 font-semibold text-ink" : "")}
+                        className={cx(
+                            iconBtn,
+                            isPlayground && "border-accent/40 bg-surface-2 text-accent shadow-xs",
+                        )}
+                        title={t("nav.playground")}
+                        aria-label={t("nav.playground")}
                     >
-                        {t("nav.playground")}
+                        <Icon name="play" />
                     </Link>
                     <LangSwitch />
                     <a

@@ -168,7 +168,7 @@ export default function Playground() {
             <main id="request-console" className={cx(wrap, "flex-1 py-8")}>
                 <div className="space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl">
-                        <div className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 p-0">
+                        <div className="inline-flex items-center rounded-lg border border-line bg-surface-2 p-1">
                             <button
                                 type="button"
                                 onClick={() => setActiveTab("map")}
@@ -326,7 +326,7 @@ export default function Playground() {
                         </div>
                     ) : activeTab === "drilldown" ? (
                         <div className="space-y-4">
-                            <div className="rounded-2xl border border-line bg-surface/80 p-5 sm:p-6 shadow-sm backdrop-blur">
+                            <div className="rounded-2xl">
                                 <div className="mb-6">
                                     <div className="inline-flex items-center gap-2 rounded-lg border border-line/70 bg-surface-2 px-2.5 py-1 font-mono text-[11px] text-accent font-semibold mb-2 shadow-xs">
                                         <span className="size-1.5 rounded-full bg-accent animate-pulse" />
