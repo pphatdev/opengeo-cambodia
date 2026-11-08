@@ -37,6 +37,9 @@ export function LangSwitch() {
     );
 }
 
+const navItem =
+    "cursor-pointer no-underline text-ink-2 hover:text-ink transition-colors max-sm:inline-grid max-sm:size-9 max-sm:place-items-center max-sm:rounded-[9px] max-sm:border max-sm:border-line max-sm:bg-surface max-sm:p-0 max-sm:hover:border-line-2 max-sm:[&_svg]:size-[17px] sm:inline-flex sm:items-center sm:rounded-lg sm:px-3 sm:py-2 sm:text-sm sm:font-medium sm:hover:bg-surface-2 sm:km:font-khmer";
+
 export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
     const { toggle } = useTheme();
     const { t } = useI18n();
@@ -85,24 +88,26 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                     <Link
                         to="/docs"
                         className={cx(
-                            iconBtn,
-                            isDocs && "border-accent/40 bg-surface-2 text-accent shadow-xs",
+                            navItem,
+                            isDocs && "bg-surface-2 font-semibold text-ink max-sm:border-accent/40 max-sm:text-accent max-sm:shadow-xs",
                         )}
                         title={t("nav.docs")}
                         aria-label={t("nav.docs")}
                     >
-                        <Icon name="book" />
+                        <Icon name="book" className="sm:hidden" />
+                        <span className="max-sm:hidden">{t("nav.docs")}</span>
                     </Link>
                     <Link
                         to="/playground"
                         className={cx(
-                            iconBtn,
-                            isPlayground && "border-accent/40 bg-surface-2 text-accent shadow-xs",
+                            navItem,
+                            isPlayground && "bg-surface-2 font-semibold text-ink max-sm:border-accent/40 max-sm:text-accent max-sm:shadow-xs",
                         )}
                         title={t("nav.playground")}
                         aria-label={t("nav.playground")}
                     >
-                        <Icon name="play" />
+                        <Icon name="play" className="sm:hidden" />
+                        <span className="max-sm:hidden">{t("nav.playground")}</span>
                     </Link>
                     <LangSwitch />
                     <a
