@@ -3625,6 +3625,79 @@
           ]
         },
         {
+          "name": "Boundary zone by coordinates",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=geojson returns raw GeoJSON; format=summary/json returns the envelope.",
+                  "pm.test(\"Body is GeoJSON or a success envelope\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.be.oneOf(['Feature', 'FeatureCollection']);",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/geo+json, application/json",
+                "description": "Expected response MIME type"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/zone?lat={{latitude}}&lng={{longitude}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "zone"
+              ],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "{{latitude}}",
+                  "description": "Required. Latitude (-90 to 90)."
+                },
+                {
+                  "key": "lng",
+                  "value": "{{longitude}}",
+                  "description": "Required. Longitude (-180 to 180; 'lon' also accepted)."
+                },
+                {
+                  "key": "level",
+                  "value": "all",
+                  "description": "Optional. 'all' (default, 3-tier hierarchy), 'province', 'district' or 'commune'.",
+                  "disabled": true
+                },
+                {
+                  "key": "format",
+                  "value": "geojson",
+                  "description": "Optional. 'geojson' (default, GeoJSON FeatureCollection/Feature), 'json' or 'summary'.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Sub-millisecond in-memory Point-in-Polygon spatial query resolving the containing administrative boundary zone (Province, District, Commune) for a given GPS coordinate."
+          },
+          "response": []
+        },
+        {
           "name": "Boundary with ancestors",
           "event": [
             {

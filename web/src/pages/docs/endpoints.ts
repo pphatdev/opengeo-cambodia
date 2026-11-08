@@ -212,6 +212,24 @@ export const ENDPOINTS: Endpoint[] = [
         params: [{ name: "code", in: "path", type: "string", required: true, example: "1201", description: { en: "Any province, district or commune code.", km: "លេខកូដខេត្ត ស្រុក ឬឃុំណាមួយ។" } }, format()],
     },
     {
+        id: "b-zone", group: "boundaries", path: "/api/boundaries/zone", geo: true,
+        title: { en: "Boundary zone by coordinates", km: "ព្រំប្រទល់តំបន់តាមកូអរដោនេ" },
+        description: {
+            en: "Sub-millisecond point-in-polygon lookup resolving the province, district, and commune boundary zone containing a GPS coordinate.",
+            km: "ការស្វែងរកចំណុចក្នុងពហុកោណកម្រិតអនុមិល្លីវិនាទី ដើម្បីកំណត់ព្រំប្រទល់ខេត្ត ស្រុក និងឃុំ ដែលផ្ទុកកូអរដោនេ GPS។",
+        },
+        params: [
+            { name: "lat", in: "query", type: "number", required: true, example: "11.57608", description: { en: "Latitude (-90 to 90)", km: "រយៈទទឹង (-90 ដល់ 90)" } },
+            { name: "lng", in: "query", type: "number", required: true, example: "104.92305", description: { en: "Longitude (-180 to 180, 'lon' also accepted)", km: "រយៈបណ្តោយ (-180 ដល់ 180, អាចប្រើ 'lon' បាន)" } },
+            {
+                name: "level", in: "query", type: "string", example: "all",
+                options: ["all", "province", "district", "commune"],
+                description: { en: "Hierarchy level to return ('all' for complete 3-tier hierarchy).", km: "កម្រិតឋានានុក្រមដែលត្រូវបង្ហាញ ('all' សម្រាប់ឋានានុក្រម 3 កម្រិតពេញលេញ)។" },
+            },
+            format(),
+        ],
+    },
+    {
         id: "b-hierarchy", group: "boundaries", path: "/api/boundaries/hierarchy/{code}", geo: true,
         title: { en: "Boundary with ancestors", km: "ព្រំប្រទល់ជាមួយអង្គភាពមេ" },
         description: {

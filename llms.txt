@@ -36,6 +36,7 @@
 - [GET /api/boundaries/communes/:code](https://opengeo-cambodia.pphat.me/api/boundaries/communes/120101): A single commune Feature.
 - [GET /api/boundaries/item/:code](https://opengeo-cambodia.pphat.me/api/boundaries/item/1201): Detects the level from the code length. Handy when you don't know the level in advance.
 - [GET /api/boundaries/:code](https://opengeo-cambodia.pphat.me/api/boundaries/120101): Shortcut for `/api/boundaries/item/:code`: single boundary lookup by any province, district or commune code (e.g. 12, KH12, 1201, 120101).
+- [GET /api/boundaries/zone](https://opengeo-cambodia.pphat.me/api/boundaries/zone?lat=11.5564&lng=104.9282): Sub-millisecond in-memory Point-in-Polygon spatial query resolving the containing administrative boundary zone (Province, District, Commune) for a given GPS coordinate.
 - [GET /api/boundaries/hierarchy/:code](https://opengeo-cambodia.pphat.me/api/boundaries/hierarchy/120101): The Feature for a code plus its parent district and province Features, keyed by level. Returned inside the `{ success, data }` envelope.
 - [GET /api/boundaries/stats](https://opengeo-cambodia.pphat.me/api/boundaries/stats): Polygon counts per level, the national bounding box and the data source.
 - [GET /api/boundaries/raw/:filename](https://opengeo-cambodia.pphat.me/api/boundaries/raw/provinces.geojson): The full source file as an attachment (`Content-Disposition: attachment`). Large download.

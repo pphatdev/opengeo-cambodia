@@ -272,17 +272,30 @@ Standardized GeoJSON (`FeatureCollection` and `Feature`) and lightweight metadat
 
 #### Flexible Boundaries Query (List & Filters)
 ```http
-GET /api/boundaries?level=:level&province_code=:pCode&district_code=:dCode&code=:code&q=:query&format=:format&limit=:limit&offset=:offset
+GET /api/boundaries?level=:level&province_code=:pCode&district_code=:dCode&code=:code&lat=:lat&lng=:lng&q=:query&format=:format&limit=:limit&offset=:offset
 ```
 - **`level`** (`province` | `district` | `commune`, default: `province`)
 - **`province_code`** (e.g. `12` or `KH12`) — filters districts or communes in that province
 - **`district_code`** (e.g. `1201` or `KH1201`) — filters communes in that district
 - **`code`** (e.g. `12`, `1201`, `120101`) — exact boundary match
+- **`lat`** & **`lng`** / **`lon`** — point-in-polygon spatial filtering by coordinates
 - **`q`** / **`search`** — searches boundary by English or Khmer name
 - **`format`** (`geojson` [default] | `summary` / `list` [lightweight JSON without heavy coordinates])
 - **`limit`** / **`offset`** — pagination controls
 
+#### Boundary Zone Lookup by Coordinates (Point-in-Polygon)
+```http
+GET /api/boundaries/zone?lat=:lat&lng=:lng&level=:level&format=:format
+```
+Sub-millisecond in-memory Point-in-Polygon lookup resolving the containing administrative boundary zone for any GPS coordinate (supports `lng` and `lon`).
+- **`lat`** (e.g. `11.57608`) — latitude (`-90` to `90`) [required]
+- **`lng`** / **`lon`** (e.g. `104.92305`) — longitude (`-180` to `180`) [required]
+- **`level`** (`all` [default: complete 3-tier hierarchy] | `province` | `district` | `commune`)
+- **`format`** (`geojson` [default: GeoJSON FeatureCollection/Feature] | `json` [JSON envelope with geometry] | `summary` [lightweight JSON metadata])
+- Aliases: `GET /api/boundaries/point`, `GET /api/boundaries/by-point`
+
 #### Boundary Shortcuts
+- `GET /api/boundaries/zone?lat=11.57608&lng=104.92305` — Zone boundaries containing GPS coordinates (sub-1ms Point-in-Polygon)
 - `GET /api/boundaries/provinces` — All 25 province polygons
 - `GET /api/boundaries/provinces/:code` — Single province boundary (e.g. `12` for Phnom Penh)
 - `GET /api/boundaries/districts?province_code=12` — Districts within a province
