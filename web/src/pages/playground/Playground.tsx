@@ -10,12 +10,10 @@ import { useTheme } from "../../lib/theme";
 import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoints";
 import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "../home/cambodiaMap";
-import { AtlasRealMap } from "./AtlasRealMap";
-import { AtlasCockpitSidebar, type CockpitTab } from "./AtlasCockpitSidebar";
+import { AtlasNetworkMap } from "./AtlasNetworkMap";
 import { type AtlasActivePanel, AtlasDrawers } from "./AtlasDrawers";
-import { AtlasInspector } from "./AtlasInspector";
-import { AtlasPlaceChips, type PlaceChipItem } from "./AtlasPlaceChips";
-import { AtlasCategory, type AtlasTier, AtlasTopBar } from "./AtlasTopBar";
+import { type PlaceChipItem } from "./AtlasPlaceChips";
+import { type AtlasCategory, type AtlasTier } from "./AtlasTopBar";
 import { EndpointSelector } from "./EndpointSelector";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
 import { PlaygroundHeroPreview } from "./PlaygroundHeroPreview";
@@ -57,11 +55,9 @@ export default function Playground() {
 
     // Mode: Atlas Cockpit (default) vs Classic Console
     const [viewMode, setViewMode] = useState<"atlas" | "classic">("atlas");
-    const [cockpitTab, setCockpitTab] = useState<CockpitTab>("overview");
     const [atlasCategory, setAtlasCategory] = useState<AtlasCategory>("ALL");
     const [activeTier, setActiveTier] = useState<AtlasTier>("all");
     const [activePanel, setActivePanel] = useState<AtlasActivePanel>("none");
-    const [networkEnabled, setNetworkEnabled] = useState(true);
     const [autoTour, setAutoTour] = useState(false);
 
     // Recent queries history
@@ -396,122 +392,63 @@ export default function Playground() {
     };
 
     // ==========================================
-    // 1. ATLAS COCKPIT FRAMEWORK (Default Mode)
+    // 1. ATLAS NETWORK GRAPH COCKPIT (Default Mode)
     // ==========================================
     if (viewMode === "atlas") {
         return (
-            <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-[#04060b] p-2 sm:p-3 text-slate-100 font-sans select-none scheme-dark">
-                {/* Dual Ambient Backlight Aura (Golden Top-Right, Cyan Bottom-Left) */}
-                <div className="absolute -top-24 -right-24 size-[650px] rounded-full bg-amber-500/18 blur-[130px] pointer-events-none" />
-                <div className="absolute -bottom-24 -left-24 size-[650px] rounded-full bg-cyan-500/22 blur-[130px] pointer-events-none" />
+            <div className="relative h-screen w-screen overflow-hidden bg-[#090710]">
+                {/* Hairball & Radiant Epicenter Network Map (Inspired by Reference UI) */}
+                <AtlasNetworkMap
+                    activeProvince={activeProvince}
+                    onSelectProvince={handleSelectProvince}
+                    selectedEndpoint={selectedEndpoint}
+                    endpoints={filteredEndpoints}
+                    onSelectEndpoint={(ep) => handleSelectEndpoint(ep)}
+                    customUrl={customUrl}
+                    onUrlChange={(u) => setCustomUrl(u)}
+                    onSend={() => handleSend()}
+                    pending={pending}
+                    log={log}
+                    onOpenRaw={() => setActivePanel("raw")}
+                    onOpenTable={() => setActivePanel("table")}
+                    onOpenParams={() => setActivePanel("params")}
+                    onToggleViewMode={() => setViewMode("classic")}
+                    viewMode={viewMode}
+                    category={atlasCategory}
+                    onSelectCategory={handleSelectCategory}
+                    tier={activeTier}
+                    onSelectTier={handleSelectTier}
+                    placeChips={placeChips}
+                    onSelectPlaceChip={handleSelectPlaceChip}
+                    onDrillDown={handleDrillDown}
+                    highlightedCodes={highlightedProvinceCodes}
+                    recentQueries={recentQueries}
+                    onSelectRecentQuery={(path) => {
+                        setCustomUrl(path);
+                        handleSend(path);
+                    }}
+                    geocodeMarker={geocodeMarker}
+                    autoTour={autoTour}
+                    onToggleAutoTour={() => setAutoTour((a) => !a)}
+                    theme={dark ? "dark" : "light"}
+                    onToggleTheme={toggleTheme}
+                    lang={lang}
+                    onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
+                />
 
-                {/* The Cockpit Frame Shell (Rounded Dark Matte Canvas) */}
-                <div className="relative flex h-full w-full max-w-[1840px] flex-col rounded-3xl border border-white/10 bg-[#070a13] shadow-[0_0_80px_rgba(0,0,0,0.95),-15px_15px_80px_rgba(6,182,212,0.18),15px_-15px_80px_rgba(245,158,11,0.14)] overflow-hidden ring-1 ring-white/5">
-                    {/* Top Slim Utility & Tier Bar */}
-                    <AtlasTopBar
-                        category={atlasCategory}
-                        onSelectCategory={handleSelectCategory}
-                        tier={activeTier}
-                        onSelectTier={handleSelectTier}
-                        log={log}
-                        customUrl={customUrl}
-                        viewMode={viewMode}
-                        onToggleViewMode={() => setViewMode("classic")}
-                        activePanel={activePanel}
-                        onTogglePanel={(p) => setActivePanel(p)}
-                        lang={lang}
-                        onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
-                        theme={dark ? "dark" : "light"}
-                        onToggleTheme={toggleTheme}
-                        autoTour={autoTour}
-                        onToggleAutoTour={() => setAutoTour((a) => !a)}
-                        itemCount={placeChips.length}
-                    />
-
-                    {/* Main Cockpit Body: Left Dashboard Column + Center 3D Map */}
-                    <div className="relative flex-1 flex overflow-hidden min-h-0">
-                        {/* Left Dashboard Column (Icon Rail + KPI Metrics + Donut Rings + Arc Gauges + Query Console) */}
-                        <div className="h-full flex-none w-88 lg:w-96 flex">
-                            <AtlasCockpitSidebar
-                                activeTab={cockpitTab}
-                                onSelectTab={setCockpitTab}
-                                activeProvince={activeProvince}
-                                onSelectProvince={handleSelectProvince}
-                                selectedEndpoint={selectedEndpoint}
-                                endpoints={filteredEndpoints}
-                                onSelectEndpoint={(ep) => handleSelectEndpoint(ep)}
-                                customUrl={customUrl}
-                                onUrlChange={(u) => setCustomUrl(u)}
-                                onSend={() => handleSend()}
-                                pending={pending}
-                                log={log}
-                                onOpenParams={() => setActivePanel("params")}
-                                onOpenRaw={() => setActivePanel("raw")}
-                                onOpenTable={() => setActivePanel("table")}
-                                recentQueries={recentQueries}
-                                onSelectRecentQuery={(path) => {
-                                    setCustomUrl(path);
-                                    handleSend(path);
-                                }}
-                                theme={dark ? "dark" : "light"}
-                                onToggleTheme={toggleTheme}
-                                lang={lang}
-                                onToggleLang={() => setLang(lang === "km" ? "en" : "km")}
-                            />
-                        </div>
-
-                        {/* Center Stage: Real Interactive Geographic Map Canvas */}
-                        <div className="flex-1 relative h-full overflow-hidden flex flex-col bg-[#060911]">
-                            <AtlasRealMap
-                                activeProvince={activeProvince}
-                                highlightedCodes={highlightedProvinceCodes}
-                                geocodeMarker={geocodeMarker}
-                                networkEnabled={networkEnabled}
-                                onSelectProvince={handleSelectProvince}
-                                onToggleNetwork={() => setNetworkEnabled((prev) => !prev)}
-                                log={log}
-                            />
-
-                            {/* Center Floating Inspector Card (Bottom-Left) */}
-                            <div className="absolute left-4 bottom-5 z-20 hidden md:block">
-                                <AtlasInspector
-                                    province={activeProvince}
-                                    log={log}
-                                    endpointPath={customUrl}
-                                    onDrillDown={handleDrillDown}
-                                    onOpenRaw={() => setActivePanel("raw")}
-                                    onOpenTable={() => setActivePanel("table")}
-                                />
-                            </div>
-
-                            {/* Floating Response Place Chips Strip (Centered Bottom) */}
-                            {placeChips.length > 0 && (
-                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 w-[min(90%,680px)] hidden sm:block">
-                                    <AtlasPlaceChips
-                                        items={placeChips}
-                                        activeCode={activeProvinceCode}
-                                        onSelectPlace={handleSelectPlaceChip}
-                                        onDrillDown={handleDrillDown}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Slide-over Drawers (Params, Raw JSON, Data Table, Presets) */}
-                    <AtlasDrawers
-                        activePanel={activePanel}
-                        onClose={() => setActivePanel("none")}
-                        selectedEndpoint={selectedEndpoint}
-                        paramValues={paramValues}
-                        onParamChange={handleParamChange}
-                        onResetParams={handleResetParams}
-                        log={log}
-                        customUrl={customUrl}
-                        onApplyPreset={handleApplyPreset}
-                        onDrillDown={handleDrillDown}
-                    />
-                </div>
+                {/* Slide-over Drawers (Params, Raw JSON, Data Table, Presets) */}
+                <AtlasDrawers
+                    activePanel={activePanel}
+                    onClose={() => setActivePanel("none")}
+                    selectedEndpoint={selectedEndpoint}
+                    paramValues={paramValues}
+                    onParamChange={handleParamChange}
+                    onResetParams={handleResetParams}
+                    log={log}
+                    customUrl={customUrl}
+                    onApplyPreset={handleApplyPreset}
+                    onDrillDown={handleDrillDown}
+                />
             </div>
         );
     }
