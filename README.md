@@ -18,7 +18,7 @@
 🏛️ **Official Data Source:** [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)  
 📮 **Postman Collection:** [`public/opengeo-cambodia.postman_collection.json`](public/opengeo-cambodia.postman_collection.json) *(Uses collection variables, no environment file needed)*  
 🤖 **LLM Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)  
-📰 **Developer Guide & Deep Dive (Blog Post):** [`blog/introducing-opengeo-cambodia.md`](blog/introducing-opengeo-cambodia.md)
+📰 **Developer Guide & Deep Dive Series:** [**`blog/` (7-Part Series)**](blog/) | [Full Article](blog/introducing-opengeo-cambodia.md)
 
 ---
 
