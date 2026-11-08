@@ -64,7 +64,7 @@ export function PlaygroundFloatingRequest({
                 >
                     <span className="flex size-2 rounded-full bg-accent animate-pulse" />
                     <span className="font-bold text-accent">GET</span>
-                    <span className="max-w-[180px] truncate text-ink-2 sm:max-w-[240px]">
+                    <span className="max-w-45 truncate text-ink-2 sm:max-w-60">
                         {customUrl}
                     </span>
                     <span className="inline-flex size-5 items-center justify-center rounded-full bg-ink text-[10px] text-bg transition-transform group-hover:scale-110">
@@ -75,7 +75,7 @@ export function PlaygroundFloatingRequest({
 
             {/* Expanded Floating Request Console Card */}
             {isOpen && (
-                <div className="w-[380px] max-w-[calc(100vw-32px)] rounded-2xl border border-line bg-surface/95 p-4 shadow-2xl backdrop-blur-xl space-y-3.5 transition-all">
+                <div className="w-95 max-w-[calc(100vw-32px)] rounded-2xl border border-line bg-surface/95 p-4 shadow-2xl backdrop-blur-xl space-y-3.5 transition-all">
                     {/* Header */}
                     <div className="flex items-center justify-between border-b border-line/60 pb-2.5">
                         <div className="flex items-center gap-2">

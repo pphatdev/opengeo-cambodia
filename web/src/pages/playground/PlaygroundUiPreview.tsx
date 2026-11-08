@@ -347,7 +347,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                     </div>
 
                     {subTab === "table" && (
-                        <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
+                        <div className="relative min-w-50 flex-1 sm:max-w-xs">
                             <Icon name="search" className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-ink-3" />
                             <input
                                 type="text"

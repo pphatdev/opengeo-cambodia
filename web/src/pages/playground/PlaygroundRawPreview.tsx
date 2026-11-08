@@ -44,7 +44,7 @@ export function PlaygroundRawPreview({ log, endpointPath }: PlaygroundRawPreview
     return (
         <div className="overflow-hidden rounded-xl border border-line bg-code-bg">
             {/* Top Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-accent bg-code-bg px-4 py-2 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/10 bg-code-bg px-4 py-1 text-xs">
                 <div className="flex items-center gap-3 font-mono text-code-dim">
                     <span>{fmtBytes(log.size)}</span>
                     <span>·</span>
@@ -83,7 +83,7 @@ export function PlaygroundRawPreview({ log, endpointPath }: PlaygroundRawPreview
             </div>
 
             {/* Syntax Highlighted JSON Body */}
-            <div className="max-h-[620px] overflow-auto p-4 font-mono text-[13px] leading-relaxed">
+            <div className="overflow-auto p-4 font-mono text-[13px] leading-relaxed">
                 <pre className="m-0 text-code-text">
                     <JsonView value={displayValue} max={100000} />
                 </pre>
