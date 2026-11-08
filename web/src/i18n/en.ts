@@ -6,8 +6,11 @@
 const en = {
     meta: {
         homeTitle: "OpenGeo Cambodia — Open API for Cambodia's Administrative Geography",
-        docsTitle: "Docs — OpenGeo Cambodia API",
+        homeDesc: "Free, keyless REST API for Cambodia's administrative geography: 25 provinces, 210 districts, 1,661 communes and 14,576 villages with official NCDD codes, Khmer & English names, GeoJSON boundaries and geocoding.",
+        docsTitle: "API Documentation — OpenGeo Cambodia",
+        docsDesc: "Developer documentation, interactive API playground, JSON schemas, rate limits, and GeoJSON boundary specifications for Cambodia's 4-tier administrative hierarchy.",
         notFoundTitle: "Page not found — OpenGeo Cambodia",
+        notFoundDesc: "The requested page does not exist on OpenGeo Cambodia.",
     },
     nav: {
         home: "OpenGeo Cambodia home",

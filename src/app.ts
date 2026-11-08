@@ -82,14 +82,42 @@ function getSpaHtml(): string {
         + "<p>The API is available at <a href=\"/api/info\">/api/info</a>.</p></body></html>";
 }
 
+function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
+    const isKm = lang === "km";
+    if (reqPath.startsWith("/docs")) {
+        const title = isKm
+            ? "ឯកសារ API — OpenGeo Cambodia"
+            : "API Documentation — OpenGeo Cambodia";
+        const desc = isKm
+            ? "ឯកសារបច្ចេកទេសសម្រាប់អ្នកអភិវឌ្ឍន៍ ផ្ទាំងសាកល្បង API គំរូទិន្នន័យ JSON កម្រិតកំណត់សំណើ និងកូអរដោនេព្រំប្រទល់ GeoJSON នៃឋានានុក្រមរដ្ឋបាល ៤ កម្រិតនៅកម្ពុជា។"
+            : "Developer documentation, interactive API playground, JSON schemas, rate limits, and GeoJSON boundary specifications for Cambodia's 4-tier administrative hierarchy.";
+        const canonical = "https://opengeo-cambodia.pphat.me/docs";
+
+        return rawHtml
+            .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
+            .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
+            .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
+            .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`)
+            .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${desc}">`)
+            .replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${canonical}">`)
+            .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${title}">`)
+            .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${desc}">`);
+    }
+    return rawHtml;
+}
+
 /** Serve the React app shell from Workers Assets when deployed, or from dist/client in Node. */
 async function serveSpa(c: Context): Promise<Response> {
+    const lang = c.req.query("lang") || "en";
     const assets = (c.env as { ASSETS?: { fetch: (req: Request) => Promise<Response> } } | undefined)?.ASSETS;
     if (assets) {
         const res = await assets.fetch(new Request(new URL("/index.html", c.req.url)));
-        if (res.ok) return res;
+        if (res.ok) {
+            const html = await res.text();
+            return c.html(renderSeoHtml(html, c.req.path, lang));
+        }
     }
-    return c.html(getSpaHtml());
+    return c.html(renderSeoHtml(getSpaHtml(), c.req.path, lang));
 }
 
 let cachedLlmsTxt: string | null = null;

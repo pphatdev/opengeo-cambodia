@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Nav } from "../../components/Nav";
+import { useSeo } from "../../components/Seo";
 import { useI18n } from "../../i18n";
+import { PROD_ORIGIN } from "../../lib/api";
 import { Sidebar } from "./Sidebar";
 import {
     IntroductionSection,
@@ -19,9 +21,12 @@ export default function Docs() {
     const { t } = useI18n();
     const [menuOpen, setMenuOpen] = useState(false);
 
-    useEffect(() => {
-        document.title = t("meta.docsTitle");
-    }, [t]);
+    useSeo({
+        title: t("meta.docsTitle"),
+        description: t("meta.docsDesc"),
+        canonical: `${PROD_ORIGIN}/docs`,
+        type: "article",
+    });
 
     return (
         <div className="leading-[1.7]">

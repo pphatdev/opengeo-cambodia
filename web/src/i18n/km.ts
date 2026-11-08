@@ -4,8 +4,11 @@ import type { Messages } from "./types";
 const km: Messages = {
     meta: {
         homeTitle: "OpenGeo Cambodia — API បើកចំហសម្រាប់ភូមិសាស្ត្ររដ្ឋបាលកម្ពុជា",
-        docsTitle: "ឯកសារ — OpenGeo Cambodia API",
+        homeDesc: "API ឥតគិតថ្លៃ និងមិនត្រូវការ API key សម្រាប់ភូមិសាស្ត្ររដ្ឋបាលកម្ពុជា៖ ២៥ រាជធានី-ខេត្ត, ២១០ ក្រុង-ស្រុក-ខណ្ឌ, ១,៦៦១ ឃុំ-សង្កាត់ និង ១៤,៥៧៦ ភូមិ ជាមួយលេខកូដផ្លូវការ ឈ្មោះខ្មែរ-អង់គ្លេស និងព្រំប្រទល់ GeoJSON។",
+        docsTitle: "ឯកសារ API — OpenGeo Cambodia",
+        docsDesc: "ឯកសារបច្ចេកទេសសម្រាប់អ្នកអភិវឌ្ឍន៍ ផ្ទាំងសាកល្បង API គំរូទិន្នន័យ JSON កម្រិតកំណត់សំណើ និងកូអរដោនេព្រំប្រទល់ GeoJSON នៃឋានានុក្រមរដ្ឋបាល ៤ កម្រិតនៅកម្ពុជា។",
         notFoundTitle: "រកមិនឃើញទំព័រ — OpenGeo Cambodia",
+        notFoundDesc: "មិនមានទំព័រដែលលោកអ្នកកំពុងស្វែងរកនៅលើ OpenGeo Cambodia ឡើយ។",
     },
     nav: {
         home: "ទំព័រដើម OpenGeo Cambodia",
