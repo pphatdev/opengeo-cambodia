@@ -33,6 +33,15 @@ function latLonToSvg(lat: number, lon: number): [number, number] {
     return [Math.max(20, Math.min(MAP_WIDTH - 20, x)), Math.max(20, Math.min(MAP_HEIGHT - 20, y))];
 }
 
+/** Convert SVG viewBox (x, y) to GPS (lat, lon) */
+function svgToLatLon(x: number, y: number): [number, number] {
+    const minLat = 10.35, maxLat = 14.75;
+    const minLon = 102.3, maxLon = 107.65;
+    const lon = minLon + (x / MAP_WIDTH) * (maxLon - minLon);
+    const lat = maxLat - (y / MAP_HEIGHT) * (maxLat - minLat);
+    return [Number(lat.toFixed(5)), Number(lon.toFixed(5))];
+}
+
 /** Extract parent province code (01-25) from any code or id */
 function extractProvinceCode(raw: unknown): string | null {
     if (!raw) return null;
@@ -168,6 +177,61 @@ export function PlaygroundHeroPreview({
 
     const active = PROVINCES.find((p) => p.code === activeCode) ?? PROVINCES[0];
 
+    // GPS coordinates of the active province centroid
+    const [activeLat, activeLng] = useMemo(() => svgToLatLon(active.cx, active.cy), [active.cx, active.cy]);
+
+    // Custom lat/lng input state
+    const [inputLat, setInputLat] = useState("");
+    const [inputLng, setInputLng] = useState("");
+
+    const handleLatChange = (val: string) => {
+        if (val.includes(",") || (val.includes(" ") && val.trim().split(/\s+/).length === 2)) {
+            const parts = val.split(/[,\s]+/).filter(Boolean);
+            if (parts.length >= 2) {
+                setInputLat(parts[0]);
+                setInputLng(parts[1]);
+                return;
+            }
+        }
+        setInputLat(val);
+    };
+
+    const handleLngChange = (val: string) => {
+        if (val.includes(",") || (val.includes(" ") && val.trim().split(/\s+/).length === 2)) {
+            const parts = val.split(/[,\s]+/).filter(Boolean);
+            if (parts.length >= 2) {
+                setInputLat(parts[0]);
+                setInputLng(parts[1]);
+                return;
+            }
+        }
+        setInputLng(val);
+    };
+
+    const handleShowZone = (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        const lat = inputLat.trim() || String(activeLat.toFixed(5));
+        const lng = inputLng.trim() || String(activeLng.toFixed(5));
+        if (onDrillDown) {
+            onDrillDown(`/api/boundaries/zone?lat=${lat}&lng=${lng}&level=all`, {
+                lat,
+                lng,
+                level: "all",
+            });
+        }
+    };
+
+    // Parsed custom coordinates marker
+    const parsedCustomCoords = useMemo(() => {
+        const lat = parseFloat(inputLat.trim());
+        const lon = parseFloat(inputLng.trim());
+        if (!isNaN(lat) && !isNaN(lon) && lat >= 10 && lat <= 15 && lon >= 102 && lon <= 108) {
+            const [x, y] = latLonToSvg(lat, lon);
+            return { x, y, lat, lon, label: `${lat.toFixed(5)}, ${lon.toFixed(5)}` };
+        }
+        return null;
+    }, [inputLat, inputLng]);
+
     const hover = useCallback((p: HeroProvince) => {
         window.clearTimeout(resumeTimer.current);
         setPaused(true);
@@ -183,9 +247,10 @@ export function PlaygroundHeroPreview({
     useEffect(() => () => window.clearTimeout(resumeTimer.current), []);
 
     // Pin & Callout positioning
-    // If geocode marker is present, anchor callout to the marker; otherwise anchor to province centroid
-    const pinX = geocodeMarker ? geocodeMarker.x : active.cx;
-    const pinY = geocodeMarker ? geocodeMarker.y : active.cy;
+    // If custom coordinates or geocode marker is present, anchor callout to the marker; otherwise anchor to province centroid
+    const activeMarker = parsedCustomCoords || geocodeMarker;
+    const pinX = activeMarker ? activeMarker.x : active.cx;
+    const pinY = activeMarker ? activeMarker.y : active.cy;
     const leftPct = (pinX / MAP_WIDTH) * 100;
     const topPct = (pinY / MAP_HEIGHT) * 100;
     const flip = leftPct > 55;
@@ -209,13 +274,17 @@ export function PlaygroundHeroPreview({
         if (body?.data?.name_en) {
             return `${body.data.administrative_unit || body.data.level || "Place"} #${body.data.code || body.data.id}`;
         }
+        // If custom coordinates marker
+        if (parsedCustomCoords) {
+            return `Target: ${parsedCustomCoords.lat.toFixed(5)}, ${parsedCustomCoords.lon.toFixed(5)}`;
+        }
         // If geocode
         if (geocodeMarker) {
             return `${geocodeMarker.lat.toFixed(5)}, ${geocodeMarker.lon.toFixed(5)}`;
         }
         // Default
         return `NCDD #${active.code} · ${active.en}`;
-    }, [endpointPath, body, active, geocodeMarker]);
+    }, [endpointPath, body, active, geocodeMarker, parsedCustomCoords]);
 
     // Place chips for fast navigation
     const [placeSearch, setPlaceSearch] = useState("");
@@ -301,11 +370,61 @@ export function PlaygroundHeroPreview({
                         <span className="size-1.5 rounded-full bg-accent animate-pulse" />
                         <span className="font-semibold">Cambodia Hero Map</span>
                         <span className="text-ink-3">·</span>
-                        <span className="text-ink-3">14.7°N · 102.3°E</span>
+                        <span className="text-ink-3">{activeLat.toFixed(2)}°N · {activeLng.toFixed(2)}°E</span>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <span className="rounded-lg border border-line/70 bg-surface/90 px-2.5 py-1 font-mono text-[11px] font-semibold text-ink-2 shadow-xs backdrop-blur">
+                    <div className="flex flex-wrap items-center gap-2">
+                        {/* Lat / Lng Coordinate Input Form */}
+                        <form
+                            onSubmit={handleShowZone}
+                            className="flex items-center gap-1.5"
+                        >
+                            <div className="inline-flex items-center rounded-lg border border-line/70 bg-surface/90 px-2 py-1 font-mono text-[11px] text-ink shadow-xs backdrop-blur focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/30 transition-all">
+                                <Icon name="pin" className="size-3 text-accent mr-1.5 shrink-0" />
+                                <span className="text-ink-3 text-[10px] font-semibold mr-1 select-none">Lat</span>
+                                <input
+                                    type="text"
+                                    value={inputLat}
+                                    onChange={(e) => handleLatChange(e.target.value)}
+                                    placeholder={activeLat.toFixed(5)}
+                                    aria-label="Latitude"
+                                    className="w-16 sm:w-18 bg-transparent text-ink placeholder:text-ink-3/40 focus:outline-none"
+                                />
+                                <span className="text-line mx-1 select-none">·</span>
+                                <span className="text-ink-3 text-[10px] font-semibold mr-1 select-none">Lng</span>
+                                <input
+                                    type="text"
+                                    value={inputLng}
+                                    onChange={(e) => handleLngChange(e.target.value)}
+                                    placeholder={activeLng.toFixed(5)}
+                                    aria-label="Longitude"
+                                    className="w-18 sm:w-20 bg-transparent text-ink placeholder:text-ink-3/40 focus:outline-none"
+                                />
+                                {(inputLat || inputLng) && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setInputLat("");
+                                            setInputLng("");
+                                        }}
+                                        className="ml-1 text-ink-3 hover:text-ink text-xs px-0.5 cursor-pointer"
+                                        title="Reset to current province coordinates"
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
+                            <button
+                                type="submit"
+                                className="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-accent hover:bg-accent/20 shadow-xs backdrop-blur transition-colors shrink-0"
+                                title="Show current zone boundaries (Point-in-Polygon)"
+                            >
+                                <Icon name="polygon" className="size-3" />
+                                <span>Zone Boundaries</span>
+                            </button>
+                        </form>
+
+                        <span className="rounded-lg border border-line/70 bg-surface/90 px-2.5 py-1 font-mono text-[11px] font-semibold text-ink-2 shadow-xs backdrop-blur max-md:hidden">
                             25 Provinces
                         </span>
                         <button
