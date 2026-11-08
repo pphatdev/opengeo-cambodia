@@ -12,3 +12,4 @@ This section covers high-resolution GeoJSON boundary polygons, spatial filtering
 - **Bulk GeoJSON Downloads**: Standalone files for QGIS, GeoPandas, and PostGIS imports.
 
 [← Previous: Administrative API](../administrative/03-administrative-hierarchy-api.md) | [Next: Reverse Geocoding →](../geocoding/05-geocoding-and-reverse-lookup.md)
+

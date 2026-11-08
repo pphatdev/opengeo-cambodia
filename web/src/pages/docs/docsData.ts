@@ -1,4 +1,6 @@
-export type BlogCategory =
+import type { EndpointGroup } from "./endpoints";
+
+export type DocCategory =
     | "getting-started"
     | "system"
     | "administrative"
@@ -6,15 +8,15 @@ export type BlogCategory =
     | "geocoding"
     | "reference";
 
-export interface BlogCategoryMeta {
-    id: BlogCategory;
+export interface DocCategoryMeta {
+    id: DocCategory;
     title: string;
     titleKm: string;
     description: string;
     descriptionKm: string;
 }
 
-export const BLOG_CATEGORIES: BlogCategoryMeta[] = [
+export const DOC_CATEGORIES: DocCategoryMeta[] = [
     {
         id: "getting-started",
         title: "Getting Started",
@@ -59,9 +61,9 @@ export const BLOG_CATEGORIES: BlogCategoryMeta[] = [
     },
 ];
 
-export interface BlogPostMeta {
+export interface DocChapterMeta {
     slug: string;
-    category: BlogCategory;
+    category: DocCategory;
     part: number;
     title: string;
     titleKm: string;
@@ -72,9 +74,10 @@ export interface BlogPostMeta {
     date: string;
     highlights: string[];
     apiEndpoints?: string[];
+    endpointGroup?: EndpointGroup;
 }
 
-export const BLOG_POSTS: BlogPostMeta[] = [
+export const DOC_CHAPTERS: DocChapterMeta[] = [
     {
         slug: "01-introduction-and-domain-model",
         category: "getting-started",
@@ -112,6 +115,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
             "Dual runtime portability: Cloudflare Workers Edge (300+ PoPs) & Node.js",
         ],
         apiEndpoints: ["/health", "/api/info"],
+        endpointGroup: "system",
     },
     {
         slug: "03-administrative-hierarchy-api",
@@ -136,6 +140,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
             "/api/admin/hierarchy/12020101",
             "/api/admin/search?q=Doun+Penh",
         ],
+        endpointGroup: "admin",
     },
     {
         slug: "04-boundaries-and-point-in-polygon",
@@ -159,6 +164,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
             "/api/boundaries/provinces",
             "/api/boundaries/districts?province_code=12",
         ],
+        endpointGroup: "boundaries",
     },
     {
         slug: "05-geocoding-and-reverse-lookup",
@@ -180,6 +186,7 @@ export const BLOG_POSTS: BlogPostMeta[] = [
             "/api/geocode/reverse?lat=11.5714&lon=104.9250",
             "/api/geocode/search?q=Wat+Phnom",
         ],
+        endpointGroup: "geocode",
     },
     {
         slug: "06-developer-integration-and-examples",
@@ -219,7 +226,6 @@ export const BLOG_POSTS: BlogPostMeta[] = [
     },
 ];
 
-export function getBlogPost(slug: string, category?: string): BlogPostMeta | undefined {
-    return BLOG_POSTS.find((p) => p.slug === slug && (!category || p.category === category));
+export function getDocChapter(slug: string, category?: string): DocChapterMeta | undefined {
+    return DOC_CHAPTERS.find((c) => c.slug === slug && (!category || c.category === category));
 }
-

@@ -11,3 +11,4 @@ This section explains how OpenGeo Cambodia translates raw GPS coordinates and un
 - **Address Autocomplete**: Free-text search via `/api/geocode/search?q=...`.
 
 [← Previous: Boundaries & Spatial](../boundaries/04-boundaries-and-point-in-polygon.md) | [Next: Reference & Integration →](../reference/06-developer-integration-and-examples.md)
+

@@ -12,3 +12,4 @@ This section covers the core administrative endpoints for building cascading add
 - **Bilingual Search**: Diacritic, spacing, and Romanization tolerant search engine.
 
 [← Previous: System Architecture](../system/02-architecture-and-performance.md) | [Next: Boundaries & Point-in-Polygon →](../boundaries/04-boundaries-and-point-in-polygon.md)
+

@@ -78,9 +78,6 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                     )}
                 </Link>
                 <nav className="ml-auto flex items-center gap-1" aria-label="Primary">
-                    <Link to="/#explore" className={cx(navLink, "max-sm:hidden")}>{t("nav.explorer")}</Link>
-                    <Link to="/#data" className={cx(navLink, "max-sm:hidden")}>{t("nav.data")}</Link>
-                    <Link to="/blog" className={cx(navLink, "max-sm:hidden")}>{t("nav.blog")}</Link>
                     {!isDocs && <Link to="/docs" className={navLink}>{t("nav.docs")}</Link>}
                     <LangSwitch />
                     <a href={REPO_URL} className={cx(iconBtn, "max-xs:hidden")} aria-label={t("nav.github")} target="_blank" rel="noopener noreferrer"><Icon name="github" /></a>
