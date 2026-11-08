@@ -1,14 +1,12 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Combobox } from "../../components/Combobox";
 import { Icon } from "../../components/Icon";
 import { Nav } from "../../components/Nav";
-import { cx, focusRing, wrap } from "../../components/ui";
+import { cx, wrap } from "../../components/ui";
 import { useI18n } from "../../i18n";
 import { apiGet, fmtBytes, PROD_ORIGIN, type RequestLog } from "../../lib/api";
 import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoints";
-import { EndpointSelector } from "./EndpointSelector";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
 import { PlaygroundHeroPreview } from "./PlaygroundHeroPreview";
 import { PlaygroundRawPreview } from "./PlaygroundRawPreview";
@@ -17,8 +15,8 @@ import { PlaygroundUiPreview } from "./PlaygroundUiPreview";
 type PreviewTab = "map" | "raw" | "table" | "headers";
 
 export default function Playground() {
-    const { t, tx, lang } = useI18n();
-    const { toast, copy } = useToast();
+    const { t, lang } = useI18n();
+    const { toast } = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
 
     // Set page title
@@ -49,23 +47,6 @@ export default function Playground() {
         setCustomUrl(built);
         setSearchParams({ ep: ep.id }, { replace: true });
     }, [setSearchParams]);
-
-    // Update individual param
-    const handleParamChange = (name: string, value: string) => {
-        const nextParams = { ...paramValues, [name]: value };
-        setParamValues(nextParams);
-        const path = buildPath(selectedEndpoint, nextParams);
-        if (path) {
-            setCustomUrl(path);
-        }
-    };
-
-    const handleResetParams = () => {
-        const reset = Object.fromEntries((selectedEndpoint.params ?? []).map((p) => [p.name, p.example ?? ""]));
-        setParamValues(reset);
-        const path = displayPath(selectedEndpoint, reset);
-        setCustomUrl(path);
-    };
 
     // Execute API request
     const handleSend = useCallback(async (pathToSend?: string) => {
@@ -113,9 +94,7 @@ export default function Playground() {
         });
 
         if (matched) {
-            setSelectedEndpoint(matched);
-            setParamValues(params ?? {});
-            setSearchParams({ ep: matched.id }, { replace: true });
+            handleSelectEndpoint(matched, params);
         }
         setCustomUrl(path);
         handleSend(path);
@@ -128,173 +107,11 @@ export default function Playground() {
         <div className="min-h-screen bg-bg text-ink flex flex-col font-sans">
             <Nav variant="playground" />
 
-            {/* Header Banner */}
-            <div className="border-b border-line bg-surface/40 py-6">
-                <div className={wrap}>
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1.5">
-                                <span className="rounded-md bg-accent px-2 py-0.5 font-display text-[11px] font-bold uppercase tracking-wider text-bg">
-                                    Interactive
-                                </span>
-                                <h1 className="m-0 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-                                    {t("playground.title")}
-                                </h1>
-                            </div>
-                            <p className="m-0 text-sm text-ink-2 max-w-2xl">
-                                {t("playground.subtitle")}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {/* Main Playground Content */}
             <main id="request-console" className={cx(wrap, "flex-1 py-8")}>
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                    {/* Left Column: Request Builder */}
-                    <div className="lg:col-span-5 space-y-4">
-                        <div className="rounded-2xl border border-line bg-surface p-4.5 shadow-card space-y-5">
-                            <EndpointSelector
-                                endpoints={ENDPOINTS}
-                                selected={selectedEndpoint}
-                                onSelect={(ep) => handleSelectEndpoint(ep)}
-                            />
-
-                            {/* Request URL Input & Send Button */}
-                            <div className="space-y-2 pt-1 border-t border-line/60">
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="font-semibold text-ink-3 uppercase tracking-wider text-[11px]">
-                                        Request Path
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => copy(`curl "${fullProdUrl}"`)}
-                                        className="cursor-pointer text-[11px] font-mono text-ink-3 hover:text-ink flex items-center gap-1"
-                                    >
-                                        <Icon name="copy" className="size-3" />
-                                        <span>{t("playground.copyCurl")}</span>
-                                    </button>
-                                </div>
-
-                                <form
-                                    onSubmit={(e: FormEvent) => {
-                                        e.preventDefault();
-                                        handleSend();
-                                    }}
-                                    className="flex items-center gap-2"
-                                >
-                                    <div className="relative flex-1">
-                                        <input
-                                            type="text"
-                                            value={customUrl}
-                                            onChange={(e) => setCustomUrl(e.target.value)}
-                                            placeholder={t("playground.urlPlaceholder")}
-                                            className={cx(
-                                                "h-10 w-full rounded-xl border border-line bg-surface-2 px-3.5 font-mono text-xs text-ink",
-                                                focusRing,
-                                            )}
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        disabled={pending}
-                                        className="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-xl border-0 bg-ink px-4 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] disabled:cursor-wait disabled:opacity-60 transition-all shadow-sm shrink-0"
-                                    >
-                                        <Icon name="play" className="size-3" />
-                                        {pending ? t("playground.sending") : t("playground.sendRequest")}
-                                    </button>
-                                </form>
-
-                                <div className="text-[11px] text-ink-3">
-                                    {t("playground.shortcutHint")}
-                                </div>
-                            </div>
-
-                            {/* Parameters Section */}
-                            <div className="border-t border-line/60 pt-4">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h3 className="m-0 text-xs font-semibold text-ink-3 uppercase tracking-wider">
-                                        {t("playground.parameters")}
-                                        {selectedEndpoint.params?.length ? ` (${selectedEndpoint.params.length})` : ""}
-                                    </h3>
-                                    {selectedEndpoint.params?.length ? (
-                                        <button
-                                            type="button"
-                                            onClick={handleResetParams}
-                                            className="text-[11px] font-mono text-ink-3 hover:text-ink cursor-pointer"
-                                        >
-                                            Reset defaults
-                                        </button>
-                                    ) : null}
-                                </div>
-
-                                {(!selectedEndpoint.params || selectedEndpoint.params.length === 0) ? (
-                                    <div className="rounded-lg border border-dashed border-line bg-surface-2/40 p-3 text-xs text-ink-3">
-                                        {t("playground.noParams")}
-                                    </div>
-                                ) : (
-                                    <div className="space-y-3.5">
-                                        {selectedEndpoint.params.map((p) => {
-                                            const val = paramValues[p.name] ?? "";
-                                            return (
-                                                <div key={p.name} className="space-y-1.5 rounded-lg border border-line/60 bg-surface-2/40 p-2.5">
-                                                    <div className="flex items-center justify-between text-xs">
-                                                        <label htmlFor={`param-${p.name}`} className="font-mono font-semibold text-ink flex items-center gap-1">
-                                                            <span>{p.name}</span>
-                                                            {p.required ? (
-                                                                <span className="text-accent text-[10px] font-bold uppercase tracking-wider">
-                                                                    Required
-                                                                </span>
-                                                            ) : (
-                                                                <span className="text-ink-3 text-[10px]">
-                                                                    Optional
-                                                                </span>
-                                                            )}
-                                                        </label>
-                                                        <span className="font-mono text-[10.5px] text-water font-medium">
-                                                            {p.in} · {p.type}
-                                                        </span>
-                                                    </div>
-
-                                                    {p.options ? (
-                                                        <Combobox
-                                                            id={`param-${p.name}`}
-                                                            size="sm"
-                                                            searchable={false}
-                                                            value={val}
-                                                            placeholder={p.name}
-                                                            options={p.options.map((o) => ({ value: o, label: o || "None (Default)" }))}
-                                                            onChange={(newVal) => handleParamChange(p.name, newVal ?? "")}
-                                                        />
-                                                    ) : (
-                                                        <input
-                                                            id={`param-${p.name}`}
-                                                            type="text"
-                                                            value={val}
-                                                            placeholder={p.example ? `e.g. ${p.example}` : p.name}
-                                                            onChange={(e) => handleParamChange(p.name, e.target.value)}
-                                                            className={cx(
-                                                                "h-8 w-full rounded-md border border-line bg-surface px-2.5 font-mono text-xs text-ink",
-                                                                focusRing,
-                                                            )}
-                                                        />
-                                                    )}
-                                                    <div className="text-[11px] text-ink-3">
-                                                        {tx(p.description)}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Column: Response Inspection */}
-                    <div className="lg:col-span-7 space-y-4">
-                        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl">
+                <div className="space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl">
                             <div className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 p-0.5">
                                 <button
                                     type="button"
@@ -440,7 +257,6 @@ export default function Playground() {
                             </div>
                         )}
                     </div>
-                </div>
             </main>
         </div>
     );
