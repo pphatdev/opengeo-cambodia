@@ -74,7 +74,32 @@ Returns all Phums belonging to that Sangkat.
 
 ---
 
-## 2. Resolving the Complete 4-Tier Hierarchy Path
+## 2. Full RESTful Nested Resource Routing
+
+For strict REST architectures and hierarchical URL patterns, OpenGeo Cambodia supports deep nested routing paths that automatically enforce and validate parent-child relationships at each tier:
+
+```http
+# 1. District nested under province
+GET https://opengeo-cambodia.pphat.me/api/admin/provinces/12/districts/1202
+
+# 2. Communes nested under district and province
+GET https://opengeo-cambodia.pphat.me/api/admin/provinces/12/districts/1202/communes
+
+# 3. Single commune nested under district and province
+GET https://opengeo-cambodia.pphat.me/api/admin/provinces/12/districts/1202/communes/120201
+
+# 4. Villages nested under commune, district, and province
+GET https://opengeo-cambodia.pphat.me/api/admin/provinces/12/districts/1202/communes/120201/villages
+
+# 5. Full 4-tier nested path to a single village
+GET https://opengeo-cambodia.pphat.me/api/admin/provinces/12/districts/1202/communes/120201/villages/12020101
+```
+
+If a child ID does not belong to the specified parent (for example, attempting to access a Battambang district ID under Phnom Penh's province ID `12`), the API returns a strict `404 Not Found` with a descriptive error message.
+
+---
+
+## 3. Resolving the Complete 4-Tier Hierarchy Path
 
 ### The Problem: Redundant Database Storage
 When storing customer addresses in your database, developers often make the mistake of saving four separate columns:
@@ -177,3 +202,4 @@ In **[Part 4: High-Resolution Boundaries & Point-in-Polygon Spatial Engine](04-b
 ---
 
 [← Previous: Part 2 — Architecture & Performance](02-architecture-and-performance.md) | [Next: Part 4 — Boundaries & Point-in-Polygon →](04-boundaries-and-point-in-polygon.md)
+

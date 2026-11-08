@@ -100,6 +100,22 @@ GET https://opengeo-cambodia.pphat.me/api/boundaries/districts?province_code=12
 GET https://opengeo-cambodia.pphat.me/api/boundaries/communes?district_code=1202
 ```
 
+### Nested Boundary Resource Routes
+You can also use natural hierarchical nesting paths instead of query parameters:
+```http
+# Districts in a province
+GET https://opengeo-cambodia.pphat.me/api/boundaries/provinces/12/districts
+
+# Single district in a province
+GET https://opengeo-cambodia.pphat.me/api/boundaries/provinces/12/districts/1202
+
+# Communes in a district under a province
+GET https://opengeo-cambodia.pphat.me/api/boundaries/provinces/12/districts/1202/communes
+
+# Single commune under a district and province
+GET https://opengeo-cambodia.pphat.me/api/boundaries/provinces/12/districts/1202/communes/120201
+```
+
 ### Complete Ascending Boundary Stack
 ```http
 GET https://opengeo-cambodia.pphat.me/api/boundaries/hierarchy/120201
@@ -139,3 +155,4 @@ In **[Part 5: Smart Reverse Geocoding & Address Autocomplete](05-geocoding-and-r
 ---
 
 [← Previous: Part 3 — Administrative Hierarchy API](03-administrative-hierarchy-api.md) | [Next: Part 5 — Reverse Geocoding & Search →](05-geocoding-and-reverse-lookup.md)
+

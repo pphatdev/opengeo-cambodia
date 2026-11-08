@@ -115,6 +115,15 @@ export const ENDPOINTS: Endpoint[] = [
         params: [{ name: "id", in: "path", type: "number", required: true, example: "120101", description: { en: "Commune id.", km: "id ឃុំ។" } }],
     },
     {
+        id: "admin-nested-communes", group: "admin", path: "/api/admin/provinces/{provinceId}/districts/{districtId}/communes",
+        title: { en: "Nested communes by province & district", km: "បញ្ជីឃុំតាមខេត្តនិងស្រុក (Nesting)" },
+        description: { en: "Strict RESTful hierarchical query validating that the district belongs to the province.", km: "ការទាញយកឃុំដោយផ្ទៀងផ្ទាត់ថាស្រុកនោះពិតជាស្ថិតក្នុងខេត្តដែលបានបញ្ជាក់។" },
+        params: [
+            { name: "provinceId", in: "path", type: "number", required: true, example: "12", description: { en: "Province id (e.g. 12).", km: "id ខេត្ត។" } },
+            { name: "districtId", in: "path", type: "number", required: true, example: "1202", description: { en: "District id (e.g. 1202).", km: "id ស្រុក។" } },
+        ],
+    },
+    {
         id: "admin-item", group: "admin", path: "/api/admin/item/{id}",
         title: { en: "Get a place", km: "ទាញយកទីតាំងមួយ" },
         description: { en: "A single record at any level, looked up by id.", km: "ទិន្នន័យមួយនៃកម្រិតណាក៏បាន ស្វែងរកតាម id។" },

@@ -438,9 +438,11 @@ app.get("/assets/*", (c) => {
     return c.body(fs.readFileSync(filePath));
 });
 
-// 8. Web app pages (React SPA: landing/explorer and API docs)
+// 8. Web app pages (React SPA: landing/explorer, API docs, and engineering blog)
 app.get("/docs", serveSpa);
 app.get("/demo", serveSpa);
+app.get("/blog", serveSpa);
+app.get("/blog/*", serveSpa);
 
 // 8. API Root Welcome Endpoint (Auto-detects Browser vs API client)
 app.get("/", async (c) => {
