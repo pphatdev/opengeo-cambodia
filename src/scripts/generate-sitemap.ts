@@ -344,3 +344,4 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
     generateSitemap();
     console.log(`✅ Sitemap generation completed (${allUrls.length} indexable URLs)!`);
 }
+
