@@ -21,6 +21,7 @@ export function App() {
                             <Route path="/" element={<Home />} />
                             <Route path="/demo" element={<Home />} />
                             <Route path="/docs" element={<Suspense fallback={<div className="min-h-screen" />}><Docs /></Suspense>} />
+                            <Route path="/docs/*" element={<Suspense fallback={<div className="min-h-screen" />}><Docs /></Suspense>} />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
                     </BrowserRouter>

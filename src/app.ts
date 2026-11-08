@@ -440,6 +440,7 @@ app.get("/assets/*", (c) => {
 
 // 8. Web app pages (React SPA: landing/explorer, API docs, and engineering blog)
 app.get("/docs", serveSpa);
+app.get("/docs/*", serveSpa);
 app.get("/demo", serveSpa);
 app.get("/blog", serveSpa);
 app.get("/blog/*", serveSpa);
@@ -495,6 +496,10 @@ app.route("/", healthRoutes);
 
 // 8. 404 Not Found Handler
 app.notFound((c) => {
+    const accept = c.req.header("Accept") || "";
+    if (accept.includes("text/html") && !c.req.path.startsWith("/api/")) {
+        return serveSpa(c);
+    }
     return c.json(
         {
             success: false,
