@@ -289,24 +289,56 @@ export function PlaygroundHeroPreview({
     };
 
     return (
-        <div>
+        <div className="space-y-4">
             {/* The Hero Map Canvas Container */}
-            <div className="relative overflow-hidden rounded">
+            <div className="relative overflow-hidden rounded-2xl border border-line bg-surface/80 p-4 sm:p-6 shadow-sm backdrop-blur-md">
+                {/* Ambient Radial Accent Glow */}
+                <div className="pointer-events-none absolute inset-0 bg-radial-[circle_at_50%_45%] from-accent/8 via-transparent to-transparent" aria-hidden="true" />
+
+                {/* Top Overlay Badge Bar */}
+                <div className="relative z-20 flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div className="inline-flex items-center gap-2 rounded-lg border border-line/70 bg-surface/90 px-2.5 py-1 font-mono text-[11px] text-ink shadow-xs backdrop-blur">
+                        <span className="size-1.5 rounded-full bg-accent animate-pulse" />
+                        <span className="font-semibold">Cambodia Hero Map</span>
+                        <span className="text-ink-3">·</span>
+                        <span className="text-ink-3">14.7°N · 102.3°E</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <span className="rounded-lg border border-line/70 bg-surface/90 px-2.5 py-1 font-mono text-[11px] font-semibold text-ink-2 shadow-xs backdrop-blur">
+                            25 Provinces
+                        </span>
+                        <button
+                            type="button"
+                            onClick={() => setPaused((p) => !p)}
+                            className="cursor-pointer inline-flex items-center gap-1 rounded-lg border border-line/70 bg-surface/90 px-2.5 py-1 font-mono text-[11px] text-ink-3 hover:text-ink hover:border-accent shadow-xs backdrop-blur transition-colors"
+                            title={paused ? "Resume Province Auto-Tour" : "Pause Auto-Tour"}
+                        >
+                            <span>{paused ? "▶ Tour" : "⏸ Pause"}</span>
+                        </button>
+                    </div>
+                </div>
+
                 {/* SVG Cambodia Hero Map (Constrained compact size) */}
                 <figure className="relative m-0 w-full max-w-190 mx-auto select-none" onMouseLeave={leave}>
                     <div className="relative pt-2 pb-2" style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT + 20}` }}>
-                        {/* Coordinates frame markers */}
-                        <span className="absolute left-0 top-0 font-mono text-[10px] tracking-wide text-ink-3">14.7°N · 102.3°E</span>
-                        <span className="absolute bottom-0 right-0 font-mono text-[10px] tracking-wide text-ink-3">10.4°N · 107.7°E</span>
-
                         <svg
                             viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
                             className="absolute inset-x-0 top-4 h-[calc(100%-32px)] w-full overflow-visible"
                             role="img"
                             aria-label="Cambodia Administrative Hero Map"
                         >
+                            <defs>
+                                <filter id="hero-map-shadow" x="-5%" y="-5%" width="115%" height="115%">
+                                    <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="currentColor" floodOpacity="0.06" />
+                                </filter>
+                                <filter id="active-lift-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feDropShadow dx="0" dy="10" stdDeviation="16" floodColor="var(--og-accent)" floodOpacity="0.3" />
+                                </filter>
+                            </defs>
+
                             {/* Country Soft Drop Shadow */}
-                            <g className="fill-ink/5 translate-x-1.5 translate-y-2" aria-hidden="true">
+                            <g className="fill-ink/5 translate-x-1.5 translate-y-2" aria-hidden="true" filter="url(#hero-map-shadow)">
                                 {PROVINCES.map((p) => (
                                     <path key={p.code} d={p.d} />
                                 ))}
@@ -333,10 +365,10 @@ export function PlaygroundHeroPreview({
                                         className={cx(
                                             "cursor-pointer stroke-[1.1] transition-all duration-300",
                                             isCurrent
-                                                ? "fill-accent/20 stroke-accent"
+                                                ? "fill-accent/20 stroke-accent stroke-[1.8]"
                                                 : isHighlighted
                                                     ? "fill-water/20 stroke-water hover:fill-water/30"
-                                                    : "fill-surface stroke-line-2 hover:fill-surface-2",
+                                                    : "fill-surface stroke-line-2 hover:fill-accent/10 hover:stroke-accent/60",
                                         )}
                                     >
                                         <title>{lang === "km" ? `${p.km} · ${p.en}` : `${p.en} · ${p.km}`}</title>
@@ -349,9 +381,17 @@ export function PlaygroundHeroPreview({
                                 key={active.code}
                                 d={active.d}
                                 vectorEffect="non-scaling-stroke"
-                                className="animate-lift pointer-events-none fill-accent/15 stroke-accent stroke-2 transform-fill origin-center drop-shadow-[0_10px_20px_color-mix(in_srgb,var(--og-accent)_35%,transparent)]"
+                                filter="url(#active-lift-shadow)"
+                                className="animate-lift pointer-events-none fill-accent/18 stroke-accent stroke-[2.2] transform-fill origin-center"
                             />
                         </svg>
+
+                        {/* Bottom-right coordinates marker */}
+                        <div className="pointer-events-none absolute bottom-2 right-2 z-10">
+                            <span className="rounded-md bg-surface/80 px-2 py-0.5 font-mono text-[10px] text-ink-3 border border-line/40 backdrop-blur">
+                                10.4°N · 107.7°E
+                            </span>
+                        </div>
 
                         {/* Gliding centroid indicator & callout */}
                         <div
@@ -361,49 +401,53 @@ export function PlaygroundHeroPreview({
                         >
                             {/* Centroid Pin */}
                             <span className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2">
-                                <span className="absolute inset-0 animate-ping rounded-full bg-accent/40 motion-reduce:hidden" />
-                                <span className="relative block size-3.5 rounded-full border-2 border-bg bg-accent shadow-md" />
+                                <span className="absolute inset-0 size-6 -translate-x-1 -translate-y-1 animate-ping rounded-full bg-accent/30 motion-reduce:hidden" />
+                                <span className="relative flex size-4 items-center justify-center">
+                                    <span className="size-2.5 rounded-full bg-accent ring-2 ring-surface shadow-md" />
+                                </span>
                             </span>
 
                             {/* Gliding Callout Card (desktop & tablet) */}
                             <div
                                 className={cx(
-                                    "pointer-events-auto absolute left-0 top-0 w-[min(280px,70%)] -translate-y-1/2 rounded-xl border border-line bg-surface/95 p-3.5 shadow-xl backdrop-blur transition-transform duration-700 max-sm:hidden",
+                                    "pointer-events-auto absolute left-0 top-0 w-[min(300px,75%)] -translate-y-1/2 rounded-2xl border border-line/80 bg-surface/95 p-4 shadow-2xl backdrop-blur-md transition-transform duration-700 max-sm:hidden",
                                     EASE,
-                                    flip ? "-translate-x-[calc(100%+18px)]" : "translate-x-4.5",
+                                    flip ? "-translate-x-[calc(100%+20px)]" : "translate-x-5",
                                 )}
                             >
                                 <div key={active.code + (geocodeMarker?.label || "")} className="animate-fade-up">
-                                    <div className="mb-1.5 flex items-center justify-between gap-2">
-                                        <span className="rounded-md bg-accent-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-accent km:font-khmer km:normal-case km:tracking-normal km:text-[11px]">
-                                            {t("hero.provinceTag")}
+                                    <div className="mb-2 flex items-center justify-between gap-2 border-b border-line/50 pb-2">
+                                        <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-accent km:font-khmer km:normal-case km:tracking-normal km:text-[11px]">
+                                            {t("hero.provinceTag")} #{active.code}
                                         </span>
-                                        <span className="font-mono text-[11px] text-ink-3">#{active.code}</span>
+                                        <span className="font-mono text-[11px] text-ink-3">
+                                            ID: {active.id}
+                                        </span>
                                     </div>
 
-                                    <div className="font-khmer text-lg font-bold leading-snug text-ink">{active.km}</div>
-                                    <div className="text-xs font-medium text-ink-2">{active.en}</div>
+                                    <div className="font-khmer text-xl font-bold leading-snug text-ink">{active.km}</div>
+                                    <div className="text-xs font-semibold text-ink-2 mt-0.5">{active.en}</div>
 
                                     {/* Summary / Context */}
                                     <div className="mt-2 text-[11px] font-mono text-ink-3 truncate">
                                         {calloutSummary}
                                     </div>
 
-                                    {/* Live Timing Badge */}
-                                    <div className="mt-2 flex items-center justify-between gap-2 rounded-md bg-code px-2 py-1.5 font-mono text-[10.5px] text-code-dim">
-                                        <span className="truncate text-code-text">{log ? endpointPath : `/api/admin/provinces/${active.id}/districts`}</span>
-                                        <span className={!log || log.status < 400 ? "text-j-str font-bold" : "text-j-err font-bold"}>
+                                    {/* Live Timing / Endpoint Pill */}
+                                    <div className="mt-2.5 flex items-center justify-between gap-2 rounded-lg bg-surface-2 border border-line/60 px-2.5 py-1.5 font-mono text-[11px] text-ink-3">
+                                        <span className="truncate text-ink-2">{log ? endpointPath : `/api/admin/provinces/${active.id}/districts`}</span>
+                                        <span className={!log || log.status < 400 ? "text-ok font-bold" : "text-warn font-bold"}>
                                             {log ? `${log.ms.toFixed(2)}ms` : "Live"}
                                         </span>
                                     </div>
 
-                                    {/* Drill Down Action */}
+                                    {/* Drill Down Action Buttons */}
                                     {onDrillDown && (
-                                        <div className="mt-2.5 flex items-center gap-2">
+                                        <div className="mt-3 flex items-center gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => onDrillDown(`/api/admin/provinces/${active.id}/districts`, { id: String(active.id) })}
-                                                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-ink px-2.5 py-1.5 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] cursor-pointer transition-colors"
+                                                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-ink px-3 py-2 text-xs font-semibold text-bg hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] cursor-pointer transition-colors shadow-xs"
                                             >
                                                 <Icon name="play" className="size-3" />
                                                 <span>Districts</span>
@@ -411,7 +455,7 @@ export function PlaygroundHeroPreview({
                                             <button
                                                 type="button"
                                                 onClick={() => onDrillDown(`/api/boundaries/districts?province_code=${active.code}`, { province_code: active.code })}
-                                                className="flex items-center justify-center gap-1 rounded-lg border border-line bg-surface-2 px-2.5 py-1.5 text-xs font-semibold text-accent hover:border-accent cursor-pointer transition-colors"
+                                                className="flex items-center justify-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-xs font-semibold text-accent hover:bg-accent/20 cursor-pointer transition-colors"
                                                 title="View district boundary polygons on map"
                                             >
                                                 <Icon name="polygon" className="size-3" />
@@ -425,26 +469,26 @@ export function PlaygroundHeroPreview({
                     </div>
 
                     {/* Mobile Callout below map */}
-                    <div className="mt-2 rounded-xl border border-line bg-surface p-3.5 sm:hidden">
-                        <div className="flex items-center justify-between mb-1">
+                    <div className="mt-3 rounded-xl border border-line bg-surface p-4 sm:hidden shadow-sm">
+                        <div className="flex items-center justify-between mb-1.5 border-b border-line/60 pb-1.5">
                             <span className={lvl("province")}>#{active.code}</span>
                             <span className="font-mono text-xs text-ok font-semibold">{log ? `${log.status} · ${log.ms.toFixed(2)}ms` : "Live Hero Map"}</span>
                         </div>
-                        <div className="font-khmer text-base font-bold text-ink">{active.km} ({active.en})</div>
+                        <div className="font-khmer text-lg font-bold text-ink">{active.km} ({active.en})</div>
                         <div className="mt-1 text-xs text-ink-3 font-mono">{calloutSummary}</div>
                         {onDrillDown && (
-                            <div className="mt-2.5 flex items-center gap-2">
+                            <div className="mt-3 flex items-center gap-2">
                                 <button
                                     type="button"
                                     onClick={() => onDrillDown(`/api/admin/provinces/${active.id}/districts`, { id: String(active.id) })}
-                                    className="flex-1 rounded-lg bg-ink py-1 text-xs font-semibold text-bg text-center"
+                                    className="flex-1 rounded-lg bg-ink py-2 text-xs font-semibold text-bg text-center"
                                 >
                                     Districts
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => onDrillDown(`/api/boundaries/districts?province_code=${active.code}`, { province_code: active.code })}
-                                    className="rounded-lg border border-line bg-surface-2 px-2.5 py-1 text-xs font-semibold text-accent text-center"
+                                    className="rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-xs font-semibold text-accent text-center"
                                 >
                                     Boundaries →
                                 </button>
