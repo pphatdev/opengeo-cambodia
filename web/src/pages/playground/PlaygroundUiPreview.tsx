@@ -59,7 +59,7 @@ export function PlaygroundUiPreview({ log, onDrillDown }: PlaygroundUiPreviewPro
                         <div className="border-b border-line bg-surface-2 px-4 py-2.5 text-xs font-semibold text-ink">
                             Features in Geometry ({count})
                         </div>
-                        <div className="max-h-60 overflow-y-auto divide-y divide-line/60">
+                        <div className="overflow-y-auto divide-y divide-line/60">
                             {features.slice(0, 100).map((f: any, idx: number) => {
                                 const p = f.properties || {};
                                 const code = p.code || p.id || String(idx + 1);
