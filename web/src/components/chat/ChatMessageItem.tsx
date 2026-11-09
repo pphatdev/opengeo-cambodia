@@ -71,16 +71,16 @@ export function ChatMessageItem({
                 {/* Bubble Container */}
                 <div
                     className={cx(
-                        "w-full rounded-2xl p-3.5 sm:p-4 text-[13px] leading-relaxed shadow-xs transition-all",
+                        "w-full rounded-2xl p-3.5 sm:p-4 text-[13px] leading-relaxed transition-all",
                         isUser
                             ? "rounded-tr-xs bg-accent text-bg font-normal"
                             : isError
-                            ? "rounded-tl-xs border border-warn/35 bg-warn/10 text-ink"
-                            : "rounded-tl-xs border border-line bg-surface text-ink",
+                            ? "rounded-tl-xs bg-warn/10 text-ink"
+                            : "rounded-tl-xs bg-surface text-ink",
                     )}
                 >
                     {isUser ? (
-                        <div className="whitespace-pre-wrap break-words">{renderIosEmojiText(message.content)}</div>
+                        <div className="whitespace-pre-wrap wrap-break-word">{renderIosEmojiText(message.content)}</div>
                     ) : isError ? (
                         <div className="space-y-2.5">
                             <div className="flex items-start gap-2 text-warn">

@@ -20,6 +20,7 @@ const en = {
         data: "Data",
         docs: "Docs",
         playground: "Playground",
+        chat: "Ask AI",
         blog: "Blog",
         apiIndex: "API index",
         github: "GitHub repository",
