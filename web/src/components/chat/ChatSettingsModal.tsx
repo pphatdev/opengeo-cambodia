@@ -239,6 +239,10 @@ export function ChatSettingsModal({
                                 <span className="text-[11px] text-ink-3 mt-0.5">Condensed endpoints (~1.2k tokens)</span>
                             </button>
                         </div>
+                        <div className="mt-2 flex items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 py-1.5 text-[11px] text-accent">
+                            <Icon name="sparkles" className="size-3.5 shrink-0" />
+                            <span><strong>Reverse Token Saving:</strong> Scans history backwards from recent turns to prune old messages and save API tokens.</span>
+                        </div>
                     </div>
 
                     {/* Device MAC Identity & History Scope */}

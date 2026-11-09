@@ -157,6 +157,9 @@ export function buildSystemPrompt(mode: "full" | "compact" = "compact"): string 
        - Instagram: https://www.instagram.com/pphat_dev
        - Google Developer Profile: https://g.dev/pphat
        - Glitch: https://glitch.com/@pphat
+12. Reverse Token Optimization for Saving Tokens:
+   - The chatbot engine uses reverse token windowing to save tokens: conversation history is traversed in reverse order (from newest to oldest), compressing bulky code blocks and pruning distant turns that exceed the token budget.
+   - If asked about token usage, cost optimization, or context management, explain that OpenGeo Assistant uses reverse token windowing to maximize contextual relevance while conserving user API tokens and minimizing quota costs.
 
 === PROJECT CREATOR & SOCIAL PROFILES ===
 Creator: PPhat
@@ -188,6 +191,95 @@ export interface ChatServiceOptions {
     model?: string;
     mode?: "full" | "compact";
     stream?: boolean;
+}
+
+/**
+ * Estimates token count for English, Khmer, and code content.
+ * Latin/ASCII: ~3.8 characters per token.
+ * Non-ASCII (Khmer unicode, symbols): ~1.5 characters per token.
+ */
+export function estimateTokens(text: string): number {
+    if (!text) return 0;
+    let asciiCount = 0;
+    let nonAsciiCount = 0;
+    for (let i = 0; i < text.length; i++) {
+        if (text.charCodeAt(i) < 128) {
+            asciiCount++;
+        } else {
+            nonAsciiCount++;
+        }
+    }
+    const tokenEst = Math.ceil(asciiCount / 3.8) + Math.ceil(nonAsciiCount / 1.5);
+    return Math.max(1, tokenEst);
+}
+
+/**
+ * Reverse Token Windowing:
+ * Iterates through message history in REVERSE (from the most recent message backwards),
+ * compressing verbose assistant code blocks and accumulating tokens until the token budget is met.
+ * Older messages that exceed the budget are pruned to save user API tokens.
+ */
+export function applyReverseTokenBudget(
+    history: ChatMessage[],
+    maxBudgetTokens: number = 1500,
+): { messages: ChatMessage[]; estimatedTokens: number; prunedCount: number } {
+    if (!history || history.length === 0) {
+        return { messages: [], estimatedTokens: 0, prunedCount: 0 };
+    }
+
+    const selectedReversed: ChatMessage[] = [];
+    let accumulatedTokens = 0;
+    let prunedCount = 0;
+
+    // Traverse in REVERSE: newest message (at the end) backwards to oldest
+    for (let i = history.length - 1; i >= 0; i--) {
+        const item = history[i];
+        if (!item || !item.content) continue;
+
+        let content = item.content;
+
+        // Compress older assistant responses by omitting verbose code fences to save tokens
+        if (item.role === "assistant" && content.length > 500) {
+            content = content.replace(
+                /```[\w]*\n[\s\S]{250,}?```/g,
+                "```\n// [Previous code block omitted to save tokens]\n```",
+            );
+        }
+
+        const msgTokens = estimateTokens(content) + 4; // 4 tokens per message role overhead
+
+        if (accumulatedTokens + msgTokens <= maxBudgetTokens) {
+            selectedReversed.push({ ...item, content });
+            accumulatedTokens += msgTokens;
+        } else {
+            // If we haven't selected ANY message yet, partially trim this single message to fit
+            if (selectedReversed.length === 0) {
+                const remainingTokens = Math.max(100, maxBudgetTokens - accumulatedTokens);
+                const charBudget = Math.floor(remainingTokens * 3);
+                const trimmedContent = content.slice(-charBudget);
+                selectedReversed.push({
+                    ...item,
+                    content: `...[Previous context trimmed to save tokens]\n${trimmedContent}`,
+                });
+                accumulatedTokens += remainingTokens;
+            }
+            prunedCount += (i + 1);
+            break; // Stop collecting older turns
+        }
+
+        // Limit maximum turn depth to 8 messages (4 turns) for optimal relevance
+        if (selectedReversed.length >= 8) {
+            prunedCount += i;
+            break;
+        }
+    }
+
+    // Reverse back to chronological order (oldest to newest)
+    return {
+        messages: selectedReversed.reverse(),
+        estimatedTokens: accumulatedTokens,
+        prunedCount,
+    };
 }
 
 export class AiChatService {
@@ -234,17 +326,11 @@ export class AiChatService {
 
         const systemPrompt = buildSystemPrompt(mode);
 
-        // Keep the last 6 messages (3 conversation turns) for rich conversational context
-        const recentHistory = history.slice(-6).map((m) => {
-            if (m.role === "assistant" && m.content.length > 800) {
-                const compressed = m.content.replace(
-                    /```[\s\S]{500,}?```/g,
-                    "```\n// [Previous code block omitted]\n```",
-                );
-                return { ...m, content: compressed };
-            }
-            return m;
-        });
+        // Reverse Token Budgeting:
+        // Evaluates conversation history in REVERSE (newest to oldest), compressing large previous code
+        // blocks and discarding turns that exceed the token reserve budget to save user API tokens.
+        const tokenBudget = mode === "compact" ? 900 : 1600;
+        const { messages: recentHistory } = applyReverseTokenBudget(history, tokenBudget);
 
         const messages: ChatMessage[] = [
             { role: "system", content: systemPrompt },

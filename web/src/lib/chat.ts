@@ -202,6 +202,47 @@ export interface StreamChatParams {
 }
 
 /**
+ * Reverse Token Budgeting (Client-side):
+ * Scans chat history backwards (newest to oldest), trimming verbose code blocks
+ * and pruning distant turns that exceed the token reserve budget to save user API quota.
+ */
+export function applyClientReverseTokenBudget(
+    history: { role: "user" | "assistant"; content: string }[],
+    maxTokens: number = 1500,
+): { role: "user" | "assistant"; content: string }[] {
+    if (!history || history.length === 0) return [];
+
+    const selectedReversed: { role: "user" | "assistant"; content: string }[] = [];
+    let accumulatedTokens = 0;
+
+    for (let i = history.length - 1; i >= 0; i--) {
+        const item = history[i];
+        if (!item || !item.content) continue;
+
+        let content = item.content;
+        if (item.role === "assistant" && content.length > 500) {
+            content = content.replace(
+                /```[\w]*\n[\s\S]{250,}?```/g,
+                "```\n// [Previous code omitted to save tokens]\n```",
+            );
+        }
+
+        // Approx 3.5 chars per token + role overhead
+        const tokens = Math.ceil(content.length / 3.5) + 4;
+        if (accumulatedTokens + tokens <= maxTokens) {
+            selectedReversed.push({ ...item, content });
+            accumulatedTokens += tokens;
+        } else {
+            break;
+        }
+
+        if (selectedReversed.length >= 8) break;
+    }
+
+    return selectedReversed.reverse();
+}
+
+/**
  * Sends a message to /api/chat with Server-Sent Events (SSE) streaming.
  * Handles incremental chunks and falls back gracefully.
  */
@@ -220,13 +261,18 @@ export async function streamChatMessage(params: StreamChatParams): Promise<void>
         headers["x-mistral-api-key"] = effectiveKey;
     }
 
+    const budgetedHistory = applyClientReverseTokenBudget(
+        history,
+        mode === "compact" ? 900 : 1600,
+    );
+
     try {
         const res = await fetch("/api/chat", {
             method: "POST",
             headers,
             body: JSON.stringify({
                 message,
-                history,
+                history: budgetedHistory,
                 model: model || getStoredModel(),
                 mode,
                 stream: true,
