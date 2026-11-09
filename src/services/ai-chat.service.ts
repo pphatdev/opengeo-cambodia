@@ -295,10 +295,11 @@ export class AiChatService {
     getStatus(): ChatStatusData {
         const full = loadKnowledgeBase("full");
         const compact = loadKnowledgeBase("compact");
+        const hasServerKey = Boolean(config.mistral.apiKey && config.mistral.apiKey.trim());
 
         return {
-            hasServerKey: false, // BYOK: Server key is never exposed to public requests
-            requiresUserKey: true,
+            hasServerKey,
+            requiresUserKey: !hasServerKey,
             defaultModel: config.mistral.model || DEFAULT_MODEL,
             availableModels: [...AVAILABLE_MODELS],
             knowledge: {
@@ -314,13 +315,14 @@ export class AiChatService {
         const {
             message,
             history = [],
-            apiKey,
+            apiKey = config.mistral.apiKey,
             model = config.mistral.model || DEFAULT_MODEL,
             mode = "full",
             stream = true,
         } = options;
 
-        if (!apiKey || !apiKey.trim()) {
+        const effectiveKey = apiKey?.trim() || config.mistral.apiKey?.trim();
+        if (!effectiveKey) {
             throw new Error("MISTRAL_API_KEY_REQUIRED");
         }
 
@@ -350,7 +352,7 @@ export class AiChatService {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey.trim()}`,
+                "Authorization": `Bearer ${effectiveKey.trim()}`,
             },
             body: JSON.stringify(mistralPayload),
         });

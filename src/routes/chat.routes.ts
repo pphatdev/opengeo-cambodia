@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { config } from "../config.js";
 import { AiChatService } from "../services/ai-chat.service.js";
 import type { ChatMessage, ChatRequestPayload } from "../types/chat.js";
 
@@ -8,10 +9,10 @@ chatRoutes.get("/status", (c) => {
     const service = AiChatService.getInstance();
     const status = service.getStatus();
 
-    // Enforce BYOK (Bring Your Own Key):
-    // Server key is not shared with public users. Clients must provide their own Mistral API key.
-    status.hasServerKey = false;
-    status.requiresUserKey = true;
+    // Check environment key from Cloudflare Worker env or process.env
+    const envKey = ((c.env as any)?.MISTRAL_API_KEY as string | undefined)?.trim() || config.mistral.apiKey?.trim();
+    status.hasServerKey = Boolean(envKey);
+    status.requiresUserKey = !envKey;
 
     return c.json({
         success: true,
@@ -92,9 +93,9 @@ chatRoutes.post("/", async (c) => {
         );
     }
 
-    // Enforce BYOK (Bring Your Own Key):
-    // Users must supply their own Mistral API key via header, Bearer authorization, or request body.
-    // Server environment keys are strictly protected and never used for public user queries.
+    // Resolve Mistral API Key priority:
+    // First read from environment (process.env.MISTRAL_API_KEY or Cloudflare c.env.MISTRAL_API_KEY).
+    // Users can also use their own personal Mistral token via x-mistral-api-key header, Bearer authorization, or request body.
     const headerKey = c.req.header("x-mistral-api-key")?.trim();
     const authHeader = c.req.header("authorization")?.trim();
     let bearerKey = "";
@@ -102,14 +103,18 @@ chatRoutes.post("/", async (c) => {
         bearerKey = authHeader.slice(7).trim();
     }
     const bodyKey = body.apiKey?.trim();
+    const userKey = headerKey || bearerKey || bodyKey;
 
-    const apiKey = headerKey || bearerKey || bodyKey;
+    const envKey = ((c.env as any)?.MISTRAL_API_KEY as string | undefined)?.trim() || config.mistral.apiKey?.trim();
+
+    // First read from env, then user can use their personal mistral token (user token overrides if provided)
+    const apiKey = userKey || envKey;
 
     if (!apiKey) {
         return c.json(
             {
                 success: false,
-                error: "Mistral API key is required. Please provide your personal Mistral API key via the 'x-mistral-api-key' header or in Chat Settings.",
+                error: "Mistral API key is required. Please set MISTRAL_API_KEY in your server environment (.env) or provide your personal Mistral key in Chat Settings.",
                 requiresKey: true,
             },
             401,

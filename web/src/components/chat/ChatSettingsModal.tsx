@@ -23,10 +23,11 @@ interface ChatSettingsModalProps {
 export function ChatSettingsModal({
     open,
     onClose,
-    status: _status,
+    status,
     onSaved,
 }: ChatSettingsModalProps) {
     const { toast } = useToast();
+    const hasServerKey = Boolean(status?.hasServerKey);
     const [apiKey, setApiKey] = useState("");
     const [showKey, setShowKey] = useState(false);
     const [model, setModel] = useState("mistral-small-latest");
@@ -117,36 +118,48 @@ export function ChatSettingsModal({
                 {/* Body */}
                 <div className="space-y-4.5 pt-4 text-[13px]">
                     {/* Key status alert */}
-                    <div className="flex items-start gap-2.5 rounded-xl border border-accent/25 bg-accent-soft px-3.5 py-2.5 text-xs text-ink">
-                        <Icon name="key" className="mt-0.5 size-4 shrink-0 text-accent" />
-                        <div>
-                            <span className="font-semibold text-ink">Bring Your Own Key (BYOK) required:</span>
-                            <span className="block mt-0.5 text-ink-2">
-                                Enter your personal Mistral API key below to query the OpenGeo Cambodia assistant. Your key stays stored securely in your browser's localStorage.
-                            </span>
-                            <a
-                                href="https://console.mistral.ai/api-keys/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="mt-1.5 inline-flex items-center gap-1 font-semibold text-accent hover:underline"
-                            >
-                                <span>Get a free API key at console.mistral.ai</span>
-                                <span>&rarr;</span>
-                            </a>
+                    {hasServerKey ? (
+                        <div className="flex items-start gap-2.5 rounded-xl border border-ok/30 bg-ok/10 px-3.5 py-2.5 text-xs text-ink">
+                            <Icon name="check" className="mt-0.5 size-4 shrink-0 text-ok" />
+                            <div>
+                                <span className="font-semibold text-ok">Server Environment Key Active (.env)</span>
+                                <span className="block mt-0.5 text-ink-2">
+                                    The assistant automatically uses the server's environment token by default. You can also enter your personal Mistral API key below if you wish to use your own quota.
+                                </span>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="flex items-start gap-2.5 rounded-xl border border-accent/25 bg-accent-soft px-3.5 py-2.5 text-xs text-ink">
+                            <Icon name="key" className="mt-0.5 size-4 shrink-0 text-accent" />
+                            <div>
+                                <span className="font-semibold text-ink">Mistral API Key:</span>
+                                <span className="block mt-0.5 text-ink-2">
+                                    First reads from environment (.env); otherwise, enter your personal Mistral API key below to query the assistant.
+                                </span>
+                                <a
+                                    href="https://console.mistral.ai/api-keys/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-1.5 inline-flex items-center gap-1 font-semibold text-accent hover:underline"
+                                >
+                                    <span>Get a free API key at console.mistral.ai</span>
+                                    <span>&rarr;</span>
+                                </a>
+                            </div>
+                        </div>
+                    )}
 
                     {/* API Key Input */}
                     <div>
                         <label className="block font-medium text-ink mb-1.5">
-                            Mistral API Key
+                            Mistral API Key {hasServerKey && <span className="text-[11px] font-normal text-ok">(Optional — Server key active)</span>}
                         </label>
                         <div className="relative flex items-center">
                             <input
                                 type={showKey ? "text" : "password"}
                                 value={apiKey}
                                 onChange={(e) => setApiKey(e.target.value)}
-                                placeholder="Enter your Mistral API key (sk-...)"
+                                placeholder={hasServerKey ? "Using server key from .env (optional custom key)" : "Enter your Mistral API key (sk-...)"}
                                 className="w-full rounded-xl border border-line bg-surface-2 px-3.5 py-2.5 pr-20 font-mono text-xs text-ink placeholder:text-ink-3/70 focus:border-accent focus:outline-hidden"
                             />
                             <div className="absolute right-2 flex items-center gap-1">

@@ -128,9 +128,9 @@ export function ChatWidget() {
         if (!query || isStreaming) return;
 
         const effectiveKey = getStoredApiKey();
-        if (!effectiveKey) {
+        if (!effectiveKey && !status?.hasServerKey) {
             setSettingsOpen(true);
-            toast("Please enter your personal Mistral API key in Settings to chat.");
+            toast("Please enter a Mistral API key in Settings to chat.");
             return;
         }
 
@@ -240,7 +240,7 @@ export function ChatWidget() {
         e.target.style.height = Math.min(e.target.scrollHeight, 140) + "px";
     };
 
-    const hasKey = Boolean(getStoredApiKey());
+    const hasKey = Boolean(status?.hasServerKey || getStoredApiKey());
 
     return (
         <>
@@ -417,12 +417,12 @@ export function ChatWidget() {
 
                     {/* Messages Scroll Area */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-surface-2/30">
-                        {/* API Key Required Banner if no personal key configured */}
+                        {/* API Key Required Banner if no key configured in env or settings */}
                         {!hasKey && (
                             <div className="flex items-center justify-between gap-3 rounded-xl border border-accent/35 bg-accent/10 p-3 text-xs text-ink shadow-xs">
                                 <div className="flex items-center gap-2 min-w-0">
                                     <Icon name="key" className="size-4 text-accent shrink-0" />
-                                    <span className="truncate">Enter your personal Mistral API key to ask questions.</span>
+                                    <span className="truncate">Enter a Mistral API key to ask questions.</span>
                                 </div>
                                 <button
                                     type="button"

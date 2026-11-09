@@ -326,7 +326,7 @@ POST /api/chat
 **Headers:**
 - `Content-Type: application/json`
 - `User-Agent: YourApp/1.0` *(Required)*
-- `x-mistral-api-key: your_key` *(Required: Bring-Your-Own-Key)*
+- `x-mistral-api-key: your_key` *(Optional if MISTRAL_API_KEY is set in server .env; or use custom key)*
 
 **Request Body:**
 ```json
