@@ -360,7 +360,7 @@ export function PlaygroundHeroPreview({
     return (
         <div className="space-y-4">
             {/* The Hero Map Canvas Container */}
-            <div className="relative overflow-hidden rounded-2xl sm:p-6">
+            <div className="relative overflow-hidden rounded-2xl">
                 {/* Ambient Radial Accent Glow */}
                 <div className="pointer-events-none absolute inset-0 bg-radial-[circle_at_50%_45%] from-accent/8 via-transparent to-transparent" aria-hidden="true" />
 

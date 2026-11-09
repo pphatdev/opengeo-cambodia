@@ -11,7 +11,7 @@ import { cx, wrap } from "./ui";
  */
 function Wordmark() {
     return (
-        <div className="pointer-events-none mt-12 select-none leading-none" aria-hidden="true">
+        <div className="pointer-events-none py-12 my-20 select-none leading-none" aria-hidden="true">
             <svg viewBox="0 0 1000 62" preserveAspectRatio="xMidYMax meet" focusable="false" className="block h-auto w-full overflow-visible">
                 <defs>
                     {/* User-space gradient so it spans exactly "OPEN GEO" (0 → ~470), like the logo */}
