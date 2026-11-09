@@ -87,16 +87,6 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                     )}
                 </Link>
                 <nav className="ml-auto flex items-center gap-1.5" aria-label="Primary">
-                    <button
-                        type="button"
-                        onClick={() => window.dispatchEvent(new CustomEvent("open-opengeo-chat"))}
-                        className={cx(navItem, "cursor-pointer")}
-                        title={t("nav.chat")}
-                        aria-label={t("nav.chat")}
-                    >
-                        <Icon name="bot" className="size-4 text-accent max-sm:mr-0 sm:mr-1.5" />
-                        <span className="max-sm:hidden">{t("nav.chat")}</span>
-                    </button>
                     <Link
                         to={lang === "km" ? "/docs?lang=km" : "/docs"}
                         className={cx(
