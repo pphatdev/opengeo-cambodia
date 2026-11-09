@@ -2,6 +2,15 @@
 
 User-agent: *
 Allow: /
+Allow: /api/geocode/reverse?lat=11.5564&lon=104.9282
+Allow: /api/geocode/reverse?lon=104.9282&lat=11.5564
+Disallow: /api/geocode/reverse?*
+
+# Explicit permissions for Googlebot (Web Search)
+User-agent: Googlebot
+Allow: /
+Allow: /api/geocode/reverse?lat=11.5564&lon=104.9282
+Allow: /api/geocode/reverse?lon=104.9282&lat=11.5564
 Disallow: /api/geocode/reverse?*
 
 # Explicit permissions for AI assistants & agents (llmstxt.org)

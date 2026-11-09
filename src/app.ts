@@ -385,7 +385,9 @@ app.get("/robots.txt", async (c) => {
         c.header("Cache-Control", "public, max-age=86400");
         return c.body(fs.readFileSync(filePath, "utf-8"));
     }
-    return c.text("User-agent: *\nAllow: /\nDisallow: /api/geocode/reverse?*\nSitemap: https://opengeo-cambodia.pphat.me/sitemap.xml\n");
+    return c.text(
+        "User-agent: *\nAllow: /\nAllow: /api/geocode/reverse?lat=11.5564&lon=104.9282\nAllow: /api/geocode/reverse?lon=104.9282&lat=11.5564\nDisallow: /api/geocode/reverse?*\n\nUser-agent: Googlebot\nAllow: /\nAllow: /api/geocode/reverse?lat=11.5564&lon=104.9282\nAllow: /api/geocode/reverse?lon=104.9282&lat=11.5564\nDisallow: /api/geocode/reverse?*\n\nSitemap: https://opengeo-cambodia.pphat.me/sitemap.xml\n",
+    );
 });
 
 app.get("/sitemap.xml", async (c) => {

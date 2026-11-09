@@ -155,6 +155,12 @@ const apiEndpoints: SitemapUrl[] = [
         changefreq: "monthly",
         priority: "0.8",
     },
+    {
+        loc: `${DOMAIN}/api/geocode/reverse?lat=11.5564&lon=104.9282`,
+        lastmod: TODAY,
+        changefreq: "monthly",
+        priority: "0.8",
+    },
 ];
 
 // 4. Official 25 Cambodian Provinces (GeoJSON boundaries & administrative records)
@@ -280,6 +286,19 @@ const allUrls: SitemapUrl[] = [
     ...downloadResources,
 ];
 
+function escapeXml(unsafe: string): string {
+    return unsafe.replace(/[<>&'"]/g, (c) => {
+        switch (c) {
+            case "<": return "&lt;";
+            case ">": return "&gt;";
+            case "&": return "&amp;";
+            case "'": return "&apos;";
+            case '"': return "&quot;";
+            default: return c;
+        }
+    });
+}
+
 // Generate XML content
 function buildXml(urls: SitemapUrl[]): string {
     const lines: string[] = [
@@ -290,10 +309,10 @@ function buildXml(urls: SitemapUrl[]): string {
 
     for (const u of urls) {
         lines.push("    <url>");
-        lines.push(`        <loc>${u.loc}</loc>`);
+        lines.push(`        <loc>${escapeXml(u.loc)}</loc>`);
         if (u.alternates) {
             for (const alt of u.alternates) {
-                lines.push(`        <xhtml:link rel="alternate" hreflang="${alt.hreflang}" href="${alt.href}"/>`);
+                lines.push(`        <xhtml:link rel="alternate" hreflang="${alt.hreflang}" href="${escapeXml(alt.href)}"/>`);
             }
         }
         if (u.lastmod) {
