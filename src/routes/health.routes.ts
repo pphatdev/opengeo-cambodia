@@ -64,6 +64,11 @@ healthRoutes.get('/api/info', (c) => {
         reverse: 'GET /api/geocode/reverse?lat=:lat&lon=:lon',
         search: 'GET /api/geocode/search?q=:query&limit=:limit',
       },
+      chat: {
+        ask: 'POST /api/chat',
+        status: 'GET /api/chat/status',
+        prompts: 'GET /api/chat/prompts',
+      },
       system: {
         root: 'GET /',
         health: 'GET /health',

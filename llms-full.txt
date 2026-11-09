@@ -1576,10 +1576,10 @@ Response `200` (`application/json`):
 ```json
 {
   "status": "ok",
-  "uptimeSeconds": 1,
-  "timestamp": "2026-11-09T10:05:08.719Z",
+  "uptimeSeconds": 0,
+  "timestamp": "2026-11-09T11:46:19.628Z",
   "security": {
-    "timestamp": "2026-11-09T10:05:08.719Z",
+    "timestamp": "2026-11-09T11:46:19.628Z",
     "prototypePollutionProtected": false,
     "configSealed": false,
     "allowedOutboundHosts": [

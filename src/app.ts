@@ -11,11 +11,13 @@ import { etag } from "hono/etag";
 import { config } from "./config.js";
 import {
     adminRateLimiter,
+    chatRateLimiter,
     createBotShield,
     globalRateLimiter,
 } from "./middleware/rate-limiter.js";
 import { adminRoutes } from "./routes/admin.routes.js";
 import { boundariesRoutes } from "./routes/boundaries.routes.js";
+import { chatRoutes } from "./routes/chat.routes.js";
 import { geocodeRoutes } from "./routes/geocode.routes.js";
 import { healthRoutes } from "./routes/health.routes.js";
 
@@ -238,13 +240,20 @@ if (config.nodeEnv !== "production") {
 // 3. Automatic HTTP ETag generation & conditional request handling (304 Not Modified)
 app.use("*", etag());
 
-// 4. Hardened CORS Configuration (Supports ETag / If-None-Match)
+// 4. Hardened CORS Configuration (Supports ETag / If-None-Match / Mistral AI API key headers)
 app.use(
     "*",
     cors({
         origin: "*",
-        allowMethods: ["GET", "OPTIONS"],
-        allowHeaders: ["Content-Type", "Accept", "If-None-Match"],
+        allowMethods: ["GET", "POST", "OPTIONS"],
+        allowHeaders: [
+            "Content-Type",
+            "Accept",
+            "If-None-Match",
+            "User-Agent",
+            "x-mistral-api-key",
+            "Authorization",
+        ],
         exposeHeaders: [
             "ETag",
             "X-Response-Time",
@@ -286,9 +295,18 @@ app.use("*", async (c, next) => {
 app.use("/api/admin/*", adminRateLimiter);
 app.use("/api/boundaries/*", adminRateLimiter);
 
+// Rate limiting: AI Chat endpoint (60 req/min/IP)
+app.use("/api/chat/*", chatRateLimiter);
+app.use("/api/chat", chatRateLimiter);
+
 // General rate limiter for non-admin API endpoints (e.g. /api/info, 5,000 req/min/IP)
 app.use("/api/*", async (c, next) => {
-    if (c.req.path.startsWith("/api/admin/") || c.req.path.startsWith("/api/geocode/") || c.req.path.startsWith("/api/boundaries")) {
+    if (
+        c.req.path.startsWith("/api/admin/") ||
+        c.req.path.startsWith("/api/geocode/") ||
+        c.req.path.startsWith("/api/boundaries") ||
+        c.req.path.startsWith("/api/chat")
+    ) {
         return next();
     }
     return globalRateLimiter(c, next);
@@ -584,6 +602,8 @@ app.get("/", async (c) => {
             boundaryDistricts: "/api/boundaries/districts?province_code=:code",
             boundaryCommunes: "/api/boundaries/communes?district_code=:code",
             boundaryItem: "/api/boundaries/item/:code",
+            chat: "/api/chat",
+            chatStatus: "/api/chat/status",
         },
     });
 });
@@ -592,6 +612,7 @@ app.get("/", async (c) => {
 app.route("/api/admin", adminRoutes);
 app.route("/api/boundaries", boundariesRoutes);
 app.route("/api/geocode", geocodeRoutes);
+app.route("/api/chat", chatRoutes);
 app.route("/", healthRoutes);
 
 // 8. 404 Not Found Handler

@@ -8,7 +8,8 @@
 [![Speed: <1ms](https://img.shields.io/badge/Speed-%3C1ms-sky.svg?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![Data Source: MEF Open Data](https://img.shields.io/badge/Data%20Source-data.mef.gov.kh-blue?style=flat-square)](https://data.mef.gov.kh/)
 [![Domain](https://img.shields.io/badge/Domain-opengeo--cambodia.pphat.me-0d9488?style=flat-square)](https://opengeo-cambodia.pphat.me)
-[![LLM Docs](https://img.shields.io/badge/LLM%20Docs-llms.txt-7c3aed?style=flat-square)](https://opengeo-cambodia.pphat.me/llms.txt)
+[![AI Docs](https://img.shields.io/badge/AI%20Docs-llms.txt-7c3aed?style=flat-square)](https://opengeo-cambodia.pphat.me/llms.txt)
+[![AI Q&A](https://img.shields.io/badge/AI%20Q%26A-Mistral%20AI-orange?style=flat-square)](https://opengeo-cambodia.pphat.me/chat)
 [![Postman](https://img.shields.io/badge/Postman-Collection-FF6C37?style=flat-square&logo=postman&logoColor=white)](public/opengeo-cambodia.postman_collection.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
@@ -17,7 +18,8 @@
 📚 **API Documentation:** [https://opengeo-cambodia.pphat.me/docs](https://opengeo-cambodia.pphat.me/docs) *(every endpoint with a live "Send" button)*  
 🏛️ **Official Data Source:** [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)  
 📮 **Postman Collection:** [`public/opengeo-cambodia.postman_collection.json`](public/opengeo-cambodia.postman_collection.json) *(Uses collection variables, no environment file needed)*  
-🤖 **LLM Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)  
+🤖 **AI Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)  
+💬 **AI Q&A Chatbot:** [https://opengeo-cambodia.pphat.me/chat](https://opengeo-cambodia.pphat.me/chat) *(interactive full AI context Q&A)*  
 📰 **Developer Guide & Deep Dive Series:** [**`blog/` (7-Part Series)**](blog/) | [Full Article](blog/introducing-opengeo-cambodia.md)
 
 ---
@@ -307,6 +309,43 @@ Sub-millisecond in-memory Point-in-Polygon lookup resolving the containing admin
 - `GET /api/boundaries/hierarchy/:code` — Ascending nested boundary polygons (Commune -> District -> Province)
 - `GET /api/boundaries/stats` — Boundary counts and Cambodia bounding box
 - `GET /api/boundaries/raw/:filename` — Direct file download (`provinces.geojson`, `districts.geojson`, `communes.geojson`)
+
+---
+
+### 4. Mistral AI Q&A Assistant (Full `llms-full.txt` Context)
+
+OpenGeo Cambodia includes a built-in AI technical assistant powered by **Mistral AI** (`mistral-small-latest` by default). The assistant ingests the full 55 KB reference specification from [`llms-full.txt`](llms-full.txt) into its system context to provide 100% ground-truth code generation (cURL, TypeScript/JavaScript, Python), administrative hierarchy navigation, and Point-in-Polygon spatial query guidance in both **English and Khmer**.
+
+#### Live Web Interfaces
+- **Full-Screen Chat Workbench:** [`/chat`](https://opengeo-cambodia.pphat.me/chat) (or `/qa`)
+- **Global Floating Widget:** Click the "Ask AI" button on any page to open the interactive drawer.
+
+#### Chat Endpoints
+```http
+POST /api/chat
+```
+**Headers:**
+- `Content-Type: application/json`
+- `User-Agent: YourApp/1.0` *(Required)*
+- `x-mistral-api-key: your_key` *(Optional if `MISTRAL_API_KEY` is configured on server)*
+
+**Request Body:**
+```json
+{
+  "message": "How do I get all communes in Khan Chamkar Mon with Python?",
+  "history": [
+    { "role": "user", "content": "Hello" },
+    { "role": "assistant", "content": "Hi! How can I help you with OpenGeo Cambodia?" }
+  ],
+  "model": "mistral-small-latest",
+  "mode": "full",
+  "stream": true
+}
+```
+
+#### Status & Recommended Prompts
+- `GET /api/chat/status` — Inspect Mistral API key configuration, active model, and loaded knowledge base byte counts.
+- `GET /api/chat/prompts` — Get categorized quick questions for administrative hierarchy, geocoding, and SDK code generation.
 
 ---
 

@@ -28,4 +28,11 @@ export const config = {
     cache: {
         ttlSeconds: parseInt(process.env.CACHE_TTL_SECONDS || "31536000", 10),
     },
+
+    // AI Configuration
+    mistral: {
+        apiKey: process.env.MISTRAL_API_KEY || "",
+        model: process.env.MISTRAL_MODEL || "mistral-small-latest",
+        apiUrl: process.env.MISTRAL_API_URL || "https://api.mistral.ai/v1/chat/completions",
+    },
 };
