@@ -259,7 +259,7 @@ export function ChatWidget() {
             {!open && (
                 <aside
                     aria-label="AI Assistant"
-                    className="fixed bottom-5 right-5 z-1050 max-sm:bottom-4 max-sm:right-4 flex flex-col items-end animate-bounce-in select-none pointer-events-auto"
+                    className="fixed bottom-5 left-5 z-1050 max-sm:bottom-4 max-sm:left-4 flex flex-col items-start animate-bounce-in select-none pointer-events-auto"
                 >
                     {/* Welcome Teaser Bubble */}
                     {teaserVisible && (
@@ -301,7 +301,7 @@ export function ChatWidget() {
                             </button>
 
                             {/* Speech Bubble Arrow pointing to the launcher button */}
-                            <div className="absolute -bottom-1.5 right-6 size-3 rotate-45 border-b border-r border-line bg-surface" />
+                            <div className="absolute -bottom-1.5 left-6 size-3 rotate-45 border-b border-r border-line bg-surface" />
                         </div>
                     )}
 
@@ -347,7 +347,7 @@ export function ChatWidget() {
                         "fixed z-1050 flex flex-col overflow-hidden rounded-2xl border border-line bg-surface/98 backdrop-blur-2xl shadow-[0_25px_70px_-15px_rgba(0,0,0,0.35)] transition-all duration-200 animate-pop",
                         maximized
                             ? "inset-3 sm:inset-6 max-w-4xl mx-auto h-[calc(100vh-24px)] sm:h-[calc(100vh-48px)]"
-                            : "bottom-5 right-5 w-[calc(100vw-32px)] sm:w-117.5 h-160 max-h-[calc(100vh-40px)] max-sm:bottom-2 max-sm:right-2 max-sm:left-2 max-sm:w-auto",
+                            : "bottom-5 left-5 w-[calc(100vw-32px)] sm:w-117.5 h-160 max-h-[calc(100vh-40px)] max-sm:bottom-2 max-sm:left-2 max-sm:right-2 max-sm:w-auto",
                     )}
                 >
                     {/* Header */}
