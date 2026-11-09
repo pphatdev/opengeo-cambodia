@@ -30,12 +30,13 @@ export function ChatWidget() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState("");
     const [isStreaming, setIsStreaming] = useState(false);
+    const [teaserVisible, setTeaserVisible] = useState(false);
 
     const abortControllerRef = useRef<AbortController | null>(null);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-    // Initial load
+    // Initial load & first-load teaser sequence
     useEffect(() => {
         const stored = getStoredHistory();
         if (stored.length > 0) {
@@ -45,10 +46,36 @@ export function ChatWidget() {
         fetchChatStatus().then((s) => s && setStatus(s));
         fetchSamplePrompts().then((p) => p && setPrompts(p));
 
-        const handleOpenChat = () => setOpen(true);
+        const handleOpenChat = () => {
+            setOpen(true);
+            setTeaserVisible(false);
+        };
         window.addEventListener("open-opengeo-chat", handleOpenChat);
-        return () => window.removeEventListener("open-opengeo-chat", handleOpenChat);
+
+        // First-load teaser bubble delay
+        const dismissed = typeof sessionStorage !== "undefined" && sessionStorage.getItem("opengeo_chat_teaser_dismissed") === "true";
+        let teaserTimer: ReturnType<typeof setTimeout> | undefined;
+        if (!dismissed) {
+            teaserTimer = setTimeout(() => {
+                setTeaserVisible(true);
+            }, 1200);
+        }
+
+        return () => {
+            window.removeEventListener("open-opengeo-chat", handleOpenChat);
+            if (teaserTimer) clearTimeout(teaserTimer);
+        };
     }, []);
+
+    const handleDismissTeaser = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setTeaserVisible(false);
+        try {
+            sessionStorage.setItem("opengeo_chat_teaser_dismissed", "true");
+        } catch {
+            // Ignore storage errors in restricted contexts
+        }
+    };
 
     // Sync messages to localStorage
     useEffect(() => {
@@ -207,15 +234,86 @@ export function ChatWidget() {
 
             {/* Floating Action Button */}
             {!open && (
-                <aside aria-label="AI Assistant" className="fixed bottom-5 right-5 z-1050 max-sm:bottom-4 max-sm:right-4">
-                    <button
-                        type="button"
-                        onClick={() => setOpen(true)}
-                        className="group relative flex items-center gap-2.5 rounded-full bg-ink p-3 text-bg shadow-xl backdrop-blur-md transition-all hover:scale-105 hover:bg-ink/90 hover:shadow-2xl active:scale-95 cursor-pointer max-sm:p-3.5"
-                        aria-label="Open API Q&A Chat"
-                    >
-                        <Icon name="bot" className="size-6 text-accent pb-1" />
-                    </button>
+                <aside
+                    aria-label="AI Assistant"
+                    className="fixed bottom-5 right-5 z-1050 max-sm:bottom-4 max-sm:right-4 flex flex-col items-end animate-bounce-in select-none pointer-events-auto"
+                >
+                    {/* Welcome Teaser Bubble */}
+                    {teaserVisible && (
+                        <div
+                            onClick={() => {
+                                setOpen(true);
+                                setTeaserVisible(false);
+                            }}
+                            className="group relative mb-3.5 flex cursor-pointer items-center gap-2.5 rounded-2xl border border-line bg-surface/95 px-3 py-2 text-ink shadow-[0_12px_36px_-6px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6)] backdrop-blur-xl transition hover:border-accent/50 hover:shadow-xl animate-fade-up animate-float max-w-72"
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Open AI Assistant"
+                        >
+                            <div className="relative flex size-7.5 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-accent to-teal-400 text-bg shadow-xs">
+                                <Icon name="sparkles" className="size-4" />
+                                <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full border border-surface bg-ok" />
+                            </div>
+                            <div className="flex flex-col min-w-0 pr-1">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[12px] font-bold text-ink leading-tight">
+                                        Ask OpenGeo AI
+                                    </span>
+                                    <span className="rounded-full bg-accent/15 px-1.5 py-0.2 text-[9px] font-extrabold text-accent uppercase tracking-wider">
+                                        AI
+                                    </span>
+                                </div>
+                                <span className="text-[10.5px] text-ink-3 truncate leading-tight mt-0.5">
+                                    Explore Cambodia geography & APIs
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleDismissTeaser}
+                                className="ml-0.5 -mr-1 rounded-lg p-1 text-ink-3/70 hover:bg-surface-2 hover:text-ink transition cursor-pointer"
+                                title="Dismiss"
+                                aria-label="Dismiss teaser"
+                            >
+                                <Icon name="x" className="size-3" />
+                            </button>
+
+                            {/* Speech Bubble Arrow pointing to the launcher button */}
+                            <div className="absolute -bottom-1.5 right-6 size-3 rotate-45 border-b border-r border-line bg-surface" />
+                        </div>
+                    )}
+
+                    {/* Main Floating Launcher Button */}
+                    <div className="relative group">
+                        {/* Ambient Glowing Aura */}
+                        <div className="absolute -inset-1.5 rounded-full bg-linear-to-tr from-accent/60 via-teal-400/50 to-sky-400/60 opacity-60 blur-md transition duration-500 group-hover:opacity-100 group-hover:scale-110 motion-reduce:hidden animate-aura" />
+
+                        {/* Expanding Attention Beacon Wave */}
+                        <div className="absolute -inset-1 rounded-full bg-accent/40 animate-beacon pointer-events-none motion-reduce:hidden" />
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setOpen(true);
+                                setTeaserVisible(false);
+                            }}
+                            className="relative flex size-14 items-center justify-center rounded-full bg-ink text-bg shadow-[0_12px_36px_-6px_rgba(13,148,136,0.4)] dark:shadow-[0_12px_36px_-6px_rgba(45,212,191,0.3)] transition-all duration-300 hover:scale-108 active:scale-95 cursor-pointer border border-white/15 dark:border-accent/30 overflow-hidden"
+                            aria-label="Open OpenGeo AI Assistant"
+                        >
+                            {/* Shimmer sweep effect on hover */}
+                            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full transition-transform duration-700 ease-out group-hover:translate-x-full pointer-events-none" />
+
+                            <Icon
+                                name="bot"
+                                className="size-6 text-accent transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110"
+                            />
+
+                            {/* Active Online Indicator */}
+                            <span className="absolute top-2.5 right-2.5 flex size-3">
+                                <span className="absolute inline-flex size-full animate-ping rounded-full bg-ok opacity-75 motion-reduce:hidden" />
+                                <span className="relative inline-flex size-3 rounded-full border-2 border-ink bg-ok" />
+                            </span>
+                        </button>
+                    </div>
                 </aside>
             )}
 

@@ -298,6 +298,75 @@
   animation: og-fade-up 380ms cubic-bezier(.22, 1, .36, 1) both;
 }
 
+/* Chat launcher entrance bounce */
+@keyframes og-bounce-in {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.08);
+  }
+  80% {
+    transform: translateY(2px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@utility animate-bounce-in {
+  animation: og-bounce-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Floating speech bubble gentle drift */
+@keyframes og-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@utility animate-float {
+  animation: og-float 3.5s ease-in-out infinite;
+}
+
+/* Pulsing ambient aura */
+@keyframes og-aura {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
+}
+@utility animate-aura {
+  animation: og-aura 3s ease-in-out infinite;
+}
+
+/* Beacon wave for initial attention */
+@keyframes og-beacon {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+@utility animate-beacon {
+  animation: og-beacon 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
 
 /* Logo gradient as text fill (the small right padding stops the last glyph's edge being clipped) */
 @utility text-brand {
