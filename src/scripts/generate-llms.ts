@@ -238,6 +238,7 @@ function buildLlmsTxt(eps: Endpoint[], f: Awaited<ReturnType<typeof facts>>): st
     lines.push("## Creator & Social Profiles", "");
     lines.push(
         "- Creator: PPhat",
+        "- Full Name: Sophat LEAT (or LEAT Sophat)",
         "- eMail: info.sophat@gmail.com",
         "- Website: https://pphat.me",
         "- Figma: https://www.figma.com/@pphat",
@@ -582,9 +583,10 @@ L.geoJSON(fc, { onEachFeature: (f, layer) => layer.bindTooltip(f.properties.name
     // --- Creator & Social Profiles
     push("## Project Creator & Social Profiles", "");
     push(
-        "OpenGeo Cambodia is created and maintained by PPhat.",
+        "OpenGeo Cambodia is created and maintained by PPhat (Full name: Sophat LEAT, or LEAT Sophat).",
         "",
         "- **Creator**: PPhat",
+        "- **Full Name**: Sophat LEAT (or LEAT Sophat)",
         "- **eMail**: info.sophat@gmail.com",
         "- **Website**: https://pphat.me",
         "- **Figma**: https://www.figma.com/@pphat",

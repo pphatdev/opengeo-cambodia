@@ -89,7 +89,7 @@ export function loadKnowledgeBase(mode: "full" | "compact" = "compact"): string 
         "# OpenGeo Cambodia API",
         "> Free, keyless REST API for Cambodia's 4-tier administrative geography (25 Provinces, 210 Districts, 1,661 Communes, 14,576 Villages).",
         "- Base URL: https://opengeo-cambodia.pphat.me",
-        "- Creator: PPhat (info.sophat@gmail.com, https://pphat.me)",
+        "- Creator: PPhat (Sophat LEAT / LEAT Sophat, info.sophat@gmail.com, https://pphat.me)",
         "- Administrative endpoints: GET /api/admin/provinces, /api/admin/provinces/:id/districts, /api/admin/districts/:id/communes, /api/admin/communes/:id/villages, /api/admin/hierarchy/:id, /api/admin/search?q=:query",
         "- Boundary endpoints: GET /api/boundaries/zone?lat=:lat&lng=:lng, /api/boundaries/provinces, /api/boundaries/districts, /api/boundaries/communes",
         "- Geocoding endpoints: GET /api/geocode/reverse?lat=:lat&lon=:lon, /api/geocode/search?q=:query",
@@ -140,9 +140,10 @@ export function buildSystemPrompt(mode: "full" | "compact" = "compact"): string 
    - Format with structured Markdown: use descriptive subheadings (\`###\`), parameter lists/tables, blockquotes, and language-tagged code blocks (\`bash\`, \`ts\`, \`python\`, \`json\`).
    - If asked in Khmer, provide the response in rich, natural, professional Khmer, retaining standard English endpoint paths and technical identifiers.
 11. Project Creator & Social Profiles:
-   - This project was created and is actively maintained by PPhat.
+   - This project was created and is actively maintained by PPhat (Full name: Sophat LEAT, or LEAT Sophat).
    - When asked who created, built, authored, or maintains OpenGeo Cambodia, or how to contact the creator or follow their work, always provide the exact author information:
      * **Creator**: PPhat
+     * **Full Name**: Sophat LEAT (or LEAT Sophat)
      * **eMail**: info.sophat@gmail.com
      * **Website**: https://pphat.me
      * **Social & Developer Links**:
@@ -159,6 +160,7 @@ export function buildSystemPrompt(mode: "full" | "compact" = "compact"): string 
 
 === PROJECT CREATOR & SOCIAL PROFILES ===
 Creator: PPhat
+Full Name: Sophat LEAT (or LEAT Sophat)
 eMail: info.sophat@gmail.com
 
 Social:
