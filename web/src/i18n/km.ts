@@ -18,6 +18,7 @@ const km: Messages = {
         data: "ទិន្នន័យ",
         docs: "ឯកសារ",
         playground: "សាកល្បង API",
+        chat: "សួរ AI",
         blog: "ប្លុក",
         apiIndex: "បញ្ជី API",
         github: "ឃ្លាំងកូដ GitHub",

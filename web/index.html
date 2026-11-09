@@ -67,6 +67,9 @@
         var l = q === 'km' || q === 'en' ? q : localStorage.getItem('og-lang');
         if (!l) l = (navigator.languages || []).some(function (x) { return /^km/i.test(x); }) ? 'km' : 'en';
         d.lang = l;
+        if (q === 'km' || q === 'en') {
+          try { localStorage.setItem('og-lang', q); } catch (e) {}
+        }
       } catch (e) {}
     })();
   </script>
@@ -82,7 +85,10 @@
         "url": "https://opengeo-cambodia.pphat.me/",
         "name": "OpenGeo Cambodia",
         "description": "Free, keyless REST API for Cambodia's administrative geography",
-        "inLanguage": ["en", "km"]
+        "inLanguage": ["en", "km"],
+        "publisher": {
+          "@id": "https://opengeo-cambodia.pphat.me/#organization"
+        }
       },
       {
         "@type": "WebAPI",
@@ -96,7 +102,8 @@
         "provider": {
           "@type": "Person",
           "name": "Sophat Leat",
-          "url": "https://pphat.me"
+          "url": "https://pphat.me",
+          "sameAs": "https://github.com/pphatdev"
         }
       },
       {
@@ -105,6 +112,13 @@
         "name": "OpenGeo Cambodia",
         "url": "https://opengeo-cambodia.pphat.me/",
         "logo": "https://opengeo-cambodia.pphat.me/logo.jpg",
+        "description": "Open-source geospatial initiative providing free APIs and geographic datasets for Cambodia.",
+        "founder": {
+          "@type": "Person",
+          "name": "Sophat Leat",
+          "url": "https://pphat.me",
+          "sameAs": "https://github.com/pphatdev"
+        },
         "sameAs": [
           "https://github.com/pphatdev/opengeo-cambodia"
         ]
@@ -113,8 +127,41 @@
         "@type": "Dataset",
         "@id": "https://opengeo-cambodia.pphat.me/#dataset",
         "name": "Cambodia Administrative Divisions and Boundaries Dataset",
+        "alternateName": [
+          "OpenGeo Cambodia Dataset",
+          "Cambodia 4-Tier Administrative Divisions & GeoJSON"
+        ],
         "description": "Official 4-tier Cambodian administrative divisions containing 25 provinces, 210 districts, 1,661 communes, and 14,576 villages with GeoJSON boundaries and centroid coordinates.",
+        "url": "https://opengeo-cambodia.pphat.me/",
+        "sameAs": "https://github.com/pphatdev/opengeo-cambodia",
+        "identifier": "https://opengeo-cambodia.pphat.me/#dataset",
+        "version": "1.7.0",
         "license": "https://opensource.org/licenses/MIT",
+        "isAccessibleForFree": true,
+        "inLanguage": ["en", "km"],
+        "datePublished": "2026-10-28",
+        "dateModified": "2026-11-09",
+        "keywords": [
+          "Cambodia",
+          "provinces",
+          "districts",
+          "communes",
+          "villages",
+          "NCDD",
+          "administrative boundaries",
+          "GeoJSON",
+          "GIS Cambodia",
+          "spatial data"
+        ],
+        "creator": {
+          "@type": "Person",
+          "name": "Sophat Leat",
+          "url": "https://pphat.me",
+          "sameAs": "https://github.com/pphatdev"
+        },
+        "publisher": {
+          "@id": "https://opengeo-cambodia.pphat.me/#organization"
+        },
         "spatialCoverage": {
           "@type": "Place",
           "geo": {
@@ -122,14 +169,19 @@
             "box": "10.2 102.3 14.7 107.6"
           }
         },
+        "temporalCoverage": "2014/..",
         "distribution": [
           {
             "@type": "DataDownload",
+            "name": "Cambodia Provinces GeoJSON Boundaries",
+            "description": "Simplified polygon boundary coordinates for all 25 provinces in GeoJSON format.",
             "encodingFormat": "application/geo+json",
             "contentUrl": "https://opengeo-cambodia.pphat.me/api/boundaries/raw/provinces.geojson"
           },
           {
             "@type": "DataDownload",
+            "name": "Cambodia Geographical Hierarchy CSV",
+            "description": "Complete 4-tier administrative hierarchy with Khmer and English names and NCDD codes.",
             "encodingFormat": "text/csv",
             "contentUrl": "https://opengeo-cambodia.pphat.me/data/CambodiaGeographicalList.csv"
           }

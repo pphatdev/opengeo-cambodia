@@ -9,3 +9,9 @@ Thumbs.db
 test.js
 test*.js
 .claude/
+
+# Generated LLM reference files
+llms.txt
+llms-full.txt
+public/llms.txt
+public/llms-full.txt

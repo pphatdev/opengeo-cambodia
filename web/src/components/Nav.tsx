@@ -42,7 +42,7 @@ const navItem =
 
 export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
     const { toggle } = useTheme();
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -57,7 +57,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
     return (
         <header
             className={cx(
-                "sticky top-0 z-1000 border-b transition-all duration-300",
+                "sticky top-0 z-1000 transition-all duration-300",
                 scrolled || isDocs || isPlayground
                     ? "glass-panel-subtle border-b-line/60! border-t-0! border-x-0! shadow-[0_8px_30px_-6px_rgba(0,0,0,0.04)]!"
                     : "border-transparent bg-transparent backdrop-blur-xs",
@@ -69,7 +69,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                         <Icon name="menu" />
                     </button>
                 )}
-                <Link className="flex items-center gap-2.5 max-sm:gap-1.5 font-semibold tracking-[-.01em] text-ink no-underline" to="/" aria-label={t("nav.home")}>
+                <Link className="flex items-center gap-2.5 max-sm:gap-1.5 font-semibold tracking-[-.01em] text-ink no-underline" to={lang === "km" ? "/?lang=km" : "/"} aria-label={t("nav.home")}>
                     <img src="/logo.jpg" alt="" width={30} height={30} className="size-7.5 rounded-lg object-cover shadow-xs" />
                     <span className="font-sans max-md:hidden">OpenGeo Cambodia</span>
                     {isDocs ? (
@@ -83,12 +83,12 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                             <span className="font-display text-[13px] font-bold uppercase text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal max-md:hidden">{t("nav.playground")}</span>
                         </>
                     ) : (
-                        <small className="rounded-full glass-pill px-2.5 py-0.5 text-xs font-medium text-accent max-xs:hidden">v1.4</small>
+                        <small className="rounded-full glass-pill px-2.5 py-0.5 text-xs font-medium text-accent max-xs:hidden">v1.7</small>
                     )}
                 </Link>
                 <nav className="ml-auto flex items-center gap-1.5" aria-label="Primary">
                     <Link
-                        to="/docs"
+                        to={lang === "km" ? "/docs?lang=km" : "/docs"}
                         className={cx(
                             navItem,
                             isDocs && "bg-surface-2 font-semibold text-ink max-sm:border-accent/40 max-sm:text-accent max-sm:shadow-xs",
@@ -100,7 +100,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                         <span className="max-sm:hidden">{t("nav.docs")}</span>
                     </Link>
                     <Link
-                        to="/playground"
+                        to={lang === "km" ? "/playground?lang=km" : "/playground"}
                         className={cx(
                             navItem,
                             isPlayground && "bg-surface-2 font-semibold text-ink max-sm:border-accent/40 max-sm:text-accent max-sm:shadow-xs",

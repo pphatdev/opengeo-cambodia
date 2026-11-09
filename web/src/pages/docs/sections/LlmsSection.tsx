@@ -1,4 +1,5 @@
 import llmsMd from "../content/10-llms.md?raw";
+import { Icon } from "../../../components/Icon";
 import { cx } from "../../../components/ui";
 import { Markdown } from "../Markdown";
 
@@ -36,6 +37,37 @@ export function LlmsSection() {
 
     return (
         <section id="llms">
+            {/* Interactive Mistral AI Assistant Banner */}
+            <div className="my-3.5 mb-6 rounded-2xl border border-accent/30 bg-accent-soft/30 p-5 backdrop-blur-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-start gap-3.5">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-bg shadow-xs">
+                            <Icon name="bot" className="size-5" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h3 className="font-display text-base font-bold text-ink">
+                                    Interactive API Assistant
+                                </h3>
+                            </div>
+                            <p className="mt-1 text-xs text-ink-2 max-w-xl">
+                                Ask integration questions in real-time. Get instant runnable code snippets in cURL, JavaScript/TypeScript, and Python.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2.5 shrink-0">
+                        <button
+                            type="button"
+                            onClick={() => window.dispatchEvent(new CustomEvent("open-opengeo-chat"))}
+                            className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-bg shadow-xs transition hover:brightness-110"
+                        >
+                            <Icon name="sparkles" className="size-4" />
+                            <span>Ask Question Now</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div className="my-3.5 mb-6 grid grid-cols-1 gap-2.5 lg:grid-cols-2">
                 {resources.map((r) => (
                     <a

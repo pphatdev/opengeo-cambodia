@@ -135,19 +135,29 @@
   --color-j-err: #f87171;
 
   /* Ubuntu for reading and UI text; JetBrains Mono for display titles and code; Montserrat for classic docs */
-  --font-sans: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Ubuntu", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --font-docs-display: "Montserrat", "Ubuntu", system-ui, sans-serif;
-  --font-docs-display: "Montserrat", "Ubuntu", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --font-khmer: "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS", sans-serif;
+  /* iOS Emoji priority font stack ensures native Apple Color Emoji styling */
+  --font-emoji: "Apple Color Emoji", -apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI Emoji", sans-serif;
+  --font-sans: "Ubuntu", "Apple Color Emoji", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Ubuntu", "Apple Color Emoji", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-docs-display: "Montserrat", "Ubuntu", "Apple Color Emoji", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Apple Color Emoji", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-khmer: "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS", "Apple Color Emoji", sans-serif;
 
   --breakpoint-xs: 27.5rem; /* 440px */
 }
 
 /* ==========================================================================
-   Base
+   Base & Typography
    ========================================================================== */
+@font-face {
+  font-family: "Apple Color Emoji";
+  src: local("Apple Color Emoji"),
+       local("AppleColorEmoji"),
+       local(".AppleColorEmojiUI"),
+       local("Apple-Color-Emoji");
+  font-display: swap;
+}
+
 @layer base {
   html { scroll-behavior: smooth; scroll-padding-top: 84px; }
   body { @apply bg-bg text-ink font-sans text-[15px] leading-[1.6] antialiased; }
@@ -160,6 +170,7 @@
   p, li, figcaption { text-wrap: pretty; }
   body { text-rendering: optimizeLegibility; font-optical-sizing: auto; }
   img { max-width: 100%; }
+  hr { border-color: var(--og-line); }
   .leaflet-zoom-animated > g {@apply outline-none;}
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
@@ -169,6 +180,20 @@
 /* ==========================================================================
    Utilities that Tailwind can't express as one class
    ========================================================================== */
+
+/* Apple iOS Emoji Utilities */
+@utility font-ios-emoji {
+  font-family: var(--font-emoji);
+}
+
+.apple-emoji {
+  display: inline-block;
+  vertical-align: -0.18em;
+  width: 1.25em;
+  height: 1.25em;
+  object-fit: contain;
+  user-select: none;
+}
 
 /* Inline markup inside translated text (rendered from <code>, <a>, <strong>) */
 @utility rich {
@@ -271,6 +296,104 @@
 }
 @utility animate-fade-up {
   animation: og-fade-up 380ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Chat launcher entrance bounce */
+@keyframes og-bounce-in {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.08);
+  }
+  80% {
+    transform: translateY(2px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@utility animate-bounce-in {
+  animation: og-bounce-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Floating speech bubble gentle drift */
+@keyframes og-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@utility animate-float {
+  animation: og-float 3.5s ease-in-out infinite;
+}
+
+/* Pulsing ambient aura */
+@keyframes og-aura {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
+}
+@utility animate-aura {
+  animation: og-aura 3s ease-in-out infinite;
+}
+
+/* Beacon wave for initial attention */
+@keyframes og-beacon {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+@utility animate-beacon {
+  animation: og-beacon 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Robot wave hi arm animation */
+@keyframes og-robot-wave {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  20%, 60% {
+    transform: rotate(26deg);
+  }
+  40%, 80% {
+    transform: rotate(-14deg);
+  }
+}
+@utility animate-robot-wave {
+  animation: og-robot-wave 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* Robot digital eye blink */
+@keyframes og-robot-blink {
+  0%, 90%, 100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@utility animate-robot-blink {
+  animation: og-robot-blink 4s ease-in-out infinite;
 }
 
 

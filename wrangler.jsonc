@@ -24,7 +24,8 @@
     "NOMINATIM_BASE_URL": "https://nominatim.openstreetmap.org",
     "NOMINATIM_USER_AGENT": "OpenGeoCambodia/1.0 (contact@opengeo-cambodia.pphat.me)",
     "OVERPASS_API_URL": "https://overpass-api.de/api/interpreter",
-    "CACHE_TTL_SECONDS": "31536000"
+    "CACHE_TTL_SECONDS": "31536000",
+    "MISTRAL_MODEL": "mistral-small-2603"
   },
   "previews": {
     "vars": {
@@ -34,18 +35,8 @@
       "NOMINATIM_BASE_URL": "https://nominatim.openstreetmap.org",
       "NOMINATIM_USER_AGENT": "OpenGeoCambodia/1.0 (contact@opengeo-cambodia.pphat.me)",
       "OVERPASS_API_URL": "https://overpass-api.de/api/interpreter",
-      "CACHE_TTL_SECONDS": "31536000"
-    }
-  },
-  "previews": {
-    "vars": {
-      "NODE_ENV": "production",
-      "APP_DOMAIN": "opengeo-cambodia.pphat.me",
-      "APP_URL": "https://opengeo-cambodia.pphat.me",
-      "NOMINATIM_BASE_URL": "https://nominatim.openstreetmap.org",
-      "NOMINATIM_USER_AGENT": "OpenGeoCambodia/1.0 (contact@opengeo-cambodia.pphat.me)",
-      "OVERPASS_API_URL": "https://overpass-api.de/api/interpreter",
-      "CACHE_TTL_SECONDS": "31536000"
+      "CACHE_TTL_SECONDS": "31536000",
+      "MISTRAL_MODEL": "mistral-small-2603"
     }
   },
   "observability": {

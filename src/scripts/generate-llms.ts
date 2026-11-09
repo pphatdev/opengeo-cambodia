@@ -235,6 +235,24 @@ function buildLlmsTxt(eps: Endpoint[], f: Awaited<ReturnType<typeof facts>>): st
         `- [Per-level CSVs](${BASE}/data/CambodiaVillagesList.csv): CambodiaProvinceList.csv, CambodiaDistrictList.csv, CambodiaCommuneList.csv, CambodiaVillagesList.csv under /data/`,
         "",
     );
+    lines.push("## Creator & Social Profiles", "");
+    lines.push(
+        "- Creator: PPhat",
+        "- Full Name: Sophat LEAT (or LEAT Sophat)",
+        "- eMail: info.sophat@gmail.com",
+        "- Website: https://pphat.me",
+        "- Figma: https://www.figma.com/@pphat",
+        "- Facebook: https://fb.me/pphat.me",
+        "- X: https://x.com/pphatdev",
+        "- GitHub: https://github.com/pphatdev",
+        "- GitLab: https://gitlab.com/pphatdev",
+        "- LinkedIn: https://www.linkedin.com/in/pphatdev",
+        "- PeerList: https://peerlist.io/pphat",
+        "- Instagram: https://www.instagram.com/pphat_dev",
+        "- Google Developer Profile: https://g.dev/pphat",
+        "- Glitch: https://glitch.com/@pphat",
+        "",
+    );
     lines.push("## Optional", "");
     lines.push(
         "- [Source code (GitHub)](https://github.com/pphatdev/opengeo-cambodia): Hono API for Node and Cloudflare Workers, MIT licensed",
@@ -559,6 +577,28 @@ L.geoJSON(fc, { onEachFeature: (f, layer) => layer.bindTooltip(f.properties.name
         `- Postman collection: ${BASE}/opengeo-cambodia.postman_collection.json`,
         "- Source code: https://github.com/pphatdev/opengeo-cambodia (MIT)",
         "- Data: Ministry of Economy and Finance Open Data Portal, https://data.mef.gov.kh/ ; boundaries from the Ministry of Land Management, Urban Planning and Construction; geocoding by OpenStreetMap Nominatim (© OpenStreetMap contributors)",
+        "",
+    );
+
+    // --- Creator & Social Profiles
+    push("## Project Creator & Social Profiles", "");
+    push(
+        "OpenGeo Cambodia is created and maintained by PPhat (Full name: Sophat LEAT, or LEAT Sophat).",
+        "",
+        "- **Creator**: PPhat",
+        "- **Full Name**: Sophat LEAT (or LEAT Sophat)",
+        "- **eMail**: info.sophat@gmail.com",
+        "- **Website**: https://pphat.me",
+        "- **Figma**: https://www.figma.com/@pphat",
+        "- **Facebook**: https://fb.me/pphat.me",
+        "- **X**: https://x.com/pphatdev",
+        "- **GitHub**: https://github.com/pphatdev",
+        "- **GitLab**: https://gitlab.com/pphatdev",
+        "- **LinkedIn**: https://www.linkedin.com/in/pphatdev",
+        "- **PeerList**: https://peerlist.io/pphat",
+        "- **Instagram**: https://www.instagram.com/pphat_dev",
+        "- **Google Developer Profile**: https://g.dev/pphat",
+        "- **Glitch**: https://glitch.com/@pphat",
         "",
     );
     return out.join("\n");

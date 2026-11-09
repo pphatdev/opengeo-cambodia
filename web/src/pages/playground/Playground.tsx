@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Icon } from "../../components/Icon";
 import { Nav } from "../../components/Nav";
+import { useSeo } from "../../components/Seo";
 import { cx, lvl, wrap } from "../../components/ui";
 import { useI18n } from "../../i18n";
 import { apiGet, fmtBytes, PROD_ORIGIN, type RequestLog } from "../../lib/api";
@@ -23,10 +24,11 @@ export default function Playground() {
     const { toast } = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // Set page title
-    useEffect(() => {
-        document.title = t("meta.playgroundTitle");
-    }, [lang, t]);
+    useSeo({
+        title: t("meta.playgroundTitle"),
+        description: t("meta.playgroundDesc"),
+        canonical: lang === "km" ? `${PROD_ORIGIN}/playground?lang=km` : `${PROD_ORIGIN}/playground`,
+    });
 
     // Active endpoint selection
     const initialEpId = searchParams.get("ep") || "admin-provinces";

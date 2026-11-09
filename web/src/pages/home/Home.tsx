@@ -9,11 +9,11 @@ import { Hero } from "./Hero";
 import { Cta, DataModel, Downloads, Quickstart, SectionHead } from "./Sections";
 
 export function Home() {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     useSeo({
         title: t("meta.homeTitle"),
         description: t("meta.homeDesc"),
-        canonical: `${PROD_ORIGIN}/`,
+        canonical: lang === "km" ? `${PROD_ORIGIN}/?lang=km` : `${PROD_ORIGIN}/`,
     });
 
     return (

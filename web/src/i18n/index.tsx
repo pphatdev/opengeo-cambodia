@@ -38,8 +38,10 @@ const interpolate = (s: string, vars?: Vars) => (vars ? s.replace(/\{(\w+)\}/g, 
 
 function detectLang(): Lang {
     try {
-        const fromUrl = new URLSearchParams(location.search).get("lang");
-        if (fromUrl === "km" || fromUrl === "en") return fromUrl;
+        if (typeof window !== "undefined") {
+            const fromUrl = new URLSearchParams(window.location.search).get("lang");
+            if (fromUrl === "km" || fromUrl === "en") return fromUrl;
+        }
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored === "km" || stored === "en") return stored;
     } catch {
@@ -62,7 +64,36 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         }
     }, [lang]);
 
-    const setLang = useCallback((next: Lang) => setLangState(next), []);
+    // Reactively listen to URL ?lang= parameter changes (e.g. popstate, back/forward)
+    useEffect(() => {
+        const syncFromUrl = () => {
+            const urlLang = new URLSearchParams(window.location.search).get("lang");
+            if ((urlLang === "km" || urlLang === "en") && urlLang !== lang) {
+                setLangState(urlLang);
+            }
+        };
+        window.addEventListener("popstate", syncFromUrl);
+        return () => window.removeEventListener("popstate", syncFromUrl);
+    }, [lang]);
+
+    // Explicit switch handler updates state, localStorage, and synchronizes URL query
+    const setLang = useCallback((next: Lang) => {
+        setLangState(next);
+        try {
+            localStorage.setItem(STORAGE_KEY, next);
+            if (typeof window !== "undefined") {
+                const url = new URL(window.location.href);
+                if (next === "km") {
+                    url.searchParams.set("lang", "km");
+                } else {
+                    url.searchParams.delete("lang");
+                }
+                window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+            }
+        } catch {
+            /* ignore */
+        }
+    }, []);
 
     const value = useMemo<I18nCtx>(() => {
         const t = (key: MessageKey, vars?: Vars) => interpolate(lookup(DICTS[lang], key) ?? lookup(DICTS.en, key) ?? key, vars);
