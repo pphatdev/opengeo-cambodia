@@ -87,7 +87,7 @@ chatMarked.use({
             return `<a href="${href}" class="text-accent font-medium underline underline-offset-2 hover:brightness-110"${targetAttr}${titleAttr}>${text}</a>`;
         },
         strong({ tokens }) {
-            return `<strong class="font-semibold text-ink">${this.parser.parseInline(tokens)}</strong>`;
+            return `<span class="font-semibold text-ink">${this.parser.parseInline(tokens)}</span>`;
         },
         em({ tokens }) {
             return `<em class="italic text-ink-2">${this.parser.parseInline(tokens)}</em>`;
