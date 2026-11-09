@@ -89,7 +89,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                             <span className="font-display text-[13px] font-bold uppercase text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal max-md:hidden">{lang === "km" ? "ជំនួយការ AI" : "Ask AI"}</span>
                         </>
                     ) : (
-                        <small className="rounded-full glass-pill px-2.5 py-0.5 text-xs font-medium text-accent max-xs:hidden">v1.4</small>
+                        <small className="rounded-full glass-pill px-2.5 py-0.5 text-xs font-medium text-accent max-xs:hidden">v1.5</small>
                     )}
                 </Link>
                 <nav className="ml-auto flex items-center gap-1.5" aria-label="Primary">
