@@ -18,6 +18,7 @@ import {
 import { ChatMessageItem } from "./ChatMessageItem";
 import { ChatWelcomeCard } from "./ChatWelcomeCard";
 import { ChatSettingsModal } from "./ChatSettingsModal";
+import { RobotWaveIcon } from "./RobotWaveIcon";
 import { useToast } from "../../lib/toast";
 
 export function ChatWidget() {
@@ -267,13 +268,13 @@ export function ChatWidget() {
                                 setOpen(true);
                                 setTeaserVisible(false);
                             }}
-                            className="group relative mb-3.5 flex cursor-pointer items-center gap-2.5 rounded-2xl border border-line bg-surface/95 px-3 py-2 text-ink shadow-[0_12px_36px_-6px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6)] backdrop-blur-xl transition hover:border-accent/50 hover:shadow-xl animate-fade-up animate-float max-w-72"
+                            className="group relative mb-3.5 flex cursor-pointer items-center gap-2.5 rounded-2xl border border-line bg-surface/95 px-3 py-2 text-ink shadow-[0_12px_36px_-6px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6)] backdrop-blur-xl transition hover:border-accent/50 hover:shadow-xl animate-fade-up max-w-72"
                             role="button"
                             tabIndex={0}
                             aria-label="Open AI Assistant"
                         >
                             <div className="relative flex size-7.5 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-accent to-teal-400 text-bg shadow-xs">
-                                <Icon name="sparkles" className="size-4" />
+                                <RobotWaveIcon className="size-5 text-bg" isWaving={true} />
                                 <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full border border-surface bg-ok" />
                             </div>
                             <div className="flex flex-col min-w-0 pr-1">
@@ -324,9 +325,9 @@ export function ChatWidget() {
                             {/* Shimmer sweep effect on hover */}
                             <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full transition-transform duration-700 ease-out group-hover:translate-x-full pointer-events-none" />
 
-                            <Icon
-                                name="bot"
-                                className="size-6 text-accent transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110"
+                            <RobotWaveIcon
+                                className="size-8.5 text-accent transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(13,148,136,0.45)]"
+                                isWaving={true}
                             />
 
                             {/* Active Online Indicator */}
@@ -362,7 +363,7 @@ export function ChatWidget() {
                     <div className="flex items-center justify-between border-b border-line bg-surface-2/70 px-4 py-3">
                         <div className="flex items-center gap-2.5 min-w-0">
                             <div className="relative flex size-8 shrink-0 items-center justify-center rounded-xl bg-accent text-bg shadow-xs">
-                                <Icon name="bot" className="size-4.5" />
+                                <RobotWaveIcon className="size-5.5 text-bg" isWaving={false} />
                                 <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full border border-surface bg-ok" />
                             </div>
                             <div className="min-w-0">
@@ -384,7 +385,7 @@ export function ChatWidget() {
                                 onClick={() => setSettingsOpen(true)}
                                 className={cx(
                                     "rounded-lg p-1.5 text-ink-3 hover:bg-surface hover:text-ink transition cursor-pointer",
-                                    !hasKey && "text-warn animate-bounce",
+                                    !hasKey && "text-warn",
                                 )}
                                 title="Mistral API Key & Model Settings"
                                 aria-label="Settings"

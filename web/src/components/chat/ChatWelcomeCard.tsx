@@ -1,5 +1,6 @@
 import { Icon } from "../Icon";
 import { IosEmoji } from "../../lib/emoji";
+import { RobotWaveIcon } from "./RobotWaveIcon";
 
 interface ChatWelcomeCardProps {
     onSelectPrompt: (prompt: string) => void;
@@ -54,7 +55,7 @@ export function ChatWelcomeCard({ onSelectPrompt }: ChatWelcomeCardProps) {
                 <div className="relative flex items-start gap-3">
                     {/* Bot Avatar Badge */}
                     <div className="relative flex size-9.5 shrink-0 items-center justify-center rounded-2xl bg-linear-to-tr from-accent to-teal-400 text-bg shadow-xs mt-0.5">
-                        <Icon name="bot" className="size-5" />
+                        <RobotWaveIcon className="size-6 text-bg" isWaving={true} />
                         <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-surface bg-ok" />
                     </div>
 

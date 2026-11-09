@@ -367,6 +367,35 @@
   animation: og-beacon 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Robot wave hi arm animation */
+@keyframes og-robot-wave {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  20%, 60% {
+    transform: rotate(26deg);
+  }
+  40%, 80% {
+    transform: rotate(-14deg);
+  }
+}
+@utility animate-robot-wave {
+  animation: og-robot-wave 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* Robot digital eye blink */
+@keyframes og-robot-blink {
+  0%, 90%, 100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@utility animate-robot-blink {
+  animation: og-robot-blink 4s ease-in-out infinite;
+}
+
 
 /* Logo gradient as text fill (the small right padding stops the last glyph's edge being clipped) */
 @utility text-brand {
