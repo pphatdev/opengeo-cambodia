@@ -18,7 +18,7 @@ chatMarked.use({
             if (depth === 2) {
                 return `<h4 class="mt-2.5 mb-1 text-[13px] font-bold text-ink">${text}</h4>\n`;
             }
-            return `<h5 class="mt-2 mb-1 text-xs font-bold uppercase tracking-wider text-ink-3">${text}</h5>\n`;
+            return `<h5 class="mt-2 mb-1 text-xs font-bold uppercase text-ink-3">${text}</h5>\n`;
         },
         paragraph({ tokens }) {
             const text = this.parser.parseInline(tokens);
@@ -27,14 +27,20 @@ chatMarked.use({
         hr() {
             return `<hr class="my-3 border-0 border-t border-line" />\n`;
         },
-        list({ items, ordered }) {
+        list({ items, ordered, start }) {
             let body = "";
             for (const item of items) {
-                body += `<li class="my-0.5 leading-relaxed text-[13px] text-ink">${this.parser.parseInline(item.tokens)}</li>`;
+                body += this.listitem(item);
             }
             const tag = ordered ? "ol" : "ul";
             const cls = ordered ? "list-decimal" : "list-disc";
-            return `<${tag} class="my-1.5 pl-4.5 space-y-1 ${cls} text-ink">${body}</${tag}>\n`;
+            const startAttr = ordered && start && start !== 1 ? ` start="${start}"` : "";
+            return `<${tag}${startAttr} class="my-1.5 pl-4.5 space-y-1 ${cls} text-ink">${body}</${tag}>\n`;
+        },
+        listitem(item) {
+            // Use this.parser.parse for block-level tokens inside list items (supports nested sublists)
+            const itemBody = this.parser.parse(item.tokens);
+            return `<li class="my-0.5 leading-relaxed text-[13px] text-ink [&>p]:inline [&>p]:my-0">${itemBody}</li>\n`;
         },
         codespan({ text }) {
             const safe = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -93,8 +99,16 @@ export function ChatMarkdown({ content, className }: { content: string; classNam
     const { copy } = useToast();
 
     const html = useMemo(() => {
-        const raw = chatMarked.parse(content, { async: false }) as string;
-        return replaceWithIosEmojiHtml(raw);
+        try {
+            const raw = chatMarked.parse(content, { async: false }) as string;
+            return replaceWithIosEmojiHtml(raw);
+        } catch {
+            const safe = content
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+            return `<p class="my-0.5 text-xs leading-[1.65] text-ink whitespace-pre-wrap">${safe}</p>`;
+        }
     }, [content]);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
