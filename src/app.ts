@@ -235,6 +235,25 @@ app.use(
 // 5. Bot Shield, Malicious Scanner Blocker & Exploit Trap
 app.use("*", createBotShield());
 
+// 5b. Search Engine Optimization: Exclude non-HTML APIs, health checks, machine specs, and data files from search indexing
+app.use("*", async (c, next) => {
+    await next();
+    const p = c.req.path;
+    if (
+        p.startsWith("/api/") ||
+        p === "/health" ||
+        p === "/robots.txt" ||
+        p === "/llms.txt" ||
+        p === "/llms-full.txt" ||
+        p === "/opengeo-cambodia.postman_collection.json" ||
+        p === "/postman" ||
+        p.startsWith("/data/") ||
+        p.startsWith("/boundaries/")
+    ) {
+        c.header("X-Robots-Tag", "noindex, nofollow");
+    }
+});
+
 // 6. Tiered Rate Limiting & Edge Caching
 // Administrative and boundary routes: Dedicated 10,000 req/min/IP for immutable geographic datasets
 app.use("/api/admin/*", adminRateLimiter);
