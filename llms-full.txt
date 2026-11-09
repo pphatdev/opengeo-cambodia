@@ -2,7 +2,7 @@
 
 > Free, keyless, read-only REST API for Cambodia's administrative geography: 25 provinces, 210 districts, 1,661 communes and 14,576 villages (16,472 places) with official NCDD codes, Khmer and English names, GeoJSON boundaries and geocoding.
 
-Generated 2026-11-08 from the API itself: the endpoint list comes from the Postman collection and every example response below is a real response captured in-process. The short index is at https://opengeo-cambodia.pphat.me/llms.txt.
+Generated 2026-11-09 from the API itself: the endpoint list comes from the Postman collection and every example response below is a real response captured in-process. The short index is at https://opengeo-cambodia.pphat.me/llms.txt.
 
 ## Essentials
 
@@ -1576,10 +1576,10 @@ Response `200` (`application/json`):
 ```json
 {
   "status": "ok",
-  "uptimeSeconds": 0,
-  "timestamp": "2026-11-08T13:58:36.449Z",
+  "uptimeSeconds": 1,
+  "timestamp": "2026-11-09T10:05:08.719Z",
   "security": {
-    "timestamp": "2026-11-08T13:58:36.449Z",
+    "timestamp": "2026-11-09T10:05:08.719Z",
     "prototypePollutionProtected": false,
     "configSealed": false,
     "allowedOutboundHosts": [
