@@ -61,7 +61,7 @@ export function ChatSettingsModal({
         <div className="fixed inset-0 z-1100 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-ink/30 backdrop-blur-xs transition-opacity"
+                className="fixed inset-0 bg-black/45 backdrop-blur-xs transition-opacity cursor-pointer"
                 onClick={onClose}
             />
 

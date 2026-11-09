@@ -69,6 +69,18 @@ export function ChatWidget() {
         }
     }, [open, settingsOpen]);
 
+    // Close on Escape key
+    useEffect(() => {
+        if (!open) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && !settingsOpen) {
+                setOpen(false);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [open, settingsOpen]);
+
     const handleSend = async (textToSend?: string) => {
         const query = (textToSend || input).trim();
         if (!query || isStreaming) return;
@@ -199,29 +211,28 @@ export function ChatWidget() {
                     <button
                         type="button"
                         onClick={() => setOpen(true)}
-                        className="group relative flex items-center gap-2.5 rounded-full border border-accent/40 bg-ink px-4 py-3 text-bg shadow-xl backdrop-blur-md transition-all hover:scale-105 hover:bg-ink/90 hover:shadow-2xl active:scale-95 cursor-pointer max-sm:p-3.5"
+                        className="group relative flex items-center gap-2.5 rounded-full bg-ink p-3 text-bg shadow-xl backdrop-blur-md transition-all hover:scale-105 hover:bg-ink/90 hover:shadow-2xl active:scale-95 cursor-pointer max-sm:p-3.5"
                         aria-label="Open API Q&A Chat"
                     >
-                        <span className="relative flex size-2.5">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
-                            <span className="relative inline-flex size-2.5 rounded-full bg-accent" />
-                        </span>
-                        <Icon name="bot" className="size-5 text-accent" />
-                        <span className="font-display text-xs font-bold tracking-wide uppercase text-bg max-sm:hidden">
-                            Ask AI (Mistral)
-                        </span>
-                        <span className="rounded-full bg-accent/20 px-1.5 py-0.5 font-mono text-[10px] text-accent max-sm:hidden">
-                            API
-                        </span>
+                        <Icon name="bot" className="size-6 text-accent pb-1" />
                     </button>
                 </aside>
+            )}
+
+            {/* Backdrop Overlay */}
+            {open && (
+                <div
+                    className="fixed inset-0 z-1040 bg-black/40 backdrop-blur-xs transition-opacity duration-200 cursor-pointer"
+                    onClick={() => setOpen(false)}
+                    aria-label="Close OpenGeo Assistant"
+                />
             )}
 
             {/* Chat Drawer / Floating Window */}
             {open && (
                 <div
                     className={cx(
-                        "fixed z-1050 flex flex-col overflow-hidden rounded-2xl border border-line bg-surface/98 backdrop-blur-2xl shadow-[0_25px_70px_-15px_rgba(0,0,0,0.35)] transition-all duration-200",
+                        "fixed z-1050 flex flex-col overflow-hidden rounded-2xl border border-line bg-surface/98 backdrop-blur-2xl shadow-[0_25px_70px_-15px_rgba(0,0,0,0.35)] transition-all duration-200 animate-pop",
                         maximized
                             ? "inset-3 sm:inset-6 max-w-4xl mx-auto h-[calc(100vh-24px)] sm:h-[calc(100vh-48px)]"
                             : "bottom-5 right-5 w-[calc(100vw-32px)] sm:w-117.5 h-160 max-h-[calc(100vh-40px)] max-sm:bottom-2 max-sm:right-2 max-sm:left-2 max-sm:w-auto",

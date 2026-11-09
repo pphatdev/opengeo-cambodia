@@ -22,7 +22,7 @@ chatMarked.use({
         },
         paragraph({ tokens }) {
             const text = this.parser.parseInline(tokens);
-            return `<p class="my-1.5 text-[13px] leading-[1.65] text-ink">${text}</p>\n`;
+            return `<p class="my-0.5 text-xs leading-[1.65] text-ink">${text}</p>\n`;
         },
         hr() {
             return `<hr class="my-3 border-0 border-t border-line" />\n`;
@@ -47,12 +47,11 @@ chatMarked.use({
             return `<div class="my-2.5 overflow-hidden rounded-xl border border-line bg-code text-code-ink shadow-xs">
                 <div class="flex items-center justify-between border-b border-code-line bg-surface-3/30 px-3 py-1.5 text-[11px] font-mono text-code-dim">
                     <span class="font-semibold text-accent">${language}</span>
-                    <button type="button" class="inline-flex cursor-pointer items-center gap-1 rounded-md border border-code-line/60 bg-code px-2 py-0.5 text-[10.5px] font-medium text-code-dim transition hover:text-code-hi hover:border-code-line active:scale-95" data-copy-code="${escaped}">
+                    <button type="button" class="inline-flex cursor-pointer items-center gap-1 rounded-md border border-code-line/60 bg-code p-1 text-[10.5px] font-medium text-code-dim transition hover:text-code-hi hover:border-code-line active:scale-95" data-copy-code="${escaped}">
                         <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        Copy
                     </button>
                 </div>
-                <pre class="m-0 overflow-x-auto p-3 font-mono text-[12px] leading-[1.6]"><code>${safe}</code></pre>
+                <pre class="m-0 overflow-x-auto p-3 font-mono text-[10px] leading-[1.6]"><code>${safe}</code></pre>
             </div>\n`;
         },
         blockquote({ tokens }) {

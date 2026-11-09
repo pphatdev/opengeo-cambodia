@@ -60,7 +60,7 @@ export function ChatMessageItem({
                 {/* Header label */}
                 <div
                     className={cx(
-                        "mb-1 flex items-center gap-1.5 text-[10.5px] font-medium text-ink-3 px-1",
+                        "my-1 flex items-center gap-1.5 text-[10.5px] font-medium text-ink-3",
                         isUser && "justify-end",
                     )}
                 >
@@ -71,7 +71,7 @@ export function ChatMessageItem({
                 {/* Bubble Container */}
                 <div
                     className={cx(
-                        "w-full rounded-2xl p-3.5 sm:p-4 text-[13px] leading-relaxed transition-all",
+                        "w-full rounded-2xl text-[13px] leading-relaxed transition-all",
                         isUser
                             ? "rounded-tr-xs bg-accent text-bg font-normal"
                             : isError
@@ -80,12 +80,12 @@ export function ChatMessageItem({
                     )}
                 >
                     {isUser ? (
-                        <div className="whitespace-pre-wrap wrap-break-word">{renderIosEmojiText(message.content)}</div>
+                        <div className="whitespace-pre-wrap wrap-break-word p-2">{renderIosEmojiText(message.content)}</div>
                     ) : isError ? (
-                        <div className="space-y-2.5">
+                        <div className="space-y-2.5 text-xs p-2">
                             <div className="flex items-start gap-2 text-warn">
-                                <Icon name="alert" className="mt-0.5 size-4 shrink-0" />
-                                <div className="font-medium text-xs leading-relaxed">{message.content}</div>
+                                <Icon name="alert" className="mt-0.5 size-3.5 shrink-0" />
+                                <div className="font-medium text-[11px] leading-relaxed">{message.content}</div>
                             </div>
                             <div className="flex flex-wrap gap-2 pt-1 border-t border-warn/20">
                                 {onConfigureKey && message.content.toLowerCase().includes("key") && (

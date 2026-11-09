@@ -47,7 +47,7 @@ export function ChatWelcomeCard({ onSelectPrompt }: ChatWelcomeCardProps) {
 
                 <div className="flex flex-col min-w-0 max-w-[96%] sm:max-w-[92%]">
                     {/* Header */}
-                    <div className="mb-1 flex items-center gap-1.5 text-[10.5px] font-medium text-ink-3 px-1">
+                    <div className="my-1 flex items-center gap-1.5 text-[10.5px] font-medium text-ink-3">
                         <span className="font-semibold text-ink">OpenGeo Assistant</span>
                         <span className="rounded bg-accent/10 px-1.5 py-0.2 font-mono text-[9.5px] font-semibold text-accent">
                             MISTRAL
