@@ -67,6 +67,9 @@
         var l = q === 'km' || q === 'en' ? q : localStorage.getItem('og-lang');
         if (!l) l = (navigator.languages || []).some(function (x) { return /^km/i.test(x); }) ? 'km' : 'en';
         d.lang = l;
+        if (q === 'km' || q === 'en') {
+          try { localStorage.setItem('og-lang', q); } catch (e) {}
+        }
       } catch (e) {}
     })();
   </script>

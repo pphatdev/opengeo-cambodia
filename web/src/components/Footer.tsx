@@ -45,7 +45,7 @@ function Column({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export function Footer() {
-    const { t, rt } = useI18n();
+    const { t, rt, lang } = useI18n();
     return (
         <footer className="scheme-dark relative overflow-hidden bg-bg pt-16 text-[13.5px] text-ink-3 border-t border-line/60">
             {/* Luminous ambient glow pool */}
@@ -56,15 +56,15 @@ export function Footer() {
             <div className={cx(wrap, "relative")}>
                 <div className="grid grid-cols-1 gap-8 border-b border-line pb-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
                     <div>
-                        <Link className="flex items-center gap-2.5 font-semibold text-ink no-underline" to="/">
+                        <Link className="flex items-center gap-2.5 font-semibold text-ink no-underline" to={lang === "km" ? "/?lang=km" : "/"}>
                             <img src="/logo.jpg" alt="" width={30} height={30} className="size-7.5 rounded-lg object-cover" />
                             <span className="font-sans">OpenGeo Cambodia</span>
                         </Link>
                         <p className="mb-0 mt-3.5 max-w-[30em] [&_a]:text-ink-2 [&_a]:underline">{rt("footer.about")}</p>
                     </div>
                     <Column title={t("footer.product")}>
-                        <li><Link to="/#explore">{t("footer.explorer")}</Link></li>
-                        <li><Link to="/docs">{t("footer.documentation")}</Link></li>
+                        <li><Link to={lang === "km" ? "/#explore?lang=km" : "/#explore"}>{t("footer.explorer")}</Link></li>
+                        <li><Link to={lang === "km" ? "/docs?lang=km" : "/docs"}>{t("footer.documentation")}</Link></li>
                         <li><a href="/api/info" rel="nofollow">{t("footer.apiIndex")}</a></li>
                         <li><a href="/health" rel="nofollow">{t("footer.status")}</a></li>
                     </Column>
@@ -72,7 +72,7 @@ export function Footer() {
                         <li><a href="/llms.txt" rel="nofollow">llms.txt</a></li>
                         <li><a href="/llms-full.txt" rel="nofollow">llms-full.txt</a></li>
                         <li><a href="/opengeo-cambodia.postman_collection.json" rel="nofollow">Postman</a></li>
-                        <li><Link to="/docs#downloads">{t("footer.downloads")}</Link></li>
+                        <li><Link to={lang === "km" ? "/docs?lang=km#downloads" : "/docs#downloads"}>{t("footer.downloads")}</Link></li>
                     </Column>
                     <Column title={t("footer.project")}>
                         <li><a href={REPO_URL} target="_blank" rel="noopener noreferrer">{t("footer.github")}</a></li>

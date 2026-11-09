@@ -18,13 +18,13 @@ import {
 } from "./sections";
 
 export default function Docs() {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     const [menuOpen, setMenuOpen] = useState(false);
 
     useSeo({
         title: t("meta.docsTitle"),
         description: t("meta.docsDesc"),
-        canonical: `${PROD_ORIGIN}/docs`,
+        canonical: lang === "km" ? `${PROD_ORIGIN}/docs?lang=km` : `${PROD_ORIGIN}/docs`,
         type: "article",
     });
 

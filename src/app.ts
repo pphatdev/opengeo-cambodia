@@ -84,45 +84,72 @@ function getSpaHtml(): string {
 
 function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
     const isKm = lang === "km";
+
+    // 1. Set <html> language attribute
+    let out = rawHtml.replace(/<html(?:\s+lang="[^"]*")?([^>]*)>/, `<html lang="${isKm ? "km" : "en"}"$1>`);
+
+    // 2. Set OpenGraph locale
+    if (isKm) {
+        out = out
+            .replace(/<meta property="og:locale" content="[^"]*">/, '<meta property="og:locale" content="km_KH">')
+            .replace(/<meta property="og:locale:alternate" content="[^"]*">/, '<meta property="og:locale:alternate" content="en_US">');
+    } else {
+        out = out
+            .replace(/<meta property="og:locale" content="[^"]*">/, '<meta property="og:locale" content="en_US">')
+            .replace(/<meta property="og:locale:alternate" content="[^"]*">/, '<meta property="og:locale:alternate" content="km_KH">');
+    }
+
+    let title = isKm
+        ? "OpenGeo Cambodia — API បើកចំហសម្រាប់ភូមិសាស្ត្ររដ្ឋបាលកម្ពុជា"
+        : "OpenGeo Cambodia — Open API for Cambodia's Administrative Geography";
+    let desc = isKm
+        ? "API ឥតគិតថ្លៃ និងមិនត្រូវការ API key សម្រាប់ភូមិសាស្ត្ររដ្ឋបាលកម្ពុជា៖ ២៥ រាជធានី-ខេត្ត, ២១០ ក្រុង-ស្រុក-ខណ្ឌ, ១,៦៦១ ឃុំ-សង្កាត់ និង ១៤,៥៧៦ ភូមិ ជាមួយលេខកូដផ្លូវការ ឈ្មោះខ្មែរ-អង់គ្លេស និងព្រំប្រទល់ GeoJSON។"
+        : "Free, keyless REST API for Cambodia's administrative geography: 25 provinces, 210 districts, 1,661 communes and 14,576 villages with official NCDD codes, Khmer & English names, GeoJSON boundaries and geocoding.";
+    let canonical = isKm
+        ? "https://opengeo-cambodia.pphat.me/?lang=km"
+        : "https://opengeo-cambodia.pphat.me/";
+
     if (reqPath.startsWith("/docs")) {
-        const title = isKm
+        title = isKm
             ? "ឯកសារ API — OpenGeo Cambodia"
             : "API Documentation — OpenGeo Cambodia";
-        const desc = isKm
+        desc = isKm
             ? "ឯកសារបច្ចេកទេសសម្រាប់អ្នកអភិវឌ្ឍន៍ ផ្ទាំងសាកល្បង API គំរូទិន្នន័យ JSON កម្រិតកំណត់សំណើ និងកូអរដោនេព្រំប្រទល់ GeoJSON នៃឋានានុក្រមរដ្ឋបាល ៤ កម្រិតនៅកម្ពុជា។"
             : "Developer documentation, interactive API playground, JSON schemas, rate limits, and GeoJSON boundary specifications for Cambodia's 4-tier administrative hierarchy.";
-        const canonical = "https://opengeo-cambodia.pphat.me/docs";
-
-        return rawHtml
-            .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
-            .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
-            .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
-            .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`)
-            .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${desc}">`)
-            .replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${canonical}">`)
-            .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${title}">`)
-            .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${desc}">`);
-    }
-    if (reqPath.startsWith("/playground")) {
-        const title = isKm
+        canonical = isKm
+            ? "https://opengeo-cambodia.pphat.me/docs?lang=km"
+            : "https://opengeo-cambodia.pphat.me/docs";
+    } else if (reqPath.startsWith("/playground")) {
+        title = isKm
             ? "ផ្ទាំងសាកល្បង API — OpenGeo Cambodia"
             : "API Playground — OpenGeo Cambodia";
-        const desc = isKm
+        desc = isKm
             ? "ផ្ទាំងសាកល្បង API អន្តរកម្មសម្រាប់ធ្វើតេស្ត endpoint នៃ OpenGeo Cambodia ជាមួយនឹងការបង្ហាញលទ្ធផលជាទម្រង់ UI និង Raw JSON។"
             : "Interactive API playground for testing OpenGeo Cambodia endpoints with live UI visualization and raw JSON inspection.";
-        const canonical = "https://opengeo-cambodia.pphat.me/playground";
-
-        return rawHtml
-            .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
-            .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
-            .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
-            .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`)
-            .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${desc}">`)
-            .replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${canonical}">`)
-            .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${title}">`)
-            .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${desc}">`);
+        canonical = isKm
+            ? "https://opengeo-cambodia.pphat.me/playground?lang=km"
+            : "https://opengeo-cambodia.pphat.me/playground";
+    } else if (reqPath.startsWith("/demo")) {
+        title = isKm
+            ? "ផ្ទាំងបង្ហាញគំរូ — OpenGeo Cambodia"
+            : "Live Demo — OpenGeo Cambodia";
+        desc = isKm
+            ? "ផ្ទាំងបង្ហាញគំរូនូវសមត្ថភាពនៃ API ភូមិសាស្ត្ររដ្ឋបាលកម្ពុជា ជាមួយផែនទីអន្តរកម្ម។"
+            : "Live interactive map demonstration of Cambodia's administrative geography API.";
+        canonical = isKm
+            ? "https://opengeo-cambodia.pphat.me/demo?lang=km"
+            : "https://opengeo-cambodia.pphat.me/demo";
     }
-    return rawHtml;
+
+    return out
+        .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
+        .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
+        .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
+        .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`)
+        .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${desc}">`)
+        .replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${canonical}">`)
+        .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${title}">`)
+        .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${desc}">`);
 }
 
 /** Serve the React app shell from Workers Assets when deployed, or from dist/client in Node. */
