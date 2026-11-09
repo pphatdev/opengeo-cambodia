@@ -96,6 +96,20 @@ export function ChatWidget() {
         }
     }, [open, settingsOpen]);
 
+    // Lock background scroll when chatbot is open
+    useEffect(() => {
+        if (!open) return;
+        const prevBodyOverflow = document.body.style.overflow;
+        const prevHtmlOverflow = document.documentElement.style.overflow;
+        document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = prevBodyOverflow;
+            document.documentElement.style.overflow = prevHtmlOverflow;
+        };
+    }, [open]);
+
     // Close on Escape key
     useEffect(() => {
         if (!open) return;
