@@ -54,7 +54,7 @@ export function ChatMessageItem({
             <div
                 className={cx(
                     "flex flex-col min-w-0",
-                    isUser ? "items-end max-w-[85%] sm:max-w-[78%]" : "items-start max-w-[92%] sm:max-w-[88%]",
+                    isUser ? "items-end max-w-[85%] sm:max-w-[78%]" : "items-start max-w-[96%] sm:max-w-[88%]",
                 )}
             >
                 {/* Header label */}

@@ -8,7 +8,7 @@ export const cx = (...parts: (string | false | null | undefined)[]) => parts.fil
 
 export const wrap = "mx-auto w-full max-w-[1360px] px-6 max-sm:px-4";
 
-export const btn = "inline-flex h-11 items-center gap-2 rounded-[10px] border border-transparent px-[18px] text-[14.5px] font-medium no-underline transition-all active:translate-y-px km:font-khmer [&_svg]:size-4";
+export const btn = "inline-flex h-10 items-center gap-2 rounded-[10px] border border-transparent px-[18px] text-[14.5px] font-medium no-underline transition-all active:translate-y-px km:font-khmer [&_svg]:size-4";
 export const btnPrimary = cx(btn, "bg-ink text-bg shadow-sm hover:bg-[color-mix(in_srgb,var(--og-ink)_85%,var(--og-accent))] hover:shadow-[0_4px_20px_-4px_var(--og-accent)]");
 export const btnGhost = cx(btn, "glass-pill text-ink hover:text-accent hover:border-accent/40");
 
