@@ -44,7 +44,7 @@ chatMarked.use({
             const language = (lang || "code").toLowerCase();
             const escaped = encodeURIComponent(text);
             const safe = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            return `<div class="my-2.5 overflow-hidden rounded-xl border border-line bg-code text-code-ink shadow-xs">
+            return `<div class="my-2.5 overflow-hidden rounded-xl bg-code text-code-ink shadow-xs">
                 <div class="flex items-center justify-between border-b border-code-line bg-surface-3/30 px-3 py-1.5 text-[11px] font-mono text-code-dim">
                     <span class="font-semibold text-accent">${language}</span>
                     <button type="button" class="inline-flex cursor-pointer items-center gap-1 rounded-md border border-code-line/60 bg-code p-1 text-[10.5px] font-medium text-code-dim transition hover:text-code-hi hover:border-code-line active:scale-95" data-copy-code="${escaped}">
