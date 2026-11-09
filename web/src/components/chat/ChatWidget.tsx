@@ -243,6 +243,7 @@ export function ChatWidget() {
                 status={status}
                 onSaved={() => {
                     fetchChatStatus().then((s) => s && setStatus(s));
+                    setMessages(getStoredHistory());
                 }}
             />
 

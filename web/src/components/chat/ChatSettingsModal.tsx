@@ -7,6 +7,8 @@ import {
     setStoredModel,
     getStoredMode,
     setStoredMode,
+    getOrCreateDeviceMac,
+    regenerateDeviceMac,
     type ChatStatus,
 } from "../../lib/chat";
 import { useToast } from "../../lib/toast";
@@ -29,16 +31,38 @@ export function ChatSettingsModal({
     const [showKey, setShowKey] = useState(false);
     const [model, setModel] = useState("mistral-small-latest");
     const [mode, setMode] = useState<"compact" | "full">("compact");
+    const [deviceMac, setDeviceMac] = useState(getOrCreateDeviceMac());
+    const [macCopied, setMacCopied] = useState(false);
 
     useEffect(() => {
         if (open) {
             setApiKey(getStoredApiKey());
             setModel(getStoredModel());
             setMode(getStoredMode());
+            setDeviceMac(getOrCreateDeviceMac());
+            setMacCopied(false);
         }
     }, [open]);
 
     if (!open) return null;
+
+    const handleCopyMac = async () => {
+        try {
+            await navigator.clipboard.writeText(deviceMac);
+            setMacCopied(true);
+            setTimeout(() => setMacCopied(false), 2000);
+            toast("Device MAC copied to clipboard!");
+        } catch {
+            toast(deviceMac);
+        }
+    };
+
+    const handleRegenerateMac = () => {
+        const newMac = regenerateDeviceMac();
+        setDeviceMac(newMac);
+        toast(`New Device MAC generated: ${newMac}`);
+        onSaved?.();
+    };
 
     const handleSave = () => {
         setStoredApiKey(apiKey);
@@ -222,6 +246,48 @@ export function ChatSettingsModal({
                                 <span className="text-[11px] text-ink-3 mt-0.5">Extended schemas (~14k tokens)</span>
                             </button>
                         </div>
+                    </div>
+
+                    {/* Device MAC Identity & History Scope */}
+                    <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                            <label className="font-medium text-ink flex items-center gap-1.5">
+                                <span>Device MAC Address</span>
+                                <span className="rounded bg-accent/15 px-1.5 py-0.2 font-mono text-[9px] font-bold text-accent">
+                                    Local Scope
+                                </span>
+                            </label>
+                            <span className="text-[11px] text-ink-3">Isolates chat history</span>
+                        </div>
+                        <div className="flex items-center justify-between rounded-xl border border-line bg-surface-2/60 px-3 py-2 text-xs">
+                            <div className="flex items-center gap-2">
+                                <span className="size-2 rounded-full bg-ok animate-pulse" />
+                                <code className="font-mono font-semibold text-ink tracking-wider text-[12px]">{deviceMac}</code>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    type="button"
+                                    onClick={handleCopyMac}
+                                    className="rounded-lg p-1.5 text-ink-3 hover:bg-surface hover:text-ink transition cursor-pointer"
+                                    title="Copy Device MAC Address"
+                                    aria-label="Copy Device MAC"
+                                >
+                                    <Icon name={macCopied ? "check" : "copy"} className="size-3.5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleRegenerateMac}
+                                    className="rounded-lg p-1.5 text-ink-3 hover:bg-surface hover:text-accent transition cursor-pointer"
+                                    title="Regenerate new Device MAC Address"
+                                    aria-label="Regenerate MAC"
+                                >
+                                    <Icon name="refresh" className="size-3.5" />
+                                </button>
+                            </div>
+                        </div>
+                        <p className="mt-1 text-[10.5px] text-ink-3 leading-tight">
+                            Synthetic IEEE 802 MAC address used to store and partition your local chat history per machine.
+                        </p>
                     </div>
                 </div>
 
