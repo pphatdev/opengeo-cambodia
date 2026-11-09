@@ -12,9 +12,6 @@ import { cx, wrap } from "./ui";
 function Wordmark() {
     return (
         <div className="pointer-events-none mt-12 select-none leading-none" aria-hidden="true">
-            {/* Set like the logo: Montserrat ExtraBold caps, "OPEN GEO" in the cyan → mint gradient, "CAMBODIA" in ink.
-                Sizes come from measuring the real font (100px → 1194.5 wide, cap height 70): at 83px the natural
-                width is ~991, so textLength only nudges the spacing and never squeezes glyphs together. */}
             <svg viewBox="0 0 1000 62" preserveAspectRatio="xMidYMax meet" focusable="false" className="block h-auto w-full overflow-visible">
                 <defs>
                     {/* User-space gradient so it spans exactly "OPEN GEO" (0 → ~470), like the logo */}
@@ -27,7 +24,7 @@ function Wordmark() {
                         <stop offset="1" className="[stop-color:var(--og-ink)]" stopOpacity="0.55" />
                     </linearGradient>
                 </defs>
-                <text x="0" y="60" textLength="1000" lengthAdjust="spacing" className="font-display text-[83px] font-extrabold">
+                <text x="0" y="60" textLength="1000" lengthAdjust="spacing" className="font-display text-[95px] font-extrabold tracking-[-3.8rem]">
                     <tspan fill="url(#wm-brand)">OPEN GEO</tspan> <tspan fill="none" strokeWidth={1.2} className="stroke-ink-2">CAMBODIA</tspan>
                 </text>
             </svg>
