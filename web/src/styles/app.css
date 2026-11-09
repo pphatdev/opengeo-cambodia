@@ -135,19 +135,29 @@
   --color-j-err: #f87171;
 
   /* Ubuntu for reading and UI text; JetBrains Mono for display titles and code; Montserrat for classic docs */
-  --font-sans: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Ubuntu", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --font-docs-display: "Montserrat", "Ubuntu", system-ui, sans-serif;
-  --font-docs-display: "Montserrat", "Ubuntu", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --font-khmer: "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS", sans-serif;
+  /* iOS Emoji priority font stack ensures native Apple Color Emoji styling */
+  --font-emoji: "Apple Color Emoji", -apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI Emoji", sans-serif;
+  --font-sans: "Ubuntu", "Apple Color Emoji", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Ubuntu", "Apple Color Emoji", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-docs-display: "Montserrat", "Ubuntu", "Apple Color Emoji", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Apple Color Emoji", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-khmer: "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS", "Apple Color Emoji", sans-serif;
 
   --breakpoint-xs: 27.5rem; /* 440px */
 }
 
 /* ==========================================================================
-   Base
+   Base & Typography
    ========================================================================== */
+@font-face {
+  font-family: "Apple Color Emoji";
+  src: local("Apple Color Emoji"),
+       local("AppleColorEmoji"),
+       local(".AppleColorEmojiUI"),
+       local("Apple-Color-Emoji");
+  font-display: swap;
+}
+
 @layer base {
   html { scroll-behavior: smooth; scroll-padding-top: 84px; }
   body { @apply bg-bg text-ink font-sans text-[15px] leading-[1.6] antialiased; }
@@ -160,6 +170,7 @@
   p, li, figcaption { text-wrap: pretty; }
   body { text-rendering: optimizeLegibility; font-optical-sizing: auto; }
   img { max-width: 100%; }
+  hr { border-color: var(--og-line); }
   .leaflet-zoom-animated > g {@apply outline-none;}
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
@@ -169,6 +180,20 @@
 /* ==========================================================================
    Utilities that Tailwind can't express as one class
    ========================================================================== */
+
+/* Apple iOS Emoji Utilities */
+@utility font-ios-emoji {
+  font-family: var(--font-emoji);
+}
+
+.apple-emoji {
+  display: inline-block;
+  vertical-align: -0.18em;
+  width: 1.25em;
+  height: 1.25em;
+  object-fit: contain;
+  user-select: none;
+}
 
 /* Inline markup inside translated text (rendered from <code>, <a>, <strong>) */
 @utility rich {
