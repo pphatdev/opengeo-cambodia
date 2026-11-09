@@ -65,13 +65,13 @@ export function Footer() {
                     <Column title={t("footer.product")}>
                         <li><Link to="/#explore">{t("footer.explorer")}</Link></li>
                         <li><Link to="/docs">{t("footer.documentation")}</Link></li>
-                        <li><a href="/api/info">{t("footer.apiIndex")}</a></li>
-                        <li><a href="/health">{t("footer.status")}</a></li>
+                        <li><a href="/api/info" rel="nofollow">{t("footer.apiIndex")}</a></li>
+                        <li><a href="/health" rel="nofollow">{t("footer.status")}</a></li>
                     </Column>
                     <Column title={t("footer.resources")}>
-                        <li><a href="/llms.txt">llms.txt</a></li>
-                        <li><a href="/llms-full.txt">llms-full.txt</a></li>
-                        <li><a href="/opengeo-cambodia.postman_collection.json">Postman</a></li>
+                        <li><a href="/llms.txt" rel="nofollow">llms.txt</a></li>
+                        <li><a href="/llms-full.txt" rel="nofollow">llms-full.txt</a></li>
+                        <li><a href="/opengeo-cambodia.postman_collection.json" rel="nofollow">Postman</a></li>
                         <li><Link to="/docs#downloads">{t("footer.downloads")}</Link></li>
                     </Column>
                     <Column title={t("footer.project")}>

@@ -235,6 +235,25 @@ app.use(
 // 5. Bot Shield, Malicious Scanner Blocker & Exploit Trap
 app.use("*", createBotShield());
 
+// 5b. Search Engine Optimization: Exclude non-HTML APIs, health checks, machine specs, and data files from search indexing
+app.use("*", async (c, next) => {
+    await next();
+    const p = c.req.path;
+    if (
+        p.startsWith("/api/") ||
+        p === "/health" ||
+        p === "/robots.txt" ||
+        p === "/llms.txt" ||
+        p === "/llms-full.txt" ||
+        p === "/opengeo-cambodia.postman_collection.json" ||
+        p === "/postman" ||
+        p.startsWith("/data/") ||
+        p.startsWith("/boundaries/")
+    ) {
+        c.header("X-Robots-Tag", "noindex, nofollow");
+    }
+});
+
 // 6. Tiered Rate Limiting & Edge Caching
 // Administrative and boundary routes: Dedicated 10,000 req/min/IP for immutable geographic datasets
 app.use("/api/admin/*", adminRateLimiter);
@@ -385,7 +404,9 @@ app.get("/robots.txt", async (c) => {
         c.header("Cache-Control", "public, max-age=86400");
         return c.body(fs.readFileSync(filePath, "utf-8"));
     }
-    return c.text("User-agent: *\nAllow: /\nDisallow: /api/geocode/reverse?*\nSitemap: https://opengeo-cambodia.pphat.me/sitemap.xml\n");
+    return c.text(
+        "User-agent: *\nAllow: /\nAllow: /api/geocode/reverse?lat=11.5564&lon=104.9282\nAllow: /api/geocode/reverse?lon=104.9282&lat=11.5564\nDisallow: /api/geocode/reverse?*\n\nUser-agent: Googlebot\nAllow: /\nAllow: /api/geocode/reverse?lat=11.5564&lon=104.9282\nAllow: /api/geocode/reverse?lon=104.9282&lat=11.5564\nDisallow: /api/geocode/reverse?*\n\nSitemap: https://opengeo-cambodia.pphat.me/sitemap.xml\n",
+    );
 });
 
 app.get("/sitemap.xml", async (c) => {
@@ -518,7 +539,7 @@ app.get("/", async (c) => {
         description:
             "An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times",
         dataSource: "https://data.mef.gov.kh/",
-        version: "1.4.0",
+        version: "1.4.1",
         documentation: "/api/info",
         playground: "/playground",
         llms: "/llms.txt",
