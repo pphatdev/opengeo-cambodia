@@ -1,6 +1,6 @@
 {
     "name": "opengeo-cambodia-api",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "description": "An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (Provinces, Districts, Communes, Villages), 100% free to use, with sub-1ms response times",
     "homepage": "https://opengeo-cambodia.pphat.me",
     "main": "dist/index.js",
