@@ -9,7 +9,7 @@
 [![Data Source: MEF Open Data](https://img.shields.io/badge/Data%20Source-data.mef.gov.kh-blue?style=flat-square)](https://data.mef.gov.kh/)
 [![Domain](https://img.shields.io/badge/Domain-opengeo--cambodia.pphat.me-0d9488?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![AI Docs](https://img.shields.io/badge/AI%20Docs-llms.txt-7c3aed?style=flat-square)](https://opengeo-cambodia.pphat.me/llms.txt)
-[![AI Q&A](https://img.shields.io/badge/AI%20Q%26A-Mistral%20AI-orange?style=flat-square)](https://opengeo-cambodia.pphat.me/chat)
+[![AI Q&A](https://img.shields.io/badge/AI%20Assistant-Mistral%20AI-orange?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![Postman](https://img.shields.io/badge/Postman-Collection-FF6C37?style=flat-square&logo=postman&logoColor=white)](public/opengeo-cambodia.postman_collection.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
@@ -19,7 +19,7 @@
 🏛️ **Official Data Source:** [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)  
 📮 **Postman Collection:** [`public/opengeo-cambodia.postman_collection.json`](public/opengeo-cambodia.postman_collection.json) *(Uses collection variables, no environment file needed)*  
 🤖 **AI Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)  
-💬 **AI Q&A Chatbot:** [https://opengeo-cambodia.pphat.me/chat](https://opengeo-cambodia.pphat.me/chat) *(interactive full AI context Q&A)*  
+💬 **AI Assistant:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me) *(interactive floating assistant on all pages)*  
 📰 **Developer Guide & Deep Dive Series:** [**`blog/` (7-Part Series)**](blog/) | [Full Article](blog/introducing-opengeo-cambodia.md)
 
 ---
@@ -317,8 +317,7 @@ Sub-millisecond in-memory Point-in-Polygon lookup resolving the containing admin
 OpenGeo Cambodia includes a built-in AI technical assistant powered by **Mistral AI** (`mistral-small-latest` by default). The assistant ingests the full 55 KB reference specification from [`llms-full.txt`](llms-full.txt) into its system context to provide 100% ground-truth code generation (cURL, TypeScript/JavaScript, Python), administrative hierarchy navigation, and Point-in-Polygon spatial query guidance in both **English and Khmer**.
 
 #### Live Web Interfaces
-- **Full-Screen Chat Workbench:** [`/chat`](https://opengeo-cambodia.pphat.me/chat) (or `/qa`)
-- **Global Floating Widget:** Click the "Ask AI" button on any page to open the interactive drawer.
+- **Global Floating Assistant:** Click "Ask AI" in the navigation bar or the floating assistant button on any page to open the interactive drawer.
 
 #### Chat Endpoints
 ```http

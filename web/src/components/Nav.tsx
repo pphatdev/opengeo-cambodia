@@ -8,7 +8,7 @@ import { cx, iconBtn, wrap } from "./ui";
 export const REPO_URL = "https://github.com/pphatdev/opengeo-cambodia";
 
 interface NavProps {
-    variant?: "home" | "docs" | "playground" | "chat";
+    variant?: "home" | "docs" | "playground";
     menuOpen?: boolean;
     onMenu?: () => void;
 }
@@ -54,12 +54,11 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
 
     const isDocs = variant === "docs";
     const isPlayground = variant === "playground";
-    const isChat = variant === "chat";
     return (
         <header
             className={cx(
                 "sticky top-0 z-1000 border-b transition-all duration-300",
-                scrolled || isDocs || isPlayground || isChat
+                scrolled || isDocs || isPlayground
                     ? "glass-panel-subtle border-b-line/60! border-t-0! border-x-0! shadow-[0_8px_30px_-6px_rgba(0,0,0,0.04)]!"
                     : "border-transparent bg-transparent backdrop-blur-xs",
             )}
@@ -83,28 +82,21 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                             <span className="font-normal text-line-2 max-md:hidden">/</span>
                             <span className="font-display text-[13px] font-bold uppercase text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal max-md:hidden">{t("nav.playground")}</span>
                         </>
-                    ) : isChat ? (
-                        <>
-                            <span className="font-normal text-line-2 max-md:hidden">/</span>
-                            <span className="font-display text-[13px] font-bold uppercase text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal max-md:hidden">{lang === "km" ? "ជំនួយការ AI" : "Ask AI"}</span>
-                        </>
                     ) : (
                         <small className="rounded-full glass-pill px-2.5 py-0.5 text-xs font-medium text-accent max-xs:hidden">v1.5</small>
                     )}
                 </Link>
                 <nav className="ml-auto flex items-center gap-1.5" aria-label="Primary">
-                    <Link
-                        to={lang === "km" ? "/chat?lang=km" : "/chat"}
-                        className={cx(
-                            navItem,
-                            isChat && "bg-surface-2 font-semibold text-ink max-sm:border-accent/40 max-sm:text-accent max-sm:shadow-xs",
-                        )}
+                    <button
+                        type="button"
+                        onClick={() => window.dispatchEvent(new CustomEvent("open-opengeo-chat"))}
+                        className={cx(navItem, "cursor-pointer")}
                         title={t("nav.chat")}
                         aria-label={t("nav.chat")}
                     >
                         <Icon name="bot" className="size-4 text-accent max-sm:mr-0 sm:mr-1.5" />
                         <span className="max-sm:hidden">{t("nav.chat")}</span>
-                    </Link>
+                    </button>
                     <Link
                         to={lang === "km" ? "/docs?lang=km" : "/docs"}
                         className={cx(
