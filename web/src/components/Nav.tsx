@@ -57,7 +57,7 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
     return (
         <header
             className={cx(
-                "sticky top-0 z-1000 border-b transition-all duration-300",
+                "sticky top-0 z-1000 transition-all duration-300",
                 scrolled || isDocs || isPlayground
                     ? "glass-panel-subtle border-b-line/60! border-t-0! border-x-0! shadow-[0_8px_30px_-6px_rgba(0,0,0,0.04)]!"
                     : "border-transparent bg-transparent backdrop-blur-xs",

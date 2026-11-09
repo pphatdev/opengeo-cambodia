@@ -322,7 +322,7 @@ export function ChatWidget() {
                             />
 
                             {/* Active Online Indicator */}
-                            <span className="absolute top-1 right-1 flex size-3">
+                            <span className="absolute -top-1 max-sm:right-6.5 right-7 flex size-3">
                                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-ok opacity-75 motion-reduce:hidden" />
                                 <span className="relative inline-flex size-3 rounded-full border-2 border-surface bg-ok" />
                             </span>
@@ -483,7 +483,7 @@ export function ChatWidget() {
                                 onKeyDown={handleKeyDown}
                                 rows={1}
                                 placeholder="Ask how to use OpenGeo API (e.g. Find all districts in Siem Reap)..."
-                                className="w-full resize-none border-0 bg-transparent px-3 py-1.5 text-xs text-ink placeholder:text-ink-3/70 focus:outline-hidden min-h-8 max-h-20 leading-normal"
+                                className="w-full resize-none border-0 bg-transparent px-3 text-xs text-ink placeholder:text-ink-3/70 focus:outline-hidden min-h-6 max-h-20 leading-normal"
                             />
                             <div className="flex items-center gap-1 shrink-0 pb-0.5 pr-0.5">
                                 {isStreaming ? (
