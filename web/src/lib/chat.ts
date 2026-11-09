@@ -103,9 +103,9 @@ export function setStoredModel(model: string): void {
 }
 
 export function getStoredMode(): "compact" | "full" {
-    if (typeof window === "undefined") return "compact";
+    if (typeof window === "undefined") return "full";
     const mode = localStorage.getItem(STORAGE_KEY_MODE);
-    return mode === "full" ? "full" : "compact";
+    return mode === "compact" ? "compact" : "full";
 }
 
 export function setStoredMode(mode: "compact" | "full"): void {

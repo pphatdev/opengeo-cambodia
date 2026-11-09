@@ -119,7 +119,7 @@ chatRoutes.post("/", async (c) => {
             history: Array.isArray(body.history) ? (body.history as ChatMessage[]) : [],
             apiKey,
             model: body.model,
-            mode: body.mode || "compact",
+            mode: body.mode || "full",
             stream,
         });
 

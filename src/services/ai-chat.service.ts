@@ -127,11 +127,17 @@ export function buildSystemPrompt(mode: "full" | "compact" = "compact"): string 
    Supply clean, working, and copy-pasteable code examples (cURL with User-Agent, JavaScript fetch, or Python requests).
 9. Confidentiality of internal file names:
    NEVER mention "llms.txt", "llms-full.txt", or any internal text filenames or file paths to the user. Always refer to your knowledge source simply as "the official OpenGeo Cambodia API documentation" or "the API reference".
-10. Strict Output Economy (Minimize Tokens):
-   - Be concise, direct, and token-efficient.
-   - Do NOT output conversational filler, pleasantries, or preamble (e.g. avoid "Hello!", "Certainly, here is...", "Hope this helps!").
-   - Provide directly what was requested: the exact endpoint URL, parameters, and one concise code snippet.
-   - Keep explanations under 2-3 short sentences.
+10. Thorough, In-Depth Technical Detail:
+   - Provide comprehensive, high-value, and detailed responses that thoroughly explain the context and mechanics.
+   - When answering endpoint inquiries, always include:
+     * Full Endpoint URL, HTTP Method, and clear purpose description
+     * Complete Parameter Breakdown: Path parameters and Query parameters (data types, required/optional, defaults, and usage examples)
+     * Mandatory Headers: emphasize the mandatory \`User-Agent: YourApp/1.0\` requirement
+     * Example JSON Response: show representative JSON response structures illustrating key attributes (\`code\`, \`name_en\`, \`name_km\`, \`administrative_unit\`, etc.)
+     * Production-Ready Code Examples: provide clean, working code in cURL, TypeScript/JavaScript (\`fetch\`), and Python (\`requests\`) with proper headers and error handling
+     * Architecture & Gotchas: explain NCDD hierarchy code structure (2/4/6/8-digit prefix inheritance), performance best practices (e.g. \`format=summary\` vs full GeoJSON boundaries, sub-millisecond in-memory point-in-polygon), and rate limit guidelines
+   - Format with structured Markdown: use descriptive subheadings (\`###\`), parameter lists/tables, blockquotes, and language-tagged code blocks (\`bash\`, \`ts\`, \`python\`, \`json\`).
+   - If asked in Khmer, provide the response in rich, natural, professional Khmer, retaining standard English endpoint paths and technical identifiers.
 
 === API SPECIFICATION & REFERENCE ===
 ${documentation}
@@ -180,7 +186,7 @@ export class AiChatService {
             history = [],
             apiKey = config.mistral.apiKey,
             model = config.mistral.model || DEFAULT_MODEL,
-            mode = "compact",
+            mode = "full",
             stream = true,
         } = options;
 
@@ -190,14 +196,12 @@ export class AiChatService {
 
         const systemPrompt = buildSystemPrompt(mode);
 
-        // Token-efficient history optimization:
-        // 1. Keep only the last 4 messages (2 conversation turns) instead of 10 to avoid token bloat.
-        // 2. In older messages (prior turns), compress large code blocks so past code isn't re-transmitted in full.
-        const recentHistory = history.slice(-4).map((m) => {
-            if (m.role === "assistant" && m.content.length > 400) {
+        // Keep the last 6 messages (3 conversation turns) for rich conversational context
+        const recentHistory = history.slice(-6).map((m) => {
+            if (m.role === "assistant" && m.content.length > 800) {
                 const compressed = m.content.replace(
-                    /```[\s\S]{200,}?```/g,
-                    "```\n// [Previous code block omitted to save tokens]\n```",
+                    /```[\s\S]{500,}?```/g,
+                    "```\n// [Previous code block omitted]\n```",
                 );
                 return { ...m, content: compressed };
             }
@@ -213,8 +217,8 @@ export class AiChatService {
         const mistralPayload = {
             model,
             messages,
-            temperature: 0.1,
-            max_tokens: 1024,
+            temperature: 0.2,
+            max_tokens: 2500,
             stream,
         };
 

@@ -30,7 +30,7 @@ export function ChatSettingsModal({
     const [apiKey, setApiKey] = useState("");
     const [showKey, setShowKey] = useState(false);
     const [model, setModel] = useState("mistral-small-latest");
-    const [mode, setMode] = useState<"compact" | "full">("compact");
+    const [mode, setMode] = useState<"compact" | "full">("full");
     const [deviceMac, setDeviceMac] = useState(getOrCreateDeviceMac());
     const [macCopied, setMacCopied] = useState(false);
 
@@ -211,28 +211,13 @@ export function ChatSettingsModal({
                     <div>
                         <div className="flex items-center justify-between mb-1.5">
                             <label className="font-medium text-ink">
-                                Token Efficiency & Knowledge Mode
+                                Detail Level & Documentation Scope
                             </label>
                             <span className="text-[11px] text-accent font-medium">
-                                {mode === "compact" ? "Minimal Token Usage" : "Full Schema"}
+                                {mode === "full" ? "Comprehensive Details" : "Compact Mode"}
                             </span>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
-                            <button
-                                type="button"
-                                onClick={() => setMode("compact")}
-                                className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition cursor-pointer ${
-                                    mode === "compact"
-                                        ? "border-accent bg-accent-soft text-accent"
-                                        : "border-line bg-surface hover:bg-surface-2 text-ink"
-                                }`}
-                            >
-                                <div className="flex items-center gap-1.5 font-semibold text-xs">
-                                    <span>Token-Saver</span>
-                                    <span className="rounded bg-ok/20 px-1 py-0.2 text-[9px] font-bold text-ok">Recommended</span>
-                                </div>
-                                <span className="text-[11px] text-ink-3 mt-0.5">Ultra-low token usage (~1.2k tokens)</span>
-                            </button>
                             <button
                                 type="button"
                                 onClick={() => setMode("full")}
@@ -242,8 +227,23 @@ export function ChatSettingsModal({
                                         : "border-line bg-surface hover:bg-surface-2 text-ink"
                                 }`}
                             >
-                                <span className="font-semibold text-xs">Full Reference</span>
-                                <span className="text-[11px] text-ink-3 mt-0.5">Extended schemas (~14k tokens)</span>
+                                <div className="flex items-center gap-1.5 font-semibold text-xs">
+                                    <span>Full Detail</span>
+                                    <span className="rounded bg-ok/20 px-1 py-0.2 text-[9px] font-bold text-ok">Recommended</span>
+                                </div>
+                                <span className="text-[11px] text-ink-3 mt-0.5">Maximum depth, schemas & multi-lang code</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setMode("compact")}
+                                className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition cursor-pointer ${
+                                    mode === "compact"
+                                        ? "border-accent bg-accent-soft text-accent"
+                                        : "border-line bg-surface hover:bg-surface-2 text-ink"
+                                }`}
+                            >
+                                <span className="font-semibold text-xs">Token-Saver</span>
+                                <span className="text-[11px] text-ink-3 mt-0.5">Condensed endpoints (~1.2k tokens)</span>
                             </button>
                         </div>
                     </div>
