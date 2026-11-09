@@ -305,35 +305,26 @@ export function ChatWidget() {
                         </div>
                     )}
 
-                    {/* Main Floating Launcher Button */}
+                    {/* Main Floating Launcher Button (Transparent background) */}
                     <div className="relative group">
-                        {/* Ambient Glowing Aura */}
-                        <div className="absolute -inset-1.5 rounded-full bg-linear-to-tr from-accent/60 via-teal-400/50 to-sky-400/60 opacity-60 blur-md transition duration-500 group-hover:opacity-100 group-hover:scale-110 motion-reduce:hidden animate-aura" />
-
-                        {/* Expanding Attention Beacon Wave */}
-                        <div className="absolute -inset-1 rounded-full bg-accent/40 animate-beacon pointer-events-none motion-reduce:hidden" />
-
                         <button
                             type="button"
                             onClick={() => {
                                 setOpen(true);
                                 setTeaserVisible(false);
                             }}
-                            className="relative flex size-14 items-center justify-center rounded-full bg-ink text-bg shadow-[0_12px_36px_-6px_rgba(13,148,136,0.4)] dark:shadow-[0_12px_36px_-6px_rgba(45,212,191,0.3)] transition-all duration-300 hover:scale-108 active:scale-95 cursor-pointer border border-white/15 dark:border-accent/30 overflow-hidden"
+                            className="relative flex items-center justify-center p-0.5 bg-transparent border-0 transition-all duration-300 hover:scale-112 active:scale-95 cursor-pointer outline-hidden select-none"
                             aria-label="Open OpenGeo AI Assistant"
                         >
-                            {/* Shimmer sweep effect on hover */}
-                            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full transition-transform duration-700 ease-out group-hover:translate-x-full pointer-events-none" />
-
                             <RobotWaveIcon
-                                className="size-8.5 text-accent transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(13,148,136,0.45)]"
+                                className="size-13 sm:size-14 text-accent transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_8px_20px_rgba(13,148,136,0.4)] dark:drop-shadow-[0_8px_24px_rgba(45,212,191,0.45)]"
                                 isWaving={true}
                             />
 
                             {/* Active Online Indicator */}
-                            <span className="absolute top-2.5 right-2.5 flex size-3">
+                            <span className="absolute top-1 right-1 flex size-3">
                                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-ok opacity-75 motion-reduce:hidden" />
-                                <span className="relative inline-flex size-3 rounded-full border-2 border-ink bg-ok" />
+                                <span className="relative inline-flex size-3 rounded-full border-2 border-surface bg-ok" />
                             </span>
                         </button>
                     </div>

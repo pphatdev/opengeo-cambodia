@@ -113,3 +113,4 @@ export function RobotWaveIcon({ className, isWaving = true, ...props }: RobotWav
         </svg>
     );
 }
+
