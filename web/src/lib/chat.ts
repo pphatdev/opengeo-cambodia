@@ -10,6 +10,7 @@ export interface ChatMessage {
 
 export interface ChatStatus {
     hasServerKey: boolean;
+    requiresUserKey?: boolean;
     defaultModel: string;
     availableModels: string[];
     knowledge: {

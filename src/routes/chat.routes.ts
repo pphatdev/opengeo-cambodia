@@ -8,11 +8,10 @@ chatRoutes.get("/status", (c) => {
     const service = AiChatService.getInstance();
     const status = service.getStatus();
 
-    // Check Cloudflare env override if available
-    const envKey = (c.env as any)?.MISTRAL_API_KEY;
-    if (envKey) {
-        status.hasServerKey = true;
-    }
+    // Enforce BYOK (Bring Your Own Key):
+    // Server key is not shared with public users. Clients must provide their own Mistral API key.
+    status.hasServerKey = false;
+    status.requiresUserKey = true;
 
     return c.json({
         success: true,
@@ -93,12 +92,9 @@ chatRoutes.post("/", async (c) => {
         );
     }
 
-    // Resolve Mistral API Key priority:
-    // 1. x-mistral-api-key header
-    // 2. Authorization header (if Bearer ...)
-    // 3. body.apiKey
-    // 4. Cloudflare Worker env (c.env.MISTRAL_API_KEY)
-    // 5. Node process.env (handled by config)
+    // Enforce BYOK (Bring Your Own Key):
+    // Users must supply their own Mistral API key via header, Bearer authorization, or request body.
+    // Server environment keys are strictly protected and never used for public user queries.
     const headerKey = c.req.header("x-mistral-api-key")?.trim();
     const authHeader = c.req.header("authorization")?.trim();
     let bearerKey = "";
@@ -106,9 +102,19 @@ chatRoutes.post("/", async (c) => {
         bearerKey = authHeader.slice(7).trim();
     }
     const bodyKey = body.apiKey?.trim();
-    const envKey = ((c.env as any)?.MISTRAL_API_KEY as string | undefined)?.trim();
 
-    const apiKey = headerKey || bearerKey || bodyKey || envKey;
+    const apiKey = headerKey || bearerKey || bodyKey;
+
+    if (!apiKey) {
+        return c.json(
+            {
+                success: false,
+                error: "Mistral API key is required. Please provide your personal Mistral API key via the 'x-mistral-api-key' header or in Chat Settings.",
+                requiresKey: true,
+            },
+            401,
+        );
+    }
 
     const service = AiChatService.getInstance();
 

@@ -27,6 +27,7 @@ export interface ChatResponseData {
 
 export interface ChatStatusData {
     hasServerKey: boolean;
+    requiresUserKey?: boolean;
     defaultModel: string;
     availableModels: string[];
     knowledge: {

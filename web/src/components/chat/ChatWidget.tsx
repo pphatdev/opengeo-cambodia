@@ -126,6 +126,13 @@ export function ChatWidget() {
         const query = (textToSend || input).trim();
         if (!query || isStreaming) return;
 
+        const effectiveKey = getStoredApiKey();
+        if (!effectiveKey) {
+            setSettingsOpen(true);
+            toast("Please enter your personal Mistral API key in Settings to chat.");
+            return;
+        }
+
         setInput("");
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto";
@@ -232,7 +239,7 @@ export function ChatWidget() {
         e.target.style.height = Math.min(e.target.scrollHeight, 140) + "px";
     };
 
-    const hasKey = Boolean(status?.hasServerKey || getStoredApiKey());
+    const hasKey = Boolean(getStoredApiKey());
 
     return (
         <>
@@ -418,19 +425,19 @@ export function ChatWidget() {
 
                     {/* Messages Scroll Area */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-surface-2/30">
-                        {/* API Key Warning Banner if no key configured */}
+                        {/* API Key Required Banner if no personal key configured */}
                         {!hasKey && (
-                            <div className="flex items-center justify-between gap-3 rounded-xl border border-warn/30 bg-warn/10 p-3 text-xs text-ink">
-                                <div className="flex items-center gap-2">
-                                    <Icon name="key" className="size-4 text-warn shrink-0" />
-                                    <span>Provide a Mistral API key to query OpenGeo Cambodia API documentation.</span>
+                            <div className="flex items-center justify-between gap-3 rounded-xl border border-accent/35 bg-accent/10 p-3 text-xs text-ink shadow-xs">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <Icon name="key" className="size-4 text-accent shrink-0" />
+                                    <span className="truncate">Enter your personal Mistral API key to ask questions.</span>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={() => setSettingsOpen(true)}
-                                    className="shrink-0 rounded-lg bg-warn px-2.5 py-1 text-xs font-semibold text-bg hover:brightness-110 active:scale-95 cursor-pointer"
+                                    className="shrink-0 rounded-lg bg-accent px-2.5 py-1 text-xs font-semibold text-bg hover:brightness-110 active:scale-95 cursor-pointer shadow-xs"
                                 >
-                                    Set Key
+                                    Enter Key
                                 </button>
                             </div>
                         )}

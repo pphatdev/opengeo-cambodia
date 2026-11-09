@@ -168,11 +168,12 @@ export class AiChatService {
         const compact = loadKnowledgeBase("compact");
 
         return {
-            hasServerKey: Boolean(config.mistral.apiKey),
+            hasServerKey: false, // BYOK: Server key is never exposed to public requests
+            requiresUserKey: true,
             defaultModel: config.mistral.model || DEFAULT_MODEL,
             availableModels: [...AVAILABLE_MODELS],
             knowledge: {
-                mode: "compact",
+                mode: "full",
                 fullBytes: Buffer.byteLength(full, "utf-8"),
                 compactBytes: Buffer.byteLength(compact, "utf-8"),
                 loaded: Boolean(compact && compact.length > 200),
@@ -184,13 +185,13 @@ export class AiChatService {
         const {
             message,
             history = [],
-            apiKey = config.mistral.apiKey,
+            apiKey,
             model = config.mistral.model || DEFAULT_MODEL,
             mode = "full",
             stream = true,
         } = options;
 
-        if (!apiKey) {
+        if (!apiKey || !apiKey.trim()) {
             throw new Error("MISTRAL_API_KEY_REQUIRED");
         }
 

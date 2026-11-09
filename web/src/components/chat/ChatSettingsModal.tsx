@@ -23,7 +23,7 @@ interface ChatSettingsModalProps {
 export function ChatSettingsModal({
     open,
     onClose,
-    status,
+    status: _status,
     onSaved,
 }: ChatSettingsModalProps) {
     const { toast } = useToast();
@@ -79,8 +79,6 @@ export function ChatSettingsModal({
         toast("Custom API key removed.");
     };
 
-    const hasServerKey = status?.hasServerKey;
-
     return (
         <div className="fixed inset-0 z-1100 flex items-center justify-center p-4">
             {/* Backdrop */}
@@ -118,30 +116,25 @@ export function ChatSettingsModal({
 
                 {/* Body */}
                 <div className="space-y-4.5 pt-4 text-[13px]">
-                    {/* Server status alert */}
-                    {hasServerKey ? (
-                        <div className="flex items-center gap-2.5 rounded-xl border border-ok/25 bg-ok/10 px-3.5 py-2.5 text-xs text-ok">
-                            <Icon name="check" className="size-4 shrink-0" />
-                            <span>
-                                <strong>Server key active:</strong> Ready to use out of the box! You may also provide your personal key below.
+                    {/* Key status alert */}
+                    <div className="flex items-start gap-2.5 rounded-xl border border-accent/25 bg-accent-soft px-3.5 py-2.5 text-xs text-ink">
+                        <Icon name="key" className="mt-0.5 size-4 shrink-0 text-accent" />
+                        <div>
+                            <span className="font-semibold text-ink">Bring Your Own Key (BYOK) required:</span>
+                            <span className="block mt-0.5 text-ink-2">
+                                Enter your personal Mistral API key below to query the OpenGeo Cambodia assistant. Your key stays stored securely in your browser's localStorage.
                             </span>
+                            <a
+                                href="https://console.mistral.ai/api-keys/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-1.5 inline-flex items-center gap-1 font-semibold text-accent hover:underline"
+                            >
+                                <span>Get a free API key at console.mistral.ai</span>
+                                <span>&rarr;</span>
+                            </a>
                         </div>
-                    ) : (
-                        <div className="flex items-start gap-2.5 rounded-xl border border-accent/25 bg-accent-soft px-3.5 py-2.5 text-xs text-ink">
-                            <Icon name="info" className="mt-0.5 size-4 shrink-0 text-accent" />
-                            <div>
-                                <span>No server API key detected. Please enter your API key below to start asking questions.</span>
-                                <a
-                                    href="https://console.mistral.ai/api-keys/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="mt-1 block font-semibold text-accent hover:underline"
-                                >
-                                    Get an API key at console.mistral.ai &rarr;
-                                </a>
-                            </div>
-                        </div>
-                    )}
+                    </div>
 
                     {/* API Key Input */}
                     <div>
@@ -153,7 +146,7 @@ export function ChatSettingsModal({
                                 type={showKey ? "text" : "password"}
                                 value={apiKey}
                                 onChange={(e) => setApiKey(e.target.value)}
-                                placeholder={hasServerKey ? "Using server key (optional custom key)" : "Enter your Mistral API key (sk-...)"}
+                                placeholder="Enter your Mistral API key (sk-...)"
                                 className="w-full rounded-xl border border-line bg-surface-2 px-3.5 py-2.5 pr-20 font-mono text-xs text-ink placeholder:text-ink-3/70 focus:border-accent focus:outline-hidden"
                             />
                             <div className="absolute right-2 flex items-center gap-1">
