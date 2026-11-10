@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
+import { BackToTop } from "./components/BackToTop";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { I18nProvider } from "./i18n";
 import { ThemeProvider } from "./lib/theme";
@@ -30,6 +31,7 @@ export function App() {
                             <Route path="*" element={<NotFound />} />
                         </Routes>
                         <ChatWidget />
+                        <BackToTop />
                     </BrowserRouter>
                 </ToastProvider>
             </ThemeProvider>
