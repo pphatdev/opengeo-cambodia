@@ -3,6 +3,7 @@ import { Nav } from "../../components/Nav";
 import { useSeo } from "../../components/Seo";
 import { useI18n } from "../../i18n";
 import { PROD_ORIGIN } from "../../lib/api";
+import { COVERS } from "../../lib/covers";
 import { Sidebar } from "./Sidebar";
 import {
     IntroductionSection,
@@ -27,6 +28,7 @@ export default function Docs() {
         description: t("meta.docsDesc"),
         canonical: lang === "km" ? `${PROD_ORIGIN}/docs?lang=km` : `${PROD_ORIGIN}/docs`,
         type: "article",
+        image: COVERS.docs,
     });
 
     return (

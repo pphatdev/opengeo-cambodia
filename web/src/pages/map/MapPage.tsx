@@ -2,6 +2,7 @@ import { Nav } from "../../components/Nav";
 import { useSeo } from "../../components/Seo";
 import { useI18n } from "../../i18n";
 import { PROD_ORIGIN } from "../../lib/api";
+import { COVERS } from "../../lib/covers";
 import { PlaygroundMap } from "../playground/PlaygroundMap";
 
 /**
@@ -15,6 +16,7 @@ export default function MapPage() {
         title: t("meta.mapTitle"),
         description: t("meta.mapDesc"),
         canonical: lang === "km" ? `${PROD_ORIGIN}/map?lang=km` : `${PROD_ORIGIN}/map`,
+        image: COVERS.map,
     });
 
     return (

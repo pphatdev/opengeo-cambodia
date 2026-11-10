@@ -6,6 +6,7 @@ import { useSeo } from "../../components/Seo";
 import { cx, lvl, wrap } from "../../components/ui";
 import { useI18n } from "../../i18n";
 import { apiGet, fmtBytes, PROD_ORIGIN, type RequestLog } from "../../lib/api";
+import { COVERS } from "../../lib/covers";
 import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoints";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
@@ -27,6 +28,7 @@ export default function Playground() {
         title: t("meta.playgroundTitle"),
         description: t("meta.playgroundDesc"),
         canonical: lang === "km" ? `${PROD_ORIGIN}/playground?lang=km` : `${PROD_ORIGIN}/playground`,
+        image: COVERS.playground,
     });
 
     // Active endpoint selection

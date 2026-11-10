@@ -84,6 +84,29 @@ function getSpaHtml(): string {
         + "<p>The API is available at <a href=\"/api/info\">/api/info</a>.</p></body></html>";
 }
 
+/**
+ * Social share covers (og:image / twitter:image) per page, in public/cover/.
+ * Link-preview crawlers don't run JS, so these must be in the server-rendered HTML.
+ * Keep in sync with web/src/lib/covers.ts.
+ */
+const SEO_COVERS = {
+    home: { path: "/cover/home.webp", width: 1900, height: 1079, alt: "OpenGeo Cambodia — free open API for Cambodia's administrative geography" },
+    docs: { path: "/cover/doc.webp", width: 1901, height: 1078, alt: "OpenGeo Cambodia API documentation" },
+    playground: { path: "/cover/playground.webp", width: 1919, height: 1079, alt: "OpenGeo Cambodia interactive API playground" },
+    map: { path: "/cover/map.webp", width: 1906, height: 1079, alt: "Interactive map of Cambodia province, district and commune boundaries" },
+} as const;
+
+function coverFor(reqPath: string): (typeof SEO_COVERS)[keyof typeof SEO_COVERS] {
+    if (reqPath.startsWith("/docs")) return SEO_COVERS.docs;
+    if (reqPath.startsWith("/playground")) return SEO_COVERS.playground;
+    if (reqPath === "/map" || reqPath.startsWith("/map/")) return SEO_COVERS.map;
+    return SEO_COVERS.home;
+}
+
+function escAttr(s: string): string {
+    return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+}
+
 function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
     const isKm = lang === "km";
 
@@ -153,7 +176,17 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
             : "https://opengeo-cambodia.pphat.me/demo";
     }
 
+    const cover = coverFor(reqPath);
+    const coverUrl = `https://opengeo-cambodia.pphat.me${cover.path}`;
+    const coverAlt = escAttr(cover.alt);
+
     return out
+        .replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${coverUrl}">`)
+        .replace(/<meta property="og:image:width" content="[^"]*">/, `<meta property="og:image:width" content="${cover.width}">`)
+        .replace(/<meta property="og:image:height" content="[^"]*">/, `<meta property="og:image:height" content="${cover.height}">`)
+        .replace(/<meta property="og:image:alt" content="[^"]*">/, `<meta property="og:image:alt" content="${coverAlt}">`)
+        .replace(/<meta name="twitter:image" content="[^"]*">/, `<meta name="twitter:image" content="${coverUrl}">`)
+        .replace(/<meta name="twitter:image:alt" content="[^"]*">/, `<meta name="twitter:image:alt" content="${coverAlt}">`)
         .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
         .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
         .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
@@ -516,6 +549,24 @@ app.get("/logo/*", (c) => {
             ".webmanifest": "application/manifest+json",
         };
         c.header("Content-Type", mimeTypes[ext] || "application/octet-stream");
+        c.header("Cache-Control", "public, max-age=86400");
+        return c.body(fs.readFileSync(filePath));
+    }
+    return c.notFound();
+});
+
+// Per-page social share covers (public/cover/*.webp). On Cloudflare these are served as static assets;
+// this route serves them from disk in Node. Only plain `name.webp` files are allowed (no traversal).
+app.get("/cover/:file", async (c) => {
+    const file = c.req.param("file");
+    if (!/^[a-z0-9-]+\.webp$/i.test(file)) return c.notFound();
+    if (c.env && (c.env as any).ASSETS) {
+        const assetRes = await (c.env as any).ASSETS.fetch(new Request(new URL(`/cover/${file}`, c.req.url)));
+        if (assetRes.ok) return assetRes;
+    }
+    const filePath = path.join(publicDir, "cover", file);
+    if (typeof fs?.existsSync === "function" && fs.existsSync(filePath)) {
+        c.header("Content-Type", "image/webp");
         c.header("Cache-Control", "public, max-age=86400");
         return c.body(fs.readFileSync(filePath));
     }
