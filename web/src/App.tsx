@@ -7,7 +7,8 @@ import { ThemeProvider } from "./lib/theme";
 import { ToastProvider } from "./lib/toast";
 import { Home } from "./pages/home/Home";
 import { NotFound } from "./pages/NotFound";
-import { ChatWidget } from "./components/chat/ChatWidget";
+// Chat is code-split and loaded on idle (see ChatLoader)
+import { ChatLoader } from "./components/chat/ChatLoader";
 
 // Docs and Playground are separate chunks so the landing page doesn't download them
 const Docs = lazy(() => import("./pages/docs/Docs"));
@@ -30,7 +31,7 @@ export function App() {
                             <Route path="/map" element={<Suspense fallback={<div className="min-h-screen" />}><MapPage /></Suspense>} />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
-                        <ChatWidget />
+                        <ChatLoader />
                         <BackToTop />
                     </BrowserRouter>
                 </ToastProvider>

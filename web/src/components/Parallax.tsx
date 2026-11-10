@@ -42,9 +42,23 @@ const layers = new Set<Layer>();
 let frame = 0;
 let listening = false;
 
+interface Pending {
+    l: Layer;
+    transform: string;
+    opacity?: string;
+}
+
+// Last values written per element, so unchanged layers cost no style invalidation
+const lastTransform = new WeakMap<HTMLElement, string>();
+const lastOpacity = new WeakMap<HTMLElement, string>();
+
 function update() {
     frame = 0;
     const vh = window.innerHeight || 1;
+    const scrollY = window.scrollY;
+
+    // Phase 1 — READ everything (one layout at most), compute targets
+    const writes: Pending[] = [];
     for (const l of layers) {
         const host = l.el.parentElement;
         if (!host) continue;
@@ -52,17 +66,31 @@ function update() {
         // Skip work for sections far outside the viewport
         if (r.bottom < -vh * 0.5 || r.top > vh * 1.5) continue;
 
-        const delta = l.origin === "scroll" ? -window.scrollY : r.top + r.height / 2 - vh / 2;
+        const delta = l.origin === "scroll" ? -scrollY : r.top + r.height / 2 - vh / 2;
         const y = Math.max(-l.max, Math.min(l.max, -delta * l.speed));
         const x = -delta * l.x;
         const progress = Math.max(-1, Math.min(1, delta / vh));
         const scale = 1 + Math.abs(progress) * l.zoom;
 
-        l.el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)${l.zoom ? ` scale(${scale.toFixed(4)})` : ""}`;
+        const transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)${l.zoom ? ` scale(${scale.toFixed(4)})` : ""}`;
+        let opacity: string | undefined;
         if (l.fade) {
             // 1 while the section is on screen, → 0 as its bottom half scrolls past the top
             const past = Math.max(0, -r.top) / Math.max(1, r.height * 0.75);
-            l.el.style.opacity = String(Math.max(0, 1 - past).toFixed(3));
+            opacity = Math.max(0, 1 - past).toFixed(3);
+        }
+        writes.push({ l, transform, opacity });
+    }
+
+    // Phase 2 — WRITE everything (no reads in between → no forced reflow per layer)
+    for (const w of writes) {
+        if (lastTransform.get(w.l.el) !== w.transform) {
+            w.l.el.style.transform = w.transform;
+            lastTransform.set(w.l.el, w.transform);
+        }
+        if (w.opacity !== undefined && lastOpacity.get(w.l.el) !== w.opacity) {
+            w.l.el.style.opacity = w.opacity;
+            lastOpacity.set(w.l.el, w.opacity);
         }
     }
 }
@@ -85,6 +113,8 @@ function detach(layer: Layer) {
     layers.delete(layer);
     layer.el.style.transform = "";
     layer.el.style.opacity = "";
+    lastTransform.delete(layer.el);
+    lastOpacity.delete(layer.el);
     if (layers.size === 0 && listening) {
         listening = false;
         window.removeEventListener("scroll", schedule);
