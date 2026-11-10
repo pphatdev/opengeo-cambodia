@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Icon } from "../../components/Icon";
+import { Parallax, Reveal } from "../../components/Parallax";
 import { RollingNumber } from "../../components/RollingNumber";
 import { btnGhost, btnPrimary, cx, displayH1, wrap } from "../../components/ui";
 import { useI18n } from "../../i18n";
@@ -39,21 +40,30 @@ export function Hero() {
 
     return (
         <section className="relative overflow-hidden pb-14 pt-10">
-            <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
-            <div className="bg-liquid-glow pointer-events-none absolute inset-0 opacity-80" aria-hidden="true" />
+            {/* Parallax depth stack: each background plane drifts at its own speed (oversized so edges never show) */}
+            <Parallax origin="scroll" speed={0.32} className="bg-dot-grid pointer-events-none absolute -inset-y-48 inset-x-0 opacity-60" aria-hidden="true" />
+            <Parallax origin="scroll" speed={0.18} className="bg-liquid-glow pointer-events-none absolute -inset-y-32 inset-x-0 opacity-80" aria-hidden="true" />
             {/* Luminous fluid ambient lighting orbs */}
-            <div className="pointer-events-none absolute -right-36 top-10 size-160 rounded-full bg-accent/15 blur-[100px] max-lg:hidden" aria-hidden="true" />
-            <div className="pointer-events-none absolute -left-20 top-36 size-120 rounded-full bg-water/15 blur-[90px] max-lg:hidden" aria-hidden="true" />
+            <Parallax origin="scroll" speed={0.5} x={0.04} minWidth={1024} className="pointer-events-none absolute -right-36 top-10" aria-hidden="true">
+                <div className="size-160 rounded-full bg-accent/15 blur-[100px]" />
+            </Parallax>
+            <Parallax origin="scroll" speed={-0.22} minWidth={1024} className="pointer-events-none absolute -left-20 top-36" aria-hidden="true">
+                <div className="size-120 rounded-full bg-water/15 blur-[90px]" />
+            </Parallax>
+            <Parallax origin="scroll" speed={0.7} minWidth={1024} className="pointer-events-none absolute left-[38%] top-[62%]" aria-hidden="true">
+                <div className="size-72 rounded-full bg-ok/10 blur-[80px]" />
+            </Parallax>
 
             <div className={cx(wrap, "relative")}>
-                <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-14">
+                {/* Foreground lifts slightly faster than the page and fades as the hero scrolls away */}
+                <Parallax origin="scroll" speed={-0.08} fade className="grid grid-cols-[minmax(0,1fr)] items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-14">
                     {/* Map on top for small screens, right column for desktop */}
-                    <div className="min-w-0 lg:col-start-2 lg:row-start-1">
+                    <Reveal from="scale" className="min-w-0 lg:col-start-2 lg:row-start-1">
                         <HeroMap />
-                    </div>
+                    </Reveal>
 
                     {/* Text content below map for small screens, left column for desktop */}
-                    <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+                    <Reveal from="left" className="min-w-0 lg:col-start-1 lg:row-start-1">
                         <span className="inline-flex items-center gap-2 rounded-full glass-pill py-1.25 pl-2 pr-3.5 text-[12.5px] font-medium text-ink-2 shadow-xs">
                             <span className="relative flex size-2 items-center justify-center">
                                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
@@ -88,11 +98,11 @@ export function Hero() {
                             <span className="inline-flex items-center gap-1.5"><Icon name="check" />{t("hero.cors")}</span>
                             <span className="inline-flex items-center gap-1.5"><Icon name="check" />{t("hero.edge")}</span>
                         </div>
-                    </div>
-                </div>
+                    </Reveal>
+                </Parallax>
 
                 {/* The hierarchy as a cascade: each tier nests inside the previous one */}
-                <div className="mt-12 overflow-hidden rounded-2xl glass-panel shadow-glass-lg" aria-label={t("hero.datasetSize")}>
+                <Reveal delay={150} className="mt-12 overflow-hidden rounded-2xl glass-panel shadow-glass-lg" aria-label={t("hero.datasetSize")}>
                     <ol className="m-0 grid list-none grid-cols-2 p-0 lg:grid-cols-4">
                         {TIERS.map((tier, i) => {
                             const value = Number(stats?.[tier.stat] ?? tier.fallback);
@@ -149,7 +159,7 @@ export function Hero() {
                         })}
                     </ol>
                     <p className="m-0 border-t border-line px-4 py-2.5 font-mono text-[10.5px] text-ink-3 sm:px-6 sm:text-[11px] km:font-khmer km:text-xs">{t("hero.hierarchyNote")} · 12 → 1201 → 120101 → 12010101</p>
-                </div>
+                </Reveal>
             </div>
         </section>
     );
