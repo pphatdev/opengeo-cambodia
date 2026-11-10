@@ -10,25 +10,87 @@ import { ENDPOINTS, GROUPS } from "./endpoints";
 interface NavLink {
     href: string;
     label: string;
+    /** Full path label, used for the tooltip and when filtering (flat list) */
+    fullLabel?: string;
     verb?: boolean;
     filter: string;
-    depth?: number;
     tag?: string;
+    children?: NavLink[];
 }
 
-const ENDPOINT_NESTING: Record<string, { depth: number; shortLabel?: string; tag?: string }> = {
-    // Admin hierarchy: Provinces -> Districts -> Communes -> Villages
-    "admin-districts": { depth: 1, shortLabel: "/{id}/districts" },
-    "admin-communes": { depth: 2, shortLabel: "/{id}/communes" },
-    "admin-villages": { depth: 3, shortLabel: "/{id}/villages" },
-    "admin-nested-communes": { depth: 1, shortLabel: "/{pId}/districts/{dId}/communes", tag: "nested" },
-
-    // Boundaries hierarchy
-    "b-zone": { depth: 0, tag: "PIP" },
-    "b-province": { depth: 1, shortLabel: "/{code}" },
-    "b-district": { depth: 1, shortLabel: "/{code}" },
-    "b-commune": { depth: 1, shortLabel: "/{code}" },
+/** Small badges for endpoints worth calling out */
+const ENDPOINT_TAGS: Record<string, string> = {
+    "b-zone": "PIP",
 };
+
+/** Path → segments with parameter names erased, so `/provinces/{id}` matches `/provinces/{provinceId}/…` */
+function shapeSegments(path: string): string[] {
+    return path.split("/").filter(Boolean).map((s) => (/^\{.+\}$/.test(s) ? "{}" : s));
+}
+
+function isPrefix(prefix: string[], full: string[]): boolean {
+    return prefix.length < full.length && prefix.every((s, i) => s === full[i]);
+}
+
+/**
+ * Build a tree from real path structure: each endpoint nests under the closest endpoint whose path is a
+ * prefix of its own. The group's common base path (e.g. `/api/boundaries`) is never used as a parent,
+ * so the whole group doesn't collapse under one row. Sibling order follows the ENDPOINTS order.
+ */
+function buildEndpointTree(endpoints: typeof ENDPOINTS): NavLink[] {
+    const shapes = endpoints.map((e) => shapeSegments(e.path));
+    const rawSegs = endpoints.map((e) => e.path.split("/").filter(Boolean));
+
+    // Longest common segment prefix across the group
+    let baseLen = shapes.length ? shapes[0].length : 0;
+    for (const s of shapes) {
+        let i = 0;
+        while (i < baseLen && i < s.length && s[i] === shapes[0][i]) i++;
+        baseLen = i;
+    }
+
+    const parentOf = endpoints.map((_, i) => {
+        let best = -1;
+        shapes.forEach((cand, j) => {
+            if (j === i || cand.length <= baseLen) return;
+            if (isPrefix(cand, shapes[i]) && (best < 0 || cand.length > shapes[best].length)) best = j;
+        });
+        return best;
+    });
+
+    const nodes: NavLink[] = endpoints.map((e, i) => {
+        const full = e.path.replace(/^\/api/, "") || e.path;
+        const p = parentOf[i];
+        const label = p >= 0 ? "/" + rawSegs[i].slice(rawSegs[p].length).join("/") : full;
+        return {
+            href: `ep-${e.id}`,
+            label,
+            fullLabel: full,
+            verb: true,
+            tag: ENDPOINT_TAGS[e.id],
+            // Filter matches the path and the title in both languages
+            filter: `${e.path} ${e.title.en} ${e.title.km}`.toLowerCase(),
+            children: [],
+        };
+    });
+
+    const roots: NavLink[] = [];
+    nodes.forEach((n, i) => {
+        const p = parentOf[i];
+        if (p >= 0) nodes[p].children!.push(n);
+        else roots.push(n);
+    });
+    return roots;
+}
+
+function flatten(links: NavLink[]): NavLink[] {
+    return links.flatMap((l) => [{ ...l, label: l.fullLabel ?? l.label, children: [] }, ...flatten(l.children ?? [])]);
+}
+
+/** Does this subtree contain the active section? (keeps the parent highlighted path readable) */
+function containsActive(link: NavLink, active: string): boolean {
+    return link.href === active || (link.children ?? []).some((c) => containsActive(c, active));
+}
 
 const GUIDE: [string, MessageKey][] = [
     ["introduction", "docs.navIntro"],
@@ -48,6 +110,68 @@ const REFERENCE: [string, MessageKey][] = [
     ["source", "docs.navSource"],
 ];
 
+/** Nested list; children sit inside a continuous guide line, active row marks the line in accent. */
+function NavTree({
+    links,
+    active,
+    onNavigate,
+    depth,
+}: {
+    links: NavLink[];
+    active: string;
+    onNavigate: () => void;
+    depth: number;
+}) {
+    return (
+        <ul
+            className={cx(
+                "m-0 list-none p-0",
+                depth > 0 && "relative ml-3.25 border-l border-line pl-2",
+            )}
+        >
+            {links.map((l) => {
+                const isActive = active === l.href;
+                const inPath = !isActive && depth === 0 && (l.children?.length ?? 0) > 0 && containsActive(l, active);
+                return (
+                    <li key={l.href} className="m-0 p-0">
+                        <a
+                            href={`#${l.href}`}
+                            onClick={onNavigate}
+                            title={l.fullLabel && l.fullLabel !== l.label ? l.fullLabel : undefined}
+                            aria-current={isActive ? "location" : undefined}
+                            className={cx(
+                                "relative flex items-center gap-2 rounded-[7px] px-2.5 py-1.25 text-[13.5px] leading-[1.4] no-underline transition-colors",
+                                // Child rows: an accent tick sits exactly on the parent's guide line when active
+                                depth > 0 && "before:absolute before:-left-2.25 before:inset-y-1 before:w-0.5 before:rounded-full before:content-['']",
+                                isActive
+                                    ? cx("bg-surface font-medium text-ink", depth > 0 ? "before:bg-accent" : "shadow-[inset_2px_0_0_var(--og-accent)]")
+                                    : cx("text-ink-2 hover:bg-surface-2 hover:text-ink", inPath && "text-ink"),
+                            )}
+                        >
+                            {l.verb ? (
+                                <>
+                                    <span className="w-6.5 flex-none font-mono text-[9.5px] font-semibold text-ok">GET</span>
+                                    <span className="min-w-0 truncate font-mono text-[12.5px]">{l.label}</span>
+                                    {l.tag && (
+                                        <span className="ml-auto flex-none rounded bg-surface-2 px-1.5 py-px font-mono text-[10px] text-ink-3">
+                                            {l.tag}
+                                        </span>
+                                    )}
+                                </>
+                            ) : (
+                                l.label
+                            )}
+                        </a>
+                        {l.children && l.children.length > 0 && (
+                            <NavTree links={l.children} active={active} onNavigate={onNavigate} depth={depth + 1} />
+                        )}
+                    </li>
+                );
+            })}
+        </ul>
+    );
+}
+
 export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
     const { toggle } = useTheme();
     const { t, tx } = useI18n();
@@ -65,25 +189,11 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
             { title: t("docs.groupGuide"), links: plain(GUIDE) },
             ...GROUPS.map((g) => ({
                 title: tx(g.title),
-                links: ENDPOINTS.filter((e) => e.group === g.id).map((e) => {
-                    const nesting = ENDPOINT_NESTING[e.id];
-                    const depth = nesting?.depth ?? 0;
-                    const defaultLabel = e.path.replace(/^\/api/, "");
-                    const label = !q && nesting?.shortLabel ? nesting.shortLabel : defaultLabel;
-                    return {
-                        href: `ep-${e.id}`,
-                        label,
-                        verb: true,
-                        depth,
-                        tag: nesting?.tag,
-                        // Filter matches the path and the title in both languages
-                        filter: `${e.path} ${e.title.en} ${e.title.km}`.toLowerCase(),
-                    };
-                }),
+                links: buildEndpointTree(ENDPOINTS.filter((e) => e.group === g.id)),
             })),
             { title: t("docs.groupReference"), links: plain(REFERENCE) },
         ];
-    }, [t, tx, q]);
+    }, [t, tx]);
 
     // Scrollspy: highlight the first visible section (ids don't change with language)
     useEffect(() => {
@@ -125,49 +235,13 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
                 />
             </div>
             {groups.map((g) => {
-                const links = g.links.filter((l) => !q || l.filter.includes(q));
+                // Filtering shows a flat list of full paths (tree context would hide why something matched)
+                const links = q ? flatten(g.links).filter((l) => l.filter.includes(q)) : g.links;
                 if (!links.length) return null;
                 return (
                     <div className="mb-5" key={g.title}>
                         <h6 className="mb-1.5 mt-0 pl-2.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-ink-3 km:font-khmer km:text-xs km:normal-case km:tracking-normal">{g.title}</h6>
-                        {links.map((l) => {
-                            const depth = l.depth ?? 0;
-                            const isChild = depth > 0 && !q;
-                            return (
-                                <a
-                                    key={l.href}
-                                    href={`#${l.href}`}
-                                    onClick={onNavigate}
-                                    className={cx(
-                                        "flex items-center gap-2 rounded-[7px] py-1.25 text-[13.5px] leading-[1.4] no-underline transition-colors",
-                                        isChild
-                                            ? depth === 1
-                                                ? "ml-3.5 border-l border-line/80 pl-2.5 pr-2"
-                                                : depth === 2
-                                                ? "ml-6 border-l border-line/60 pl-2.5 pr-2"
-                                                : "ml-8.5 border-l border-line/40 pl-2.5 pr-2"
-                                            : "px-2.5",
-                                        active === l.href
-                                            ? "bg-surface font-medium text-ink shadow-[inset_2px_0_0_var(--og-accent)]"
-                                            : "text-ink-2 hover:bg-surface-2 hover:text-ink",
-                                    )}
-                                >
-                                    {l.verb ? (
-                                        <>
-                                            <span className="w-6.5 flex-none font-mono text-[9.5px] font-semibold text-ok">GET</span>
-                                            <span className="truncate font-mono text-[12.5px]">{l.label}</span>
-                                            {l.tag && (
-                                                <span className="ml-auto rounded bg-surface-2 px-1.5 py-px font-mono text-[10px] text-ink-3">
-                                                    {l.tag}
-                                                </span>
-                                            )}
-                                        </>
-                                    ) : (
-                                        l.label
-                                    )}
-                                </a>
-                            );
-                        })}
+                        <NavTree links={links} active={active} onNavigate={onNavigate} depth={0} />
                     </div>
                 );
             })}
