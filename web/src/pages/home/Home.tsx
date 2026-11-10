@@ -1,0 +1,38 @@
+import { useSeo } from "../../components/Seo";
+import { Footer } from "../../components/Footer";
+import { Nav } from "../../components/Nav";
+import { wrap } from "../../components/ui";
+import { useI18n } from "../../i18n";
+import { PROD_ORIGIN } from "../../lib/api";
+import { Explorer } from "./Explorer";
+import { Hero } from "./Hero";
+import { Cta, DataModel, Downloads, Quickstart, SectionHead } from "./Sections";
+
+export function Home() {
+    const { t, lang } = useI18n();
+    useSeo({
+        title: t("meta.homeTitle"),
+        description: t("meta.homeDesc"),
+        canonical: lang === "km" ? `${PROD_ORIGIN}/?lang=km` : `${PROD_ORIGIN}/`,
+    });
+
+    return (
+        <div>
+            <Nav />
+            <main>
+                <Hero />
+                <section className="relative overflow-hidden border-y border-line/60 bg-liquid-mesh py-20 sm:py-24" id="explore">
+                    <div className={wrap}>
+                        <SectionHead kicker={t("explore.kicker")} title={t("explore.title")} intro={t("explore.intro")} />
+                        <Explorer />
+                    </div>
+                </section>
+                <DataModel />
+                <Quickstart />
+                <Downloads />
+                <Cta />
+            </main>
+            <Footer />
+        </div>
+    );
+}

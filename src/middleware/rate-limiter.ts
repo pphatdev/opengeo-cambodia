@@ -134,6 +134,14 @@ export const globalRateLimiter = createRateLimiter({
     keyPrefix: "global",
 });
 
+// Chat API rate limit: 60 requests per minute per IP for conversational AI Q&A
+export const chatRateLimiter = createRateLimiter({
+    windowMs: 60 * 1000,
+    maxRequests: parseInt(process.env.RATE_LIMIT_CHAT_MAX || "60", 10),
+    message: "Chat rate limit exceeded. Please wait a moment before sending another message.",
+    keyPrefix: "chat",
+});
+
 // Stricter rate limit for Geocoding / Nominatim calls: 30 requests per minute per IP
 // (Respects OpenStreetMap Nominatim 1 req/sec Fair Use Policy)
 export const geocodeRateLimiter = createRateLimiter({
@@ -241,9 +249,10 @@ export function createBotShield(): MiddlewareHandler {
             }
         }
 
-        // 4. Enforce Read-Only API: Reject POST, PUT, DELETE, PATCH mutations on public API
+        // 4. Enforce Read-Only API: Reject POST, PUT, DELETE, PATCH mutations on public API (except conversational AI Chatbot)
         if (
             path.startsWith("/api/") &&
+            !path.startsWith("/api/chat") &&
             c.req.method !== "GET" &&
             c.req.method !== "HEAD" &&
             c.req.method !== "OPTIONS"

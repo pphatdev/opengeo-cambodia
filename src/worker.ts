@@ -7,6 +7,7 @@
  * Fully compatible with Cloudflare Workers runtime (V8 Isolate) and nodejs_compat.
  */
 
+import "./worker-seed.js"; // must stay first: registers bundled seed data
 import { app } from "./app.js";
 import { AdminStore } from "./data/store.js";
 import { BoundariesService } from "./services/boundaries.service.js";

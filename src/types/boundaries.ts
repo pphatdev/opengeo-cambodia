@@ -77,9 +77,31 @@ export interface BoundaryFilterOptions {
     districtCode?: string;
     code?: string;
     search?: string;
+    lat?: number;
+    lon?: number;
     limit?: number;
     offset?: number;
     format?: "geojson" | "summary" | "list";
+}
+
+export interface BoundaryPointLookupOptions {
+    lat: number;
+    lon: number;
+    level?: BoundaryLevel | "all";
+    format?: "geojson" | "summary" | "json" | "list";
+}
+
+export interface BoundaryZoneResult {
+    matched: boolean;
+    point: {
+        lat: number;
+        lng: number;
+    };
+    province?: BoundarySummaryItem | BoundaryFeature;
+    district?: BoundarySummaryItem | BoundaryFeature;
+    commune?: BoundarySummaryItem | BoundaryFeature;
+    boundaries?: BoundaryFeatureCollection;
+    geoJson?: BoundaryFeature | BoundaryFeatureCollection;
 }
 
 export interface BoundaryStats {

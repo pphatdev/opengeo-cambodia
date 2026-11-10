@@ -2,10 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { AdminItem, AdminLevel, AdminStats, HierarchyPath } from '../types/admin.js';
-import seedProvinces from './seed/provinces.json' with { type: 'json' };
-import seedDistricts from './seed/districts.json' with { type: 'json' };
-import seedCommunes from './seed/communes.json' with { type: 'json' };
-import seedVillages from './seed/villages.json' with { type: 'json' };
+
+export interface SeedData {
+  provinces: AdminItem[];
+  districts: AdminItem[];
+  communes: AdminItem[];
+  villages: AdminItem[];
+}
 
 function resolveCurrentDir(): string {
   try {
@@ -85,6 +88,15 @@ export const KRONG_CODES = new Set([
 
 export class AdminStore {
   private static instance: AdminStore | null = null;
+  private static bundledSeed: SeedData | null = null;
+
+  /**
+   * Register pre-bundled seed data (used by the Cloudflare Worker entry, where
+   * there is no filesystem). Must be called before the first getInstance().
+   */
+  public static registerSeed(seed: SeedData): void {
+    AdminStore.bundledSeed = seed;
+  }
 
   private provinces: AdminItem[] = [];
   private districts: AdminItem[] = [];
@@ -165,10 +177,10 @@ export class AdminStore {
     if (currentDir && typeof fs?.existsSync === 'function') {
       try {
         const possibleDataDirs = [
-          path.resolve(currentDir),
-          path.resolve(currentDir, '..', '..', 'src', 'data'),
-          path.resolve(process.cwd(), 'src', 'data'),
-          path.resolve(process.cwd(), 'dist', 'data'),
+          path.resolve(currentDir, '..', '..', 'public', 'data'),
+          path.resolve(currentDir, '..', 'public', 'data'),
+          path.resolve(process.cwd(), 'public', 'data'),
+          path.resolve(process.cwd(), 'dist', 'public', 'data'),
         ];
 
         let dataDir = path.resolve(currentDir);
@@ -195,16 +207,37 @@ export class AdminStore {
           this.isLoaded = true;
           return;
         }
+
+        // 1b. CSVs missing: fall back to seed JSON on disk (public/data/seed)
+        if (!AdminStore.bundledSeed) {
+          const seedDir = possibleDataDirs
+            .map((dir) => path.join(dir, 'seed'))
+            .find((dir) => fs.existsSync(path.join(dir, 'villages.json')));
+          if (seedDir) {
+            const read = (f: string) => JSON.parse(fs.readFileSync(path.join(seedDir, f), 'utf-8')) as AdminItem[];
+            AdminStore.bundledSeed = {
+              provinces: read('provinces.json'),
+              districts: read('districts.json'),
+              communes: read('communes.json'),
+              villages: read('villages.json'),
+            };
+          }
+        }
       } catch (err) {
         console.warn('[AdminStore] Local CSV read unavailable, using bundled datasets:', err);
       }
     }
 
-    // 2. Edge / Cloudflare Workers / Serverless: load directly from pre-bundled canonical seed JSON
-    this.provinces = seedProvinces as AdminItem[];
-    this.districts = seedDistricts as AdminItem[];
-    this.communes = seedCommunes as AdminItem[];
-    this.villages = seedVillages as AdminItem[];
+    // 2. Edge / Cloudflare Workers / Serverless: load from registered seed JSON
+    const seed = AdminStore.bundledSeed;
+    if (!seed) {
+      console.error('[AdminStore] No CSV datasets or seed data available; store is empty.');
+      return;
+    }
+    this.provinces = seed.provinces;
+    this.districts = seed.districts;
+    this.communes = seed.communes;
+    this.villages = seed.villages;
 
     this.rebuildIndexes();
     this.isLoaded = true;

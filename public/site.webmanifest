@@ -79,8 +79,8 @@
     {
       "name": "API Documentation",
       "short_name": "Docs",
-      "description": "REST API specification & metadata",
-      "url": "/api/info",
+      "description": "Interactive REST API documentation & schemas",
+      "url": "/docs",
       "icons": [
         {
           "src": "/logo.jpg",

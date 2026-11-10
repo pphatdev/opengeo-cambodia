@@ -14,7 +14,7 @@ export function convertCsvToSeedFiles(): {
   villages: number;
 } {
   const startTime = performance.now();
-  const dataDir = path.resolve(__dirname, '..', 'data');
+  const dataDir = path.resolve(__dirname, '..', '..', 'public', 'data');
   const seedDir = path.join(dataDir, 'seed');
   const csvPath = path.join(dataDir, 'CambodiaGeographicalList.csv');
 
