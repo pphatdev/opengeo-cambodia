@@ -210,7 +210,8 @@
 
 /* Inline markup inside translated text (rendered from <code>, <a>, <strong>) */
 @utility rich {
-  & code { @apply font-mono text-[0.87em] bg-surface-2 border border-line px-1.25 py-px rounded-[5px] text-ink whitespace-nowrap; }
+  /* Inline code only: never style <pre><code> blocks (nowrap would collapse them onto one line) */
+  & :not(pre) > code { @apply font-mono text-[0.87em] bg-surface-2 border border-line px-1.25 py-px rounded-[5px] text-ink whitespace-nowrap; }
   & a { @apply text-accent underline-offset-[3px]; }
   & strong { @apply text-ink font-semibold; }
 }

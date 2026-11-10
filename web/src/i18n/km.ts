@@ -187,6 +187,7 @@ const km: Messages = {
         navConcepts: "កម្រិត និងលេខកូដ",
         navResponses: "ចម្លើយតប និងកំហុស",
         navLimits: "ដែនកំណត់ និង Cache",
+        navBestPractices: "ការអនុវត្តល្អបំផុត",
         navAdminItem: "AdminItem",
         navBoundary: "លក្ខណៈព្រំប្រទល់",
         navGeocode: "GeocodeResult",

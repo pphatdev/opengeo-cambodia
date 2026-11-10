@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Marked } from "marked";
 import { cx } from "../../components/ui";
+import { highlightToHtml } from "../../lib/highlight";
 import { useToast } from "../../lib/toast";
 
 const markedInstance = new Marked();
@@ -51,8 +52,9 @@ markedInstance.use({
         code({ text, lang }) {
             const language = lang || "code";
             const escaped = encodeURIComponent(text);
-            const safeCode = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            return `<div class="overflow-hidden rounded-xl border border-code-line bg-code text-code-ink my-3.5 mb-5"><div class="flex items-center justify-between border-b border-code-line px-3 py-2 text-xs font-mono text-code-dim"><span>${language}</span><button type="button" class="inline-flex cursor-pointer items-center gap-1.5 rounded-[7px] border border-code-line bg-transparent px-2.5 py-1 text-xs font-medium text-code-dim hover:text-code-hi" data-copy-code="${escaped}"><svg class="size-3.25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Copy</button></div><pre class="m-0 overflow-x-auto p-4 font-mono text-[13px] leading-[1.65]"><code>${safeCode}</code></pre></div>\n`;
+            // Escaped + syntax-coloured (same token colours as the rest of the site)
+            const safeCode = highlightToHtml(text, lang || "");
+            return `<div class="overflow-hidden rounded-xl border border-code-line bg-code text-code-ink my-3.5 mb-5"><div class="flex items-center justify-between border-b border-code-line px-3 py-2 text-xs font-mono text-code-dim"><span>${language}</span><button type="button" class="inline-flex cursor-pointer items-center gap-1.5 rounded-[7px] border border-code-line bg-transparent px-2.5 py-1 text-xs font-medium text-code-dim hover:text-code-hi" data-copy-code="${escaped}"><svg class="size-3.25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Copy</button></div><pre class="scrollbar-thin m-0 overflow-x-auto p-4 font-mono text-[13px] leading-[1.65] text-code-ink"><code class="block whitespace-pre border-0 bg-transparent p-0 text-inherit">${safeCode}</code></pre></div>\n`;
         },
         blockquote({ tokens }) {
             const inner = this.parser.parse(tokens);
@@ -84,7 +86,12 @@ export function Markdown({ content, className }: { content: string; className?: 
 
     return (
         <div
-            className={cx("rich markdown-body text-ink-2 [&>p]:mb-3.5 [&>p]:mt-0 [&>p]:text-ink-2", className)}
+            className={cx(
+                "rich markdown-body text-ink-2 [&>p]:mb-3.5 [&>p]:mt-0 [&>p]:text-ink-2",
+                // Preflight strips list markers; restore readable bullets / numbers with accent markers
+                "[&_ul]:mb-4 [&_ul]:mt-0 [&_ul]:list-disc [&_ul]:pl-5.5 [&_ol]:mb-4 [&_ol]:mt-0 [&_ol]:list-decimal [&_ol]:pl-5.5 [&_li]:mb-1.5 [&_li]:pl-1 [&_li]:text-ink-2 [&_li::marker]:text-accent",
+                className,
+            )}
             dangerouslySetInnerHTML={{ __html: html }}
             onClick={handleClick}
         />

@@ -36,6 +36,7 @@ const GUIDE: [string, MessageKey][] = [
     ["concepts", "docs.navConcepts"],
     ["responses", "docs.navResponses"],
     ["rate-limits", "docs.navLimits"],
+    ["best-practices", "docs.navBestPractices"],
 ];
 
 const REFERENCE: [string, MessageKey][] = [

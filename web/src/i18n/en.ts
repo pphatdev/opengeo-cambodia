@@ -189,6 +189,7 @@ const en = {
         navConcepts: "Levels & codes",
         navResponses: "Responses & errors",
         navLimits: "Rate limits & caching",
+        navBestPractices: "Best practices",
         navAdminItem: "AdminItem",
         navBoundary: "Boundary properties",
         navGeocode: "GeocodeResult",
