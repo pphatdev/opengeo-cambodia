@@ -1,10 +1,27 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { cx } from "../../components/ui";
 import { useI18n } from "../../i18n";
 import { apiGet } from "../../lib/api";
 import type { AdminItem, ApiEnvelope } from "../../lib/types";
 import { MAP_HEIGHT, MAP_WIDTH, PROVINCES, type HeroProvince } from "./cambodiaMap";
+
+/**
+ * Provinces with no international border or coastline. Their outlines are fully masked out by the
+ * country-rim mask, so skipping them just saves animating invisible strokes (the mask, not this list,
+ * guarantees light only shows on the outer edge).
+ */
+const INTERIOR_PROVINCES = new Set(["03", "04", "05", "06", "12", "17"]);
+const RIM_PROVINCES = PROVINCES.filter((p) => !INTERIOR_PROVINCES.has(p.code));
+
+/** Per-border comet speed / phase / direction, so the lights don't march in step */
+function cometTiming(i: number): CSSProperties {
+    return {
+        animationDuration: `${6 + ((i * 7) % 5)}s`,
+        animationDelay: `-${((i * 1.37) % 6).toFixed(2)}s`,
+        animationDirection: i % 2 ? "reverse" : "normal",
+    };
+}
 
 /** Fired when a province is clicked; the Explorer listens and selects it. */
 export const SELECT_PROVINCE_EVENT = "og:select-province";
@@ -59,8 +76,20 @@ function Callout({ province, info, className, style }: { province: HeroProvince;
 
 export function HeroMap() {
     const { t, lang } = useI18n();
+    // Unique SVG ids (gradient / filters) in case the map renders more than once
+    const uid = "hm" + useId().replace(/[^a-zA-Z0-9]/g, "");
     const [activeCode, setActiveCode] = useState(TOUR[0]);
     const [paused, setPaused] = useState(false);
+    // Off-screen: stop the tour (and its API calls) and freeze the decorative CSS animations
+    const [onScreen, setOnScreen] = useState(true);
+    const figureRef = useRef<HTMLElement | null>(null);
+    useEffect(() => {
+        const el = figureRef.current;
+        if (!el || typeof IntersectionObserver === "undefined") return;
+        const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting), { rootMargin: "100px" });
+        io.observe(el);
+        return () => io.disconnect();
+    }, []);
     const [live, setLive] = useState<Record<string, Live>>({});
     const resumeTimer = useRef<number | undefined>(undefined);
     const reducedMotion = useRef(typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
@@ -69,12 +98,12 @@ export function HeroMap() {
 
     // Auto-tour (not under reduced motion, not while the visitor is pointing at the map)
     useEffect(() => {
-        if (paused || reducedMotion.current) return;
+        if (paused || !onScreen || reducedMotion.current) return;
         const id = window.setInterval(() => {
             setActiveCode((c) => TOUR[(TOUR.indexOf(c) + 1) % TOUR.length]);
         }, TOUR_MS);
         return () => window.clearInterval(id);
-    }, [paused]);
+    }, [paused, onScreen]);
 
     // Real request for the highlighted province, so the timing shown is genuine (cached per province)
     useEffect(() => {
@@ -113,11 +142,34 @@ export function HeroMap() {
     const info = live[active.code];
 
     return (
-        <figure className="relative m-0 w-full select-none" onMouseLeave={leave}>
+        <figure ref={figureRef} className={cx("relative m-0 w-full select-none", !onScreen && "og-paused")} onMouseLeave={leave}>
             <div className="relative pt-5 pb-5" style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT + 80}` }}>
                 {/* Corner coordinates: the dataset's bounding box, like a map sheet's margin */}
                 <span className="absolute left-0 top-0 rounded-md glass-pill px-2 py-0.5 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">14.7°N · 102.3°E</span>
                 <span className="absolute bottom-0 right-0 rounded-md glass-pill px-2 py-0.5 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">10.4°N · 107.7°E</span>
+
+                {/* Breathing halo around the country silhouette. Its own layer: the CSS blur is rasterised once and only
+                    opacity animates (compositor-only), instead of re-running an SVG blur filter every frame. */}
+                <div
+                    aria-hidden="true"
+                    className="animate-intro-fade pointer-events-none absolute inset-x-0 top-5 h-[calc(100%-40px)]"
+                    style={{ "--d": "600ms" } as CSSProperties}
+                >
+                    <div className="animate-map-aura size-full will-change-[opacity]">
+                        <svg viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} className="size-full overflow-visible blur-2xl">
+                            <defs>
+                                <linearGradient id={`${uid}-halo`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={MAP_WIDTH} y2={MAP_HEIGHT}>
+                                    <stop offset="0" className="[stop-color:var(--og-water)]" />
+                                    <stop offset="0.55" className="[stop-color:var(--og-accent)]" />
+                                    <stop offset="1" className="[stop-color:var(--og-ok)]" />
+                                </linearGradient>
+                            </defs>
+                            <g fill={`url(#${uid}-halo)`}>
+                                {PROVINCES.map((p) => <path key={p.code} d={p.d} />)}
+                            </g>
+                        </svg>
+                    </div>
+                </div>
 
                 <svg
                     viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
@@ -125,6 +177,23 @@ export function HeroMap() {
                     role="img"
                     aria-label={t("hero.mapAlt")}
                 >
+                    <defs>
+                        {/* Light colour shifts across the country: water (west) → accent → ok (east) */}
+                        <linearGradient id={`${uid}-light`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={MAP_WIDTH} y2={MAP_HEIGHT}>
+                            <stop offset="0" className="[stop-color:var(--og-water)]" />
+                            <stop offset="0.55" className="[stop-color:var(--og-accent)]" />
+                            <stop offset="1" className="[stop-color:var(--og-ok)]" />
+                        </linearGradient>
+                        {/* Country-outline-only mask: everything outside the country is visible, the inside is hidden.
+                            Interior province borders lie fully inside, so only light on the outer edge remains. */}
+                        <mask id={`${uid}-rim`} maskUnits="userSpaceOnUse" x={-50} y={-50} width={MAP_WIDTH + 100} height={MAP_HEIGHT + 100}>
+                            <rect x={-50} y={-50} width={MAP_WIDTH + 100} height={MAP_HEIGHT + 100} fill="white" />
+                            <g fill="black">
+                                {PROVINCES.map((p) => <path key={p.code} d={p.d} />)}
+                            </g>
+                        </mask>
+                    </defs>
+
                     {/* Soft shadow of the whole country */}
                     <g className="fill-ink/4 translate-x-1.5 translate-y-2" aria-hidden="true">
                         {PROVINCES.map((p) => <path key={p.code} d={p.d} />)}
@@ -147,6 +216,33 @@ export function HeroMap() {
                             </path>
                         );
                     })}
+                    {/* Rim light travelling around the country's outer edge only (the mask hides every interior
+                        province border). Only provinces that touch the national border can show light, so the
+                        rest are skipped. Starts after the hero intro. */}
+                    <g
+                        className="animate-intro-fade pointer-events-none motion-reduce:hidden"
+                        style={{ "--d": "1100ms" } as CSSProperties}
+                        mask={`url(#${uid}-rim)`}
+                        aria-hidden="true"
+                    >
+                        {/* No SVG filter: the glow is a wide translucent stroke under a thin crisp one with the same
+                            timing (only the outer half of each stroke survives the mask) */}
+                        {(["glow", "core"] as const).map((layer) => (
+                            <g
+                                key={layer}
+                                fill="none"
+                                stroke={`url(#${uid}-light)`}
+                                strokeWidth={layer === "glow" ? 14 : 5}
+                                strokeOpacity={layer === "glow" ? 0.3 : 1}
+                                strokeLinecap="round"
+                            >
+                                {RIM_PROVINCES.map((p, i) => (
+                                    <path key={p.code} d={p.d} pathLength={100} className="animate-border-run" style={cometTiming(i)} />
+                                ))}
+                            </g>
+                        ))}
+                    </g>
+
                     {/* Active province "lifts" off the map: a raised copy scaled from its own centre.
                         Keyed so the lift replays for each province. */}
                     <path
