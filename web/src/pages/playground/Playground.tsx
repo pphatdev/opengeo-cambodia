@@ -8,7 +8,6 @@ import { useI18n } from "../../i18n";
 import { apiGet, fmtBytes, PROD_ORIGIN, type RequestLog } from "../../lib/api";
 import { useToast } from "../../lib/toast";
 import { buildPath, displayPath, ENDPOINTS, type Endpoint } from "../docs/endpoints";
-import { PlaygroundFloatingRequest } from "./PlaygroundFloatingRequest";
 import { PlaygroundHeaders } from "./PlaygroundHeaders";
 import { PlaygroundHeroPreview } from "./PlaygroundHeroPreview";
 import { PlaygroundMap } from "./PlaygroundMap";
@@ -77,23 +76,6 @@ export default function Playground() {
         }, { replace: true });
     }, [setSearchParams]);
 
-    // Update individual param
-    const handleParamChange = (name: string, value: string) => {
-        const nextParams = { ...paramValues, [name]: value };
-        setParamValues(nextParams);
-        const path = buildPath(selectedEndpoint, nextParams);
-        if (path) {
-            setCustomUrl(path);
-        }
-    };
-
-    const handleResetParams = () => {
-        const reset = Object.fromEntries((selectedEndpoint.params ?? []).map((p) => [p.name, p.example ?? ""]));
-        setParamValues(reset);
-        const path = displayPath(selectedEndpoint, reset);
-        setCustomUrl(path);
-    };
-
     // Execute API request
     const handleSend = useCallback(async (pathToSend?: string) => {
         const path = pathToSend || customUrl || buildPath(selectedEndpoint, paramValues);
@@ -116,16 +98,12 @@ export default function Playground() {
         }
     }, [customUrl, selectedEndpoint, paramValues, toast, t]);
 
-    // Keyboard shortcuts: Cmd+Enter (Send), Cmd+K (Search)
+    // Keyboard shortcut: Cmd+Enter (Send)
     useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
                 e.preventDefault();
                 handleSend();
-            }
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-                e.preventDefault();
-                window.dispatchEvent(new CustomEvent("open-endpoint-selector"));
             }
         };
         window.addEventListener("keydown", onKeyDown);
@@ -390,21 +368,6 @@ export default function Playground() {
                     )}
                 </div>
             </main>
-
-            {/* Floating Request Console in Bottom-Right Corner */}
-            <PlaygroundFloatingRequest
-                endpoints={ENDPOINTS}
-                selectedEndpoint={selectedEndpoint}
-                onSelectEndpoint={handleSelectEndpoint}
-                customUrl={customUrl}
-                onUrlChange={(u) => setCustomUrl(u)}
-                paramValues={paramValues}
-                onParamChange={handleParamChange}
-                onResetParams={handleResetParams}
-                onSend={() => handleSend()}
-                pending={pending}
-                log={log}
-            />
         </div>
     );
 }
