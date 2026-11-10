@@ -27,7 +27,7 @@ markedInstance.use({
                 return `<h1 id="${id}" class="mb-4 font-display text-[clamp(36px,4.4vw,54px)] font-bold leading-[1.06] tracking-[-.035em] text-ink km:text-[clamp(32px,4vw,46px)] km:font-khmer km:font-semibold">${text}</h1>\n`;
             }
             if (depth === 2) {
-                return `<h2 id="${id}" class="mb-3.5 mt-16 pt-2 font-display text-[30px] font-bold leading-[1.15] tracking-[-.025em] text-ink max-sm:text-[26px] km:text-[clamp(26px,3.2vw,38px)] km:font-khmer km:font-semibold"><a class="group text-inherit no-underline" href="#${id}">${text}<span class="ml-2 text-ink-3 opacity-0 group-hover:opacity-100">#</span></a></h2>\n`;
+                return `<h2 id="${id}" class="mb-3.5 mt-16 pt-2 font-display text-[30px] font-bold leading-[1.15] tracking-tight text-ink max-sm:text-[26px] km:text-[clamp(26px,3.2vw,38px)] km:font-khmer km:font-semibold"><a class="group text-inherit no-underline" href="#${id}">${text}<span class="ml-2 text-ink-3 opacity-0 group-hover:opacity-100">#</span></a></h2>\n`;
             }
             if (depth === 3) {
                 return `<h3 id="${id}" class="mb-2 mt-6 font-display text-[20px] font-bold text-ink km:font-khmer km:font-semibold">${text}</h3>\n`;
@@ -58,7 +58,7 @@ markedInstance.use({
         },
         blockquote({ tokens }) {
             const inner = this.parser.parse(tokens);
-            return `<div class="my-[18px] grid grid-cols-[20px_1fr] gap-3 rounded-xl border border-water/25 bg-water-soft px-4 py-3.5 text-sm text-ink"><svg class="mt-[3px] size-[18px] text-water" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><div class="rich m-0 text-ink">${inner}</div></div>\n`;
+            return `<div class="my-4.5 grid grid-cols-[20px_1fr] gap-3 rounded-xl border border-water/25 bg-water-soft px-4 py-3.5 text-sm text-ink"><svg class="mt-0.75 size-4.5 text-water" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><div class="rich m-0 text-ink">${inner}</div></div>\n`;
         },
         link({ href, title, tokens }) {
             const text = this.parser.parseInline(tokens);

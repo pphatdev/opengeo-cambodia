@@ -170,7 +170,7 @@ export function Quickstart() {
             {/* Dark mode: faint blueprint grid fading out from behind the code panel */}
             <Parallax
                 speed={0.15}
-                className="pointer-events-none absolute -inset-y-24 inset-x-0 hidden bg-[linear-gradient(var(--og-line)_1px,transparent_1px),linear-gradient(90deg,var(--og-line)_1px,transparent_1px)] bg-size-[56px_56px] [mask-image:radial-gradient(ellipse_55%_60%_at_72%_50%,#000_10%,transparent_75%)] dark:block"
+                className="pointer-events-none absolute -inset-y-24 inset-x-0 hidden bg-[linear-gradient(var(--og-line)_1px,transparent_1px),linear-gradient(90deg,var(--og-line)_1px,transparent_1px)] bg-size-[56px_56px] mask-[radial-gradient(ellipse_55%_60%_at_72%_50%,#000_10%,transparent_75%)] dark:block"
                 aria-hidden="true"
             />
             <div className={cx(wrap, "relative grid grid-cols-[minmax(0,1fr)] items-start gap-12 lg:grid-cols-[1fr_1.15fr]")}>
@@ -193,7 +193,7 @@ export function Quickstart() {
                 {/* Code panel floats slightly ahead of the page on desktop */}
                 <Parallax speed={-0.06} minWidth={1024} className="relative min-w-0">
                 {/* Dark mode: brand bloom behind the panel */}
-                <div aria-hidden="true" className="pointer-events-none absolute -inset-6 hidden rounded-[32px] bg-[radial-gradient(ellipse_at_30%_0%,color-mix(in_srgb,var(--og-accent)_22%,transparent),transparent_60%),radial-gradient(ellipse_at_100%_100%,color-mix(in_srgb,var(--og-water)_18%,transparent),transparent_60%)] blur-xl dark:block" />
+                <div aria-hidden="true" className="pointer-events-none absolute -inset-6 hidden rounded-4xl bg-[radial-gradient(ellipse_at_30%_0%,color-mix(in_srgb,var(--og-accent)_22%,transparent),transparent_60%),radial-gradient(ellipse_at_100%_100%,color-mix(in_srgb,var(--og-water)_18%,transparent),transparent_60%)] blur-xl dark:block" />
                 <Reveal from="right" delay={120} className="relative min-w-0 overflow-hidden rounded-2xl border border-code-line/80 bg-code/95 text-code-ink shadow-[0_24px_50px_-16px_rgba(0,0,0,.5),inset_0_1px_1px_0_rgba(255,255,255,.08)] backdrop-blur-md dark:border-transparent dark:[background:linear-gradient(var(--og-code-bg),var(--og-code-bg))_padding-box,linear-gradient(135deg,color-mix(in_srgb,var(--og-accent)_70%,transparent),rgba(255,255,255,.06)_40%,color-mix(in_srgb,var(--og-water)_60%,transparent))_border-box] dark:shadow-[0_30px_70px_-20px_rgba(0,0,0,.9)]">
                     <div className="flex items-center gap-1 border-b border-code-line px-3 py-2.5">
                         <span className={codeTab} aria-selected="true">address-form.js</span>
@@ -289,7 +289,7 @@ export function Cta() {
             </Parallax>
             <div className={cx(wrap, "relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]")}>
                 <Reveal from="left">
-                    <h2 className="mb-2.5 mt-0 font-display text-[clamp(24px,3vw,36px)] font-bold leading-[1.15] tracking-[-.025em] km:font-khmer km:tracking-normal km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
+                    <h2 className="mb-2.5 mt-0 font-display text-[clamp(24px,3vw,36px)] font-bold leading-[1.15] tracking-tight km:font-khmer km:tracking-normal km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
                     <p className="m-0 opacity-70 dark:text-ink-2 dark:opacity-100">{t("cta.body")}</p>
                 </Reveal>
                 <Reveal from="right" delay={120} className="flex flex-wrap gap-3 lg:justify-end">
