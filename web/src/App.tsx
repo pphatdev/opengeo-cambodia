@@ -11,6 +11,7 @@ import { ChatWidget } from "./components/chat/ChatWidget";
 // Docs and Playground are separate chunks so the landing page doesn't download them
 const Docs = lazy(() => import("./pages/docs/Docs"));
 const Playground = lazy(() => import("./pages/playground/Playground"));
+const MapPage = lazy(() => import("./pages/map/MapPage"));
 
 export function App() {
     return (
@@ -25,6 +26,7 @@ export function App() {
                             <Route path="/docs" element={<Suspense fallback={<div className="min-h-screen" />}><Docs /></Suspense>} />
                             <Route path="/docs/*" element={<Suspense fallback={<div className="min-h-screen" />}><Docs /></Suspense>} />
                             <Route path="/playground" element={<Suspense fallback={<div className="min-h-screen" />}><Playground /></Suspense>} />
+                            <Route path="/map" element={<Suspense fallback={<div className="min-h-screen" />}><MapPage /></Suspense>} />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
                         <ChatWidget />

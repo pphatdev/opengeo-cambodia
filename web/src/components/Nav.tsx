@@ -8,7 +8,7 @@ import { cx, iconBtn, wrap } from "./ui";
 export const REPO_URL = "https://github.com/pphatdev/opengeo-cambodia";
 
 interface NavProps {
-    variant?: "home" | "docs" | "playground";
+    variant?: "home" | "docs" | "playground" | "map";
     menuOpen?: boolean;
     onMenu?: () => void;
 }
@@ -54,11 +54,12 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
 
     const isDocs = variant === "docs";
     const isPlayground = variant === "playground";
+    const isMap = variant === "map";
     return (
         <header
             className={cx(
                 "sticky top-0 z-1000 transition-all duration-300",
-                scrolled || isDocs || isPlayground
+                scrolled || isDocs || isPlayground || isMap
                     ? "glass-panel-subtle border-b-line/60! border-t-0! border-x-0! shadow-[0_8px_30px_-6px_rgba(0,0,0,0.04)]!"
                     : "border-transparent bg-transparent backdrop-blur-xs",
             )}
@@ -81,6 +82,11 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                         <>
                             <span className="font-normal text-line-2 max-md:hidden">/</span>
                             <span className="font-display text-[13px] font-bold uppercase text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal max-md:hidden">{t("nav.playground")}</span>
+                        </>
+                    ) : isMap ? (
+                        <>
+                            <span className="font-normal text-line-2 max-md:hidden">/</span>
+                            <span className="font-display text-[13px] font-bold uppercase text-accent km:font-khmer km:text-base km:font-semibold km:normal-case km:tracking-normal max-md:hidden">{t("nav.map")}</span>
                         </>
                     ) : (
                         <small className="rounded-full glass-pill px-2.5 py-0.5 text-xs font-medium text-accent max-xs:hidden">v1.7</small>
@@ -110,6 +116,19 @@ export function Nav({ variant = "home", menuOpen, onMenu }: NavProps) {
                     >
                         <Icon name="play" className="sm:hidden" />
                         <span className="max-sm:hidden">{t("nav.playground")}</span>
+                    </Link>
+                    <Link
+                        to={lang === "km" ? "/map?lang=km" : "/map"}
+                        className={cx(
+                            navItem,
+                            isMap && "bg-surface-2 font-semibold text-ink max-sm:border-accent/40 max-sm:text-accent max-sm:shadow-xs",
+                        )}
+                        title={t("nav.map")}
+                        aria-label={t("nav.map")}
+                        aria-current={isMap ? "page" : undefined}
+                    >
+                        <Icon name="map" className="sm:hidden" />
+                        <span className="max-sm:hidden">{t("nav.map")}</span>
                     </Link>
                     <LangSwitch />
                     <a

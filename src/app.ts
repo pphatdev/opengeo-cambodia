@@ -131,6 +131,16 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
         canonical = isKm
             ? "https://opengeo-cambodia.pphat.me/playground?lang=km"
             : "https://opengeo-cambodia.pphat.me/playground";
+    } else if (reqPath === "/map" || reqPath.startsWith("/map/")) {
+        title = isKm
+            ? "ផែនទីព្រំប្រទល់កម្ពុជា — OpenGeo Cambodia"
+            : "Cambodia Boundaries Map — OpenGeo Cambodia";
+        desc = isKm
+            ? "ផែនទីអន្តរកម្មនៃព្រំប្រទល់ខេត្ត ស្រុក និងឃុំនៅកម្ពុជា លើផែនទី OpenStreetMap ផ្កាយរណប ឬសណ្ឋានដី ជាមួយការស្វែងរកតំបន់តាមការចុច GPS ឬកូអរដោនេ។"
+            : "Interactive map of Cambodia province, district and commune boundaries over OpenStreetMap, satellite or terrain basemaps, with point-in-polygon lookup by click, GPS or coordinates.";
+        canonical = isKm
+            ? "https://opengeo-cambodia.pphat.me/map?lang=km"
+            : "https://opengeo-cambodia.pphat.me/map";
     } else if (reqPath.startsWith("/demo")) {
         title = isKm
             ? "ផ្ទាំងបង្ហាញគំរូ — OpenGeo Cambodia"
@@ -558,6 +568,7 @@ app.get("/docs", serveSpa);
 app.get("/docs/*", serveSpa);
 app.get("/playground", serveSpa);
 app.get("/playground/*", serveSpa);
+app.get("/map", serveSpa);
 app.get("/demo", serveSpa);
 app.get("/blog", serveSpa);
 app.get("/blog/*", serveSpa);
