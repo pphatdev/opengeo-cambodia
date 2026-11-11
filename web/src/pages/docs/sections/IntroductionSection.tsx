@@ -1,6 +1,7 @@
 import introMd from "../content/01-introduction.md?raw";
 import { Markdown } from "../Markdown";
 import { Icon } from "../../../components/Icon";
+import { PostmanRunButton } from "../../../components/PostmanRunButton";
 import { cx, kicker } from "../../../components/ui";
 import { useI18n } from "../../../i18n";
 import { PROD_ORIGIN } from "../../../lib/api";
@@ -30,6 +31,16 @@ export function IntroductionSection() {
                     <Icon name="copy" />{t("common.copy")}
                 </button>
                 {isLocal && <span className="rich basis-full text-[12.5px] text-ink-3">{rt("docs.localNote", { origin: location.origin })}</span>}
+            </div>
+            {/* Run in Postman — also the proof of API ownership for Postman's verified-publisher check, so keep it near the top of /docs */}
+            <div className="mb-4.5 flex flex-col gap-3 rounded-xl border border-line bg-surface px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                    <b className="block text-sm font-semibold text-ink">Run in Postman</b>
+                    <span className="block text-[13px] text-ink-3">
+                        Fork the official collection: every endpoint, with variables and test assertions.
+                    </span>
+                </div>
+                <PostmanRunButton eager className="shrink-0" />
             </div>
             <div className="mb-2.5 mt-5.5 grid grid-cols-1 gap-3 lg:grid-cols-3">
                 <div className={fact}><b>{t("docs.factAuthTitle")}</b><span>{t("docs.factAuthBody")}</span></div>

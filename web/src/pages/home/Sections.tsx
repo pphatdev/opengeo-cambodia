@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Icon, type IconName } from "../../components/Icon";
 import { Parallax, Reveal } from "../../components/Parallax";
+import { PostmanRunButton } from "../../components/PostmanRunButton";
 import { btn, btnGhost, codeCopy, codePre, codeTab, cx, kicker, lvl, sectionH2, wrap } from "../../components/ui";
 import { useI18n, type MessageKey } from "../../i18n";
 import { PROD_ORIGIN } from "../../lib/api";
@@ -262,6 +263,10 @@ export function Downloads() {
                         </Reveal>
                     ))}
                 </div>
+                <Reveal className="mt-6 flex flex-wrap items-center justify-center gap-3 text-[13px] text-ink-3">
+                    <span>{t("downloads.postmanSub")} —</span>
+                    <PostmanRunButton />
+                </Reveal>
             </div>
         </section>
     );
