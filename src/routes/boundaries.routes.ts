@@ -9,6 +9,7 @@ import type {
     BoundaryLevel,
     BoundaryStats,
     BoundarySummaryItem,
+    CountGroup,
 } from "../types/boundaries.js";
 
 export const boundariesRoutes = new Hono();
@@ -1015,13 +1016,50 @@ function parseLatLngArray(input: unknown): { points: { lat: number; lon: number 
  * Counts how many of the given coordinates (e.g. customer locations) fall in each boundary.
  *
  * Query Parameters (both methods):
- * - level: 'commune' (default) | 'district' | 'province'
+ * - level: 'commune' (default) | 'district' | 'province' | 'all' (each point counted once per level)
  * - sort: 'input' (default, first-seen order) | 'count' (largest first)
+ * - format: 'summary' (default, list without geometry) | 'geojson' (FeatureCollection of the matched boundaries
+ *           with polygons; properties carry index, level, count and point; top-level `unmatched`)
  *
- * Response `data`: one item per boundary — { index, count, point, matched: true, [level]: summary } —
- * where `point` is the first input coordinate that fell in it. Points outside Cambodia are grouped
- * into a final { matched: false, [level]: null, point_indexes } item.
+ * Response `data`: one item per boundary — { index, level, count, point, matched: true, [level]: summary } —
+ * where `point` is the first input coordinate that fell in it. With level=all the result is a tree: each
+ * province item carries `districts`, each district carries `communes` (sort=count sorts every list).
+ * Points outside Cambodia are grouped into a final { matched: false, level, point_indexes } item.
  */
+/** One count row: { index, level, count, point, matched, [level]: summary } */
+function countItem(g: CountGroup, index: number): Record<string, unknown> {
+    return {
+        index,
+        level: g.level,
+        count: g.count,
+        point: g.point,
+        matched: true,
+        [g.level]: boundariesService.summarize(g.feature),
+    };
+}
+
+const CHILD_LIST = { province: "districts", district: "communes" } as const;
+
+/**
+ * level=all: province → districts → communes, linked by the parent each point was actually resolved through
+ * (not by code prefix, since some new districts share their parent's geometry). Groups arrive ordered by
+ * level, so a parent always exists before its children. `index` is the position within each list.
+ */
+function nestCountGroups(groups: CountGroup[]): Record<string, unknown>[] {
+    const roots: Record<string, unknown>[] = [];
+    const nodes = new Map<string, Record<string, unknown>>();
+    for (const g of groups) {
+        const node = countItem(g, 0);
+        if (g.level !== "commune") node[CHILD_LIST[g.level]] = [];
+        nodes.set(g.key, node);
+        const parent = g.parent ? nodes.get(g.parent) : undefined;
+        const list = parent ? (parent[CHILD_LIST[g.level === "district" ? "province" : "district"]] as Record<string, unknown>[]) : roots;
+        node.index = list.length;
+        list.push(node);
+    }
+    return roots;
+}
+
 const handleCountByPoints = async (c: Context) => {
     let parsed: { points: { lat: number; lon: number }[] } | { error: string };
 
@@ -1050,28 +1088,71 @@ const handleCountByPoints = async (c: Context) => {
         return c.json<ApiResponse<null>>({ success: false, data: null, error: parsed.error }, 400);
     }
 
-    const rawLevel = (c.req.query("level") || "commune").toLowerCase();
-    const level: BoundaryLevel = rawLevel === "province" || rawLevel === "district" ? rawLevel : "commune";
+    const rawLevel = (c.req.query("level") || "commune").trim().toLowerCase();
+    if (rawLevel !== "commune" && rawLevel !== "district" && rawLevel !== "province" && rawLevel !== "all") {
+        return c.json<ApiResponse<null>>(
+            { success: false, data: null, error: `Invalid level '${rawLevel.slice(0, 20)}': use commune, district, province or all` },
+            400,
+        );
+    }
+    const level = rawLevel as BoundaryLevel | "all";
     const sortByCount = (c.req.query("sort") || "").toLowerCase() === "count";
+    const rawFormat = (c.req.query("format") || "summary").trim().toLowerCase();
+    if (rawFormat !== "summary" && rawFormat !== "json" && rawFormat !== "geojson") {
+        return c.json<ApiResponse<null>>(
+            { success: false, data: null, error: `Invalid format '${rawFormat.slice(0, 20)}': use summary or geojson` },
+            400,
+        );
+    }
 
     const start = performance.now();
     const { groups, unmatched } = boundariesService.countByPoints(parsed.points, level);
-    if (sortByCount) groups.sort((a, b) => b.count - a.count);
+    if (sortByCount) {
+        const order = { province: 0, district: 1, commune: 2 } as const;
+        // Stable sort: level order first (parents before children), then largest count — every nested list ends up sorted
+        groups.sort((a, b) => order[a.level] - order[b.level] || b.count - a.count);
+    }
 
-    const data: Record<string, unknown>[] = groups.map((g, index) => ({
-        index,
-        count: g.count,
-        point: g.point,
-        matched: true,
-        [level]: boundariesService.summarize(g.feature),
-    }));
+    if (rawFormat === "geojson") {
+        // Boundaries with geometry; counts live in each feature's properties (shared features are cloned, never mutated)
+        const features = groups.map((g, index) => ({
+            ...g.feature,
+            properties: { ...g.feature.properties, index, level: g.level, count: g.count, point: g.point },
+        }));
+        const boxes = features.map((f) => f.bbox).filter(Boolean) as number[][];
+        const fc = {
+            type: "FeatureCollection",
+            name: "cambodia_zone_counts",
+            crs: { type: "name", properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+            ...(boxes.length && {
+                bbox: [
+                    Math.min(...boxes.map((b) => b[0])),
+                    Math.min(...boxes.map((b) => b[1])),
+                    Math.max(...boxes.map((b) => b[2])),
+                    Math.max(...boxes.map((b) => b[3])),
+                ],
+            }),
+            features,
+            // Foreign members (allowed by RFC 7946)
+            level,
+            total: parsed.points.length,
+            matched: parsed.points.length - unmatched.count,
+            unmatched: { count: unmatched.count, point: unmatched.point, point_indexes: unmatched.indexes },
+        };
+        return c.newResponse(JSON.stringify(fc), 200, {
+            "Content-Type": "application/geo+json; charset=utf-8",
+        });
+    }
+
+    const data = level === "all" ? nestCountGroups(groups) : groups.map((g, index) => countItem(g, index));
     if (unmatched.count > 0) {
         data.push({
             index: data.length,
+            level,
             count: unmatched.count,
             point: unmatched.point,
             matched: false,
-            [level]: null,
+            ...(level !== "all" && { [level]: null }),
             point_indexes: unmatched.indexes,
         });
     }

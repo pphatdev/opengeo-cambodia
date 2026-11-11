@@ -12,6 +12,7 @@ import type {
     BoundaryStats,
     BoundarySummaryItem,
     BoundaryZoneResult,
+    CountGroup,
 } from "../types/boundaries.js";
 
 function resolveCurrentDir(): string {
@@ -1044,50 +1045,70 @@ export class BoundariesService {
      */
     public countByPoints(
         points: { lat: number; lon: number }[],
-        level: BoundaryLevel,
+        level: BoundaryLevel | "all",
     ): {
-        groups: { feature: BoundaryFeature; count: number; point: { lat: number; lng: number } }[];
+        groups: CountGroup[];
         unmatched: { count: number; point: { lat: number; lng: number } | null; indexes: number[] };
     } {
         this.ensureLoaded();
 
+        const tiers: BoundaryLevel[] = level === "all" ? ["province", "district", "commune"] : [level];
+        const deepest = tiers[tiers.length - 1];
         const [minLon, minLat, maxLon, maxLat] = this.overallBbox;
         const margin = 0.1;
-        const memo = new Map<string, BoundaryFeature | null>();
-        const resolve = (lat: number, lon: number): BoundaryFeature | null => {
+        type Hit = Partial<Record<BoundaryLevel, BoundaryFeature>>;
+        const memo = new Map<string, Hit | null>();
+
+        // Top-down: each step only scans the children of the previous match
+        const resolve = (lat: number, lon: number): Hit | null => {
             if (lon < minLon - margin || lon > maxLon + margin || lat < minLat - margin || lat > maxLat + margin) {
                 return null;
             }
-            const province = this.findFeatureByPoint(lon, lat, "province");
-            if (level === "province") return province ?? null;
-            const district = this.findFeatureByPoint(lon, lat, "district", province?.properties?.code);
-            if (level === "district") return district ?? null;
-            return this.findFeatureByPoint(lon, lat, "commune", district?.properties?.code) ?? null;
+            const hit: Hit = {};
+            hit.province = this.findFeatureByPoint(lon, lat, "province");
+            if (deepest !== "province") {
+                hit.district = this.findFeatureByPoint(lon, lat, "district", hit.province?.properties?.code);
+                if (deepest === "commune") {
+                    hit.commune = this.findFeatureByPoint(lon, lat, "commune", hit.district?.properties?.code);
+                }
+            }
+            // A point counts as matched only when it resolves at the deepest requested level
+            return hit[deepest] ? hit : null;
         };
 
-        const byCode = new Map<string, { feature: BoundaryFeature; count: number; point: { lat: number; lng: number } }>();
+        const byKey = new Map<string, CountGroup>();
         const unmatched = { count: 0, point: null as { lat: number; lng: number } | null, indexes: [] as number[] };
 
         points.forEach(({ lat, lon }, i) => {
             const key = `${lat},${lon}`;
-            let feature = memo.get(key);
-            if (feature === undefined) {
-                feature = resolve(lat, lon);
-                memo.set(key, feature);
+            let hit = memo.get(key);
+            if (hit === undefined) {
+                hit = resolve(lat, lon);
+                memo.set(key, hit);
             }
-            if (!feature) {
+            if (!hit) {
                 unmatched.count++;
                 unmatched.indexes.push(i);
                 unmatched.point ??= { lat, lng: lon };
                 return;
             }
-            const code = String(feature.properties?.code);
-            const group = byCode.get(code);
-            if (group) group.count++;
-            else byCode.set(code, { feature, count: 1, point: { lat, lng: lon } });
+            // parent = the group this point was resolved through one tier up (lets level=all nest the result)
+            let parent: string | undefined;
+            for (const tier of tiers) {
+                const feature = hit[tier];
+                if (!feature) continue;
+                const groupKey = `${tier}:${feature.properties?.code}`;
+                const group = byKey.get(groupKey);
+                if (group) group.count++;
+                else byKey.set(groupKey, { key: groupKey, parent, level: tier, feature, count: 1, point: { lat, lng: lon } });
+                parent = groupKey;
+            }
         });
 
-        return { groups: [...byCode.values()], unmatched };
+        // With level=all keep the hierarchy readable: provinces, then districts, then communes
+        const order: Record<BoundaryLevel, number> = { province: 0, district: 1, commune: 2 };
+        const groups = [...byKey.values()].sort((a, b) => order[a.level] - order[b.level]);
+        return { groups, unmatched };
     }
 
     /** Public summary view of a feature (no geometry). */

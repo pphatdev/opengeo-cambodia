@@ -277,12 +277,19 @@ export const ENDPOINTS: Endpoint[] = [
             },
             {
                 name: "level", in: "query", type: "string", example: "commune",
-                options: ["commune", "district", "province"],
-                description: { en: "Boundary level to count by (default commune).", km: "កម្រិតព្រំប្រទល់សម្រាប់រាប់ (លំនាំដើម ឃុំ)។" },
+                options: ["commune", "district", "province", "all"],
+                description: { en: "Boundary level to count by (default commune). 'all' returns a tree: provinces → districts → communes, each with its own count.", km: "កម្រិតព្រំប្រទល់សម្រាប់រាប់ (លំនាំដើម ឃុំ)។ 'all' បង្ហាញជាមែកធាង៖ ខេត្ត → ស្រុក → ឃុំ ដែលនីមួយៗមានចំនួនរាប់ផ្ទាល់ខ្លួន។" },
             },
             {
                 name: "sort", in: "query", type: "string", example: "input", options: ["input", "count"],
                 description: { en: "input (first-seen order, default) or count (largest first).", km: "input (តាមលំដាប់ដែលឃើញមុន លំនាំដើម) ឬ count (ច្រើនបំផុតមុន)។" },
+            },
+            {
+                name: "format", in: "query", type: "string", example: "summary", options: ["summary", "geojson"],
+                description: {
+                    en: "summary (default, list without geometry) or geojson (FeatureCollection of the matched boundaries with polygons; properties carry level, count and point).",
+                    km: "summary (លំនាំដើម បញ្ជីគ្មានធរណីមាត្រ) ឬ geojson (FeatureCollection នៃព្រំប្រទល់ជាមួយពហុកោណ; properties មាន level, count និង point)។",
+                },
             },
         ],
     },

@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "2180e49e-070a-417a-991e-cdd36023335c",
+    "_postman_id": "57acfd25-b942-4568-aacc-eb9453cf8289",
     "name": "opengeo-cambodia.pphat.me",
     "description": "# OpenGeo Cambodia API - Postman Collection\n\nPostman collection for the **OpenGeo Cambodia API**, an open REST API for Cambodia's geography data.\n\n- **Administrative hierarchy:** 25 provinces, 210 districts, 1,661 communes and 14,576 villages from the Ministry of Economy and Finance Open Data Portal (data.mef.gov.kh).\n- **Boundaries:** province, district and commune polygons as GeoJSON or lightweight summaries.\n- **Geocoding:** reverse and forward geocoding via OpenStreetMap Nominatim, normalised to the Cambodian hierarchy.\n- **Free and open:** no API keys. Only GET requests.\n\n### Rate limits (per IP)\n- `/api/admin/*` and `/api/boundaries/*`: 10,000 requests/min\n- `/api/admin/search`: 120 requests/min\n- `/api/geocode/*`: 30 requests/min\n- Other `/api/*`: 5,000 requests/min\n\n### Variables\n- `{{baseUrl}}`: defaults to `https://opengeo-cambodia.pphat.me`. Use `http://localhost:3000` for local development.\n- `{{provinceId}}`, `{{districtId}}`, `{{communeId}}`, `{{villageId}}`: numeric ids for the Administrative endpoints (12 / 1201 / 120101 / 12010101).\n- `{{provinceCode}}`, `{{districtCode}}`, `{{communeCode}}`: zero-padded codes for the Boundaries endpoints (12 / 1201 / 120101).\n- `{{searchQuery}}`, `{{geocodeQuery}}`: sample search text.\n- `{{latitude}}`, `{{longitude}}`: sample coordinates for reverse geocoding (11.5564, 104.9282).\n\nEvery request has a test script checking for 200 and the expected body shape.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "16827919",
-    "_collection_link": "https://go.postman.co/collection/16827919-2180e49e-070a-417a-991e-cdd36023335c?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/16827919-57acfd25-b942-4568-aacc-eb9453cf8289?source=collection_link"
   },
   "item": [
     {
@@ -3773,16 +3773,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test(\"Counts add up to the number of points sent\", function () {",
-                  "    var json = pm.response.json();",
-                  "    pm.expect(json.success).to.eql(true);",
-                  "    var sum = json.data.reduce(function (s, g) { return s + g.count; }, 0);",
-                  "    pm.expect(sum).to.eql(json.meta.total);",
-                  "});"
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Counts add up to the number of points sent\", function () {\n    var json = pm.response.json();\n    if (json.type === \"FeatureCollection\") {\n        // format=geojson: counts are in feature properties; with level=all each point counts once per level\n        pm.expect(json.total).to.be.a(\"number\");\n        return;\n    }\n    pm.expect(json.success).to.eql(true);\n    var sum = json.data.reduce(function (s, g) { return s + g.count; }, 0);\n    if (json.meta.level !== \"all\") pm.expect(sum).to.eql(json.meta.total);\n});"
                 ]
               }
             }
@@ -3810,7 +3801,7 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/boundaries/zones/count?level=commune&sort=count",
+              "raw": "{{baseUrl}}/api/boundaries/zones/count?sort=count&level=all",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -3822,20 +3813,188 @@
               ],
               "query": [
                 {
-                  "key": "level",
-                  "value": "commune",
-                  "description": "commune (default), district or province."
-                },
-                {
                   "key": "sort",
                   "value": "count",
                   "description": "input (default, first-seen order) or count (largest first)."
+                },
+                {
+                  "key": "format",
+                  "value": "geojson",
+                  "description": "summary (default, list without geometry) or geojson (FeatureCollection of the matched boundaries with polygons; properties carry level, count and point).",
+                  "disabled": true
+                },
+                {
+                  "key": "level",
+                  "value": "all"
                 }
               ]
             },
-            "description": "Counts how many coordinates (e.g. customer locations) fall in each boundary. POST takes up to 10,000 points (body up to 1 MB); for up to 100 points you can also use GET with `?at=lat,lng;lat,lng`.\n\nEach item is `{ index, count, point, matched, commune }`, where `point` is the first input coordinate in that boundary. Points outside Cambodia are grouped into a final `matched: false` item with `point_indexes`."
+            "description": "Counts how many coordinates (e.g. customer locations) fall in each boundary. POST takes up to 10,000 points (body up to 1 MB); for up to 100 points you can also use GET with `?at=lat,lng;lat,lng`.\n\nEach item is `{ index, level, count, point, matched, commune }`, where `point` is the first input coordinate in that boundary. Points outside Cambodia are grouped into a final `matched: false` item with `point_indexes`.\n\nAdd `format=geojson` to get the boundaries with their polygons as a FeatureCollection (counts in each feature's `properties`), e.g. to draw a choropleth."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Count points per boundary",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "description": "Expected response MIME type."
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"latlngs\": [\n        {\n            \"lat\": 11.57608,\n            \"lng\": 104.92305\n        },\n        {\n            \"lat\": 11.5761,\n            \"lng\": 104.9231\n        },\n        {\n            \"lat\": 13.4125,\n            \"lng\": 103.867\n        },\n        {\n            \"lat\": 10.6104,\n            \"lng\": 104.1814\n        }\n    ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/boundaries/zones/count?sort=count&level=all",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "boundaries",
+                    "zones",
+                    "count"
+                  ],
+                  "query": [
+                    {
+                      "key": "sort",
+                      "value": "count",
+                      "description": "input (default, first-seen order) or count (largest first)."
+                    },
+                    {
+                      "key": "format",
+                      "value": "geojson",
+                      "description": "summary (default, list without geometry) or geojson (FeatureCollection of the matched boundaries with polygons; properties carry level, count and point).",
+                      "disabled": true
+                    },
+                    {
+                      "key": "level",
+                      "value": "all"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "access-control-allow-origin",
+                  "value": "*"
+                },
+                {
+                  "key": "access-control-expose-headers",
+                  "value": "ETag,X-Response-Time,X-RateLimit-Limit,X-RateLimit-Remaining,X-RateLimit-Reset,Retry-After,CF-Cache-Status,X-Cache"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "public, max-age=31536000, s-maxage=31536000, immutable, stale-while-revalidate=86400"
+                },
+                {
+                  "key": "content-security-policy",
+                  "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://opengeo-cambodia.pphat.me https://nominatim.openstreetmap.org https://unpkg.com https://cdn.tailwindcss.com https://cloudflareinsights.com"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "cross-origin-opener-policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "cross-origin-resource-policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "origin-agent-cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "referrer-policy",
+                  "value": "strict-origin-when-cross-origin"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=31536000; includeSubDomains; preload"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-dns-prefetch-control",
+                  "value": "off"
+                },
+                {
+                  "key": "x-download-options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "x-frame-options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "x-permitted-cross-domain-policies",
+                  "value": "none"
+                },
+                {
+                  "key": "x-ratelimit-limit",
+                  "value": "10000"
+                },
+                {
+                  "key": "x-ratelimit-remaining",
+                  "value": "9999"
+                },
+                {
+                  "key": "x-ratelimit-reset",
+                  "value": "1794381350"
+                },
+                {
+                  "key": "x-response-time",
+                  "value": "8.25ms"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "noindex, nofollow"
+                },
+                {
+                  "key": "x-xss-protection",
+                  "value": "0"
+                },
+                {
+                  "key": "content-length",
+                  "value": "5091"
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 11 Nov 2026 07:14:49 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"index\": 0,\n      \"level\": \"province\",\n      \"count\": 2,\n      \"point\": {\n        \"lat\": 11.57608,\n        \"lng\": 104.92305\n      },\n      \"matched\": true,\n      \"province\": {\n        \"id\": 12,\n        \"code\": \"12\",\n        \"pcode\": \"KH12\",\n        \"name\": \"Phnom Penh\",\n        \"name_en\": \"Phnom Penh\",\n        \"name_km\": \"រាជធានីភ្នំពេញ\",\n        \"type_km\": \"រាជធានី\",\n        \"level\": \"province\",\n        \"province_code\": \"12\",\n        \"province_name_en\": \"Phnom Penh\",\n        \"province_name_km\": \"រាជធានីភ្នំពេញ\",\n        \"lat\": 11.5564,\n        \"lon\": 104.9282,\n        \"bbox\": [\n          104.712708,\n          11.421509,\n          105.049072,\n          11.736511\n        ],\n        \"shape_length\": 1.45685991518,\n        \"shape_area\": 0.0567541588326\n      },\n      \"districts\": [\n        {\n          \"index\": 0,\n          \"level\": \"district\",\n          \"count\": 2,\n          \"point\": {\n            \"lat\": 11.57608,\n            \"lng\": 104.92305\n          },\n          \"matched\": true,\n          \"district\": {\n            \"id\": 1202,\n            \"code\": \"1202\",\n            \"pcode\": \"KH1202\",\n            \"name\": \"Doun Penh\",\n            \"name_en\": \"Doun Penh\",\n            \"name_km\": \"ដូនពេញ\",\n            \"type_km\": \"ខណ្ឌ\",\n            \"level\": \"district\",\n            \"province_code\": \"12\",\n            \"province_name_en\": \"Phnom Penh\",\n            \"province_name_km\": \"រាជធានីភ្នំពេញ\",\n            \"lat\": 11.572693,\n            \"lon\": 104.92749,\n            \"bbox\": [\n              104.903503,\n              11.555908,\n              104.951477,\n              11.589478\n            ],\n            \"shape_length\": 0.140878370347,\n            \"shape_area\": 0.000641072710154\n          },\n          \"communes\": [\n            {\n              \"index\": 0,\n              \"level\": \"commune\",\n              \"count\": 2,\n              \"point\": {\n                \"lat\": 11.57608,\n                \"lng\": 104.92305\n              },\n              \"matched\": true,\n              \"commune\": {\n                \"id\": 120211,\n                \"code\": \"120211\",\n                \"pcode\": \"KH120211\",\n                \"name\": \"Voat Phnum\",\n                \"name_en\": \"Voat Phnum\",\n                \"name_km\": \"វត្ដភ្នំ\",\n                \"type_km\": \"សង្កាត់\",\n                \"level\": \"commune\",\n                \"province_code\": \"12\",\n                \"province_name_en\": \"Phnom Penh\",\n                \"province_name_km\": \"រាជធានីភ្នំពេញ\",\n                \"district_code\": \"1202\",\n                \"district_name_en\": \"Doun Penh\",\n                \"district_name_km\": \"ដូនពេញ\",\n                \"lat\": 11.574551,\n                \"lon\": 104.924804,\n                \"bbox\": [\n                  104.918884,\n                  11.571587,\n                  104.930725,\n                  11.577515\n                ],\n                \"shape_length\": 0.0326198592602,\n                \"shape_area\": 0.0000515997854517\n              }\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"index\": 1,\n      \"level\": \"province\",\n      \"count\": 1,\n      \"point\": {\n        \"lat\": 13.4125,\n        \"lng\": 103.867\n      },\n      \"matched\": true,\n      \"province\": {\n        \"id\": 17,\n        \"code\": \"17\",\n        \"pcode\": \"KH17\",\n        \"name\": \"Siemreap\",\n        \"name_en\": \"Siemreap\",\n        \"name_km\": \"សៀមរាប\",\n        \"type_km\": \"ខេត្ត\",\n        \"level\": \"province\",\n        \"province_code\": \"17\",\n        \"province_name_en\": \"Siemreap\",\n        \"province_name_km\": \"សៀមរាប\",\n        \"lat\": 13.3671,\n        \"lon\": 103.8448,\n        \"bbox\": [\n          103.39032,\n          12.779724,\n          104.682922,\n          13.97168\n        ],\n        \"shape_length\": 5.00166759967,\n        \"shape_area\": 0.88072952445\n      },\n      \"districts\": [\n        {\n          \"index\": 0,\n          \"level\": \"district\",\n          \"count\": 1,\n          \"point\": {\n            \"lat\": 13.4125,\n            \"lng\": 103.867\n          },\n          \"matched\": true,\n          \"district\": {\n            \"id\": 1710,\n            \"code\": \"1710\",\n            \"pcode\": \"KH1710\",\n            \"name\": \"Siem Reab\",\n            \"name_en\": \"Siem Reab\",\n            \"name_km\": \"សៀមរាប\",\n            \"type_km\": \"ក្រុង\",\n            \"level\": \"district\",\n            \"province_code\": \"17\",\n            \"province_name_en\": \"Siemreap\",\n            \"province_name_km\": \"សៀមរាប\",\n            \"lat\": 13.340607,\n            \"lon\": 103.861999,\n            \"bbox\": [\n              103.732483,\n              13.211487,\n              103.991516,\n              13.469727\n            ],\n            \"shape_length\": 0.968327560384,\n            \"shape_area\": 0.0392774920984\n          },\n          \"communes\": [\n            {\n              \"index\": 0,\n              \"level\": \"commune\",\n              \"count\": 1,\n              \"point\": {\n                \"lat\": 13.4125,\n                \"lng\": 103.867\n              },\n              \"matched\": true,\n              \"commune\": {\n                \"id\": 171005,\n                \"code\": \"171005\",\n                \"pcode\": \"KH171005\",\n                \"name\": \"Nokor Thum\",\n                \"name_en\": \"Nokor Thum\",\n                \"name_km\": \"នគរធំ\",\n                \"type_km\": \"សង្កាត់\",\n                \"level\": \"commune\",\n                \"province_code\": \"17\",\n                \"province_name_en\": \"Siemreap\",\n                \"province_name_km\": \"សៀមរាប\",\n                \"district_code\": \"1710\",\n                \"district_name_en\": \"Siem Reab\",\n                \"district_name_km\": \"សៀមរាប\",\n                \"lat\": 13.424988,\n                \"lon\": 103.890503,\n                \"bbox\": [\n                  103.857483,\n                  13.381104,\n                  103.923523,\n                  13.468872\n                ],\n                \"shape_length\": 0.275806426639,\n                \"shape_area\": 0.00457164460161\n              }\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"index\": 2,\n      \"level\": \"province\",\n      \"count\": 1,\n      \"point\": {\n        \"lat\": 10.6104,\n        \"lng\": 104.1814\n      },\n      \"matched\": true,\n      \"province\": {\n        \"id\": 7,\n        \"code\": \"07\",\n        \"pcode\": \"KH07\",\n        \"name\": \"Kampot\",\n        \"name_en\": \"Kampot\",\n        \"name_km\": \"កំពត\",\n        \"type_km\": \"ខេត្ត\",\n        \"level\": \"province\",\n        \"province_code\": \"07\",\n        \"province_name_en\": \"Kampot\",\n        \"province_name_km\": \"កំពត\",\n        \"lat\": 10.6104,\n        \"lon\": 104.1815,\n        \"bbox\": [\n          103.916077,\n          10.40509,\n          104.729126,\n          11.172302\n        ],\n        \"shape_length\": 3.44690751967,\n        \"shape_area\": 0.39027782714\n      },\n      \"districts\": [\n        {\n          \"index\": 0,\n          \"level\": \"district\",\n          \"count\": 1,\n          \"point\": {\n            \"lat\": 10.6104,\n            \"lng\": 104.1814\n          },\n          \"matched\": true,\n          \"district\": {\n            \"id\": 708,\n            \"code\": \"0708\",\n            \"pcode\": \"KH0708\",\n            \"name\": \"Kampot\",\n            \"name_en\": \"Kampot\",\n            \"name_km\": \"កំពត\",\n            \"type_km\": \"ក្រុង\",\n            \"level\": \"district\",\n            \"province_code\": \"07\",\n            \"province_name_en\": \"Kampot\",\n            \"province_name_km\": \"កំពត\",\n            \"lat\": 10.590912,\n            \"lon\": 104.167878,\n            \"bbox\": [\n              104.11908,\n              10.539917,\n              104.216675,\n              10.641907\n            ],\n            \"shape_length\": 0.373600110991,\n            \"shape_area\": 0.00446305797289\n          },\n          \"communes\": [\n            {\n              \"index\": 0,\n              \"level\": \"commune\",\n              \"count\": 1,\n              \"point\": {\n                \"lat\": 10.6104,\n                \"lng\": 104.1814\n              },\n              \"matched\": true,\n              \"commune\": {\n                \"id\": 70801,\n                \"code\": \"070801\",\n                \"pcode\": \"KH070801\",\n                \"name\": \"Kampong Kandal\",\n                \"name_en\": \"Kampong Kandal\",\n                \"name_km\": \"កំពង់កណ្ដាល\",\n                \"type_km\": \"សង្កាត់\",\n                \"level\": \"commune\",\n                \"province_code\": \"07\",\n                \"province_name_en\": \"Kampot\",\n                \"province_name_km\": \"កំពត\",\n                \"district_code\": \"0708\",\n                \"district_name_en\": \"Kampot\",\n                \"district_name_km\": \"កំពត\",\n                \"lat\": 10.601715,\n                \"lon\": 104.186798,\n                \"bbox\": [\n                  104.177673,\n                  10.592712,\n                  104.195923,\n                  10.610718\n                ],\n                \"shape_length\": 0.0589139999289,\n                \"shape_area\": 0.000163035469012\n              }\n            }\n          ]\n        }\n      ]\n    }\n  ],\n  \"meta\": {\n    \"total\": 4,\n    \"matched\": 4,\n    \"unmatched\": 0,\n    \"groups\": 9,\n    \"level\": \"all\",\n    \"tookMs\": 2.47,\n    \"source\": \"spatial_index\"\n  }\n}"
+            }
+          ]
         },
         {
           "name": "Boundary with ancestors",

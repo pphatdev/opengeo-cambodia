@@ -50,6 +50,7 @@ healthRoutes.get('/api/info', (c) => {
         list: 'GET /api/boundaries?level=:level&province_code=:pCode&district_code=:dCode&q=:search&format=:format&limit=:limit&offset=:offset',
         zone: 'GET /api/boundaries/zone?lat=:lat&lng=:lng&level=:level&format=:format',
         zones: 'GET /api/boundaries/zones?points=:lat,:lng;:lat,:lng&level=:level&format=:format',
+        zonesCount: 'GET /api/boundaries/zones/count?at=:lat,:lng;:lat,:lng&level=:level&sort=:sort&format=:format (or POST with {"latlngs":[{"lat","lng"}]})',
         provinces: 'GET /api/boundaries/provinces',
         provinceItem: 'GET /api/boundaries/provinces/:code',
         districts: 'GET /api/boundaries/districts?province_code=:pCode',
