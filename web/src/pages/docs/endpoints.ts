@@ -239,6 +239,30 @@ export const ENDPOINTS: Endpoint[] = [
         ],
     },
     {
+        id: "b-zones", group: "boundaries", path: "/api/boundaries/zones", geo: true,
+        title: { en: "Boundary zones by multiple coordinates", km: "ព្រំប្រទល់តំបន់តាមកូអរដោនេច្រើន" },
+        description: {
+            en: "Batch point-in-polygon: resolve the province, district and commune for up to 100 coordinates in one request. Summary results come back in input order; geojson returns each distinct boundary once, with the indexes of the points it contains in properties.point_indexes.",
+            km: "ការស្វែងរកចំណុចក្នុងពហុកោណជាបាច់៖ កំណត់ខេត្ត ស្រុក និងឃុំ សម្រាប់កូអរដោនេរហូតដល់ 100 ក្នុងសំណើតែមួយ។ លទ្ធផល summary តាមលំដាប់ដែលបានផ្ញើ; geojson បង្ហាញព្រំប្រទល់នីមួយៗតែម្តង ជាមួយលេខរៀងចំណុចនៅក្នុង properties.point_indexes។",
+        },
+        params: [
+            {
+                name: "points", in: "query", type: "string", required: true,
+                example: "11.57608,104.92305;13.4125,103.8670;10.6104,104.1814",
+                description: { en: "lat,lng pairs separated by ';' or '|' (max 100).", km: "គូ lat,lng បំបែកដោយ ';' ឬ '|' (អតិបរមា 100)។" },
+            },
+            {
+                name: "level", in: "query", type: "string", example: "all",
+                options: ["all", "province", "district", "commune"],
+                description: { en: "Hierarchy level to return ('all' for complete 3-tier hierarchy).", km: "កម្រិតឋានានុក្រមដែលត្រូវបង្ហាញ ('all' សម្រាប់ឋានានុក្រម 3 កម្រិតពេញលេញ)។" },
+            },
+            {
+                name: "format", in: "query", type: "string", example: "summary", options: ["summary", "geojson"],
+                description: { en: "summary (default, per point) or geojson (distinct boundaries).", km: "summary (លំនាំដើម តាមចំណុច) ឬ geojson (ព្រំប្រទល់ផ្សេងៗគ្នា)។" },
+            },
+        ],
+    },
+    {
         id: "b-hierarchy", group: "boundaries", path: "/api/boundaries/hierarchy/{code}", geo: true,
         title: { en: "Boundary with ancestors", km: "ព្រំប្រទល់ជាមួយអង្គភាពមេ" },
         description: {

@@ -297,6 +297,16 @@ Sub-millisecond in-memory Point-in-Polygon lookup resolving the containing admin
 - **`format`** (`geojson` [default: GeoJSON FeatureCollection/Feature] | `json` [JSON envelope with geometry] | `summary` [lightweight JSON metadata])
 - Aliases: `GET /api/boundaries/point`, `GET /api/boundaries/by-point`
 
+#### Boundary Zones for Multiple Coordinates (Batch Point-in-Polygon)
+```http
+GET /api/boundaries/zones?points=:lat,:lng;:lat,:lng&level=:level&format=:format
+```
+Resolves the province / district / commune for up to 100 GPS coordinates in one request.
+- **`points`** (e.g. `11.57608,104.92305;13.4125,103.8670`) — `lat,lng` pairs separated by `;` or `|`, max 100 [required]
+- **`level`** (`all` [default] | `province` | `district` | `commune`)
+- **`format`** (`summary` [default: one result per point, in input order, `matched: false` for points outside Cambodia] | `geojson` [FeatureCollection of the distinct matched boundaries; `properties.point_indexes` lists the input points inside each, top-level `unmatched` lists the rest])
+- Alias: `GET /api/boundaries/by-points`
+
 #### Boundary Shortcuts
 - `GET /api/boundaries/zone?lat=11.57608&lng=104.92305` — Zone boundaries containing GPS coordinates (sub-1ms Point-in-Polygon)
 - `GET /api/boundaries/provinces` — All 25 province polygons

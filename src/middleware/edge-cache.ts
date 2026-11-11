@@ -27,6 +27,7 @@ const BOUNDARY_QUERY_PARAMS = [
     "lng",
     "lon",
     "longitude",
+    "points",
 ];
 
 /**

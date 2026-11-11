@@ -57,6 +57,14 @@ export const PRESETS: PlaygroundPreset[] = [
         description: { en: "Sub-millisecond GPS point-in-polygon lookup", km: "ស្វែងរកតំបន់រដ្ឋបាលពីកូអរដោនេ GPS ភ្លាមៗ" },
     },
     {
+        id: "pip-zones",
+        label: { en: "Batch Point-in-Polygon (3 cities)", km: "កំណត់តំបន់ GPS ច្រើន (3 ទីក្រុង)" },
+        endpointId: "b-zones",
+        path: "/api/boundaries/zones?points=11.57608,104.92305;13.4125,103.8670;10.6104,104.1814&level=all",
+        params: { points: "11.57608,104.92305;13.4125,103.8670;10.6104,104.1814", level: "all" },
+        description: { en: "Resolve many GPS points in one request", km: "កំណត់តំបន់ពីចំណុច GPS ច្រើនក្នុងសំណើតែមួយ" },
+    },
+    {
         id: "geocode-angkor",
         label: { en: "Geocode \"Angkor Wat\"", km: "ស្វែងរក \"អង្គរវត្ត\"" },
         endpointId: "geo-search",

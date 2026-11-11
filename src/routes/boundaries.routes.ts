@@ -840,6 +840,144 @@ boundariesRoutes.get("/zone", handleZoneLookup);
 boundariesRoutes.get("/point", handleZoneLookup);
 boundariesRoutes.get("/by-point", handleZoneLookup);
 
+/** Max coordinates per batch request — keeps URLs well under common 8 KB limits and the work bounded. */
+const MAX_BATCH_POINTS = 100;
+const COORD_RE = /^-?\d{1,3}(\.\d{1,15})?$/;
+
+/**
+ * Parses `points=lat,lng;lat,lng;...` (pairs separated by `;` or `|`, whitespace ignored).
+ */
+function parsePointList(raw: string | undefined): { points: { lat: number; lon: number }[] } | { error: string } {
+    if (!raw || !raw.trim()) {
+        return { error: "Missing required query parameter 'points' (format: lat,lng;lat,lng;...)" };
+    }
+    const pairs = raw.split(/[;|]/).map((p) => p.trim()).filter(Boolean);
+    if (pairs.length === 0) {
+        return { error: "Missing required query parameter 'points' (format: lat,lng;lat,lng;...)" };
+    }
+    if (pairs.length > MAX_BATCH_POINTS) {
+        return { error: `Too many points: ${pairs.length} given, maximum is ${MAX_BATCH_POINTS} per request` };
+    }
+
+    const points: { lat: number; lon: number }[] = [];
+    for (let i = 0; i < pairs.length; i++) {
+        const parts = pairs[i].split(",").map((s) => s.trim());
+        if (parts.length !== 2 || !COORD_RE.test(parts[0]) || !COORD_RE.test(parts[1])) {
+            return { error: `Invalid point at index ${i}: '${pairs[i].slice(0, 40)}' (expected 'lat,lng' decimal numbers)` };
+        }
+        const lat = parseFloat(parts[0]);
+        const lon = parseFloat(parts[1]);
+        if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+            return { error: `Invalid point at index ${i}: latitude must be [-90, 90] and longitude [-180, 180]` };
+        }
+        points.push({ lat, lon });
+    }
+    return { points };
+}
+
+/**
+ * GET /api/boundaries/zones
+ * GET /api/boundaries/by-points
+ *
+ * Batch point-in-polygon: resolves the province / district / commune for many GPS coordinates in one request.
+ *
+ * Query Parameters:
+ * - points: `lat,lng;lat,lng;...` (up to 100 pairs, `;` or `|` separated) [required]
+ * - level: 'all' (default) | 'province' | 'district' | 'commune'
+ * - format: 'summary' (default) — one result per point, in input order, without geometry
+ *           'geojson' — FeatureCollection of the distinct matched boundaries; each feature lists
+ *                       the input indexes it contains in `properties.point_indexes`
+ */
+const handleZonesLookup = (c: Context) => {
+    const parsed = parsePointList(c.req.query("points"));
+    if ("error" in parsed) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: parsed.error }, 400);
+    }
+
+    const rawLevel = (c.req.query("level") || "all").toLowerCase();
+    const level: BoundaryLevel | "all" =
+        rawLevel === "province" || rawLevel === "district" || rawLevel === "commune" ? rawLevel : "all";
+    const rawFormat = (c.req.query("format") || "summary").toLowerCase();
+    const asGeoJson = rawFormat === "geojson";
+    const tiers: BoundaryLevel[] = level === "all" ? ["province", "district", "commune"] : [level];
+
+    const start = performance.now();
+
+    if (asGeoJson) {
+        // Distinct boundaries (keyed by level + code) with the indexes of the points inside each
+        const byKey = new Map<string, { feature: any; indexes: number[] }>();
+        const unmatched: number[] = [];
+        parsed.points.forEach(({ lat, lon }, i) => {
+            const r = boundariesService.getZoneByPoint({ lat, lon, level, format: "json" });
+            if (!r.matched) {
+                unmatched.push(i);
+                return;
+            }
+            for (const tier of tiers) {
+                const f = (r as any)[tier];
+                if (!f) continue;
+                const key = `${tier}:${f.properties?.code}`;
+                const hit = byKey.get(key);
+                if (hit) hit.indexes.push(i);
+                else byKey.set(key, { feature: f, indexes: [i] });
+            }
+        });
+
+        // Clone so the shared in-memory features are never mutated
+        const features = [...byKey.values()].map(({ feature, indexes }) => ({
+            ...feature,
+            properties: { ...feature.properties, point_indexes: indexes },
+        }));
+        const boxes = features.map((f) => f.bbox).filter(Boolean) as number[][];
+        const fc = {
+            type: "FeatureCollection",
+            name: "cambodia_zones_by_points",
+            crs: { type: "name", properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+            ...(boxes.length && {
+                bbox: [
+                    Math.min(...boxes.map((b) => b[0])),
+                    Math.min(...boxes.map((b) => b[1])),
+                    Math.max(...boxes.map((b) => b[2])),
+                    Math.max(...boxes.map((b) => b[3])),
+                ],
+            }),
+            features,
+            // Foreign members (allowed by RFC 7946): which inputs matched nothing
+            points: parsed.points.map(({ lat, lon }) => ({ lat, lng: lon })),
+            unmatched,
+        };
+        return c.newResponse(JSON.stringify(fc), 200, {
+            "Content-Type": "application/geo+json; charset=utf-8",
+        });
+    }
+
+    let matchedCount = 0;
+    const data = parsed.points.map(({ lat, lon }, index) => {
+        const r = boundariesService.getZoneByPoint({ lat, lon, level, format: "summary" });
+        if (r.matched) matchedCount++;
+        const item: Record<string, unknown> = { index, point: { lat, lng: lon }, matched: r.matched };
+        if (r.matched) for (const tier of tiers) item[tier] = r[tier] ?? null;
+        return item;
+    });
+    const tookMs = Number((performance.now() - start).toFixed(2));
+
+    return c.json<ApiResponse<any>>({
+        success: true,
+        data,
+        meta: {
+            count: data.length,
+            matched: matchedCount,
+            unmatched: data.length - matchedCount,
+            level,
+            tookMs,
+            source: "spatial_index",
+        },
+    });
+};
+
+boundariesRoutes.get("/zones", handleZonesLookup);
+boundariesRoutes.get("/by-points", handleZonesLookup);
+
 /**
  * GET /api/boundaries/:code
  * Shortcut for single boundary lookup by code (e.g. '12', 'KH12', '1201', '120101')
@@ -857,6 +995,8 @@ boundariesRoutes.get("/:code", (c) => {
         "zone",
         "point",
         "by-point",
+        "zones",
+        "by-points",
     ]);
     if (reserved.has(rawCode.toLowerCase())) {
         return c.notFound();

@@ -3698,6 +3698,74 @@
           "response": []
         },
         {
+          "name": "Boundary zones by multiple coordinates",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Default format=summary returns one result per input point; format=geojson returns a FeatureCollection.",
+                  "pm.test(\"Body is a per-point list or a FeatureCollection\", function () {",
+                  "    var json = pm.response.json();",
+                  "    if (json.type !== undefined) {",
+                  "        pm.expect(json.type).to.eql(\"FeatureCollection\");",
+                  "    } else {",
+                  "        pm.expect(json.success).to.eql(true);",
+                  "        pm.expect(json.data).to.be.an(\"array\");",
+                  "        pm.expect(json.meta.count).to.eql(json.data.length);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "description": "Expected response MIME type."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/boundaries/zones?points=11.57608,104.92305;13.4125,103.8670;10.6104,104.1814&level=all&format=summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "boundaries",
+                "zones"
+              ],
+              "query": [
+                {
+                  "key": "points",
+                  "value": "11.57608,104.92305;13.4125,103.8670;10.6104,104.1814",
+                  "description": "lat,lng pairs separated by ; or | (max 100). Required."
+                },
+                {
+                  "key": "level",
+                  "value": "all",
+                  "description": "all (default), province, district or commune."
+                },
+                {
+                  "key": "format",
+                  "value": "summary",
+                  "description": "summary (default: one result per point, in input order) or geojson (FeatureCollection of distinct boundaries with properties.point_indexes)."
+                }
+              ]
+            },
+            "description": "Batch point-in-polygon. Resolves the province, district and commune for up to 100 coordinates in one request (Phnom Penh, Siem Reap and Kampot in this example).\n\nPoints outside Cambodia come back with `matched: false` instead of failing the whole request. Invalid or more than 100 points return `400`."
+          },
+          "response": []
+        },
+        {
           "name": "Boundary with ancestors",
           "event": [
             {

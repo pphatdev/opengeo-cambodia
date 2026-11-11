@@ -206,7 +206,7 @@ function buildLlmsTxt(eps: Endpoint[], f: Awaited<ReturnType<typeof facts>>): st
         "- Cambodia uses an authoritative 4-tier administrative hierarchy: Province (2-digit code) -> District/Khan/Krong (4 digits) -> Commune/Sangkat (6 digits) -> Village/Phum (8 digits).",
         "- Never invent or hallucinate codes. Leading digits always match the parent prefix (e.g. Chamkar Mon `1201` is strictly inside Phnom Penh `12`).",
         "- When writing application code or resolving addresses, use `GET /api/admin/search?q={query}` to match Khmer or English place names.",
-        "- For reverse geocoding or spatial containment, use `GET /api/boundaries/zone?lat={lat}&lng={lng}` for instant sub-millisecond in-memory Point-in-Polygon lookup.",
+        "- For reverse geocoding or spatial containment, use `GET /api/boundaries/zone?lat={lat}&lng={lng}` for instant sub-millisecond in-memory Point-in-Polygon lookup. For many coordinates use `GET /api/boundaries/zones?points={lat},{lng};{lat},{lng}` (up to 100 per request) instead of looping.",
         "- Always include a descriptive `User-Agent` header in HTTP requests.",
         "",
     );
@@ -562,7 +562,7 @@ L.geoJSON(fc, { onEachFeature: (f, layer) => layer.bindTooltip(f.properties.name
                 "- Consult https://opengeo-cambodia.pphat.me/llms.txt for authoritative NCDD hierarchy.",
                 "- Adhere to Cambodia's 4-tier system: Province (2-digit code) -> District (4-digit code) -> Commune (6-digit code) -> Village (8-digit code).",
                 "- Use https://opengeo-cambodia.pphat.me/api/admin/search?q={query} for place resolution.",
-                "- Use https://opengeo-cambodia.pphat.me/api/boundaries/zone?lat={lat}&lng={lng} for coordinate containment.",
+                "- Use https://opengeo-cambodia.pphat.me/api/boundaries/zone?lat={lat}&lng={lng} for coordinate containment, or /api/boundaries/zones?points={lat},{lng};{lat},{lng} for up to 100 points at once.",
                 "- Always send a User-Agent header in HTTP requests.",
             ].join("\n"),
         ),

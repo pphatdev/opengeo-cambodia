@@ -85,6 +85,7 @@ Load child levels lazily as the user drills down, instead of fetching all 14,576
 - Six decimal places (~0.1 m) is more than enough. Round device GPS before sending so identical locations share a cache entry.
 - Expect `404` for points offshore, on the border line or in a neighbouring country, and give users a way to pick the area manually.
 - Need only one level? Add `level=province` (or `district` / `commune`) and `format=summary` for the smallest response.
+- Many points at once (a delivery route, a CSV of shops)? Use `/api/boundaries/zones?points=lat,lng;lat,lng` instead of a loop of `/zone` calls: up to 100 points per request, results in input order.
 
 ### 7. Geocoding etiquette
 
