@@ -10,8 +10,8 @@ import { ENDPOINTS, GROUPS } from "./endpoints";
 interface NavLink {
     href: string;
     label: string;
-    /** Full path label, used for the tooltip and when filtering (flat list) */
-    fullLabel?: string;
+    /** Endpoint path, shown as the tooltip */
+    path?: string;
     verb?: boolean;
     filter: string;
     tag?: string;
@@ -23,68 +23,21 @@ const ENDPOINT_TAGS: Record<string, string> = {
     "b-zone": "PIP",
 };
 
-/** Path → segments with parameter names erased, so `/provinces/{id}` matches `/provinces/{provinceId}/…` */
-function shapeSegments(path: string): string[] {
-    return path.split("/").filter(Boolean).map((s) => (/^\{.+\}$/.test(s) ? "{}" : s));
-}
-
-function isPrefix(prefix: string[], full: string[]): boolean {
-    return prefix.length < full.length && prefix.every((s, i) => s === full[i]);
-}
-
-/**
- * Build a tree from real path structure: each endpoint nests under the closest endpoint whose path is a
- * prefix of its own. The group's common base path (e.g. `/api/boundaries`) is never used as a parent,
- * so the whole group doesn't collapse under one row. Sibling order follows the ENDPOINTS order.
- */
-function buildEndpointTree(endpoints: typeof ENDPOINTS): NavLink[] {
-    const shapes = endpoints.map((e) => shapeSegments(e.path));
-    const rawSegs = endpoints.map((e) => e.path.split("/").filter(Boolean));
-
-    // Longest common segment prefix across the group
-    let baseLen = shapes.length ? shapes[0].length : 0;
-    for (const s of shapes) {
-        let i = 0;
-        while (i < baseLen && i < s.length && s[i] === shapes[0][i]) i++;
-        baseLen = i;
-    }
-
-    const parentOf = endpoints.map((_, i) => {
-        let best = -1;
-        shapes.forEach((cand, j) => {
-            if (j === i || cand.length <= baseLen) return;
-            if (isPrefix(cand, shapes[i]) && (best < 0 || cand.length > shapes[best].length)) best = j;
-        });
-        return best;
-    });
-
-    const nodes: NavLink[] = endpoints.map((e, i) => {
-        const full = e.path.replace(/^\/api/, "") || e.path;
-        const p = parentOf[i];
-        const label = p >= 0 ? "/" + rawSegs[i].slice(rawSegs[p].length).join("/") : full;
-        return {
-            href: `ep-${e.id}`,
-            label,
-            fullLabel: full,
-            verb: true,
-            tag: ENDPOINT_TAGS[e.id],
-            // Filter matches the path and the title in both languages
-            filter: `${e.path} ${e.title.en} ${e.title.km}`.toLowerCase(),
-            children: [],
-        };
-    });
-
-    const roots: NavLink[] = [];
-    nodes.forEach((n, i) => {
-        const p = parentOf[i];
-        if (p >= 0) nodes[p].children!.push(n);
-        else roots.push(n);
-    });
-    return roots;
+/** Flat list of endpoint rows in ENDPOINTS order; the row shows the localized title, the path is the tooltip */
+function endpointLinks(endpoints: typeof ENDPOINTS, titleOf: (e: (typeof ENDPOINTS)[number]) => string): NavLink[] {
+    return endpoints.map((e) => ({
+        href: `ep-${e.id}`,
+        label: titleOf(e),
+        path: e.path,
+        verb: true,
+        tag: ENDPOINT_TAGS[e.id],
+        // Filter matches the path and the title in both languages
+        filter: `${e.path} ${e.title.en} ${e.title.km}`.toLowerCase(),
+    }));
 }
 
 function flatten(links: NavLink[]): NavLink[] {
-    return links.flatMap((l) => [{ ...l, label: l.fullLabel ?? l.label, children: [] }, ...flatten(l.children ?? [])]);
+    return links.flatMap((l) => [{ ...l, children: [] }, ...flatten(l.children ?? [])]);
 }
 
 /** Does this subtree contain the active section? (keeps the parent highlighted path readable) */
@@ -137,7 +90,7 @@ function NavTree({
                         <a
                             href={`#${l.href}`}
                             onClick={onNavigate}
-                            title={l.fullLabel && l.fullLabel !== l.label ? l.fullLabel : undefined}
+                            title={l.path ? `GET ${l.path}` : undefined}
                             aria-current={isActive ? "location" : undefined}
                             className={cx(
                                 "relative flex items-center gap-2 rounded-[7px] px-2.5 py-1.25 text-[13.5px] leading-[1.4] no-underline transition-colors",
@@ -151,7 +104,7 @@ function NavTree({
                             {l.verb ? (
                                 <>
                                     <span className="w-6.5 flex-none font-mono text-[9.5px] font-semibold text-ok">GET</span>
-                                    <span className="min-w-0 truncate font-mono text-[12.5px]">{l.label}</span>
+                                    <span className="min-w-0 truncate text-[13px] km:font-khmer">{l.label}</span>
                                     {l.tag && (
                                         <span className="ml-auto flex-none rounded bg-surface-2 px-1.5 py-px font-mono text-[10px] text-ink-3">
                                             {l.tag}
@@ -189,7 +142,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
             { title: t("docs.groupGuide"), links: plain(GUIDE) },
             ...GROUPS.map((g) => ({
                 title: tx(g.title),
-                links: buildEndpointTree(ENDPOINTS.filter((e) => e.group === g.id)),
+                links: endpointLinks(ENDPOINTS.filter((e) => e.group === g.id), (e) => tx(e.title)),
             })),
             { title: t("docs.groupReference"), links: plain(REFERENCE) },
         ];
@@ -235,7 +188,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () =>
                 />
             </div>
             {groups.map((g) => {
-                // Filtering shows a flat list of full paths (tree context would hide why something matched)
+                // Filtering shows a flat list (tree context would hide why something matched)
                 const links = q ? flatten(g.links).filter((l) => l.filter.includes(q)) : g.links;
                 if (!links.length) return null;
                 return (
