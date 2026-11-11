@@ -84,6 +84,29 @@ function getSpaHtml(): string {
         + "<p>The API is available at <a href=\"/api/info\">/api/info</a>.</p></body></html>";
 }
 
+/**
+ * Social share covers (og:image / twitter:image) per page, in public/cover/.
+ * Link-preview crawlers don't run JS, so these must be in the server-rendered HTML.
+ * Keep in sync with web/src/lib/covers.ts.
+ */
+const SEO_COVERS = {
+    home: { path: "/cover/home.webp", width: 1900, height: 1079, alt: "OpenGeo Cambodia — free open API for Cambodia's administrative geography" },
+    docs: { path: "/cover/doc.webp", width: 1901, height: 1078, alt: "OpenGeo Cambodia API documentation" },
+    playground: { path: "/cover/playground.webp", width: 1919, height: 1079, alt: "OpenGeo Cambodia interactive API playground" },
+    map: { path: "/cover/map.webp", width: 1906, height: 1079, alt: "Interactive map of Cambodia province, district and commune boundaries" },
+} as const;
+
+function coverFor(reqPath: string): (typeof SEO_COVERS)[keyof typeof SEO_COVERS] {
+    if (reqPath.startsWith("/docs")) return SEO_COVERS.docs;
+    if (reqPath.startsWith("/playground")) return SEO_COVERS.playground;
+    if (reqPath === "/map" || reqPath.startsWith("/map/")) return SEO_COVERS.map;
+    return SEO_COVERS.home;
+}
+
+function escAttr(s: string): string {
+    return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+}
+
 function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
     const isKm = lang === "km";
 
@@ -131,6 +154,16 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
         canonical = isKm
             ? "https://opengeo-cambodia.pphat.me/playground?lang=km"
             : "https://opengeo-cambodia.pphat.me/playground";
+    } else if (reqPath === "/map" || reqPath.startsWith("/map/")) {
+        title = isKm
+            ? "ផែនទីព្រំប្រទល់កម្ពុជា — OpenGeo Cambodia"
+            : "Cambodia Boundaries Map — OpenGeo Cambodia";
+        desc = isKm
+            ? "ផែនទីអន្តរកម្មនៃព្រំប្រទល់ខេត្ត ស្រុក និងឃុំនៅកម្ពុជា លើផែនទី OpenStreetMap ផ្កាយរណប ឬសណ្ឋានដី ជាមួយការស្វែងរកតំបន់តាមការចុច GPS ឬកូអរដោនេ។"
+            : "Interactive map of Cambodia province, district and commune boundaries over OpenStreetMap, satellite or terrain basemaps, with point-in-polygon lookup by click, GPS or coordinates.";
+        canonical = isKm
+            ? "https://opengeo-cambodia.pphat.me/map?lang=km"
+            : "https://opengeo-cambodia.pphat.me/map";
     } else if (reqPath.startsWith("/demo")) {
         title = isKm
             ? "ផ្ទាំងបង្ហាញគំរូ — OpenGeo Cambodia"
@@ -143,7 +176,17 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
             : "https://opengeo-cambodia.pphat.me/demo";
     }
 
+    const cover = coverFor(reqPath);
+    const coverUrl = `https://opengeo-cambodia.pphat.me${cover.path}`;
+    const coverAlt = escAttr(cover.alt);
+
     return out
+        .replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${coverUrl}">`)
+        .replace(/<meta property="og:image:width" content="[^"]*">/, `<meta property="og:image:width" content="${cover.width}">`)
+        .replace(/<meta property="og:image:height" content="[^"]*">/, `<meta property="og:image:height" content="${cover.height}">`)
+        .replace(/<meta property="og:image:alt" content="[^"]*">/, `<meta property="og:image:alt" content="${coverAlt}">`)
+        .replace(/<meta name="twitter:image" content="[^"]*">/, `<meta name="twitter:image" content="${coverUrl}">`)
+        .replace(/<meta name="twitter:image:alt" content="[^"]*">/, `<meta name="twitter:image:alt" content="${coverAlt}">`)
         .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
         .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
         .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
@@ -512,6 +555,24 @@ app.get("/logo/*", (c) => {
     return c.notFound();
 });
 
+// Per-page social share covers (public/cover/*.webp). On Cloudflare these are served as static assets;
+// this route serves them from disk in Node. Only plain `name.webp` files are allowed (no traversal).
+app.get("/cover/:file", async (c) => {
+    const file = c.req.param("file");
+    if (!/^[a-z0-9-]+\.webp$/i.test(file)) return c.notFound();
+    if (c.env && (c.env as any).ASSETS) {
+        const assetRes = await (c.env as any).ASSETS.fetch(new Request(new URL(`/cover/${file}`, c.req.url)));
+        if (assetRes.ok) return assetRes;
+    }
+    const filePath = path.join(publicDir, "cover", file);
+    if (typeof fs?.existsSync === "function" && fs.existsSync(filePath)) {
+        c.header("Content-Type", "image/webp");
+        c.header("Cache-Control", "public, max-age=86400");
+        return c.body(fs.readFileSync(filePath));
+    }
+    return c.notFound();
+});
+
 // Bulk data downloads (public/data). On Cloudflare these are served directly as static assets.
 app.get("/data/*", (c) => {
     const relativeSubPath = c.req.path.replace(/^\/data\//, "");
@@ -558,6 +619,7 @@ app.get("/docs", serveSpa);
 app.get("/docs/*", serveSpa);
 app.get("/playground", serveSpa);
 app.get("/playground/*", serveSpa);
+app.get("/map", serveSpa);
 app.get("/demo", serveSpa);
 app.get("/blog", serveSpa);
 app.get("/blog/*", serveSpa);
@@ -584,7 +646,7 @@ app.get("/", async (c) => {
         description:
             "An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times",
         dataSource: "https://data.mef.gov.kh/",
-        version: "1.7.0",
+        version: "1.8.0",
         documentation: "/api/info",
         playground: "/playground",
         llms: "/llms.txt",

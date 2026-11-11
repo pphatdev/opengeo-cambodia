@@ -71,6 +71,17 @@ const webPages: SitemapUrl[] = [
         ],
     },
     {
+        loc: `${DOMAIN}/map`,
+        lastmod: TODAY,
+        changefreq: "monthly",
+        priority: "0.8",
+        alternates: [
+            { hreflang: "km", href: `${DOMAIN}/map?lang=km` },
+            { hreflang: "en", href: `${DOMAIN}/map?lang=en` },
+            { hreflang: "x-default", href: `${DOMAIN}/map` },
+        ],
+    },
+    {
         loc: `${DOMAIN}/demo`,
         lastmod: TODAY,
         changefreq: "weekly",

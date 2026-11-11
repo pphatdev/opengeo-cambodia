@@ -1,16 +1,56 @@
 import type { MiddlewareHandler } from "hono";
 
 /**
+ * Bump to invalidate every cached entry when no per-deploy version id is available.
+ * On Cloudflare, the CF_VERSION_METADATA binding id is used, so each deploy gets a fresh cache.
+ */
+const CACHE_SCHEMA_VERSION = "2";
+
+/**
+ * Query parameters that change the response of /api/boundaries/* routes.
+ * Anything else is dropped from the cache key (anti cache-busting).
+ */
+const BOUNDARY_QUERY_PARAMS = [
+    "level",
+    "province_code",
+    "provincecode",
+    "district_code",
+    "districtcode",
+    "code",
+    "q",
+    "search",
+    "format",
+    "limit",
+    "offset",
+    "lat",
+    "latitude",
+    "lng",
+    "lon",
+    "longitude",
+];
+
+/**
  * Normalizes request URL into a deterministic cache key.
  * Strips arbitrary cache-busting junk query parameters to defeat Cache Busting DoS attacks.
  */
-function normalizeCacheUrl(rawUrl: string): string {
+function normalizeCacheUrl(rawUrl: string, version: string): string {
     try {
         const u = new URL(rawUrl);
         u.protocol = "https:";
 
-        // For search route, only preserve whitelisted parameters
-        if (u.pathname.endsWith("/search")) {
+        if (u.pathname.startsWith("/api/boundaries")) {
+            // Boundaries responses depend on filters, format and coordinates: keep only known params
+            const cleanParams = new URLSearchParams();
+            for (const [rawKey, rawVal] of u.searchParams) {
+                const key = rawKey.toLowerCase();
+                const val = rawVal.trim();
+                if (!BOUNDARY_QUERY_PARAMS.includes(key) || val === "" || cleanParams.has(key)) continue;
+                cleanParams.set(key, key === "q" || key === "search" ? val.toLowerCase() : val);
+            }
+            cleanParams.sort();
+            u.search = cleanParams.toString();
+        } else if (u.pathname.endsWith("/search")) {
+            // For search route, only preserve whitelisted parameters
             const cleanParams = new URLSearchParams();
             const allowed = ["q", "level", "limit"];
             for (const key of allowed) {
@@ -36,6 +76,9 @@ function normalizeCacheUrl(rawUrl: string): string {
             // Completely strip all query parameters so cache-busting attempts hit edge cache
             u.search = "";
         }
+
+        // Namespace the key by deploy version so a new deploy never serves responses from an old one
+        u.searchParams.set("__v", version);
 
         return u.toString();
     } catch {
@@ -76,7 +119,10 @@ export function createEdgeCache(options?: {
             return next();
         }
 
-        const normalizedUrl = normalizeCacheUrl(c.req.url);
+        const deployVersion = (c.env as { CF_VERSION_METADATA?: { id?: string } } | undefined)
+            ?.CF_VERSION_METADATA?.id;
+        const version = deployVersion ? `${CACHE_SCHEMA_VERSION}-${deployVersion}` : CACHE_SCHEMA_VERSION;
+        const normalizedUrl = normalizeCacheUrl(c.req.url, version);
         const cacheKey = new Request(normalizedUrl, {
             method: "GET",
         });
@@ -98,7 +144,9 @@ export function createEdgeCache(options?: {
         await next();
 
         // 3. Store successful 200 responses in Cloudflare Edge Cache
-        if (c.res && c.res.status === 200) {
+        // Handlers opt out (e.g. dataset not loaded yet) with Cache-Control: no-store
+        const resCacheControl = c.res?.headers.get("Cache-Control") || "";
+        if (c.res && c.res.status === 200 && !/no-store/i.test(resCacheControl)) {
             try {
                 const responseToCache = c.res.clone();
 

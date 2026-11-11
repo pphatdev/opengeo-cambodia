@@ -29,11 +29,12 @@
   <meta property="og:url" content="https://opengeo-cambodia.pphat.me/">
   <meta property="og:title" content="OpenGeo Cambodia — Open API for Cambodia's Administrative Geography">
   <meta property="og:description" content="Free, keyless REST API for Cambodia's administrative geography: 25 provinces, 210 districts, 1,661 communes and 14,576 villages with official NCDD codes, Khmer & English names, and GeoJSON boundaries.">
-  <meta property="og:image" content="https://opengeo-cambodia.pphat.me/cover.webp">
+  <!-- Per-page cover (home / docs / playground / map) is swapped in server-side by renderSeoHtml in src/app.ts -->
+  <meta property="og:image" content="https://opengeo-cambodia.pphat.me/cover/home.webp">
   <meta property="og:image:type" content="image/webp">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="OpenGeo Cambodia Platform Banner — Free Cambodia Geospatial API">
+  <meta property="og:image:width" content="1900">
+  <meta property="og:image:height" content="1079">
+  <meta property="og:image:alt" content="OpenGeo Cambodia — free open API for Cambodia's administrative geography">
 
   <!-- Twitter / X -->
   <meta name="twitter:card" content="summary_large_image">
@@ -41,8 +42,8 @@
   <meta name="twitter:creator" content="@pphatdev">
   <meta name="twitter:title" content="OpenGeo Cambodia — Open API for Cambodia's Administrative Geography">
   <meta name="twitter:description" content="Every province, district, commune and village in Cambodia. Free, keyless, sub-millisecond.">
-  <meta name="twitter:image" content="https://opengeo-cambodia.pphat.me/cover.webp">
-  <meta name="twitter:image:alt" content="OpenGeo Cambodia Platform Banner">
+  <meta name="twitter:image" content="https://opengeo-cambodia.pphat.me/cover/home.webp">
+  <meta name="twitter:image:alt" content="OpenGeo Cambodia — free open API for Cambodia's administrative geography">
 
   <!-- Favicon & Icons -->
   <link rel="icon" type="image/jpeg" href="/logo.jpg">
@@ -51,11 +52,16 @@
   <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#050507" media="(prefers-color-scheme: dark)">
 
-  <!-- Preconnect & Preload -->
+  <!-- Preconnect -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="image" href="/cover.webp" type="image/webp">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap">
+  <!-- cover.webp is only the social-share image (og:image), so it is not preloaded: it would compete with critical resources -->
+
+  <!-- Web fonts without blocking first paint: fetched as print-only (non-blocking), switched to all on load.
+       display=swap shows system text immediately; JetBrains Mono 800 was never used, so it is not requested. -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap"></noscript>
 
   <script>
     // Apply the saved theme and language before first paint to avoid a flash
@@ -135,7 +141,7 @@
         "url": "https://opengeo-cambodia.pphat.me/",
         "sameAs": "https://github.com/pphatdev/opengeo-cambodia",
         "identifier": "https://opengeo-cambodia.pphat.me/#dataset",
-        "version": "1.7.0",
+        "version": "1.8.0",
         "license": "https://opensource.org/licenses/MIT",
         "isAccessibleForFree": true,
         "inLanguage": ["en", "km"],

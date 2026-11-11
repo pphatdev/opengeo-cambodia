@@ -75,7 +75,9 @@ boundariesRoutes.use("*", async (c, next) => {
     await next();
     const tookMs = Number((performance.now() - start).toFixed(2));
     c.header("X-Response-Time", `${tookMs}ms`);
-    if (c.res.status >= 200 && c.res.status < 300) {
+    // Never let an empty/unloaded dataset response be cached for a year (edge, CDN or browser)
+    const datasetReady = boundariesService.getStats().isLoaded;
+    if (datasetReady && c.res.status >= 200 && c.res.status < 300) {
         c.header(
             "Cache-Control",
             "public, max-age=31536000, s-maxage=31536000, immutable, stale-while-revalidate=86400",
@@ -670,7 +672,7 @@ boundariesRoutes.get("/item/:code", (c) => {
  * GET /api/boundaries/raw/:filename
  * Direct raw GeoJSON dataset download
  */
-boundariesRoutes.get("/raw/:filename", (c) => {
+boundariesRoutes.get("/raw/:filename", async (c) => {
     const filename = c.req.param("filename").toLowerCase();
     const allowedFiles: Record<string, string> = {
         "provinces.geojson": "province.geojson",
@@ -691,6 +693,22 @@ boundariesRoutes.get("/raw/:filename", (c) => {
             },
             404,
         );
+    }
+
+    // Cloudflare Workers: no filesystem, the files are deployed as static assets under /boundaries/
+    const assets = (c.env as { ASSETS?: { fetch: (req: Request) => Promise<Response> } } | undefined)?.ASSETS;
+    if (assets) {
+        const assetRes = await assets.fetch(new Request(new URL(`/boundaries/${targetFile}`, c.req.url)));
+        if (assetRes.ok) {
+            return new Response(assetRes.body, {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/geo+json; charset=utf-8",
+                    "Content-Disposition": `attachment; filename="${filename}"`,
+                    "Cache-Control": "public, max-age=31536000, immutable",
+                },
+            });
+        }
     }
 
     const candidates = [
