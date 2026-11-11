@@ -1036,6 +1036,66 @@ export class BoundariesService {
     }
 
     /**
+     * Count points per boundary at one level (e.g. customers per commune).
+     *
+     * Resolves top-down (province → district → commune, stopping at `level`) so each step only scans the
+     * children of the previous match, and memoizes identical coordinates within the call.
+     * Groups keep first-seen order; `point` is the first input point that fell in the group.
+     */
+    public countByPoints(
+        points: { lat: number; lon: number }[],
+        level: BoundaryLevel,
+    ): {
+        groups: { feature: BoundaryFeature; count: number; point: { lat: number; lng: number } }[];
+        unmatched: { count: number; point: { lat: number; lng: number } | null; indexes: number[] };
+    } {
+        this.ensureLoaded();
+
+        const [minLon, minLat, maxLon, maxLat] = this.overallBbox;
+        const margin = 0.1;
+        const memo = new Map<string, BoundaryFeature | null>();
+        const resolve = (lat: number, lon: number): BoundaryFeature | null => {
+            if (lon < minLon - margin || lon > maxLon + margin || lat < minLat - margin || lat > maxLat + margin) {
+                return null;
+            }
+            const province = this.findFeatureByPoint(lon, lat, "province");
+            if (level === "province") return province ?? null;
+            const district = this.findFeatureByPoint(lon, lat, "district", province?.properties?.code);
+            if (level === "district") return district ?? null;
+            return this.findFeatureByPoint(lon, lat, "commune", district?.properties?.code) ?? null;
+        };
+
+        const byCode = new Map<string, { feature: BoundaryFeature; count: number; point: { lat: number; lng: number } }>();
+        const unmatched = { count: 0, point: null as { lat: number; lng: number } | null, indexes: [] as number[] };
+
+        points.forEach(({ lat, lon }, i) => {
+            const key = `${lat},${lon}`;
+            let feature = memo.get(key);
+            if (feature === undefined) {
+                feature = resolve(lat, lon);
+                memo.set(key, feature);
+            }
+            if (!feature) {
+                unmatched.count++;
+                unmatched.indexes.push(i);
+                unmatched.point ??= { lat, lng: lon };
+                return;
+            }
+            const code = String(feature.properties?.code);
+            const group = byCode.get(code);
+            if (group) group.count++;
+            else byCode.set(code, { feature, count: 1, point: { lat, lng: lon } });
+        });
+
+        return { groups: [...byCode.values()], unmatched };
+    }
+
+    /** Public summary view of a feature (no geometry). */
+    public summarize(feature: BoundaryFeature): BoundarySummaryItem {
+        return this.toSummary(feature);
+    }
+
+    /**
      * Get summary statistics of loaded boundaries
      */
     public getStats(): BoundaryStats {

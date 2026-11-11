@@ -978,6 +978,123 @@ const handleZonesLookup = (c: Context) => {
 boundariesRoutes.get("/zones", handleZonesLookup);
 boundariesRoutes.get("/by-points", handleZonesLookup);
 
+/** POST bodies can carry many more points than a URL. */
+const MAX_COUNT_POINTS = 10000;
+const MAX_COUNT_BODY_BYTES = 1024 * 1024;
+
+/** Accepts {lat,lng} / {lat,lon} / {latitude,longitude} objects or [lat, lng] tuples. */
+function parseLatLngArray(input: unknown): { points: { lat: number; lon: number }[] } | { error: string } {
+    if (!Array.isArray(input) || input.length === 0) {
+        return { error: "Body must be JSON like { \"latlngs\": [{ \"lat\": 11.57, \"lng\": 104.92 }, ...] }" };
+    }
+    if (input.length > MAX_COUNT_POINTS) {
+        return { error: `Too many points: ${input.length} given, maximum is ${MAX_COUNT_POINTS} per request` };
+    }
+    const points: { lat: number; lon: number }[] = [];
+    for (let i = 0; i < input.length; i++) {
+        const p = input[i] as any;
+        const lat = Array.isArray(p) ? p[0] : p?.lat ?? p?.latitude;
+        const lon = Array.isArray(p) ? p[1] : p?.lng ?? p?.lon ?? p?.longitude;
+        const latN = typeof lat === "string" ? Number(lat) : lat;
+        const lonN = typeof lon === "string" ? Number(lon) : lon;
+        if (typeof latN !== "number" || typeof lonN !== "number" || !Number.isFinite(latN) || !Number.isFinite(lonN)) {
+            return { error: `Invalid point at index ${i}: expected { "lat": number, "lng": number }` };
+        }
+        if (latN < -90 || latN > 90 || lonN < -180 || lonN > 180) {
+            return { error: `Invalid point at index ${i}: latitude must be [-90, 90] and longitude [-180, 180]` };
+        }
+        points.push({ lat: latN, lon: lonN });
+    }
+    return { points };
+}
+
+/**
+ * GET  /api/boundaries/zones/count?at=lat,lng;lat,lng;...   (up to 100 points)
+ * POST /api/boundaries/zones/count  { "latlngs": [{ "lat": .., "lng": .. }, ...] }   (up to 10,000 points)
+ *
+ * Counts how many of the given coordinates (e.g. customer locations) fall in each boundary.
+ *
+ * Query Parameters (both methods):
+ * - level: 'commune' (default) | 'district' | 'province'
+ * - sort: 'input' (default, first-seen order) | 'count' (largest first)
+ *
+ * Response `data`: one item per boundary — { index, count, point, matched: true, [level]: summary } —
+ * where `point` is the first input coordinate that fell in it. Points outside Cambodia are grouped
+ * into a final { matched: false, [level]: null, point_indexes } item.
+ */
+const handleCountByPoints = async (c: Context) => {
+    let parsed: { points: { lat: number; lon: number }[] } | { error: string };
+
+    if (c.req.method === "POST") {
+        const len = Number(c.req.header("Content-Length") || 0);
+        if (len > MAX_COUNT_BODY_BYTES) {
+            return c.json<ApiResponse<null>>({ success: false, data: null, error: "Request body too large (max 1 MB)" }, 413);
+        }
+        let body: any;
+        try {
+            const text = await c.req.text();
+            if (text.length > MAX_COUNT_BODY_BYTES) {
+                return c.json<ApiResponse<null>>({ success: false, data: null, error: "Request body too large (max 1 MB)" }, 413);
+            }
+            body = JSON.parse(text);
+        } catch {
+            return c.json<ApiResponse<null>>({ success: false, data: null, error: "Invalid JSON body" }, 400);
+        }
+        parsed = parseLatLngArray(body?.latlngs ?? body?.points);
+    } else {
+        parsed = parsePointList(c.req.query("at") ?? c.req.query("points"));
+        if ("error" in parsed) parsed = { error: parsed.error.replace("'points'", "'at'") };
+    }
+
+    if ("error" in parsed) {
+        return c.json<ApiResponse<null>>({ success: false, data: null, error: parsed.error }, 400);
+    }
+
+    const rawLevel = (c.req.query("level") || "commune").toLowerCase();
+    const level: BoundaryLevel = rawLevel === "province" || rawLevel === "district" ? rawLevel : "commune";
+    const sortByCount = (c.req.query("sort") || "").toLowerCase() === "count";
+
+    const start = performance.now();
+    const { groups, unmatched } = boundariesService.countByPoints(parsed.points, level);
+    if (sortByCount) groups.sort((a, b) => b.count - a.count);
+
+    const data: Record<string, unknown>[] = groups.map((g, index) => ({
+        index,
+        count: g.count,
+        point: g.point,
+        matched: true,
+        [level]: boundariesService.summarize(g.feature),
+    }));
+    if (unmatched.count > 0) {
+        data.push({
+            index: data.length,
+            count: unmatched.count,
+            point: unmatched.point,
+            matched: false,
+            [level]: null,
+            point_indexes: unmatched.indexes,
+        });
+    }
+    const tookMs = Number((performance.now() - start).toFixed(2));
+
+    return c.json<ApiResponse<any>>({
+        success: true,
+        data,
+        meta: {
+            total: parsed.points.length,
+            matched: parsed.points.length - unmatched.count,
+            unmatched: unmatched.count,
+            groups: groups.length,
+            level,
+            tookMs,
+            source: "spatial_index",
+        },
+    });
+};
+
+boundariesRoutes.get("/zones/count", handleCountByPoints);
+boundariesRoutes.post("/zones/count", handleCountByPoints);
+
 /**
  * GET /api/boundaries/:code
  * Shortcut for single boundary lookup by code (e.g. '12', 'KH12', '1201', '120101')

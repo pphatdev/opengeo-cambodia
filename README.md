@@ -307,6 +307,19 @@ Resolves the province / district / commune for up to 100 GPS coordinates in one 
 - **`format`** (`summary` [default: one result per point, in input order, `matched: false` for points outside Cambodia] | `geojson` [FeatureCollection of the distinct matched boundaries; `properties.point_indexes` lists the input points inside each, top-level `unmatched` lists the rest])
 - Alias: `GET /api/boundaries/by-points`
 
+#### Count Points per Boundary (e.g. customers per commune)
+```http
+GET  /api/boundaries/zones/count?at=:lat,:lng;:lat,:lng&level=:level&sort=:sort
+POST /api/boundaries/zones/count?level=:level&sort=:sort
+Content-Type: application/json
+
+{ "latlngs": [{ "lat": 11.57608, "lng": 104.92305 }, { "lat": 13.4125, "lng": 103.867 }] }
+```
+Counts how many coordinates fall in each boundary. GET takes up to 100 points; POST up to 10,000 (body ≤ 1 MB; `[lat, lng]` tuples and `lon` are also accepted). This is the only `POST` on the API besides chat, and it is a read-only query.
+- **`level`** (`commune` [default] | `district` | `province`)
+- **`sort`** (`input` [default: first-seen order] | `count` [largest first])
+- Response `data`: `{ index, count, point, matched, commune }` per boundary — `point` is the first input coordinate in it. Points outside Cambodia are grouped into a final `matched: false` item with `point_indexes`.
+
 #### Boundary Shortcuts
 - `GET /api/boundaries/zone?lat=11.57608&lng=104.92305` — Zone boundaries containing GPS coordinates (sub-1ms Point-in-Polygon)
 - `GET /api/boundaries/provinces` — All 25 province polygons

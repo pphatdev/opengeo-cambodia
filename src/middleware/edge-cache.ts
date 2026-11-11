@@ -28,6 +28,8 @@ const BOUNDARY_QUERY_PARAMS = [
     "lon",
     "longitude",
     "points",
+    "at",
+    "sort",
 ];
 
 /**
