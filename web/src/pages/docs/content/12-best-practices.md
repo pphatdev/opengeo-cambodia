@@ -86,6 +86,7 @@ Load child levels lazily as the user drills down, instead of fetching all 14,576
 - Expect `404` for points offshore, on the border line or in a neighbouring country, and give users a way to pick the area manually.
 - Need only one level? Add `level=province` (or `district` / `commune`) and `format=summary` for the smallest response.
 - Many points at once (a delivery route, a CSV of shops)? Use `/api/boundaries/zones?points=lat,lng;lat,lng` instead of a loop of `/zone` calls: up to 100 points per request, results in input order.
+- Counting points per area (customers per commune, orders per province)? `/api/boundaries/zones/count` takes up to 10,000 points and returns one row per area with its `count`. Send large lists as `POST` with a JSON body (`{"latlngs":[{"lat":…,"lng":…}]}`), since long URLs get cut off by proxies.
 
 ### 7. Geocoding etiquette
 
