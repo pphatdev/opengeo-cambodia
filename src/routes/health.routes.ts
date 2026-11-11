@@ -28,7 +28,7 @@ healthRoutes.get('/api/info', (c) => {
     url: config.appUrl,
     description: 'An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times',
     dataSource: 'https://data.mef.gov.kh/',
-    version: '1.9.0',
+    version: '1.12.0',
     convention: {
       tier1: 'City / Province (រាជធានី / ខេត្ត) - admin_level=4 (25)',
       tier2: 'District / Khan / Krong (ស្រុក / ខណ្ឌ / ក្រុង) - admin_level=6 (210)',
@@ -49,6 +49,8 @@ healthRoutes.get('/api/info', (c) => {
       boundaries: {
         list: 'GET /api/boundaries?level=:level&province_code=:pCode&district_code=:dCode&q=:search&format=:format&limit=:limit&offset=:offset',
         zone: 'GET /api/boundaries/zone?lat=:lat&lng=:lng&level=:level&format=:format',
+        zones: 'GET /api/boundaries/zones?points=:lat,:lng;:lat,:lng&level=:level&format=:format',
+        zonesCount: 'GET /api/boundaries/zones/count?at=:lat,:lng;:lat,:lng&level=:level&sort=:sort&format=:format (or POST with {"latlngs":[{"lat","lng"}]})',
         provinces: 'GET /api/boundaries/provinces',
         provinceItem: 'GET /api/boundaries/provinces/:code',
         districts: 'GET /api/boundaries/districts?province_code=:pCode',

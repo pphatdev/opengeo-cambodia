@@ -91,7 +91,7 @@ export function loadKnowledgeBase(mode: "full" | "compact" = "compact"): string 
         "- Base URL: https://opengeo-cambodia.pphat.me",
         "- Creator: PPhat (Sophat LEAT / LEAT Sophat, info.sophat@gmail.com, https://pphat.me)",
         "- Administrative endpoints: GET /api/admin/provinces, /api/admin/provinces/:id/districts, /api/admin/districts/:id/communes, /api/admin/communes/:id/villages, /api/admin/hierarchy/:id, /api/admin/search?q=:query",
-        "- Boundary endpoints: GET /api/boundaries/zone?lat=:lat&lng=:lng, /api/boundaries/provinces, /api/boundaries/districts, /api/boundaries/communes",
+        "- Boundary endpoints: GET /api/boundaries/zone?lat=:lat&lng=:lng, /api/boundaries/zones?points=:lat,:lng;:lat,:lng (batch, max 100), /api/boundaries/provinces, /api/boundaries/districts, /api/boundaries/communes",
         "- Geocoding endpoints: GET /api/geocode/reverse?lat=:lat&lon=:lon, /api/geocode/search?q=:query",
         "- Mandatory: Must send User-Agent header (403 without it).",
     ].join("\n");

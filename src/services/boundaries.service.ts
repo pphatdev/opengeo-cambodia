@@ -12,6 +12,7 @@ import type {
     BoundaryStats,
     BoundarySummaryItem,
     BoundaryZoneResult,
+    CountGroup,
 } from "../types/boundaries.js";
 
 function resolveCurrentDir(): string {
@@ -1033,6 +1034,86 @@ export class BoundariesService {
             boundaries: featureCollection,
             geoJson: featureCollection,
         };
+    }
+
+    /**
+     * Count points per boundary at one level (e.g. customers per commune).
+     *
+     * Resolves top-down (province → district → commune, stopping at `level`) so each step only scans the
+     * children of the previous match, and memoizes identical coordinates within the call.
+     * Groups keep first-seen order; `point` is the first input point that fell in the group.
+     */
+    public countByPoints(
+        points: { lat: number; lon: number }[],
+        level: BoundaryLevel | "all",
+    ): {
+        groups: CountGroup[];
+        unmatched: { count: number; point: { lat: number; lng: number } | null; indexes: number[] };
+    } {
+        this.ensureLoaded();
+
+        const tiers: BoundaryLevel[] = level === "all" ? ["province", "district", "commune"] : [level];
+        const deepest = tiers[tiers.length - 1];
+        const [minLon, minLat, maxLon, maxLat] = this.overallBbox;
+        const margin = 0.1;
+        type Hit = Partial<Record<BoundaryLevel, BoundaryFeature>>;
+        const memo = new Map<string, Hit | null>();
+
+        // Top-down: each step only scans the children of the previous match
+        const resolve = (lat: number, lon: number): Hit | null => {
+            if (lon < minLon - margin || lon > maxLon + margin || lat < minLat - margin || lat > maxLat + margin) {
+                return null;
+            }
+            const hit: Hit = {};
+            hit.province = this.findFeatureByPoint(lon, lat, "province");
+            if (deepest !== "province") {
+                hit.district = this.findFeatureByPoint(lon, lat, "district", hit.province?.properties?.code);
+                if (deepest === "commune") {
+                    hit.commune = this.findFeatureByPoint(lon, lat, "commune", hit.district?.properties?.code);
+                }
+            }
+            // A point counts as matched only when it resolves at the deepest requested level
+            return hit[deepest] ? hit : null;
+        };
+
+        const byKey = new Map<string, CountGroup>();
+        const unmatched = { count: 0, point: null as { lat: number; lng: number } | null, indexes: [] as number[] };
+
+        points.forEach(({ lat, lon }, i) => {
+            const key = `${lat},${lon}`;
+            let hit = memo.get(key);
+            if (hit === undefined) {
+                hit = resolve(lat, lon);
+                memo.set(key, hit);
+            }
+            if (!hit) {
+                unmatched.count++;
+                unmatched.indexes.push(i);
+                unmatched.point ??= { lat, lng: lon };
+                return;
+            }
+            // parent = the group this point was resolved through one tier up (lets level=all nest the result)
+            let parent: string | undefined;
+            for (const tier of tiers) {
+                const feature = hit[tier];
+                if (!feature) continue;
+                const groupKey = `${tier}:${feature.properties?.code}`;
+                const group = byKey.get(groupKey);
+                if (group) group.count++;
+                else byKey.set(groupKey, { key: groupKey, parent, level: tier, feature, count: 1, point: { lat, lng: lon } });
+                parent = groupKey;
+            }
+        });
+
+        // With level=all keep the hierarchy readable: provinces, then districts, then communes
+        const order: Record<BoundaryLevel, number> = { province: 0, district: 1, commune: 2 };
+        const groups = [...byKey.values()].sort((a, b) => order[a.level] - order[b.level]);
+        return { groups, unmatched };
+    }
+
+    /** Public summary view of a feature (no geometry). */
+    public summarize(feature: BoundaryFeature): BoundarySummaryItem {
+        return this.toSummary(feature);
     }
 
     /**

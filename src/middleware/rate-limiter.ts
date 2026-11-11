@@ -253,6 +253,8 @@ export function createBotShield(): MiddlewareHandler {
         if (
             path.startsWith("/api/") &&
             !path.startsWith("/api/chat") &&
+            // Read-only query that needs a body for large coordinate lists
+            !(c.req.method === "POST" && path === "/api/boundaries/zones/count") &&
             c.req.method !== "GET" &&
             c.req.method !== "HEAD" &&
             c.req.method !== "OPTIONS"

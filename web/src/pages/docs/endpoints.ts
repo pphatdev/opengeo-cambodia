@@ -239,6 +239,61 @@ export const ENDPOINTS: Endpoint[] = [
         ],
     },
     {
+        id: "b-zones", group: "boundaries", path: "/api/boundaries/zones", geo: true,
+        title: { en: "Boundary zones by multiple coordinates", km: "ព្រំប្រទល់តំបន់តាមកូអរដោនេច្រើន" },
+        description: {
+            en: "Batch point-in-polygon: resolve the province, district and commune for up to 100 coordinates in one request. Summary results come back in input order; geojson returns each distinct boundary once, with the indexes of the points it contains in properties.point_indexes.",
+            km: "ការស្វែងរកចំណុចក្នុងពហុកោណជាបាច់៖ កំណត់ខេត្ត ស្រុក និងឃុំ សម្រាប់កូអរដោនេរហូតដល់ 100 ក្នុងសំណើតែមួយ។ លទ្ធផល summary តាមលំដាប់ដែលបានផ្ញើ; geojson បង្ហាញព្រំប្រទល់នីមួយៗតែម្តង ជាមួយលេខរៀងចំណុចនៅក្នុង properties.point_indexes។",
+        },
+        params: [
+            {
+                name: "points", in: "query", type: "string", required: true,
+                example: "11.57608,104.92305;13.4125,103.8670;10.6104,104.1814",
+                description: { en: "lat,lng pairs separated by ';' or '|' (max 100).", km: "គូ lat,lng បំបែកដោយ ';' ឬ '|' (អតិបរមា 100)។" },
+            },
+            {
+                name: "level", in: "query", type: "string", example: "all",
+                options: ["all", "province", "district", "commune"],
+                description: { en: "Hierarchy level to return ('all' for complete 3-tier hierarchy).", km: "កម្រិតឋានានុក្រមដែលត្រូវបង្ហាញ ('all' សម្រាប់ឋានានុក្រម 3 កម្រិតពេញលេញ)។" },
+            },
+            {
+                name: "format", in: "query", type: "string", example: "summary", options: ["summary", "geojson"],
+                description: { en: "summary (default, per point) or geojson (distinct boundaries).", km: "summary (លំនាំដើម តាមចំណុច) ឬ geojson (ព្រំប្រទល់ផ្សេងៗគ្នា)។" },
+            },
+        ],
+    },
+    {
+        id: "b-zones-count", group: "boundaries", path: "/api/boundaries/zones/count",
+        title: { en: "Count points per boundary", km: "រាប់ចំណុចតាមព្រំប្រទល់" },
+        description: {
+            en: "Counts how many coordinates (e.g. customer locations) fall in each commune, district or province. GET takes up to 100 points in 'at'; POST takes up to 10,000 as JSON: { \"latlngs\": [{ \"lat\": 11.57, \"lng\": 104.92 }] }. Points outside Cambodia are grouped into a final matched: false item.",
+            km: "រាប់ចំនួនកូអរដោនេ (ឧ. ទីតាំងអតិថិជន) ក្នុងឃុំ ស្រុក ឬខេត្តនីមួយៗ។ GET ទទួលរហូតដល់ 100 ចំណុចក្នុង 'at'; POST ទទួលរហូតដល់ 10,000 ជា JSON: { \"latlngs\": [{ \"lat\": 11.57, \"lng\": 104.92 }] }។ ចំណុចនៅក្រៅកម្ពុជាត្រូវបានដាក់ជាក្រុម matched: false ចុងក្រោយ។",
+        },
+        params: [
+            {
+                name: "at", in: "query", type: "string", required: true,
+                example: "11.57608,104.92305;11.5761,104.9231;13.4125,103.8670",
+                description: { en: "lat,lng pairs separated by ';' or '|' (max 100). Use POST for more.", km: "គូ lat,lng បំបែកដោយ ';' ឬ '|' (អតិបរមា 100)។ ប្រើ POST សម្រាប់ច្រើនជាងនេះ។" },
+            },
+            {
+                name: "level", in: "query", type: "string", example: "commune",
+                options: ["commune", "district", "province", "all"],
+                description: { en: "Boundary level to count by (default commune). 'all' returns a tree: provinces → districts → communes, each with its own count.", km: "កម្រិតព្រំប្រទល់សម្រាប់រាប់ (លំនាំដើម ឃុំ)។ 'all' បង្ហាញជាមែកធាង៖ ខេត្ត → ស្រុក → ឃុំ ដែលនីមួយៗមានចំនួនរាប់ផ្ទាល់ខ្លួន។" },
+            },
+            {
+                name: "sort", in: "query", type: "string", example: "input", options: ["input", "count"],
+                description: { en: "input (first-seen order, default) or count (largest first).", km: "input (តាមលំដាប់ដែលឃើញមុន លំនាំដើម) ឬ count (ច្រើនបំផុតមុន)។" },
+            },
+            {
+                name: "format", in: "query", type: "string", example: "summary", options: ["summary", "geojson"],
+                description: {
+                    en: "summary (default, list without geometry) or geojson (FeatureCollection of the matched boundaries with polygons; properties carry level, count and point).",
+                    km: "summary (លំនាំដើម បញ្ជីគ្មានធរណីមាត្រ) ឬ geojson (FeatureCollection នៃព្រំប្រទល់ជាមួយពហុកោណ; properties មាន level, count និង point)។",
+                },
+            },
+        ],
+    },
+    {
         id: "b-hierarchy", group: "boundaries", path: "/api/boundaries/hierarchy/{code}", geo: true,
         title: { en: "Boundary with ancestors", km: "ព្រំប្រទល់ជាមួយអង្គភាពមេ" },
         description: {
