@@ -8,7 +8,10 @@
   ],
   "assets": {
     "directory": "./dist/client",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // "/" would otherwise be answered by dist/client/index.html before the Worker runs, which breaks
+    // the JSON API root (Accept: application/json) and the server-side SEO tags on the home page.
+    "run_worker_first": ["/"]
   },
   // Per-deploy version id: namespaces the edge cache so old responses are never served after a deploy
   "version_metadata": {

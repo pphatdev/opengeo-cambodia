@@ -627,6 +627,8 @@ app.get("/blog/*", serveSpa);
 // 8. API Root Welcome Endpoint (Auto-detects Browser vs API client)
 app.get("/", async (c) => {
     const accept = c.req.header("Accept") || "";
+    // Same URL serves HTML or JSON — keep browser/CDN caches from mixing them up
+    c.header("Vary", "Accept");
     if (accept.includes("text/html") && !c.req.query("json")) {
         return serveSpa(c);
     }
@@ -646,7 +648,7 @@ app.get("/", async (c) => {
         description:
             "An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times",
         dataSource: "https://data.mef.gov.kh/",
-        version: "1.8.0",
+        version: "1.9.0",
         documentation: "/api/info",
         playground: "/playground",
         llms: "/llms.txt",
