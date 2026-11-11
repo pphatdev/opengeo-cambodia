@@ -627,6 +627,8 @@ app.get("/blog/*", serveSpa);
 // 8. API Root Welcome Endpoint (Auto-detects Browser vs API client)
 app.get("/", async (c) => {
     const accept = c.req.header("Accept") || "";
+    // Same URL serves HTML or JSON — keep browser/CDN caches from mixing them up
+    c.header("Vary", "Accept");
     if (accept.includes("text/html") && !c.req.query("json")) {
         return serveSpa(c);
     }
