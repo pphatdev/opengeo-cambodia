@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
-import { config } from '../config.js';
+import { config } from '../config.ts';
 
-import { getSupplyChainStatus } from '../security/supply-chain.js';
+import { getSupplyChainStatus } from '../security/supply-chain.ts';
+import process from "node:process";
 
 export const healthRoutes = new Hono();
 
@@ -28,7 +29,7 @@ healthRoutes.get('/api/info', (c) => {
     url: config.appUrl,
     description: 'An Open API for Cambodia geography data providing complete 4-tier administrative hierarchy (25 Provinces, 210 Districts, 1,661 Communes, and 14,576 Villages), 100% free to use, with sub-1ms response times',
     dataSource: 'https://data.mef.gov.kh/',
-    version: '1.12.0',
+    version: '1.13.0',
     convention: {
       tier1: 'City / Province (រាជធានី / ខេត្ត) - admin_level=4 (25)',
       tier2: 'District / Khan / Krong (ស្រុក / ខណ្ឌ / ក្រុង) - admin_level=6 (210)',

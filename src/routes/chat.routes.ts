@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { config } from "../config.js";
-import { AiChatService } from "../services/ai-chat.service.js";
-import type { ChatMessage, ChatRequestPayload } from "../types/chat.js";
+import { config } from "../config.ts";
+import { AiChatService } from "../services/ai-chat.service.ts";
+import type { ChatMessage, ChatRequestPayload } from "../types/chat.ts";
 
 export const chatRoutes = new Hono();
 

@@ -2,8 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { config } from "../config.js";
-import type { ChatMessage, ChatResponseData, ChatStatusData } from "../types/chat.js";
+import { config } from "../config.ts";
+import type { ChatMessage, ChatResponseData, ChatStatusData } from "../types/chat.ts";
+import process from "node:process";
 
 const DEFAULT_MODEL = "mistral-small-latest";
 export const AVAILABLE_MODELS = [
@@ -44,7 +45,7 @@ function resolveRootDir(): string {
 
 /**
  * Loads and caches the documentation knowledge base (llms-full.txt or llms.txt).
- * Uses multi-path fallback for Node.js, dist builds, and Cloudflare Workers compatibility.
+ * Uses multi-path fallback for the Deno server, dist builds, and Cloudflare Workers compatibility.
  */
 export function loadKnowledgeBase(mode: "full" | "compact" = "compact"): string {
     if (mode === "compact" && cachedCompactContext) {
@@ -304,8 +305,8 @@ export class AiChatService {
             availableModels: [...AVAILABLE_MODELS],
             knowledge: {
                 mode: "full",
-                fullBytes: Buffer.byteLength(full, "utf-8"),
-                compactBytes: Buffer.byteLength(compact, "utf-8"),
+                fullBytes: new TextEncoder().encode(full).length,
+                compactBytes: new TextEncoder().encode(compact).length,
                 loaded: Boolean(compact && compact.length > 200),
             },
         };

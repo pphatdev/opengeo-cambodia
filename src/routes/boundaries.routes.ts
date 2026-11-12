@@ -2,15 +2,16 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Hono, type Context } from "hono";
-import { BoundariesService } from "../services/boundaries.service.js";
-import { createEdgeCache } from "../middleware/edge-cache.js";
-import type { ApiResponse } from "../types/api.js";
+import { BoundariesService } from "../services/boundaries.service.ts";
+import { createEdgeCache } from "../middleware/edge-cache.ts";
+import type { ApiResponse } from "../types/api.ts";
 import type {
     BoundaryLevel,
     BoundaryStats,
     BoundarySummaryItem,
     CountGroup,
-} from "../types/boundaries.js";
+} from "../types/boundaries.ts";
+import process from "node:process";
 
 export const boundariesRoutes = new Hono();
 const boundariesService = BoundariesService.getInstance();

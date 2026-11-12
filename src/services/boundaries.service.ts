@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { AdminStore } from "../data/store.js";
+import { AdminStore } from "../data/store.ts";
 import type {
     BoundaryFeature,
     BoundaryFeatureCollection,
@@ -13,7 +13,8 @@ import type {
     BoundarySummaryItem,
     BoundaryZoneResult,
     CountGroup,
-} from "../types/boundaries.js";
+} from "../types/boundaries.ts";
+import process from "node:process";
 
 function resolveCurrentDir(): string {
     try {

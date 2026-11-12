@@ -1,8 +1,7 @@
-import { initSupplyChainDefense } from "./security/supply-chain.js";
-import { serve } from "@hono/node-server";
-import { app } from "./app.js";
-import { config } from "./config.js";
-import { AdminStore } from "./data/store.js";
+import { initSupplyChainDefense } from "./security/supply-chain.ts";
+import { app } from "./app.ts";
+import { config } from "./config.ts";
+import { AdminStore } from "./data/store.ts";
 
 // Initialize runtime supply chain defense (prototype pollution & config sealing)
 initSupplyChainDefense();
@@ -10,16 +9,14 @@ initSupplyChainDefense();
 const store = AdminStore.getInstance();
 const stats = store.getStats();
 
-serve(
+Deno.serve(
     {
-        fetch: app.fetch,
         port: config.port,
         hostname: config.host,
-    },
-    (info) => {
-        console.log(`
+        onListen: (info) => {
+            console.log(`
 =========================================================
-    🇰🇭 OpenGeo Cambodia API - Hono.js on Node.js
+    🇰🇭 OpenGeo Cambodia API - Hono.js on Deno
 =========================================================
     🚀 Server Running:   http://${info.address}:${info.port}
     🖥️  Interactive Demo: http://localhost:${info.port}/demo
@@ -31,5 +28,7 @@ serve(
     📊 Loaded Records:   ${stats.provinces} Provinces | ${stats.districts} Districts | ${stats.communes} Communes | ${stats.villages} Villages
 =========================================================
 `);
+        },
     },
+    app.fetch,
 );
