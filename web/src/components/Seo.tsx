@@ -10,6 +10,7 @@ export interface SeoProps {
     type?: "website" | "article";
     /** Social share cover (og:image / twitter:image). Defaults to the home cover. */
     image?: SeoCover;
+    noindex?: boolean;
 }
 
 function setMetaTag(name: string, content: string, isProperty = false) {
@@ -33,7 +34,18 @@ function setCanonical(href: string) {
     el.setAttribute("href", href);
 }
 
-export function useSeo({ title, description, canonical, type = "website", image = COVERS.home }: SeoProps) {
+function setHreflang(hreflang: string, href: string) {
+    let el = document.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${hreflang}"]`);
+    if (!el) {
+        el = document.createElement("link");
+        el.setAttribute("rel", "alternate");
+        el.setAttribute("hreflang", hreflang);
+        document.head.appendChild(el);
+    }
+    el.setAttribute("href", href);
+}
+
+export function useSeo({ title, description, canonical, type = "website", image = COVERS.home, noindex = false }: SeoProps) {
     const { lang } = useI18n();
 
     useEffect(() => {
@@ -49,6 +61,7 @@ export function useSeo({ title, description, canonical, type = "website", image 
         document.documentElement.lang = lang;
 
         setMetaTag("description", description);
+        setMetaTag("robots", noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
         setMetaTag("og:title", title, true);
         setMetaTag("og:description", description, true);
         setMetaTag("og:type", type, true);
@@ -56,9 +69,13 @@ export function useSeo({ title, description, canonical, type = "website", image 
         setMetaTag("twitter:description", description);
 
         const url = canonical || (typeof location !== "undefined" ? location.origin + location.pathname : PROD_ORIGIN);
+        const basePathUrl = url.replace(/\?lang=(?:km|en)$/, "");
         setMetaTag("og:url", url, true);
         setCanonical(url);
-    }, [title, description, canonical, type, lang, image]);
+        setHreflang("en", basePathUrl);
+        setHreflang("km", `${basePathUrl}?lang=km`);
+        setHreflang("x-default", basePathUrl);
+    }, [title, description, canonical, type, lang, image, noindex]);
 }
 
 export function Seo(props: SeoProps) {

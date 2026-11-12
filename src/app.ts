@@ -107,7 +107,7 @@ function escAttr(s: string): string {
     return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }
 
-function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
+function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en", status: 200 | 404 = 200): string {
     const isKm = lang === "km";
 
     // 1. Set <html> language attribute
@@ -130,9 +130,7 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
     let desc = isKm
         ? "API ឥតគិតថ្លៃ និងមិនត្រូវការ API key សម្រាប់ភូមិសាស្ត្ររដ្ឋបាលកម្ពុជា៖ ២៥ រាជធានី-ខេត្ត, ២១០ ក្រុង-ស្រុក-ខណ្ឌ, ១,៦៦១ ឃុំ-សង្កាត់ និង ១៤,៥៧៦ ភូមិ ជាមួយលេខកូដផ្លូវការ ឈ្មោះខ្មែរ-អង់គ្លេស និងព្រំប្រទល់ GeoJSON។"
         : "Free, keyless REST API for Cambodia's administrative geography: 25 provinces, 210 districts, 1,661 communes and 14,576 villages with official NCDD codes, Khmer & English names, GeoJSON boundaries and geocoding.";
-    let canonical = isKm
-        ? "https://opengeo-cambodia.pphat.me/?lang=km"
-        : "https://opengeo-cambodia.pphat.me/";
+    let baseCanonical = "https://opengeo-cambodia.pphat.me/";
 
     if (reqPath.startsWith("/docs")) {
         title = isKm
@@ -141,9 +139,7 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
         desc = isKm
             ? "ឯកសារបច្ចេកទេសសម្រាប់អ្នកអភិវឌ្ឍន៍ ផ្ទាំងសាកល្បង API គំរូទិន្នន័យ JSON កម្រិតកំណត់សំណើ និងកូអរដោនេព្រំប្រទល់ GeoJSON នៃឋានានុក្រមរដ្ឋបាល ៤ កម្រិតនៅកម្ពុជា។"
             : "Developer documentation, interactive API playground, JSON schemas, rate limits, and GeoJSON boundary specifications for Cambodia's 4-tier administrative hierarchy.";
-        canonical = isKm
-            ? "https://opengeo-cambodia.pphat.me/docs?lang=km"
-            : "https://opengeo-cambodia.pphat.me/docs";
+        baseCanonical = "https://opengeo-cambodia.pphat.me/docs";
     } else if (reqPath.startsWith("/playground")) {
         title = isKm
             ? "ផ្ទាំងសាកល្បង API — OpenGeo Cambodia"
@@ -151,9 +147,7 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
         desc = isKm
             ? "ផ្ទាំងសាកល្បង API អន្តរកម្មសម្រាប់ធ្វើតេស្ត endpoint នៃ OpenGeo Cambodia ជាមួយនឹងការបង្ហាញលទ្ធផលជាទម្រង់ UI និង Raw JSON។"
             : "Interactive API playground for testing OpenGeo Cambodia endpoints with live UI visualization and raw JSON inspection.";
-        canonical = isKm
-            ? "https://opengeo-cambodia.pphat.me/playground?lang=km"
-            : "https://opengeo-cambodia.pphat.me/playground";
+        baseCanonical = "https://opengeo-cambodia.pphat.me/playground";
     } else if (reqPath === "/map" || reqPath.startsWith("/map/")) {
         title = isKm
             ? "ផែនទីព្រំប្រទល់កម្ពុជា — OpenGeo Cambodia"
@@ -161,19 +155,15 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
         desc = isKm
             ? "ផែនទីអន្តរកម្មនៃព្រំប្រទល់ខេត្ត ស្រុក និងឃុំនៅកម្ពុជា លើផែនទី OpenStreetMap ផ្កាយរណប ឬសណ្ឋានដី ជាមួយការស្វែងរកតំបន់តាមការចុច GPS ឬកូអរដោនេ។"
             : "Interactive map of Cambodia province, district and commune boundaries over OpenStreetMap, satellite or terrain basemaps, with point-in-polygon lookup by click, GPS or coordinates.";
-        canonical = isKm
-            ? "https://opengeo-cambodia.pphat.me/map?lang=km"
-            : "https://opengeo-cambodia.pphat.me/map";
-    } else if (reqPath.startsWith("/demo")) {
-        title = isKm
-            ? "ផ្ទាំងបង្ហាញគំរូ — OpenGeo Cambodia"
-            : "Live Demo — OpenGeo Cambodia";
-        desc = isKm
-            ? "ផ្ទាំងបង្ហាញគំរូនូវសមត្ថភាពនៃ API ភូមិសាស្ត្ររដ្ឋបាលកម្ពុជា ជាមួយផែនទីអន្តរកម្ម។"
-            : "Live interactive map demonstration of Cambodia's administrative geography API.";
-        canonical = isKm
-            ? "https://opengeo-cambodia.pphat.me/demo?lang=km"
-            : "https://opengeo-cambodia.pphat.me/demo";
+        baseCanonical = "https://opengeo-cambodia.pphat.me/map";
+    }
+
+    const hrefEn = baseCanonical;
+    const hrefKm = `${baseCanonical}?lang=km`;
+    const canonical = isKm ? hrefKm : hrefEn;
+
+    if (status === 404) {
+        out = out.replace(/<meta name="robots" content="[^"]*">/, '<meta name="robots" content="noindex, nofollow">');
     }
 
     const cover = coverFor(reqPath);
@@ -189,6 +179,9 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
         .replace(/<meta name="twitter:image:alt" content="[^"]*">/, `<meta name="twitter:image:alt" content="${coverAlt}">`)
         .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
         .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${canonical}">`)
+        .replace(/<link rel="alternate" hreflang="en" href="[^"]*">/, `<link rel="alternate" hreflang="en" href="${hrefEn}">`)
+        .replace(/<link rel="alternate" hreflang="km" href="[^"]*">/, `<link rel="alternate" hreflang="km" href="${hrefKm}">`)
+        .replace(/<link rel="alternate" hreflang="x-default" href="[^"]*">/, `<link rel="alternate" hreflang="x-default" href="${hrefEn}">`)
         .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`)
         .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`)
         .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${desc}">`)
@@ -198,17 +191,27 @@ function renderSeoHtml(rawHtml: string, reqPath: string, lang = "en"): string {
 }
 
 /** Serve the React app shell from Workers Assets when deployed, or from dist/client in Node. */
-async function serveSpa(c: Context): Promise<Response> {
-    const lang = c.req.query("lang") || "en";
+async function serveSpa(c: Context, status: 200 | 404 = 200): Promise<Response> {
+    const langParam = c.req.query("lang");
+    // Canonicalize ?lang=en to the clean URL (301 Permanent Redirect) so Google doesn't flag
+    // ?lang=en as an "Alternate page with proper canonical tag"
+    if (langParam === "en" && status === 200) {
+        const cleanUrl = new URL(c.req.url);
+        cleanUrl.searchParams.delete("lang");
+        const target = cleanUrl.pathname + (cleanUrl.search || "");
+        return c.redirect(target, 301);
+    }
+
+    const lang = langParam || "en";
     const assets = (c.env as { ASSETS?: { fetch: (req: Request) => Promise<Response> } } | undefined)?.ASSETS;
     if (assets) {
         const res = await assets.fetch(new Request(new URL("/index.html", c.req.url)));
         if (res.ok) {
             const html = await res.text();
-            return c.html(renderSeoHtml(html, c.req.path, lang));
+            return c.html(renderSeoHtml(html, c.req.path, lang, status), status);
         }
     }
-    return c.html(renderSeoHtml(getSpaHtml(), c.req.path, lang));
+    return c.html(renderSeoHtml(getSpaHtml(), c.req.path, lang, status), status);
 }
 
 let cachedLlmsTxt: string | null = null;
@@ -614,15 +617,16 @@ app.get("/assets/*", (c) => {
     return c.body(fs.readFileSync(filePath));
 });
 
-// 8. Web app pages (React SPA: landing/explorer, API docs, playground, and engineering blog)
-app.get("/docs", serveSpa);
-app.get("/docs/*", serveSpa);
-app.get("/playground", serveSpa);
-app.get("/playground/*", serveSpa);
-app.get("/map", serveSpa);
-app.get("/demo", serveSpa);
-app.get("/blog", serveSpa);
-app.get("/blog/*", serveSpa);
+// 8. Web app pages (React SPA: landing/explorer, API docs, playground, and boundaries map)
+app.get("/docs", (c) => serveSpa(c));
+app.get("/docs/*", (c) => serveSpa(c));
+app.get("/playground", (c) => serveSpa(c));
+app.get("/playground/*", (c) => serveSpa(c));
+app.get("/map", (c) => serveSpa(c));
+app.get("/demo", (c) => {
+    const lang = c.req.query("lang");
+    return c.redirect(lang === "km" ? "/?lang=km" : "/", 301);
+});
 
 // 8. API Root Welcome Endpoint (Auto-detects Browser vs API client)
 app.get("/", (c) => {
@@ -683,7 +687,8 @@ app.route("/", healthRoutes);
 app.notFound((c) => {
     const accept = c.req.header("Accept") || "";
     if (accept.includes("text/html") && !c.req.path.startsWith("/api/")) {
-        return serveSpa(c);
+        c.header("X-Robots-Tag", "noindex, nofollow");
+        return serveSpa(c, 404);
     }
     return c.json(
         {
