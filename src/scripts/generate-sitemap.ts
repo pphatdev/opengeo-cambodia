@@ -44,7 +44,7 @@ const webPages: SitemapUrl[] = [
         priority: "1.0",
         alternates: [
             { hreflang: "km", href: `${DOMAIN}/?lang=km` },
-            { hreflang: "en", href: `${DOMAIN}/?lang=en` },
+            { hreflang: "en", href: `${DOMAIN}/` },
             { hreflang: "x-default", href: `${DOMAIN}/` },
         ],
     },
@@ -55,7 +55,7 @@ const webPages: SitemapUrl[] = [
         priority: "0.9",
         alternates: [
             { hreflang: "km", href: `${DOMAIN}/docs?lang=km` },
-            { hreflang: "en", href: `${DOMAIN}/docs?lang=en` },
+            { hreflang: "en", href: `${DOMAIN}/docs` },
             { hreflang: "x-default", href: `${DOMAIN}/docs` },
         ],
     },
@@ -66,7 +66,7 @@ const webPages: SitemapUrl[] = [
         priority: "0.9",
         alternates: [
             { hreflang: "km", href: `${DOMAIN}/playground?lang=km` },
-            { hreflang: "en", href: `${DOMAIN}/playground?lang=en` },
+            { hreflang: "en", href: `${DOMAIN}/playground` },
             { hreflang: "x-default", href: `${DOMAIN}/playground` },
         ],
     },
@@ -77,19 +77,8 @@ const webPages: SitemapUrl[] = [
         priority: "0.8",
         alternates: [
             { hreflang: "km", href: `${DOMAIN}/map?lang=km` },
-            { hreflang: "en", href: `${DOMAIN}/map?lang=en` },
+            { hreflang: "en", href: `${DOMAIN}/map` },
             { hreflang: "x-default", href: `${DOMAIN}/map` },
-        ],
-    },
-    {
-        loc: `${DOMAIN}/demo`,
-        lastmod: TODAY,
-        changefreq: "weekly",
-        priority: "0.8",
-        alternates: [
-            { hreflang: "km", href: `${DOMAIN}/demo?lang=km` },
-            { hreflang: "en", href: `${DOMAIN}/demo?lang=en` },
-            { hreflang: "x-default", href: `${DOMAIN}/demo` },
         ],
     },
 ];
