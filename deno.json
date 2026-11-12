@@ -36,7 +36,8 @@
         },
         "audit": "deno audit",
         "predeploy": "deno task copy:assets && deno task generate:sitemap && deno task build:web",
-        "deploy": "deno task predeploy && wrangler deploy",
+        "deploy": "deno task predeploy && WRANGLER_CI_MATCH_TAG= wrangler deploy",
+        "cf:deploy": "WRANGLER_CI_MATCH_TAG= deno run -A npm:wrangler deploy",
         "preview": "deno task build:web && wrangler dev",
         "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
     },
