@@ -1,10 +1,10 @@
-import { NominatimClient } from "./nominatim.client.js";
-import { AdminStore } from "../data/store.js";
+import { NominatimClient } from "./nominatim.client.ts";
+import { AdminStore } from "../data/store.ts";
 import type {
     AdminHierarchy,
     GeocodeResult,
     NominatimRawItem,
-} from "../types/geocode.js";
+} from "../types/geocode.ts";
 
 export class GeocodeService {
     private nominatim: NominatimClient;

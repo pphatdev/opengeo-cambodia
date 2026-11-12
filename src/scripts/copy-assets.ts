@@ -26,7 +26,7 @@ console.log("📦 Copying non-TypeScript assets to dist/ ...");
 
 // 1. Seed Data (JSON) lives in public/data/seed and is copied with public/ in step 6.
 
-// 2. The web UI is a React app in web/, built separately with `pnpm build:web` → dist/client.
+// 2. The web UI is a React app in web/, built separately with `deno task build:web` → dist/client.
 
 // 3. Copy Synced Data if exists
 if (fs.existsSync(path.join(srcDir, "data", "synced"))) {

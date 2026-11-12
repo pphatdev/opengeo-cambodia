@@ -1,0 +1,88 @@
+{
+    "lock": false,
+    "name": "@pphatdev/opengeo-cambodia-api",
+    "version": "1.12.0",
+    "exports": "./src/index.ts",
+    "license": "MIT",
+    "nodeModulesDir": "auto",
+    "tasks": {
+        "dev": {
+            "description": "API (:3000) and web app (:5173) together, both with live reload",
+            "dependencies": ["dev:api", "dev:web"]
+        },
+        "dev:api": "deno run --watch=src/ --env-file --allow-net --allow-read --allow-env src/index.ts",
+        "dev:web": "vite web",
+        "start": "deno run --env-file --allow-net --allow-read --allow-env src/index.ts",
+        "build": {
+            "description": "Copy data assets, generate llms/sitemap files and build the web app",
+            "command": "deno task copy:assets && deno task generate:llms && deno task generate:sitemap && deno task build:web"
+        },
+        "build:web": "vite build web",
+        "preview:web": "vite preview web",
+        "copy:assets": "deno run --allow-read --allow-write src/scripts/copy-assets.ts",
+        "generate:llms": "deno run --env-file --allow-read --allow-write --allow-env --allow-net src/scripts/generate-llms.ts",
+        "generate:sitemap": "deno run --allow-read --allow-write --allow-env src/scripts/generate-sitemap.ts",
+        "generate:hero-map": "deno run --allow-read --allow-write scripts/generate-hero-map.mjs",
+        "sync:overpass": "deno run --env-file --allow-net --allow-read --allow-write --allow-env src/scripts/sync-overpass.ts",
+        "convert:csv": "deno run --allow-read --allow-write src/scripts/convert-csv.ts",
+        "update:provinces": "deno run --env-file -A src/scripts/update-provinces.ts",
+        "update:districts": "deno run --env-file -A src/scripts/update-districts.ts",
+        "update:communes": "deno run --env-file -A src/scripts/update-communes.ts",
+        "update:villages": "deno run --env-file -A src/scripts/update-villages.ts",
+        "update:all": "deno task update:provinces && deno task update:districts && deno task update:communes && deno task update:villages",
+        "lint": {
+            "description": "Type-check the API/worker (deno check) and the web app (tsc)",
+            "command": "deno check src/ && tsc -p web/tsconfig.json"
+        },
+        "audit": "deno audit",
+        "predeploy": "deno task copy:assets && deno task generate:sitemap && deno task build:web",
+        "deploy": "deno task predeploy && wrangler deploy",
+        "preview": "deno task build:web && wrangler dev",
+        "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    },
+    "imports": {
+        "hono": "npm:hono@4.13.17",
+        "hono/": "npm:/hono@4.13.17/",
+        "axios": "npm:axios@1.21.0",
+        "marked": "npm:marked@18.1.3",
+
+        "react": "npm:react@19.3.1",
+        "react/": "npm:/react@19.3.1/",
+        "react-dom": "npm:react-dom@19.3.1",
+        "react-dom/": "npm:/react-dom@19.3.1/",
+        "react-router": "npm:react-router@8.5.1",
+        "react-leaflet": "npm:react-leaflet@5.0.0",
+        "leaflet": "npm:leaflet@1.9.4",
+        "leaflet/": "npm:/leaflet@1.9.4/",
+
+        "vite": "npm:vite@8.3.6",
+        "@vitejs/plugin-react": "npm:@vitejs/plugin-react@6.2.1",
+        "@tailwindcss/vite": "npm:@tailwindcss/vite@4.3.5",
+        "tailwindcss": "npm:tailwindcss@4.3.5",
+        "typescript": "npm:typescript@7.0.2",
+        "wrangler": "npm:wrangler@4.158.0",
+
+        "@types/geojson": "npm:@types/geojson@7946.0.16",
+        "@types/leaflet": "npm:@types/leaflet@1.9.22",
+        "@types/node": "npm:@types/node@26.6.6",
+        "@types/react": "npm:@types/react@19.3.0",
+        "@types/react-dom": "npm:@types/react-dom@19.3.0"
+    },
+    "compilerOptions": {
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true
+    },
+    "exclude": ["dist/", "web/", "node_modules/", ".wrangler/", ".pnpm-store/", "worker-configuration.d.ts"],
+    "lint": {
+        "exclude": ["worker-configuration.d.ts"],
+        "rules": {
+            "exclude": ["no-explicit-any"]
+        }
+    },
+    "fmt": {
+        "indentWidth": 4,
+        "lineWidth": 140
+    },
+    "allowScripts": ["npm:esbuild@0.28.2", "npm:workerd@1.20261104.1"]
+}

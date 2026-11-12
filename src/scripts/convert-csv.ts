@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { AdminItem } from '../types/admin.js';
-import { DEFAULT_PROVINCE_COORDINATES, KRONG_CODES } from '../data/store.js';
+import type { AdminItem } from '../types/admin.ts';
+import { DEFAULT_PROVINCE_COORDINATES, KRONG_CODES } from '../data/store.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -275,6 +275,6 @@ export function convertCsvToSeedFiles(): {
 }
 
 // Auto-run when executed directly
-if (process.argv[1] && process.argv[1].endsWith('convert-csv.ts')) {
+if (import.meta.main) {
   convertCsvToSeedFiles();
 }

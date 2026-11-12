@@ -1,7 +1,7 @@
-import axios, { AxiosInstance } from "axios";
-import { config } from "../config.js";
-import { validateOutboundUrl } from "../security/supply-chain.js";
-import type { NominatimRawItem } from "../types/geocode.js";
+import axios, { type AxiosInstance } from "axios";
+import { config } from "../config.ts";
+import { validateOutboundUrl } from "../security/supply-chain.ts";
+import type { NominatimRawItem } from "../types/geocode.ts";
 
 interface CacheEntry<T> {
     data: T;
@@ -64,7 +64,7 @@ export class NominatimClient {
      * Enforce strict sequential execution with >=1050ms interval between upstream requests
      * Protects OpenGeo against upstream IP bans and rate-limiting blocks from OpenStreetMap
      */
-    private async scheduleOutbound<T>(fetchFn: () => Promise<T>): Promise<T> {
+    private scheduleOutbound<T>(fetchFn: () => Promise<T>): Promise<T> {
         if (this.pendingQueueDepth >= this.MAX_PENDING_QUEUE) {
             throw new Error(
                 "Upstream geocoding queue is currently congested. Please retry in a few moments.",

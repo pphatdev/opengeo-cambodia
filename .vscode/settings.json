@@ -1,0 +1,7 @@
+{
+    // API, worker and scripts run on Deno; the web app (web/) stays a Vite + TypeScript project
+    "deno.enable": true,
+    "deno.enablePaths": ["src", "scripts"],
+    "deno.lint": true,
+    "deno.config": "./deno.json"
+}

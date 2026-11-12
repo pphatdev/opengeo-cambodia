@@ -8,18 +8,18 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { etag } from "hono/etag";
 
-import { config } from "./config.js";
+import { config } from "./config.ts";
 import {
     adminRateLimiter,
     chatRateLimiter,
     createBotShield,
     globalRateLimiter,
-} from "./middleware/rate-limiter.js";
-import { adminRoutes } from "./routes/admin.routes.js";
-import { boundariesRoutes } from "./routes/boundaries.routes.js";
-import { chatRoutes } from "./routes/chat.routes.js";
-import { geocodeRoutes } from "./routes/geocode.routes.js";
-import { healthRoutes } from "./routes/health.routes.js";
+} from "./middleware/rate-limiter.ts";
+import { adminRoutes } from "./routes/admin.routes.ts";
+import { boundariesRoutes } from "./routes/boundaries.routes.ts";
+import { chatRoutes } from "./routes/chat.routes.ts";
+import { geocodeRoutes } from "./routes/geocode.routes.ts";
+import { healthRoutes } from "./routes/health.routes.ts";
 
 export const app = new Hono();
 
@@ -36,7 +36,7 @@ function resolveAppDir(): string {
 
 const currentDir = resolveAppDir();
 const rootDir = currentDir ? path.resolve(currentDir, "..") : "";
-// React web app build output (`pnpm build:web` → dist/client). Served by Cloudflare Workers Assets in production.
+// React web app build output (`deno task build:web` → dist/client). Served by Cloudflare Workers Assets in production.
 const clientDir = rootDir ? path.resolve(rootDir, "dist", "client") : "";
 const spaHtmlPath = clientDir ? path.join(clientDir, "index.html") : "";
 const llmsTxtPath = rootDir ? path.resolve(rootDir, "llms.txt") : "";
@@ -80,7 +80,7 @@ function getSpaHtml(): string {
         return content;
     }
     return "<!DOCTYPE html><html><body style=\"font-family:system-ui;padding:24px\"><h1>OpenGeo Cambodia</h1>"
-        + "<p>The web app hasn't been built. Run <code>pnpm build:web</code>, or <code>pnpm dev:web</code> for live development.</p>"
+        + "<p>The web app hasn't been built. Run <code>deno task build:web</code>, or <code>deno task dev:web</code> for live development.</p>"
         + "<p>The API is available at <a href=\"/api/info\">/api/info</a>.</p></body></html>";
 }
 
@@ -343,7 +343,7 @@ app.use("/api/chat/*", chatRateLimiter);
 app.use("/api/chat", chatRateLimiter);
 
 // General rate limiter for non-admin API endpoints (e.g. /api/info, 5,000 req/min/IP)
-app.use("/api/*", async (c, next) => {
+app.use("/api/*", (c, next) => {
     if (
         c.req.path.startsWith("/api/admin/") ||
         c.req.path.startsWith("/api/geocode/") ||
@@ -625,7 +625,7 @@ app.get("/blog", serveSpa);
 app.get("/blog/*", serveSpa);
 
 // 8. API Root Welcome Endpoint (Auto-detects Browser vs API client)
-app.get("/", async (c) => {
+app.get("/", (c) => {
     const accept = c.req.header("Accept") || "";
     // Same URL serves HTML or JSON — keep browser/CDN caches from mixing them up
     c.header("Vary", "Accept");

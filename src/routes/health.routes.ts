@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
-import { config } from '../config.js';
+import { config } from '../config.ts';
 
-import { getSupplyChainStatus } from '../security/supply-chain.js';
+import { getSupplyChainStatus } from '../security/supply-chain.ts';
+import process from "node:process";
 
 export const healthRoutes = new Hono();
 

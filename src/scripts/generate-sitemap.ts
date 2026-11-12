@@ -13,7 +13,7 @@
  * - dist/public/sitemap.xml (Node dist asset)
  *
  * Usage:
- *   pnpm generate:sitemap
+ *   deno task generate:sitemap
  */
 
 import fs from "node:fs";
@@ -173,7 +173,7 @@ export function generateSitemap(): string {
 }
 
 // Auto-run if executed as CLI
-if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith("generate-sitemap.ts") || process.argv[1]?.endsWith("generate-sitemap.js")) {
+if (import.meta.main) {
     console.log("🚀 Building XML Sitemap for OpenGeo Cambodia...");
     generateSitemap();
     console.log(`✅ Sitemap generation completed (${allUrls.length} indexable URLs)!`);

@@ -10,7 +10,7 @@
  * 4. Process Environment Shield: Audits and seals sensitive runtime configuration
  */
 
-import { config } from "../config.js";
+import { config } from "../config.ts";
 
 interface SecurityAuditReport {
     timestamp: string;

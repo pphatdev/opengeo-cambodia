@@ -115,7 +115,7 @@ export function createEdgeCache(options?: {
                 edgeCache = cacheStorage.default;
             }
         } catch {
-            // Not in Cloudflare Workers environment (e.g. Node.js local dev)
+            // Not in Cloudflare Workers environment (e.g. the Deno server in local dev)
         }
 
         if (!edgeCache) {
