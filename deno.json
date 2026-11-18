@@ -56,7 +56,7 @@
         "leaflet": "npm:leaflet@1.9.4",
         "leaflet/": "npm:/leaflet@1.9.4/",
 
-        "vite": "npm:vite@8.3.6",
+        "vite": "npm:vite@8.3.8",
         "@vitejs/plugin-react": "npm:@vitejs/plugin-react@6.2.1",
         "@tailwindcss/vite": "npm:@tailwindcss/vite@4.3.5",
         "tailwindcss": "npm:tailwindcss@4.3.5",
