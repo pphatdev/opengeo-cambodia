@@ -38,6 +38,19 @@ export interface BoundaryFeature {
     bbox?: [number, number, number, number];
 }
 
+/** One boundary in a points-per-boundary count (see BoundariesService.countByPoints) */
+export interface CountGroup {
+    /** "<level>:<code>", unique within one count */
+    key: string;
+    /** Key of the group one tier up this point was resolved through (level=all only) */
+    parent?: string;
+    level: BoundaryLevel;
+    feature: BoundaryFeature;
+    count: number;
+    /** First input point that fell in this boundary */
+    point: { lat: number; lng: number };
+}
+
 export interface BoundaryFeatureCollection {
     type: "FeatureCollection";
     name?: string;

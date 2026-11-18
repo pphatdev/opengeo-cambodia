@@ -6,7 +6,7 @@ Structured geographic address lookup resolved through OpenStreetMap Nominatim an
 | :--- | :--- | :--- |
 | `displayName` | `string` | Full human-readable address string returned from geocoding. |
 | `lat`, `lon` | `number` | Geographic latitude and longitude coordinates. |
-| `hierarchy` | `object` | Matched Cambodia administrative units (province, district, commune, village). |
+| `hierarchy` | `object` | `province`, `district`, `commune`, `village` and `country` as name strings (or `null`), taken from the OpenStreetMap address. |
 | `osmId`, `osmType` | `number`, `string` | OpenStreetMap entity identifier and type (`node`, `way`, `relation`). |
 | `type`, `importance` | `string`, `number` | Category classification and Nominatim search relevance rank. |
 | `rawAddress` | `object` | Raw address dictionary directly from upstream OpenStreetMap data. |

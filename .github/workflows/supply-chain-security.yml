@@ -25,23 +25,20 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js (LTS)
-        uses: actions/setup-node@v7
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
         with:
-          node-version: 20
-          cache: 'pnpm'
+          deno-version: v2.x
+          cache: true
 
       - name: Verify Lockfile Integrity & Frozen Dependencies
-        run: pnpm install --frozen-lockfile
+        run: deno install --frozen
 
-      - name: Run pnpm Security Audit
-        run: pnpm audit --audit-level=high
+      - name: Run Deno Security Audit
+        run: deno audit
 
-      - name: TypeScript Type Check
-        run: pnpm run lint
+      - name: Type Check (deno check + web tsc)
+        run: deno task lint
 
   dependency-review:
     name: Dependency Review (PRs only)

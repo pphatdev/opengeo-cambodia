@@ -11,9 +11,9 @@
  * Excluded from the Node tsc build (tsconfig.json rootDir is ./src); it is
  * type-checked via tsconfig.worker.json and bundled by wrangler.
  */
-import { AdminStore } from "./data/store.js";
-import { BoundariesService } from "./services/boundaries.service.js";
-import type { AdminItem } from "./types/admin.js";
+import { AdminStore } from "./data/store.ts";
+import { BoundariesService } from "./services/boundaries.service.ts";
+import type { AdminItem } from "./types/admin.ts";
 import provinces from "../public/data/seed/provinces.json" with { type: "json" };
 import districts from "../public/data/seed/districts.json" with { type: "json" };
 import communes from "../public/data/seed/communes.json" with { type: "json" };

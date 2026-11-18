@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { AdminItem, AdminLevel, AdminStats, HierarchyPath } from '../types/admin.js';
+import type { AdminItem, AdminLevel, AdminStats, HierarchyPath } from '../types/admin.ts';
+import process from "node:process";
 
 export interface SeedData {
   provinces: AdminItem[];
@@ -173,7 +174,7 @@ export class AdminStore {
    * Read-only: never modifies, overwrites, or regenerates seed files on server startup.
    */
   public loadData(): void {
-    // 1. If in a Node.js filesystem environment, try loading from the 4 official CSV files
+    // 1. If running with filesystem access (Deno server, scripts), try loading from the 4 official CSV files
     if (currentDir && typeof fs?.existsSync === 'function') {
       try {
         const possibleDataDirs = [

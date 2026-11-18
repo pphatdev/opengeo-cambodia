@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AdminItem } from "../types/admin.js";
+import type { AdminItem } from "../types/admin.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -191,9 +191,7 @@ export function updateVillagesFromCsv(): {
 }
 
 // CLI direct execution
-const isDirectRun = process.argv[1] &&
-    (process.argv[1].endsWith("update-villages.ts") ||
-        process.argv[1].endsWith("update-villages.js"));
+const isDirectRun = import.meta.main;
 
 if (isDirectRun) {
     console.log("🔄 Updating villages.json from CambodiaVillagesList.csv...");

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Marked } from "marked";
 import { cx } from "../../components/ui";
+import { highlightToHtml } from "../../lib/highlight";
 import { useToast } from "../../lib/toast";
 
 const markedInstance = new Marked();
@@ -26,7 +27,7 @@ markedInstance.use({
                 return `<h1 id="${id}" class="mb-4 font-display text-[clamp(36px,4.4vw,54px)] font-bold leading-[1.06] tracking-[-.035em] text-ink km:text-[clamp(32px,4vw,46px)] km:font-khmer km:font-semibold">${text}</h1>\n`;
             }
             if (depth === 2) {
-                return `<h2 id="${id}" class="mb-3.5 mt-16 pt-2 font-display text-[30px] font-bold leading-[1.15] tracking-[-.025em] text-ink max-sm:text-[26px] km:text-[clamp(26px,3.2vw,38px)] km:font-khmer km:font-semibold"><a class="group text-inherit no-underline" href="#${id}">${text}<span class="ml-2 text-ink-3 opacity-0 group-hover:opacity-100">#</span></a></h2>\n`;
+                return `<h2 id="${id}" class="mb-3.5 mt-16 pt-2 font-display text-[30px] font-bold leading-[1.15] tracking-tight text-ink max-sm:text-[26px] km:text-[clamp(26px,3.2vw,38px)] km:font-khmer km:font-semibold"><a class="group text-inherit no-underline" href="#${id}">${text}<span class="ml-2 text-ink-3 opacity-0 group-hover:opacity-100">#</span></a></h2>\n`;
             }
             if (depth === 3) {
                 return `<h3 id="${id}" class="mb-2 mt-6 font-display text-[20px] font-bold text-ink km:font-khmer km:font-semibold">${text}</h3>\n`;
@@ -51,12 +52,13 @@ markedInstance.use({
         code({ text, lang }) {
             const language = lang || "code";
             const escaped = encodeURIComponent(text);
-            const safeCode = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            return `<div class="overflow-hidden rounded-xl border border-code-line bg-code text-code-ink my-3.5 mb-5"><div class="flex items-center justify-between border-b border-code-line px-3 py-2 text-xs font-mono text-code-dim"><span>${language}</span><button type="button" class="inline-flex cursor-pointer items-center gap-1.5 rounded-[7px] border border-code-line bg-transparent px-2.5 py-1 text-xs font-medium text-code-dim hover:text-code-hi" data-copy-code="${escaped}"><svg class="size-3.25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Copy</button></div><pre class="m-0 overflow-x-auto p-4 font-mono text-[13px] leading-[1.65]"><code>${safeCode}</code></pre></div>\n`;
+            // Escaped + syntax-coloured (same token colours as the rest of the site)
+            const safeCode = highlightToHtml(text, lang || "");
+            return `<div class="overflow-hidden rounded-xl border border-code-line bg-code text-code-ink my-3.5 mb-5"><div class="flex items-center justify-between border-b border-code-line px-3 py-2 text-xs font-mono text-code-dim"><span>${language}</span><button type="button" class="inline-flex cursor-pointer items-center gap-1.5 rounded-[7px] border border-code-line bg-transparent px-2.5 py-1 text-xs font-medium text-code-dim hover:text-code-hi" data-copy-code="${escaped}"><svg class="size-3.25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Copy</button></div><pre class="scrollbar-thin m-0 overflow-x-auto p-4 font-mono text-[13px] leading-[1.65] text-code-ink"><code class="block whitespace-pre border-0 bg-transparent p-0 text-inherit">${safeCode}</code></pre></div>\n`;
         },
         blockquote({ tokens }) {
             const inner = this.parser.parse(tokens);
-            return `<div class="my-[18px] grid grid-cols-[20px_1fr] gap-3 rounded-xl border border-water/25 bg-water-soft px-4 py-3.5 text-sm text-ink"><svg class="mt-[3px] size-[18px] text-water" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><div class="rich m-0 text-ink">${inner}</div></div>\n`;
+            return `<div class="my-4.5 grid grid-cols-[20px_1fr] gap-3 rounded-xl border border-water/25 bg-water-soft px-4 py-3.5 text-sm text-ink"><svg class="mt-0.75 size-4.5 text-water" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><div class="rich m-0 text-ink">${inner}</div></div>\n`;
         },
         link({ href, title, tokens }) {
             const text = this.parser.parseInline(tokens);
@@ -84,7 +86,12 @@ export function Markdown({ content, className }: { content: string; className?: 
 
     return (
         <div
-            className={cx("rich markdown-body text-ink-2 [&>p]:mb-3.5 [&>p]:mt-0 [&>p]:text-ink-2", className)}
+            className={cx(
+                "rich markdown-body text-ink-2 [&>p]:mb-3.5 [&>p]:mt-0 [&>p]:text-ink-2",
+                // Preflight strips list markers; restore readable bullets / numbers with accent markers
+                "[&_ul]:mb-4 [&_ul]:mt-0 [&_ul]:list-disc [&_ul]:pl-5.5 [&_ol]:mb-4 [&_ol]:mt-0 [&_ol]:list-decimal [&_ol]:pl-5.5 [&_li]:mb-1.5 [&_li]:pl-1 [&_li]:text-ink-2 [&_li::marker]:text-accent",
+                className,
+            )}
             dangerouslySetInnerHTML={{ __html: html }}
             onClick={handleClick}
         />

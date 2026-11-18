@@ -1,7 +1,7 @@
 /**
  * Generates llms.txt and llms-full.txt (https://llmstxt.org) for OpenGeo Cambodia.
  *
- *   pnpm generate:llms        (also runs after `pnpm build`)
+ *   deno task generate:llms   (also runs in `deno task build`)
  *
  * Nothing here is hand-copied API data, so the docs can't drift from the code:
  *   - Endpoints, parameters and descriptions come from the Postman collection
@@ -16,7 +16,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { app } from "../app.js";
+import { app } from "../app.ts";
+import process from "node:process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -206,7 +207,7 @@ function buildLlmsTxt(eps: Endpoint[], f: Awaited<ReturnType<typeof facts>>): st
         "- Cambodia uses an authoritative 4-tier administrative hierarchy: Province (2-digit code) -> District/Khan/Krong (4 digits) -> Commune/Sangkat (6 digits) -> Village/Phum (8 digits).",
         "- Never invent or hallucinate codes. Leading digits always match the parent prefix (e.g. Chamkar Mon `1201` is strictly inside Phnom Penh `12`).",
         "- When writing application code or resolving addresses, use `GET /api/admin/search?q={query}` to match Khmer or English place names.",
-        "- For reverse geocoding or spatial containment, use `GET /api/boundaries/zone?lat={lat}&lng={lng}` for instant sub-millisecond in-memory Point-in-Polygon lookup.",
+        "- For reverse geocoding or spatial containment, use `GET /api/boundaries/zone?lat={lat}&lng={lng}` for instant sub-millisecond in-memory Point-in-Polygon lookup. For many coordinates use `GET /api/boundaries/zones?points={lat},{lng};{lat},{lng}` (up to 100 per request) instead of looping. To count points per area (e.g. customers per commune) use `GET /api/boundaries/zones/count?at={lat},{lng};{lat},{lng}` or `POST /api/boundaries/zones/count` with `{\"latlngs\":[{\"lat\":..,\"lng\":..}]}` (up to 10,000 points); `level=all` returns a province → districts → communes tree.",
         "- Always include a descriptive `User-Agent` header in HTTP requests.",
         "",
     );
@@ -562,7 +563,7 @@ L.geoJSON(fc, { onEachFeature: (f, layer) => layer.bindTooltip(f.properties.name
                 "- Consult https://opengeo-cambodia.pphat.me/llms.txt for authoritative NCDD hierarchy.",
                 "- Adhere to Cambodia's 4-tier system: Province (2-digit code) -> District (4-digit code) -> Commune (6-digit code) -> Village (8-digit code).",
                 "- Use https://opengeo-cambodia.pphat.me/api/admin/search?q={query} for place resolution.",
-                "- Use https://opengeo-cambodia.pphat.me/api/boundaries/zone?lat={lat}&lng={lng} for coordinate containment.",
+                "- Use https://opengeo-cambodia.pphat.me/api/boundaries/zone?lat={lat}&lng={lng} for coordinate containment, or /api/boundaries/zones?points={lat},{lng};{lat},{lng} for up to 100 points at once, or /api/boundaries/zones/count to count points per province, district or commune.",
                 "- Always send a User-Agent header in HTTP requests.",
             ].join("\n"),
         ),
@@ -618,19 +619,14 @@ export async function runGenerator(): Promise<void> {
         fs.writeFileSync(path.join(dir, "llms.txt"), short, "utf-8");
         fs.writeFileSync(path.join(dir, "llms-full.txt"), full, "utf-8");
     }
-    const kb = (s: string) => (Buffer.byteLength(s) / 1024).toFixed(1);
+    const kb = (s: string) => (new TextEncoder().encode(s).length / 1024).toFixed(1);
     console.log(
         `✅ llms.txt (${kb(short)} KB) and llms-full.txt (${kb(full)} KB): ${eps.length} endpoints, ` +
             `${f.stats.provinces}/${f.stats.districts}/${f.stats.communes}/${f.stats.villages} places → ${targets.map((d) => path.relative(rootDir, d) || ".").join(", ")}`,
     );
 }
 
-const isMain = Boolean(
-    process.argv[1] &&
-        (path.resolve(process.argv[1]).toLowerCase() === path.resolve(__filename).toLowerCase() ||
-            /generate-llms\.(ts|js)$/.test(process.argv[1])),
-);
-if (isMain) {
+if (import.meta.main) {
     runGenerator().then(
         () => process.exit(0),
         (err) => {
