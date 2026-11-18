@@ -10,6 +10,7 @@ export function NotFound() {
     useSeo({
         title: t("meta.notFoundTitle"),
         description: t("meta.notFoundDesc"),
+        noindex: true,
     });
     return (
         <div>

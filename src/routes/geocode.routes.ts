@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { GeocodeService } from "../services/geocode.service.js";
-import { geocodeRateLimiter } from "../middleware/rate-limiter.js";
-import type { ApiResponse } from "../types/api.js";
-import type { GeocodeResult } from "../types/geocode.js";
+import { GeocodeService } from "../services/geocode.service.ts";
+import { geocodeRateLimiter } from "../middleware/rate-limiter.ts";
+import type { ApiResponse } from "../types/api.ts";
+import type { GeocodeResult } from "../types/geocode.ts";
 
 export const geocodeRoutes = new Hono();
 const geocodeService = new GeocodeService();

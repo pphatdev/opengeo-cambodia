@@ -1,7 +1,5 @@
-import dotenv from "dotenv";
-
-dotenv.config();
-
+import process from "node:process";
+// Environment comes from the process; `deno task` loads .env via --env-file (Workers inject vars from wrangler.jsonc)
 export const config = {
     port: parseInt(process.env.PORT || "3000", 10),
     host: process.env.HOST || "0.0.0.0",

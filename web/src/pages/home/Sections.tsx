@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import { Icon, type IconName } from "../../components/Icon";
 import { Parallax, Reveal } from "../../components/Parallax";
@@ -12,12 +13,12 @@ import { useToast } from "../../lib/toast";
 /** Kicker + serif title on the left, a short intro on the right. */
 export function SectionHead({ kicker: k, title, intro }: { kicker: string; title: string; intro: string }) {
     return (
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
             <Reveal from="left">
                 <div className={kicker}>{k}</div>
                 <h2 className={sectionH2}>{title}</h2>
             </Reveal>
-            <Reveal as="p" delay={120} className="m-0 max-w-[30em] text-ink-2">{intro}</Reveal>
+            <Reveal as="p" delay={120} className="m-0 max-w-[32em] text-sm sm:text-base leading-relaxed text-ink-2">{intro}</Reveal>
         </div>
     );
 }
@@ -38,18 +39,17 @@ export function GlowEdge({ position = "top", tone = "accent" }: { position?: "to
 }
 
 /** Level → colour token classes for the dark-mode card glows */
-const LEVEL_GLOW: Record<string, { line: string; bloom: string }> = {
-    province: { line: "via-accent", bloom: "bg-accent" },
-    district: { line: "via-water", bloom: "bg-water" },
-    commune: { line: "via-warn", bloom: "bg-warn" },
-    village: { line: "via-ok", bloom: "bg-ok" },
+const LEVEL_GLOW: Record<string, { line: string; bloom: string; digitsBg: string }> = {
+    province: { line: "via-accent", bloom: "bg-accent", digitsBg: "bg-accent/15 text-accent border-accent/35" },
+    district: { line: "via-water", bloom: "bg-water", digitsBg: "bg-water/15 text-water border-water/35" },
+    commune: { line: "via-warn", bloom: "bg-warn", digitsBg: "bg-warn/15 text-warn border-warn/35" },
+    village: { line: "via-ok", bloom: "bg-ok", digitsBg: "bg-ok/15 text-ok border-ok/35" },
 };
 
 /* Section bands: alternating grounds give the page rhythm. */
 const pad = "py-20 sm:py-24";
 const section = pad;
 /** Dark navy band, whichever theme the page is in (scheme-dark swaps the tokens for everything inside). */
-// In dark mode the band would match the page, so it drops to a deeper midnight and swaps borders for GlowEdge
 const navyBand = cx("scheme-dark relative overflow-hidden border-y border-line bg-bg dark:border-transparent dark:bg-[#03060d]", pad);
 /** Soft wash band. Dark: a vertical midnight-blue wash instead of the (near invisible) diagonal tint. */
 const washBand = cx(
@@ -78,20 +78,20 @@ function Glows() {
     );
 }
 
-const FEATURES: { icon: IconName; n: 1 | 2 | 3 | 4 | 5 | 6 }[] = [
-    { icon: "layers", n: 1 },
-    { icon: "polygon", n: 2 },
-    { icon: "lang", n: 3 },
-    { icon: "zap", n: 4 },
-    { icon: "key", n: 5 },
-    { icon: "bot", n: 6 },
+const FEATURES: { icon: IconName; n: 1 | 2 | 3 | 4 | 5 | 6; tag: string }[] = [
+    { icon: "layers", n: 1, tag: "4 Tiers · NCDD" },
+    { icon: "polygon", n: 2, tag: "GeoJSON · RFC 7946" },
+    { icon: "lang", n: 3, tag: "UTF-8 · ខ្មែរ / EN" },
+    { icon: "zap", n: 4, tag: "< 1ms · Edge Memory" },
+    { icon: "key", n: 5, tag: "Zero Auth · CORS *" },
+    { icon: "bot", n: 6, tag: "OpenAPI 3.1 · AI" },
 ];
 
 const HIER = [
-    { level: "province", km: "រាជធានីភ្នំពេញ", en: "Phnom Penh", bold: "12", rest: "" },
-    { level: "district", km: "ខណ្ឌចំការមន", en: "Chamkar Mon", bold: "12", rest: "01" },
-    { level: "commune", km: "សង្កាត់ទន្លេបាសាក់", en: "Tonle Basak", bold: "1201", rest: "01" },
-    { level: "village", km: "ភូមិ ១", en: "Phum Muoy", bold: "120101", rest: "01" },
+    { level: "province", km: "រាជធានីភ្នំពេញ", en: "Phnom Penh", prefix: "", activeDigits: "12", fullCode: "12", digitsLabel: "2 digits" },
+    { level: "district", km: "ខណ្ឌចំការមន", en: "Chamkar Mon", prefix: "12", activeDigits: "01", fullCode: "1201", digitsLabel: "4 digits" },
+    { level: "commune", km: "សង្កាត់ទន្លេបាសាក់", en: "Tonle Basak", prefix: "1201", activeDigits: "01", fullCode: "120101", digitsLabel: "6 digits" },
+    { level: "village", km: "ភូមិ ១", en: "Phum Muoy", prefix: "120101", activeDigits: "01", fullCode: "12010101", digitsLabel: "8 digits" },
 ] as const;
 
 export function DataModel() {
@@ -101,33 +101,75 @@ export function DataModel() {
             <Glows />
             <div className={cx(wrap, "relative")}>
                 <SectionHead kicker={t("data.kicker")} title={t("data.title")} intro={t("data.intro")} />
-                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+
+                {/* 4-tier NCDD Code Anatomy Cards */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {HIER.map((h, i) => (
-                        // The connector line between cards only makes sense on the 4-column row
                         <Reveal
                             key={h.level}
                             delay={i * 110}
-                            className="relative rounded-2xl lg:not-last:after:absolute lg:not-last:after:-right-3.75 lg:not-last:after:top-1/2 lg:not-last:after:h-px lg:not-last:after:w-3.75 lg:not-last:after:bg-line-2 lg:not-last:after:content-['']"
+                            className="relative rounded-2xl lg:not-last:after:absolute lg:not-last:after:-right-4 lg:not-last:after:top-1/2 lg:not-last:after:h-px lg:not-last:after:w-4 lg:not-last:after:bg-line-2 lg:not-last:after:content-['']"
                         >
-                            <div className="group/card relative isolate h-full overflow-hidden rounded-2xl glass-card p-5 dark:bg-[linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.01))]">
+                            <div className="group/card relative isolate flex h-full flex-col justify-between overflow-hidden rounded-2xl glass-card p-5 dark:bg-[linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.01))]">
                                 {/* Dark mode: level-coloured top rim + bloom that intensifies on hover */}
                                 <span aria-hidden="true" className={cx("absolute inset-x-4 top-0 -z-1 hidden h-px bg-linear-to-r from-transparent to-transparent dark:block", LEVEL_GLOW[h.level].line)} />
                                 <span aria-hidden="true" className={cx("absolute -top-10 left-1/2 -z-1 hidden size-28 -translate-x-1/2 rounded-full opacity-25 blur-2xl transition-opacity duration-300 group-hover/card:opacity-50 dark:block", LEVEL_GLOW[h.level].bloom)} />
-                                <span className={cx(lvl(h.level), "mb-3.5")}>{t(`level.${h.level}`)}</span>
-                                <span className="block font-khmer text-[17px] font-semibold">{h.km}</span>
-                                <span className="text-[13.5px] text-ink-2">{h.en}</span>
-                                <div className="mt-3.5 font-mono text-[12.5px] text-ink-3">{t("data.code")} <b className="font-medium text-ink">{h.bold}</b>{h.rest}</div>
+
+                                <div>
+                                    <div className="mb-3.5 flex items-center justify-between gap-2">
+                                        <span className={lvl(h.level)}>{t(`level.${h.level}`)}</span>
+                                        <span className="font-mono text-[10.5px] text-ink-3">{h.digitsLabel}</span>
+                                    </div>
+                                    <span className="block font-khmer text-[18px] font-semibold leading-snug text-ink">{h.km}</span>
+                                    <span className="text-[13.5px] text-ink-2">{h.en}</span>
+                                </div>
+
+                                <div className="mt-4 border-t border-line/60 pt-3.5">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <span className="font-mono text-[11.5px] text-ink-3">{t("data.code")}</span>
+                                        <span className="inline-flex items-center font-mono text-[13px] tracking-wider">
+                                            {h.prefix && <span className="text-ink-3">{h.prefix}</span>}
+                                            <b className={cx("ml-0.5 rounded border px-1.25 py-0.5 font-semibold", LEVEL_GLOW[h.level].digitsBg)}>
+                                                {h.activeDigits}
+                                            </b>
+                                        </span>
+                                    </div>
+                                    <a
+                                        href={`/api/admin/item/${h.fullCode}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-2.5 flex items-center justify-between rounded-lg border border-line/60 bg-surface/40 px-2.5 py-1.5 font-mono text-[11px] text-ink-2 no-underline transition-colors hover:border-accent/50 hover:text-accent"
+                                    >
+                                        <span className="truncate">GET /api/admin/item/{h.fullCode}</span>
+                                        <Icon name="ext" className="size-3 flex-none opacity-70" />
+                                    </a>
+                                </div>
                             </div>
                         </Reveal>
                     ))}
                 </div>
-                <Reveal delay={120} className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl glass-panel bg-line/30 sm:grid-cols-2 lg:grid-cols-3">
+
+                {/* 6-Card Bento Grid */}
+                <Reveal delay={120} className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {FEATURES.map((f, i) => (
-                        <Reveal key={f.n} delay={180 + i * 70} className="flex">
-                            <div className="group/feat glass-panel w-full p-7 transition-colors duration-300 dark:bg-[#060a14]/80 dark:hover:bg-[#0a1120]/90">
-                                <div className="mb-4.5 grid size-9.5 place-items-center rounded-xl glass-pill text-accent transition-shadow duration-300 [&_svg]:size-4.75 dark:bg-accent-soft dark:shadow-[0_0_0_1px_color-mix(in_srgb,var(--og-accent)_30%,transparent),0_0_22px_-6px_var(--og-accent)] dark:group-hover/feat:shadow-[0_0_0_1px_color-mix(in_srgb,var(--og-accent)_55%,transparent),0_0_30px_-4px_var(--og-accent)]"><Icon name={f.icon} /></div>
-                                <h3 className="mb-1.5 mt-0 text-base font-semibold tracking-[-.01em]">{t(`data.f${f.n}Title` as MessageKey)}</h3>
-                                <p className="rich m-0 text-sm text-ink-2">{rt(`data.f${f.n}Body` as MessageKey)}</p>
+                        <Reveal key={f.n} delay={160 + i * 65} className="flex">
+                            <div className="group/feat relative flex w-full flex-col justify-between overflow-hidden rounded-2xl glass-card p-6 sm:p-7 dark:bg-[#060b16]/85 dark:hover:bg-[#0a1224]/95">
+                                <div>
+                                    <div className="mb-5 flex items-center justify-between gap-3">
+                                        <div className="grid size-10 place-items-center rounded-xl glass-pill text-accent transition-shadow duration-300 [&_svg]:size-5 dark:bg-accent-soft dark:shadow-[0_0_0_1px_color-mix(in_srgb,var(--og-accent)_30%,transparent),0_0_22px_-6px_var(--og-accent)] dark:group-hover/feat:shadow-[0_0_0_1px_color-mix(in_srgb,var(--og-accent)_55%,transparent),0_0_30px_-4px_var(--og-accent)]">
+                                            <Icon name={f.icon} />
+                                        </div>
+                                        <span className="rounded-full border border-line/80 bg-surface/60 px-2.5 py-0.5 font-mono text-[10.5px] font-medium text-ink-3">
+                                            {f.tag}
+                                        </span>
+                                    </div>
+                                    <h3 className="mb-2 mt-0 text-[16.5px] font-semibold tracking-[-.01em] text-ink">
+                                        {t(`data.f${f.n}Title` as MessageKey)}
+                                    </h3>
+                                    <p className="rich m-0 text-sm leading-relaxed text-ink-2">
+                                        {rt(`data.f${f.n}Body` as MessageKey)}
+                                    </p>
+                                </div>
                             </div>
                         </Reveal>
                     ))}
@@ -137,7 +179,12 @@ export function DataModel() {
     );
 }
 
-const QUICKSTART = `const API = "${PROD_ORIGIN}/api/admin";
+const CODE_SNIPPETS = [
+    {
+        id: "cascade",
+        filename: "address-form.js",
+        endpoint: "GET /api/admin/provinces/:id/districts",
+        code: `const API = "${PROD_ORIGIN}/api/admin";
 
 async function load(path) {
   const { data } = await fetch(API + path).then(r => r.json());
@@ -158,11 +205,55 @@ districtSelect.onchange = async (e) => {
 function fill(select, items) {
   select.replaceChildren(...items.map(i =>
     new Option(\`\${i.name_en} · \${i.name_km}\`, i.id)));
-}`;
+}`,
+    },
+    {
+        id: "reverse",
+        filename: "reverse-geocode.js",
+        endpoint: "GET /api/boundaries/reverse",
+        code: `const ORIGIN = "${PROD_ORIGIN}";
+
+// Resolve GPS coordinates (Phnom Penh) to admin units + polygon
+const res = await fetch(
+  \`\${ORIGIN}/api/boundaries/reverse?lat=11.5564&lon=104.9282\`
+);
+const { data } = await res.json();
+
+console.log(data.province.name_en, data.province.name_km);
+// -> "Phnom Penh" "រាជធានីភ្នំពេញ"
+
+console.log(data.commune.code, data.commune.name_en);
+// -> "120101" "Tonle Basak"
+
+// Fetch the GeoJSON boundary polygon for that commune
+const geo = await fetch(
+  \`\${ORIGIN}/api/boundaries/item/\${data.commune.code}\`
+).then(r => r.json());`,
+    },
+    {
+        id: "curl",
+        filename: "quickstart.sh",
+        endpoint: "REST / cURL",
+        code: `# 1. List all 25 provinces & capital
+curl "${PROD_ORIGIN}/api/admin/provinces"
+
+# 2. Bilingual search across all 16,472 units
+curl "${PROD_ORIGIN}/api/admin/search?q=Siem+Reap&limit=5"
+
+# 3. Full ancestor hierarchy for an 8-digit village code
+curl "${PROD_ORIGIN}/api/admin/hierarchy/12010101"
+
+# 4. GeoJSON polygon for a province, district, or commune
+curl "${PROD_ORIGIN}/api/boundaries/item/1201"`,
+    },
+] as const;
 
 export function Quickstart() {
     const { copy } = useToast();
     const { t, rt } = useI18n();
+    const [tabIdx, setTabIdx] = useState(0);
+    const activeSnippet = CODE_SNIPPETS[tabIdx];
+
     return (
         <section className={cx(section, "relative overflow-hidden")}>
             <Parallax speed={0.35} className="pointer-events-none absolute -left-24 top-1/3" aria-hidden="true">
@@ -174,34 +265,76 @@ export function Quickstart() {
                 className="pointer-events-none absolute -inset-y-24 inset-x-0 hidden bg-[linear-gradient(var(--og-line)_1px,transparent_1px),linear-gradient(90deg,var(--og-line)_1px,transparent_1px)] bg-size-[56px_56px] mask-[radial-gradient(ellipse_55%_60%_at_72%_50%,#000_10%,transparent_75%)] dark:block"
                 aria-hidden="true"
             />
-            <div className={cx(wrap, "relative grid grid-cols-[minmax(0,1fr)] items-start gap-12 lg:grid-cols-[1fr_1.15fr]")}>
+            <div className={cx(wrap, "relative grid grid-cols-[minmax(0,1fr)] items-start gap-12 lg:grid-cols-[1fr_1.18fr]")}>
                 <Reveal from="left" className="min-w-0">
                     <div className={kicker}>{t("quick.kicker")}</div>
                     <h2 className={sectionH2}>{t("quick.title")}</h2>
-                    <ol className="mt-7 grid list-none gap-4.5 p-0">
+                    <ol className="mt-7 grid list-none gap-5 p-0">
                         {([1, 2, 3] as const).map((n) => (
-                            <li key={n} className="grid grid-cols-[32px_1fr] gap-3.5">
-                                <span className="grid size-8 place-items-center rounded-full border border-line-2 font-mono text-[13px] font-medium text-ink-2 dark:border-accent/40 dark:bg-accent-soft dark:text-accent dark:shadow-[0_0_18px_-4px_var(--og-accent)]">{n}</span>
+                            <li
+                                key={n}
+                                className="relative grid grid-cols-[36px_1fr] gap-4 not-last:before:absolute not-last:before:-bottom-5 not-last:before:left-[17.5px] not-last:before:top-9 not-last:before:w-px not-last:before:bg-line-2"
+                            >
+                                <span className="relative z-1 grid size-9 place-items-center rounded-full border border-line-2 bg-surface font-mono text-[13px] font-semibold text-ink-2 shadow-2xs dark:border-accent/40 dark:bg-accent-soft dark:text-accent dark:shadow-[0_0_18px_-4px_var(--og-accent)]">
+                                    {n}
+                                </span>
                                 <div>
-                                    <h4 className="mb-0.5 mt-1 text-[15px] font-semibold">{t(`quick.s${n}Title`)}</h4>
-                                    <p className="rich m-0 text-sm text-ink-2">{rt(`quick.s${n}Body`)}</p>
+                                    <h4 className="mb-1 mt-1 text-[15.5px] font-semibold text-ink">{t(`quick.s${n}Title`)}</h4>
+                                    <p className="rich m-0 text-sm leading-relaxed text-ink-2">{rt(`quick.s${n}Body`)}</p>
                                 </div>
                             </li>
                         ))}
                     </ol>
-                    <div className="mt-7"><Link className={btnGhost} to="/docs#quickstart">{t("quick.full")} <Icon name="arrow" /></Link></div>
-                </Reveal>
-                {/* Code panel floats slightly ahead of the page on desktop */}
-                <Parallax speed={-0.06} minWidth={1024} className="relative min-w-0">
-                {/* Dark mode: brand bloom behind the panel */}
-                <div aria-hidden="true" className="pointer-events-none absolute -inset-6 hidden rounded-4xl bg-[radial-gradient(ellipse_at_30%_0%,color-mix(in_srgb,var(--og-accent)_22%,transparent),transparent_60%),radial-gradient(ellipse_at_100%_100%,color-mix(in_srgb,var(--og-water)_18%,transparent),transparent_60%)] blur-xl dark:block" />
-                <Reveal from="right" delay={120} className="relative min-w-0 overflow-hidden rounded-2xl border border-code-line/80 bg-code/95 text-code-ink shadow-[0_24px_50px_-16px_rgba(0,0,0,.5),inset_0_1px_1px_0_rgba(255,255,255,.08)] backdrop-blur-md dark:border-transparent dark:[background:linear-gradient(var(--og-code-bg),var(--og-code-bg))_padding-box,linear-gradient(135deg,color-mix(in_srgb,var(--og-accent)_70%,transparent),rgba(255,255,255,.06)_40%,color-mix(in_srgb,var(--og-water)_60%,transparent))_border-box] dark:shadow-[0_30px_70px_-20px_rgba(0,0,0,.9)]">
-                    <div className="flex items-center gap-1 border-b border-code-line px-3 py-2.5">
-                        <span className={codeTab} aria-selected="true">address-form.js</span>
-                        <button className={codeCopy} type="button" onClick={() => copy(QUICKSTART)}><Icon name="copy" />{t("common.copy")}</button>
+                    <div className="mt-8 flex flex-wrap gap-3">
+                        <Link className={btnGhost} to="/docs#quickstart">
+                            {t("quick.full")} <Icon name="arrow" />
+                        </Link>
+                        <Link className={btnGhost} to="/playground">
+                            <Icon name="play" /> {t("nav.playground")}
+                        </Link>
                     </div>
-                    <pre className={cx(codePre, "px-4.5 py-4")}>{highlightCode(QUICKSTART)}</pre>
                 </Reveal>
+
+                {/* Multi-tab code workbench floats slightly ahead of the page on desktop */}
+                <Parallax speed={-0.06} minWidth={1024} className="relative min-w-0">
+                    {/* Dark mode: brand bloom behind the panel */}
+                    <div aria-hidden="true" className="pointer-events-none absolute -inset-6 hidden rounded-4xl bg-[radial-gradient(ellipse_at_30%_0%,color-mix(in_srgb,var(--og-accent)_22%,transparent),transparent_60%),radial-gradient(ellipse_at_100%_100%,color-mix(in_srgb,var(--og-water)_18%,transparent),transparent_60%)] blur-xl dark:block" />
+                    <Reveal
+                        from="right"
+                        delay={120}
+                        className="relative min-w-0 overflow-hidden rounded-2xl border border-code-line/80 bg-code/95 text-code-ink shadow-[0_24px_50px_-16px_rgba(0,0,0,.5),inset_0_1px_1px_0_rgba(255,255,255,.08)] backdrop-blur-md dark:border-transparent dark:[background:linear-gradient(var(--og-code-bg),var(--og-code-bg))_padding-box,linear-gradient(135deg,color-mix(in_srgb,var(--og-accent)_70%,transparent),rgba(255,255,255,.06)_40%,color-mix(in_srgb,var(--og-water)_60%,transparent))_border-box] dark:shadow-[0_30px_70px_-20px_rgba(0,0,0,.9)]"
+                    >
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-code-line px-3.5 py-2.5">
+                            <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Quickstart code examples">
+                                <div className="mr-1.5 flex items-center gap-1.5 max-sm:hidden" aria-hidden="true">
+                                    <span className="size-2.5 rounded-full bg-rose-500/75" />
+                                    <span className="size-2.5 rounded-full bg-amber-400/75" />
+                                    <span className="size-2.5 rounded-full bg-emerald-400/75" />
+                                </div>
+                                {CODE_SNIPPETS.map((s, idx) => (
+                                    <button
+                                        key={s.id}
+                                        type="button"
+                                        role="tab"
+                                        aria-selected={idx === tabIdx}
+                                        onClick={() => setTabIdx(idx)}
+                                        className={codeTab}
+                                    >
+                                        {s.filename}
+                                    </button>
+                                ))}
+                            </div>
+                            <button className={codeCopy} type="button" onClick={() => copy(activeSnippet.code)}>
+                                <Icon name="copy" />
+                                {t("common.copy")}
+                            </button>
+                        </div>
+                        <pre className={cx(codePre, "px-4.5 py-4")}>{highlightCode(activeSnippet.code)}</pre>
+                        <div className="flex items-center justify-between border-t border-code-line/70 bg-white/[0.02] px-4 py-2 font-mono text-[11px] text-code-dim">
+                            <span>{activeSnippet.endpoint}</span>
+                            <span className="text-emerald-400">200 OK · application/json</span>
+                        </div>
+                    </Reveal>
                 </Parallax>
             </div>
         </section>
@@ -223,13 +356,13 @@ const EXT_HOVER = {
 
 export function Downloads() {
     const { t } = useI18n();
-    const items: { href: string; ext: string; kind: keyof typeof EXT_STYLES; name: string; sub: string }[] = [
-        { href: "/api/boundaries/raw/provinces.geojson", ext: "geo json", kind: "geo", name: "province.geojson", sub: t("downloads.polygons", { n: 25 }) },
-        { href: "/api/boundaries/raw/districts.geojson", ext: "geo json", kind: "geo", name: "district.geojson", sub: t("downloads.polygons", { n: 197 }) },
-        { href: "/api/boundaries/raw/communes.geojson", ext: "geo json", kind: "geo", name: "commune.geojson", sub: t("downloads.polygons", { n: "1,633" }) },
-        { href: "/data/CambodiaProvinceList.csv", ext: "csv", kind: "csv", name: "CambodiaProvinceList.csv", sub: t("downloads.provinceList") },
-        { href: "/data/CambodiaVillagesList.csv", ext: "csv", kind: "csv", name: "CambodiaVillagesList.csv", sub: t("downloads.allVillages") },
-        { href: "/opengeo-cambodia.postman_collection.json", ext: "json", kind: "json", name: t("downloads.postman"), sub: t("downloads.postmanSub") },
+    const items: { href: string; ext: string; kind: keyof typeof EXT_STYLES; name: string; sub: string; badge: string }[] = [
+        { href: "/api/boundaries/raw/provinces.geojson", ext: "geo json", kind: "geo", name: "province.geojson", sub: t("downloads.polygons", { n: 25 }), badge: "WGS84" },
+        { href: "/api/boundaries/raw/districts.geojson", ext: "geo json", kind: "geo", name: "district.geojson", sub: t("downloads.polygons", { n: 197 }), badge: "WGS84" },
+        { href: "/api/boundaries/raw/communes.geojson", ext: "geo json", kind: "geo", name: "commune.geojson", sub: t("downloads.polygons", { n: "1,633" }), badge: "WGS84" },
+        { href: "/data/CambodiaProvinceList.csv", ext: "csv", kind: "csv", name: "CambodiaProvinceList.csv", sub: t("downloads.provinceList"), badge: "UTF-8" },
+        { href: "/data/CambodiaVillagesList.csv", ext: "csv", kind: "csv", name: "CambodiaVillagesList.csv", sub: t("downloads.allVillages"), badge: "UTF-8" },
+        { href: "/opengeo-cambodia.postman_collection.json", ext: "json", kind: "json", name: t("downloads.postman"), sub: t("downloads.postmanSub"), badge: "v2.1" },
     ];
     return (
         <section className={cx(washBand, "overflow-hidden")}>
@@ -242,30 +375,47 @@ export function Downloads() {
             <GlowEdge position="top" tone="water" />
             <div className={cx(wrap, "relative")}>
                 <SectionHead kicker={t("downloads.kicker")} title={t("downloads.title")} intro={t("downloads.intro")} />
-                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {items.map((d, i) => (
                         <Reveal key={d.href} delay={(i % 3) * 90 + Math.floor(i / 3) * 140} className="flex">
                             <a
                                 className={cx(
-                                    "flex w-full items-center gap-3.5 rounded-2xl glass-card px-4.5 py-4 text-ink no-underline",
+                                    "group/dl flex w-full items-center gap-3.5 rounded-2xl glass-card px-4.5 py-4 text-ink no-underline",
                                     "dark:bg-[linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015))]",
                                     EXT_HOVER[d.kind],
                                 )}
                                 href={d.href}
                                 download
                             >
-                                <span className={cx("grid size-11.5 flex-none place-items-center rounded-xl text-center font-mono text-[10.5px] font-semibold uppercase leading-[1.1] shadow-xs", EXT_STYLES[d.kind])}>{d.ext}</span>
-                                <div>
-                                    <b className="block text-sm font-semibold">{d.name}</b>
-                                    <span className="text-[12.5px] text-ink-3">{d.sub}</span>
+                                <span className={cx("grid size-12 flex-none place-items-center rounded-xl text-center font-mono text-[10.5px] font-semibold uppercase leading-[1.1] shadow-xs", EXT_STYLES[d.kind])}>
+                                    {d.ext}
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <b className="truncate text-sm font-semibold group-hover/dl:text-accent transition-colors">{d.name}</b>
+                                        <span className="rounded border border-line/70 bg-surface-2/60 px-1.5 py-0.5 font-mono text-[10px] text-ink-3">
+                                            {d.badge}
+                                        </span>
+                                    </div>
+                                    <span className="mt-0.5 block truncate text-[12.5px] text-ink-3">{d.sub}</span>
                                 </div>
                             </a>
                         </Reveal>
                     ))}
                 </div>
-                <Reveal className="mt-6 flex flex-wrap items-center justify-center gap-3 text-[13px] text-ink-3">
+                <Reveal className="mt-7 flex flex-wrap items-center justify-center gap-3 rounded-2xl glass-panel-subtle px-5 py-3.5 text-[13px] text-ink-2">
                     <span>{t("downloads.postmanSub")} —</span>
                     <PostmanRunButton />
+                    <span className="text-line-2">·</span>
+                    <a
+                        href="/openapi.json"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 font-mono text-xs font-medium text-accent hover:underline"
+                    >
+                        <span>OpenAPI 3.1 Spec</span>
+                        <Icon name="ext" className="size-3" />
+                    </a>
                 </Reveal>
             </div>
         </section>
@@ -277,7 +427,7 @@ export function Cta() {
     return (
         // Light: inverted ink band (black, white type).
         // Dark: instead of a glaring white slab, a deep teal→midnight band lit by brand glows, with light type.
-        <section className="relative overflow-hidden bg-ink py-16 text-bg sm:py-20 dark:bg-[linear-gradient(120deg,#042f2e_0%,#06131f_45%,#071a33_100%)] dark:text-ink">
+        <section className="relative overflow-hidden bg-ink py-16 text-bg sm:py-22 dark:bg-[linear-gradient(120deg,#042f2e_0%,#06131f_45%,#071a33_100%)] dark:text-ink">
             {/* Dark mode: brand light pools + top rim */}
             <Parallax speed={0.35} className="pointer-events-none absolute -left-24 -top-32 hidden dark:block" aria-hidden="true">
                 <div className="size-110 rounded-full bg-accent/25 blur-[100px]" />
@@ -292,28 +442,40 @@ export function Cta() {
                     {PROVINCES.map((p) => <path key={p.code} d={p.d} className="fill-none stroke-bg dark:stroke-accent" strokeWidth={2} vectorEffect="non-scaling-stroke" />)}
                 </svg>
             </Parallax>
-            <div className={cx(wrap, "relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]")}>
+            <div className={cx(wrap, "relative grid items-center gap-8 lg:grid-cols-[1.35fr_1fr]")}>
                 <Reveal from="left">
-                    <h2 className="mb-2.5 mt-0 font-display text-[clamp(24px,3vw,36px)] font-bold leading-[1.15] tracking-tight km:font-khmer km:tracking-normal km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
-                    <p className="m-0 opacity-70 dark:text-ink-2 dark:opacity-100">{t("cta.body")}</p>
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-bg/20 bg-bg/10 px-3 py-1 font-mono text-[11px] font-medium text-bg/85 dark:border-accent/30 dark:bg-accent/10 dark:text-accent">
+                        <span className="size-1.5 rounded-full bg-ok animate-pulse" />
+                        <span>OpenGeo Cambodia API · Ready for Production</span>
+                    </div>
+                    <h2 className="mb-2.5 mt-0 font-display text-[clamp(26px,3.2vw,38px)] font-bold leading-[1.15] tracking-tight km:font-khmer km:tracking-normal km:text-[clamp(26px,3.2vw,36px)] km:font-semibold km:leading-[1.4]">{t("cta.title")}</h2>
+                    <p className="m-0 max-w-[38em] opacity-75 dark:text-ink-2 dark:opacity-100">{t("cta.body")}</p>
                 </Reveal>
                 <Reveal from="right" delay={120} className="flex flex-wrap gap-3 lg:justify-end">
-                    {/* Built from `btn` so colours don't conflict with the theme recipes */}
                     <Link
                         className={cx(
                             btn,
                             "bg-bg text-ink hover:opacity-90",
-                            // Dark: glowing accent primary with dark type for contrast
                             "dark:bg-accent dark:font-semibold dark:text-[#04201d] dark:shadow-[0_8px_28px_-6px_var(--og-accent)] dark:hover:opacity-100 dark:hover:shadow-[0_10px_36px_-4px_var(--og-accent)]",
                         )}
                         to="/docs"
                     >
                         {t("cta.docs")} <Icon name="arrow" />
                     </Link>
-                    <a
+                    <Link
                         className={cx(
                             btn,
                             "border-bg/30 bg-transparent text-bg hover:border-bg/70",
+                            "dark:border-line-2 dark:bg-white/5 dark:text-ink dark:backdrop-blur-md dark:hover:border-accent/60 dark:hover:text-accent",
+                        )}
+                        to="/playground"
+                    >
+                        <Icon name="play" /> {t("nav.playground")}
+                    </Link>
+                    <a
+                        className={cx(
+                            btn,
+                            "border-bg/30 bg-transparent text-bg hover:border-bg/70 font-mono text-xs",
                             "dark:border-line-2 dark:bg-white/5 dark:text-ink dark:backdrop-blur-md dark:hover:border-accent/60 dark:hover:text-accent",
                         )}
                         href="/api/info"

@@ -1,12 +1,12 @@
 import { Hono } from "hono";
-import { AdminService } from "../services/admin.service.js";
-import { createEdgeCache } from "../middleware/edge-cache.js";
-import { searchRateLimiter } from "../middleware/rate-limiter.js";
-import type { ApiResponse } from "../types/api.js";
+import { AdminService } from "../services/admin.service.ts";
+import { createEdgeCache } from "../middleware/edge-cache.ts";
+import { searchRateLimiter } from "../middleware/rate-limiter.ts";
+import type { ApiResponse } from "../types/api.ts";
 import type {
     AdminItem,
     AdminLevel,
-} from "../types/admin.js";
+} from "../types/admin.ts";
 
 export const adminRoutes = new Hono();
 const adminService = new AdminService();

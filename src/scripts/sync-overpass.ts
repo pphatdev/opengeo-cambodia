@@ -2,9 +2,9 @@ import axios from "axios";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { config } from "../config.js";
-import { validateOutboundUrl } from "../security/supply-chain.js";
-import type { AdminItem } from "../types/admin.js";
+import { config } from "../config.ts";
+import { validateOutboundUrl } from "../security/supply-chain.ts";
+import type { AdminItem } from "../types/admin.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,7 +25,7 @@ interface OverpassResponse {
 
 /**
  * Overpass ETL Pipeline for Cambodia Administrative Divisions
- * Run with: npm run sync:overpass
+ * Run with: deno task sync:overpass
  */
 async function syncFromOverpass() {
     console.log(

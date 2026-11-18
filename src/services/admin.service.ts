@@ -1,10 +1,10 @@
-import { AdminStore } from "../data/store.js";
+import { AdminStore } from "../data/store.ts";
 import type {
     AdminItem,
     AdminLevel,
     AdminStats,
     HierarchyPath,
-} from "../types/admin.js";
+} from "../types/admin.ts";
 
 export class AdminService {
     private store: AdminStore;

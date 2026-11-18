@@ -1,13 +1,40 @@
+# Dependencies & Packages
 node_modules/
 .pnpm-store/
+
+# Build artifacts & caches
 dist/
+dist-ssr/
+*.local
+.vite/
+web/.vite/
+
+# Environment files
 .env
+.env.*
+!.env.example
+
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Cloudflare & Serverless caches
+.wrangler/
+.dev.vars
+
+# OS generated files
 .DS_Store
 Thumbs.db
-.wrangler/
+*.swp
+*.swo
+
+# Temporary & Test files
 test.js
 test*.js
+
+# AI & Editor workspaces
 .claude/
 
 # Generated LLM reference files

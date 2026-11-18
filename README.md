@@ -80,29 +80,31 @@ $$\text{City / Province (រាជធានី / ខេត្ត)} \longrightarr
 ## 🚀 Quick Start
 
 ### 1. Prerequisites
-- **Node.js** v20+ LTS
-- **npm** or **pnpm** / **yarn**
+- **[Deno](https://deno.com/)** v2.x. No Node.js or npm needed: Deno runs the API, the scripts and the npm-based tooling (Vite, wrangler, TypeScript).
+- Optional: the [Deno VS Code extension](https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno). It is enabled for `src/` and `scripts/` in `.vscode/settings.json`.
 
 ### 2. Installation
 ```bash
-npm install
+deno install
 ```
+
+Dependencies are pinned in [`deno.json`](deno.json) (`imports`) and locked in `deno.lock`. `deno install` also creates `node_modules/` for Vite and wrangler. npm lifecycle scripts never run on install.
 
 ### 3. Run Development Server
 ```bash
-pnpm dev        # both servers, with live reload — open http://localhost:5173
+deno task dev        # both servers, with live reload — open http://localhost:5173
 ```
 
-`pnpm dev` runs [scripts/dev.mjs](scripts/dev.mjs), which starts two processes. Their output is prefixed `[api]` and `[web]`, and Ctrl+C stops both:
-- `[api]` is `pnpm dev:api` (`tsx watch src/index.ts`). It serves the API on http://localhost:3000 and restarts on `src/` changes.
-- `[web]` is `pnpm dev:web` (`vite web`). It serves the site on http://localhost:5173 and hot-reloads on `web/` changes.
+`deno task dev` runs two tasks in parallel. Ctrl+C stops both:
+- `deno task dev:api` (`deno run --watch src/index.ts`) serves the API on http://localhost:3000 and restarts on `src/` changes. It reads `.env` (see `.env.example`).
+- `deno task dev:web` (`vite web`) serves the site on http://localhost:5173 and hot-reloads on `web/` changes.
 
-Use port 5173 while developing. Port 3000 only serves the last `pnpm build:web` output, so it won't show edits in `web/`. You can still run either process on its own.
+Use port 5173 while developing. Port 3000 only serves the last `deno task build:web` output, so it won't show edits in `web/`. You can still run either task on its own.
 
-The web app lives in [`web/`](web/) (React + TypeScript + Vite, Tailwind CSS v4, React Router, react-leaflet). It's bilingual (English / ខ្មែរ): the switch in the nav saves the choice, `?lang=km` or `?lang=en` in a link picks the language, and Khmer-language browsers get Khmer by default. To add or change text, edit `web/src/i18n/en.ts` and `km.ts`. The type check fails if a key is missing from either. In development, Vite proxies `/api`, `/health` and `/llms*.txt` to the API on port 3000 (override with `API_URL`). `pnpm build:web` writes the production bundle to `dist/client`. That folder is what Cloudflare Workers Assets serves, and the Node server serves it at `/`, `/demo` and `/docs`.
+The web app lives in [`web/`](web/) (React + TypeScript + Vite, Tailwind CSS v4, React Router, react-leaflet). It's bilingual (English / ខ្មែរ): the switch in the nav saves the choice, `?lang=km` or `?lang=en` in a link picks the language, and Khmer-language browsers get Khmer by default. To add or change text, edit `web/src/i18n/en.ts` and `km.ts`. The type check fails if a key is missing from either. In development, Vite proxies `/api`, `/health` and `/llms*.txt` to the API on port 3000 (override with `API_URL`). `deno task build:web` writes the production bundle to `dist/client`. That folder is what Cloudflare Workers Assets serves, and the Deno server serves it at `/`, `/demo` and `/docs`.
 
 The API server starts at `http://localhost:3000`:
-- **Web UI**: `http://localhost:3000/` and `/docs` (after `pnpm build:web`)
+- **Web UI**: `http://localhost:3000/` and `/docs` (after `deno task build:web`)
 - **API Welcome / Endpoints**: `http://localhost:3000/` (JSON)
 - **API Spec & Info**: `http://localhost:3000/api/info`
 - **Postman Collection**: `http://localhost:3000/opengeo-cambodia.postman_collection.json`
@@ -110,33 +112,37 @@ The API server starts at `http://localhost:3000`:
 - **LLM Full Specification**: `http://localhost:3000/llms-full.txt`
 - **Health Check**: `http://localhost:3000/health`
 
-### 4. Build Backend for Production
+### 4. Build and run for production
 ```bash
-npm run build
-npm start
+deno task build   # data assets, llms.txt, sitemap and the web bundle
+deno task start   # serve on http://localhost:3000 (PORT / HOST from .env)
 ```
+
+Deploy to Cloudflare Workers with `deno task deploy`.
+
+Other tasks: `deno task lint` (type-check), `deno task audit` (known vulnerabilities in npm packages) and `deno task preview` (local Workers runtime). Run `deno task` to list them all.
 
 ### 5. Run Overpass ETL Sync
 ```bash
-npm run sync:overpass
+deno task sync:overpass
 ```
 
 ### 6. Update Seed Datasets from CSV
 ```bash
 # Update provinces from CambodiaProvinceList.csv
-npm run update:provinces
+deno task update:provinces
 
 # Update districts from CambodiaDistrictList.csv
-npm run update:districts
+deno task update:districts
 
 # Update communes from CambodiaCommuneList.csv
-npm run update:communes
+deno task update:communes
 
 # Update villages from CambodiaVillagesList.csv
-npm run update:villages
+deno task update:villages
 
 # Update all administrative divisions in one step
-npm run update:all
+deno task update:all
 ```
 
 ---
@@ -376,8 +382,8 @@ POST /api/chat
 
 ```text
 opengeo-cambodia.pphat.me/
-├── package.json
-├── tsconfig.json
+├── deno.json              # Tasks, pinned npm imports, compiler options
+├── deno.lock
 ├── .env.example
 ├── .gitignore
 ├── README.md
@@ -395,7 +401,7 @@ opengeo-cambodia.pphat.me/
 │       ├── district.geojson   # 204 Districts boundary polygons
 │       └── commune.geojson    # 1,640 Communes boundary polygons
 └── src/
-    ├── index.ts               # Server entry point using @hono/node-server
+    ├── index.ts               # Self-hosted server entry point (Deno.serve)
     ├── app.ts                 # Hono app configuration, CORS, Logger, routes
     ├── config.ts              # Environment settings and constants
     ├── types/

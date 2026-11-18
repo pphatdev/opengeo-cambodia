@@ -3,7 +3,7 @@
   "short_name": "OpenGeo",
   "description": "Sub-1ms Cambodian Geographic & Administrative Division API (Provinces, Districts, Communes, Villages & Geocoding)",
   "id": "/",
-  "start_url": "/demo",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -64,10 +64,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Interactive Demo",
-      "short_name": "Demo",
+      "name": "API Playground",
+      "short_name": "Playground",
       "description": "Interactive cascading admin lookups and map geocoding",
-      "url": "/demo",
+      "url": "/playground",
       "icons": [
         {
           "src": "/logo.jpg",

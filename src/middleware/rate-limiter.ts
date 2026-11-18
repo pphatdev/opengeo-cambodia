@@ -1,4 +1,5 @@
 import type { MiddlewareHandler } from "hono";
+import process from "node:process";
 
 interface RateLimitOptions {
     windowMs: number;
@@ -14,7 +15,7 @@ interface ClientRecord {
 
 /**
  * High-performance sliding-window in-memory rate limiter for Hono
- * Supports Cloudflare Workers (cf-connecting-ip), Proxies (x-forwarded-for), and Direct Node.js
+ * Supports Cloudflare Workers (cf-connecting-ip), Proxies (x-forwarded-for), and direct Deno server
  */
 export function createRateLimiter(
     options: RateLimitOptions,
@@ -67,7 +68,7 @@ export function createRateLimiter(
         const cfIp = c.req.header("cf-connecting-ip");
         let clientIp = cfIp;
         if (!clientIp) {
-            // Local dev / Node fallback
+            // Local dev / Deno server fallback
             const realIp = c.req.header("x-real-ip");
             const forwarded = c.req.header("x-forwarded-for");
             clientIp = realIp || (forwarded ? forwarded.split(",")[0].trim() : "") || "127.0.0.1";

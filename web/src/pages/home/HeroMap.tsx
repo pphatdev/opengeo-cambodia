@@ -43,32 +43,55 @@ const EASE = "ease-[cubic-bezier(.22,1,.36,1)]";
  * The card itself stays mounted (so it can glide); only its contents are keyed,
  * which cross-fades the text when the province changes.
  */
-function Callout({ province, info, className, style }: { province: HeroProvince; info?: Live; className?: string; style?: CSSProperties }) {
+function Callout({
+    province,
+    info,
+    onInspect,
+    className,
+    style,
+}: {
+    province: HeroProvince;
+    info?: Live;
+    onInspect: (p: HeroProvince) => void;
+    className?: string;
+    style?: CSSProperties;
+}) {
     const { t } = useI18n();
     return (
         <div className={cx("pointer-events-none rounded-2xl glass-panel p-4 shadow-glass-lg transition-all", className)} style={style}>
             <div key={province.code} className="animate-fade-up">
-            <div className="mb-1.5 flex items-center justify-between gap-2">
-                <span className="rounded-full bg-accent-soft/90 border border-accent/25 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-accent km:font-khmer km:normal-case km:tracking-normal km:text-[11px]">
-                    {t("hero.provinceTag")}
-                </span>
-                <span className="font-mono text-[11px] text-ink-3">#{province.code}</span>
-            </div>
-            <div className="font-khmer text-[19px] font-semibold leading-snug text-ink">{province.km}</div>
-            <div className="text-[13px] text-ink-2">{province.en}</div>
-            <div className="mt-2.5 flex items-center justify-between gap-2 rounded-lg bg-code/95 border border-code-line/60 px-2.5 py-1.5 font-mono text-[10.5px] text-code-dim backdrop-blur-sm">
-                <span className="truncate"><span className="text-j-str">GET</span> {info?.path ?? `/api/admin/item/${province.id}`}</span>
-                <span className="flex-none">
-                    {info ? (<><span className={info.status < 400 ? "text-j-str" : "text-j-err"}>{info.status}</span> · {info.server}</>) : "…"}
-                </span>
-            </div>
-            <Link
-                to={`/playground?ep=admin-districts&id=${province.id}`}
-                className="pointer-events-auto mt-2.5 flex items-center justify-between rounded-lg glass-pill px-3 py-1.5 font-mono text-[10.5px] font-semibold text-accent hover:border-accent hover:text-accent transition-all no-underline"
-            >
-                <span>{t("playground.testInPlayground")}</span>
-                <span>→</span>
-            </Link>
+                <div className="mb-1.5 flex items-center justify-between gap-2">
+                    <span className="rounded-full bg-accent-soft/90 border border-accent/25 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-accent km:font-khmer km:normal-case km:tracking-normal km:text-[11px]">
+                        {t("hero.provinceTag")}
+                    </span>
+                    <span className="rounded-md border border-line/70 bg-surface-2/60 px-1.5 py-0.5 font-mono text-[10.5px] font-semibold text-ink-2">
+                        NCDD #{province.code}
+                    </span>
+                </div>
+                <div className="font-khmer text-[19px] font-semibold leading-snug text-ink">{province.km}</div>
+                <div className="text-[13px] font-medium text-ink-2">{province.en}</div>
+                <div className="mt-2.5 flex items-center justify-between gap-2 rounded-lg bg-code/95 border border-code-line/60 px-2.5 py-1.5 font-mono text-[10.5px] text-code-dim backdrop-blur-sm">
+                    <span className="truncate"><span className="text-j-str font-semibold">GET</span> {info?.path ?? `/api/admin/item/${province.id}`}</span>
+                    <span className="flex-none">
+                        {info ? (<><span className={info.status < 400 ? "text-j-str" : "text-j-err"}>{info.status}</span> · {info.server}</>) : "…"}
+                    </span>
+                </div>
+                <div className="mt-2.5 grid grid-cols-2 gap-1.5">
+                    <button
+                        type="button"
+                        onClick={() => onInspect(province)}
+                        className="pointer-events-auto flex cursor-pointer items-center justify-center gap-1 rounded-lg border border-line/80 bg-surface/80 px-2.5 py-1.5 font-mono text-[10.5px] font-semibold text-ink hover:border-accent/50 hover:text-accent transition-all km:font-khmer"
+                    >
+                        <span>{t("hero.explore")}</span>
+                    </button>
+                    <Link
+                        to={`/playground?ep=admin-districts&id=${province.id}`}
+                        className="pointer-events-auto flex items-center justify-center gap-1 rounded-lg glass-pill px-2.5 py-1.5 font-mono text-[10.5px] font-semibold text-accent hover:border-accent hover:text-accent transition-all no-underline km:font-khmer"
+                    >
+                        <span>API</span>
+                        <span>→</span>
+                    </Link>
+                </div>
             </div>
         </div>
     );
@@ -144,9 +167,18 @@ export function HeroMap() {
     return (
         <figure ref={figureRef} className={cx("relative m-0 w-full select-none", !onScreen && "og-paused")} onMouseLeave={leave}>
             <div className="relative pt-5 pb-5" style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT + 80}` }}>
-                {/* Corner coordinates: the dataset's bounding box, like a map sheet's margin */}
-                <span className="absolute left-0 top-0 rounded-md glass-pill px-2 py-0.5 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">14.7°N · 102.3°E</span>
-                <span className="absolute bottom-0 right-0 rounded-md glass-pill px-2 py-0.5 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">10.4°N · 107.7°E</span>
+                {/* Corner coordinates + CRS badge: the dataset's bounding box, like a GIS sheet's margin */}
+                <span className="absolute left-0 top-0 inline-flex items-center gap-1.5 rounded-md glass-pill px-2 py-0.5 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">
+                    <span className="size-1.5 rounded-full bg-water" />
+                    14.7°N · 102.3°E
+                </span>
+                <span className="absolute right-0 top-0 rounded-md glass-pill px-2 py-0.5 font-mono text-[10px] tracking-wider text-ink-3 max-sm:hidden" aria-hidden="true">
+                    EPSG:4326 · WGS84
+                </span>
+                <span className="absolute bottom-0 right-0 inline-flex items-center gap-1.5 rounded-md glass-pill px-2 py-0.5 font-mono text-[10.5px] tracking-wide text-ink-3" aria-hidden="true">
+                    10.4°N · 107.7°E
+                    <span className="size-1.5 rounded-full bg-accent" />
+                </span>
 
                 {/* Breathing halo around the country silhouette. Its own layer: the CSS blur is rasterised once and only
                     opacity animates (compositor-only), instead of re-running an SVG blur filter every frame. */}
@@ -271,8 +303,9 @@ export function HeroMap() {
                     <Callout
                         province={active}
                         info={info}
+                        onInspect={select}
                         className={cx(
-                            "absolute left-0 top-0 w-[min(250px,62%)] -translate-y-1/2 transition-transform duration-700 max-sm:hidden",
+                            "absolute left-0 top-0 w-[min(256px,64%)] -translate-y-1/2 transition-transform duration-700 max-sm:hidden",
                             EASE,
                             flip ? "-translate-x-[calc(100%+18px)]" : "translate-x-4.5",
                         )}
@@ -281,7 +314,7 @@ export function HeroMap() {
             </div>
 
             {/* Phones: no room beside the pin, so the same card sits under the map */}
-            <Callout province={active} info={info} className="mt-1 sm:hidden" />
+            <Callout province={active} info={info} onInspect={select} className="mt-1 sm:hidden" />
 
             <figcaption className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-ink-3">
                 <span className="inline-flex items-center gap-1.5 rounded-full glass-pill px-2.5 py-1">

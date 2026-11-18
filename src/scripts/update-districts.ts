@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AdminItem } from "../types/admin.js";
-import { KRONG_CODES } from "../data/store.js";
+import type { AdminItem } from "../types/admin.ts";
+import { KRONG_CODES } from "../data/store.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -194,9 +194,7 @@ export function updateDistrictsFromCsv(): {
 }
 
 // CLI direct execution
-const isDirectRun = process.argv[1] &&
-    (process.argv[1].endsWith("update-districts.ts") ||
-        process.argv[1].endsWith("update-districts.js"));
+const isDirectRun = import.meta.main;
 
 if (isDirectRun) {
     console.log("🔄 Updating districts.json from CambodiaDistrictList.csv...");

@@ -1,16 +1,6 @@
 version: 2
 updates:
-  # Maintain dependencies for npm/pnpm
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    # Enforce security updates priority
-    versioning-strategy: "increase-if-necessary"
-    labels:
-      - "security"
-      - "dependencies"
+  # npm packages are pinned in deno.json; Dependabot has no Deno ecosystem, so update them with `deno outdated --update`
 
   # Maintain GitHub Actions dependencies
   - package-ecosystem: "github-actions"
