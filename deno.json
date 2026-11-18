@@ -74,7 +74,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true
     },
-    "exclude": ["dist/", "web/", "node_modules/", ".wrangler/", ".pnpm-store/", "worker-configuration.d.ts"],
+    "exclude": ["dist/", "web/", "src/worker.ts", "src/worker-seed.ts", "node_modules/", ".wrangler/", ".pnpm-store/", "worker-configuration.d.ts"],
     "lint": {
         "exclude": ["worker-configuration.d.ts"],
         "rules": {
