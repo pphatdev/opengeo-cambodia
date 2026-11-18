@@ -18,7 +18,7 @@ Deno.serve(
 =========================================================
     🇰🇭 OpenGeo Cambodia API - Hono.js on Deno
 =========================================================
-    🚀 Server Running:   http://${info.address}:${info.port}
+    🚀 Server Running:   http://${info.hostname}:${info.port}
     🖥️  Interactive Demo: http://localhost:${info.port}/demo
     🌐 API Welcome:      http://localhost:${info.port}/
     📖 API Endpoints:    http://localhost:${info.port}/api/info

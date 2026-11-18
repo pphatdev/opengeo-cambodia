@@ -330,7 +330,7 @@ export function Quickstart() {
                             </button>
                         </div>
                         <pre className={cx(codePre, "px-4.5 py-4")}>{highlightCode(activeSnippet.code)}</pre>
-                        <div className="flex items-center justify-between border-t border-code-line/70 bg-white/[0.02] px-4 py-2 font-mono text-[11px] text-code-dim">
+                        <div className="flex items-center justify-between border-t border-code-line/70 bg-white/2 px-4 py-2 font-mono text-[11px] text-code-dim">
                             <span>{activeSnippet.endpoint}</span>
                             <span className="text-emerald-400">200 OK · application/json</span>
                         </div>

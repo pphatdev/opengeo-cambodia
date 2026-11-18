@@ -188,7 +188,7 @@ export function Hero() {
                             className="animate-intro mt-7 max-w-145 overflow-hidden rounded-2xl border border-code-line/85 bg-code/95 text-code-ink shadow-[0_20px_45px_-18px_rgba(0,0,0,.65),inset_0_1px_1px_0_rgba(255,255,255,.08)] backdrop-blur-md"
                         >
                             {/* Terminal top bar with macOS dots + endpoint switcher tabs */}
-                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-code-line/80 bg-white/[0.02] px-3.5 py-2">
+                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-code-line/80 bg-white/2 px-3.5 py-2">
                                 <div className="flex items-center gap-1.5" aria-hidden="true">
                                     <span className="size-2.5 rounded-full bg-rose-500/75" />
                                     <span className="size-2.5 rounded-full bg-amber-400/75" />
@@ -232,7 +232,7 @@ export function Hero() {
                                     <Link
                                         to={activeEp.playground}
                                         title={t("playground.testInPlayground")}
-                                        className="inline-flex h-7.5 items-center gap-1 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 font-mono text-[11px] font-medium text-code-dim no-underline hover:border-accent/40 hover:bg-accent/15 hover:text-accent transition-all"
+                                        className="inline-flex h-7.5 items-center gap-1 rounded-lg border border-white/10 bg-white/4 px-2.5 font-mono text-[11px] font-medium text-code-dim no-underline hover:border-accent/40 hover:bg-accent/15 hover:text-accent transition-all"
                                     >
                                         <Icon name="play" className="size-3" />
                                         <span className="max-sm:hidden">Run</span>
