@@ -11,6 +11,7 @@
 [![AI Docs](https://img.shields.io/badge/AI%20Docs-llms.txt-7c3aed?style=flat-square)](https://opengeo-cambodia.pphat.me/llms.txt)
 [![AI Q&A](https://img.shields.io/badge/AI%20Assistant-Mistral%20AI-orange?style=flat-square)](https://opengeo-cambodia.pphat.me)
 [![Postman](https://img.shields.io/badge/Postman-Collection-FF6C37?style=flat-square&logo=postman&logoColor=white)](public/opengeo-cambodia.postman_collection.json)
+[![Docker: GHCR](https://img.shields.io/badge/Docker-ghcr.io-2496ED?style=flat-square&logo=docker&logoColor=white)](#-docker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
 🔗 **Live Production URL:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me)  
@@ -19,6 +20,7 @@
 🏛️ **Official Data Source:** [https://data.mef.gov.kh/](https://data.mef.gov.kh/) (Ministry of Economy and Finance Open Data Portal)  
 📮 **Postman Collection:** [`public/opengeo-cambodia.postman_collection.json`](public/opengeo-cambodia.postman_collection.json) *(Uses collection variables, no environment file needed)*  
 🤖 **AI Reference Context:** [`/llms.txt`](https://opengeo-cambodia.pphat.me/llms.txt) | [`/llms-full.txt`](https://opengeo-cambodia.pphat.me/llms-full.txt)  
+🐳 **Docker Image:** `ghcr.io/pphatdev/opengeo-cambodia` *(see [Docker](#-docker))*  
 💬 **AI Assistant:** [https://opengeo-cambodia.pphat.me](https://opengeo-cambodia.pphat.me) *(interactive floating assistant on all pages)*  
 📰 **Developer Guide & Deep Dive Series:** [**`blog/` (7-Part Series)**](blog/) | [Full Article](blog/introducing-opengeo-cambodia.md)
 
@@ -118,7 +120,7 @@ deno task build   # data assets, llms.txt, sitemap and the web bundle
 deno task start   # serve on http://localhost:3000 (PORT / HOST from .env)
 ```
 
-Deploy to Cloudflare Workers with `deno task deploy`.
+Deploy to Cloudflare Workers with `deno task deploy`, or run the whole app in a container (see [Docker](#-docker)).
 
 Other tasks: `deno task lint` (type-check), `deno task audit` (known vulnerabilities in npm packages) and `deno task preview` (local Workers runtime). Run `deno task` to list them all.
 
@@ -144,6 +146,104 @@ deno task update:villages
 # Update all administrative divisions in one step
 deno task update:all
 ```
+
+---
+
+## 🐳 Docker
+
+Each release is published as a Docker image to the GitHub Container Registry. One container serves everything: the REST API, the web app (`/`, `/map`, `/docs`, `/playground`), `llms.txt` and the Postman collection, all on port `3000`.
+
+**Image:** [`ghcr.io/pphatdev/opengeo-cambodia`](https://github.com/pphatdev/opengeo-cambodia/pkgs/container/opengeo-cambodia), for `linux/amd64` and `linux/arm64`
+
+### Pull and run the image
+
+```bash
+docker pull ghcr.io/pphatdev/opengeo-cambodia:latest
+docker run -d --name opengeo-cambodia -p 3000:3000 ghcr.io/pphatdev/opengeo-cambodia:latest
+```
+
+Open http://localhost:3000. To check that it's up:
+
+```bash
+curl http://localhost:3000/health
+```
+
+### Image tags
+
+| Tag | Points to |
+| --- | --- |
+| `latest` | The newest stable release |
+| `1.14.0` | One exact release. Use this in production so updates are on your terms |
+| `1.14` | The newest patch of `1.14.x` |
+| `1` | The newest `1.x.x` release |
+
+Pre-release tags such as `v1.15.0-rc.1` are published under their own version but never move `latest`.
+
+### Configuration
+
+The image needs no configuration. These environment variables are optional (the full list is in [`.env.example`](.env.example)):
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `PORT` | `3000` | Port the server listens on inside the container |
+| `APP_URL` | `https://opengeo-cambodia.pphat.me` | Public URL used in canonical links and the sitemap |
+| `MISTRAL_API_KEY` | *(empty)* | Turns on the AI assistant (`/api/chat`). Without it, the rest of the app still works |
+| `MISTRAL_MODEL` | `mistral-small-latest` | Mistral model for the assistant |
+| `NOMINATIM_USER_AGENT` | `OpenGeoCambodia/1.0 (...)` | User-Agent sent to OSM Nominatim. Set your own contact when self-hosting |
+
+Pass them with `-e`, or point to a file with `--env-file`:
+
+```bash
+docker run -d --name opengeo-cambodia -p 8080:3000 \
+  -e MISTRAL_API_KEY=your-key \
+  ghcr.io/pphatdev/opengeo-cambodia:1.14.0
+```
+
+### Docker Compose
+
+```yaml
+# compose.yaml
+services:
+  api:
+    image: ghcr.io/pphatdev/opengeo-cambodia:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+```
+
+```bash
+docker compose up -d
+```
+
+### Build the image from source
+
+The repository's [`compose.yaml`](compose.yaml) builds from the local [`Dockerfile`](Dockerfile) and reads `.env` if it exists:
+
+```bash
+docker compose up -d --build       # http://localhost:3000
+PORT=8080 docker compose up -d     # use a different host port
+```
+
+Or with plain Docker:
+
+```bash
+docker build -t opengeo-cambodia .
+docker run -d -p 3000:3000 opengeo-cambodia
+```
+
+The build has two stages. The first installs dependencies and runs `deno task build`. The second keeps only the server code, `public/`, the web bundle and the npm packages the API imports, and runs as the unprivileged `deno` user with a built-in health check.
+
+### Publishing a release
+
+[`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml) builds and pushes the image whenever a version tag is pushed:
+
+```bash
+git tag v1.14.0 && git push origin v1.14.0
+```
+
+To publish an existing tag again, run the **Publish Docker Image** workflow from the Actions tab and enter the tag.
 
 ---
 
@@ -384,7 +484,13 @@ POST /api/chat
 opengeo-cambodia.pphat.me/
 ├── deno.json              # Tasks, pinned npm imports, compiler options
 ├── deno.lock
+├── Dockerfile             # Multi-stage image: build the web app, then run the Deno server
+├── compose.yaml           # Build and run the container locally
+├── .dockerignore
 ├── .env.example
+├── .github/workflows/
+│   ├── docker-publish.yml         # Push the image to ghcr.io on version tags
+│   └── supply-chain-security.yml  # Dependency audit and type check
 ├── .gitignore
 ├── README.md
 ├── context.md
