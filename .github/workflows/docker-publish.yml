@@ -50,7 +50,7 @@ jobs:
 
       - name: Extract image metadata (tags, labels)
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # v1.13.0 -> 1.13.0, 1.13, 1, latest (pre-releases like v1.14.0-rc.1 skip latest)
